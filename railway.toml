@@ -1,0 +1,33 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "uv sync --frozen"
+
+[deploy]
+startCommand = "streamlit run src/kardamow/app/main.py --server.port=$PORT --server.address=0.0.0.0"
+healthcheckPath = "/_stcore/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "web"
+
+[[services]]
+name = "ingestors-daily"
+startCommand = "python -m scripts.run_ingestors"
+schedule = "0 6 * * *"
+
+[[services]]
+name = "ingestors-eia-weekly"
+startCommand = "python -m scripts.run_eia_weekly"
+schedule = "30 15 * * 4"
+
+[[services]]
+name = "alerts"
+startCommand = "python -m scripts.run_alerts"
+schedule = "*/15 * * * *"
+
+[[services]]
+name = "saturday-drop"
+startCommand = "python -m scripts.run_saturday_drop"
+schedule = "0 7 * * 6"
