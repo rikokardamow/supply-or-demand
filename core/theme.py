@@ -150,3 +150,34 @@ def dual_axis_chart(
         yaxis2={"title": right_label, "color": LIGHT_BLUE, "overlaying": "y", "side": "right"},
     )
     return fig
+
+
+def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+    fig = go.Figure(
+        go.Scatter(x=series.index, y=series.values, line={"color": NAVY, "width": 2})
+    )
+    fig.update_layout(title=title, yaxis_title=unit)
+    return fig
+
+
+def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """One line per year (most recent 4 only), reusing the per-year columns
+    core.seasonal.seasonal_stats() already computes — seasonal_range_chart only uses
+    them for lo/hi/median, this shows each year's track directly instead."""
+    year_cols = [c for c in stats_df.columns if c not in ("lo", "hi", "median")]
+    recent_years = sorted(year_cols, key=int)[-4:]
+    colours = [RED, ORANGE, LIGHT_BLUE, NAVY]  # oldest -> most recent of the 4
+
+    fig = go.Figure()
+    for year, colour in zip(recent_years, colours[-len(recent_years):], strict=False):
+        is_current = year == recent_years[-1]
+        fig.add_trace(
+            go.Scatter(
+                x=stats_df.index,
+                y=stats_df[year],
+                name=year,
+                line={"color": colour, "width": 3 if is_current else 2},
+            )
+        )
+    fig.update_layout(title=title, yaxis_title=unit)
+    return fig
