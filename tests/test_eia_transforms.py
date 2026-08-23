@@ -45,6 +45,26 @@ def test_wpsr_summary_computes_latest_prior_and_delta() -> None:
     assert summary.loc["WPULEUS3", "delta"] == pytest.approx(1.0)
 
 
+def test_wpsr_summary_computes_vs_seasonal_median() -> None:
+    # Same June 15th value (175.0) every year 2018-2024 except 2020 (skipped
+    # entirely) and the latest year 2025, which gets a deliberately different
+    # value. Median across the 7 contributing years stays 175.0 (only one of
+    # seven points differs), so vs_median should come out as exactly 300-175.
+    years = [2018, 2019, 2021, 2022, 2023, 2024, 2025]
+    values = [175.0] * 6 + [300.0]
+    df = pd.DataFrame(
+        {
+            "series_id": ["WCESTUS1"] * len(years),
+            "ts": pd.to_datetime([f"{y}-06-15" for y in years]),
+            "value": values,
+        }
+    )
+
+    summary = wpsr_summary(df).set_index("series_id")
+
+    assert summary.loc["WCESTUS1", "vs_median"] == pytest.approx(125.0)
+
+
 def test_net_balance_hand_checked() -> None:
     ts = pd.Timestamp("2026-05-01")
     flows = pd.DataFrame(
