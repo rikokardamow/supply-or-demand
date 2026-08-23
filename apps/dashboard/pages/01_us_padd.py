@@ -20,7 +20,7 @@ from pipelines.eia.pull_wpsr import (
     UTILISATION,
     WEEKLY_IMPORTS,
 )
-from pipelines.eia.transforms import net_balance, wpsr_summary
+from pipelines.eia.transforms import days_of_cover, net_balance, wpsr_summary
 
 GROSS_INPUTS_BY_GEO = {
     "US": "WGIRIUS2",
@@ -152,3 +152,12 @@ with tab_wpsr:
             }
         )
         st.dataframe(styled, use_container_width=True)
+
+    stocks = _series_by_ts("WCESTUS1")
+    product_supplied = _series_by_ts("WRPUPUS2")
+    if stocks.empty or product_supplied.empty:
+        st.info("No data yet for days-of-cover — run `pipelines/eia/pull_wpsr.py`.")
+    else:
+        cover = days_of_cover(stocks, product_supplied).dropna()
+        if not cover.empty:
+            st.metric("US crude days of cover", f"{cover.iloc[-1]:.1f} days")

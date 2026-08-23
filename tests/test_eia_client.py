@@ -77,6 +77,16 @@ def test_wkly_route_returns_ts_long_conformant_dataframe() -> None:
 
 
 @pytest.mark.vcr
+def test_list_series_returns_id_and_name_facets() -> None:
+    client = EIAClient()
+    facets = client.list_series(route="petroleum/move/pipe")
+
+    assert facets
+    assert all({"id", "name"} <= set(f) for f in facets)
+    assert any(f["id"] == "MCRMPP2P31" for f in facets)
+
+
+@pytest.mark.vcr
 def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
     client = EIAClient()
     df = client.get_flows(
