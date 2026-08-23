@@ -55,6 +55,8 @@ Route `petroleum/stoc/wstk` (weekly stocks):
 - `WCSSTUS1` — US crude oil stocks in the SPR.
 - `WGTSTUS1` — US total gasoline stocks.
 - `WDISTUS1` — US distillate fuel oil stocks.
+- `WTESTUS1` — US ending stocks excl. SPR, crude oil and petroleum products combined
+  (1.245 Bn bbl as of 2026-08-14 — matches a "Bn bbl"-scale chart, not "MBBL"-scale).
 
 Route `petroleum/pnp/wiup` (weekly refinery utilisation & gross inputs):
 - `WPULEUS3` — US % utilisation of refinery operable capacity.
@@ -70,6 +72,12 @@ Route `petroleum/cons/wpsup` (weekly product supplied — demand proxy):
 
 Route `petroleum/move/wkly` (weekly imports):
 - `WCEIMUS2` — US commercial crude oil imports excluding SPR.
+
+Route `petroleum/sum/sndw` (weekly national supply/demand summary):
+- `WCRRIUS2` — US refiner net input of crude oil ("refinery demand").
+- `WCRFPUS2` — US field production of crude oil.
+- `WCREXUS2` — US exports of crude oil.
+- `WTTEXUS2` — US exports of crude oil and petroleum products combined.
 
 Inter-PADD crude movements (monthly, `flows` schema, not `ts_long`):
 - Routes `petroleum/move/pipe` (mode=`pipeline`), `petroleum/move/tb` (mode=`tanker_barge`),
