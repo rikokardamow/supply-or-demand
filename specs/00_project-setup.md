@@ -93,9 +93,14 @@ Commit as `feat: core library, EIA client, dashboard shell (v0.1)` and tag `v0.1
 > no secrets needed). Protect `main`. Confirm CI green on a trivial PR.
 
 ## Definition of Done
-- Dashboard shell runs with one real, themed EIA chart read from the lake.
-- `core/` complete and tested (settings, schemas, storage, seasonal excl-2020, theme, calendars).
-- CI green; `v0.1` tagged; zero secrets in git history.
+- [x] Dashboard shell runs with one real, themed EIA chart read from the lake.
+- [x] `core/` complete and tested (settings, schemas, storage, seasonal excl-2020, theme, calendars).
+- [x] CI green; `v0.1` tagged; zero secrets in git history.
+
+Done as of 2026-08-23 (PRs #1, #2). Branch protection on `main` (mentioned in the master
+build guide's Session 3 verify step, not required by this Definition of Done) is blocked —
+this repo is private and GitHub's free tier doesn't support branch protection rules on
+private repos. Revisit if/when upgrading to GitHub Pro.
 
 ## Stretch (only if ahead of schedule)
 - `gitleaks` pre-commit hook. — `core/theme.py` scatter-with-fitted-log-curve helper (needed by Spec 07).
