@@ -1,0 +1,2246 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/petroleum/move/pipe/data/?data%5B0%5D=value&facets%5Bseries%5D%5B%5D=MCRMPP2P31&frequency=monthly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "485", "dateFormat": "YYYY-MM", "frequency":
+        "monthly", "data": [{"period": "2026-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19237", "units": "MBBL"}, {"period": "2026-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "17009",
+        "units": "MBBL"}, {"period": "2026-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "26073", "units": "MBBL"}, {"period": "2026-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "17074",
+        "units": "MBBL"}, {"period": "2026-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "20556", "units": "MBBL"}, {"period": "2025-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "21937",
+        "units": "MBBL"}, {"period": "2025-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "21816", "units": "MBBL"}, {"period": "2025-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22038",
+        "units": "MBBL"}, {"period": "2025-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19837", "units": "MBBL"}, {"period": "2025-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24472",
+        "units": "MBBL"}, {"period": "2025-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "26697", "units": "MBBL"}, {"period": "2025-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "23852",
+        "units": "MBBL"}, {"period": "2025-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "21170", "units": "MBBL"}, {"period": "2025-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "18212",
+        "units": "MBBL"}, {"period": "2025-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18228", "units": "MBBL"}, {"period": "2025-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "19509",
+        "units": "MBBL"}, {"period": "2025-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "20484", "units": "MBBL"}, {"period": "2024-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "17652",
+        "units": "MBBL"}, {"period": "2024-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19408", "units": "MBBL"}, {"period": "2024-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "21312",
+        "units": "MBBL"}, {"period": "2024-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "23479", "units": "MBBL"}, {"period": "2024-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26804",
+        "units": "MBBL"}, {"period": "2024-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "25288", "units": "MBBL"}, {"period": "2024-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24587",
+        "units": "MBBL"}, {"period": "2024-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "22342", "units": "MBBL"}, {"period": "2024-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "19327",
+        "units": "MBBL"}, {"period": "2024-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19354", "units": "MBBL"}, {"period": "2024-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "16675",
+        "units": "MBBL"}, {"period": "2024-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "16200", "units": "MBBL"}, {"period": "2023-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22099",
+        "units": "MBBL"}, {"period": "2023-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "23463", "units": "MBBL"}, {"period": "2023-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "20230",
+        "units": "MBBL"}, {"period": "2023-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18039", "units": "MBBL"}, {"period": "2023-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "19074",
+        "units": "MBBL"}, {"period": "2023-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "21546", "units": "MBBL"}, {"period": "2023-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "23932",
+        "units": "MBBL"}, {"period": "2023-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24666", "units": "MBBL"}, {"period": "2023-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22582",
+        "units": "MBBL"}, {"period": "2023-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "15050", "units": "MBBL"}, {"period": "2023-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "17833",
+        "units": "MBBL"}, {"period": "2023-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24011", "units": "MBBL"}, {"period": "2022-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22298",
+        "units": "MBBL"}, {"period": "2022-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "17675", "units": "MBBL"}, {"period": "2022-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "19620",
+        "units": "MBBL"}, {"period": "2022-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18313", "units": "MBBL"}, {"period": "2022-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "23144",
+        "units": "MBBL"}, {"period": "2022-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "22997", "units": "MBBL"}, {"period": "2022-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22612",
+        "units": "MBBL"}, {"period": "2022-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "20458", "units": "MBBL"}, {"period": "2022-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "16040",
+        "units": "MBBL"}, {"period": "2022-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19766", "units": "MBBL"}, {"period": "2022-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "11660",
+        "units": "MBBL"}, {"period": "2022-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "12832", "units": "MBBL"}, {"period": "2021-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "18727",
+        "units": "MBBL"}, {"period": "2021-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "21999", "units": "MBBL"}, {"period": "2021-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "15528",
+        "units": "MBBL"}, {"period": "2021-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "20733", "units": "MBBL"}, {"period": "2021-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26243",
+        "units": "MBBL"}, {"period": "2021-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24685", "units": "MBBL"}, {"period": "2021-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "20626",
+        "units": "MBBL"}, {"period": "2021-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "19979", "units": "MBBL"}, {"period": "2021-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "18123",
+        "units": "MBBL"}, {"period": "2021-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "13728", "units": "MBBL"}, {"period": "2021-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "6871",
+        "units": "MBBL"}, {"period": "2021-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "7517", "units": "MBBL"}, {"period": "2020-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "13235",
+        "units": "MBBL"}, {"period": "2020-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "15023", "units": "MBBL"}, {"period": "2020-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "16217",
+        "units": "MBBL"}, {"period": "2020-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "14991", "units": "MBBL"}, {"period": "2020-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "13549",
+        "units": "MBBL"}, {"period": "2020-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "16709", "units": "MBBL"}, {"period": "2020-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "13281",
+        "units": "MBBL"}, {"period": "2020-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "12267", "units": "MBBL"}, {"period": "2020-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "21570",
+        "units": "MBBL"}, {"period": "2020-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18049", "units": "MBBL"}, {"period": "2020-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "18653",
+        "units": "MBBL"}, {"period": "2020-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "21793", "units": "MBBL"}, {"period": "2019-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "20354",
+        "units": "MBBL"}, {"period": "2019-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "20824", "units": "MBBL"}, {"period": "2019-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24072",
+        "units": "MBBL"}, {"period": "2019-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "26611", "units": "MBBL"}, {"period": "2019-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "31006",
+        "units": "MBBL"}, {"period": "2019-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31774", "units": "MBBL"}, {"period": "2019-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29974",
+        "units": "MBBL"}, {"period": "2019-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "33950", "units": "MBBL"}, {"period": "2019-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29793",
+        "units": "MBBL"}, {"period": "2019-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27650", "units": "MBBL"}, {"period": "2019-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28205",
+        "units": "MBBL"}, {"period": "2019-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "34215", "units": "MBBL"}, {"period": "2018-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "34132",
+        "units": "MBBL"}, {"period": "2018-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31211", "units": "MBBL"}, {"period": "2018-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25832",
+        "units": "MBBL"}, {"period": "2018-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24832", "units": "MBBL"}, {"period": "2018-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25909",
+        "units": "MBBL"}, {"period": "2018-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24170", "units": "MBBL"}, {"period": "2018-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "20975",
+        "units": "MBBL"}, {"period": "2018-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24816", "units": "MBBL"}, {"period": "2018-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24473",
+        "units": "MBBL"}, {"period": "2018-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "28230", "units": "MBBL"}, {"period": "2018-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "17484",
+        "units": "MBBL"}, {"period": "2018-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18661", "units": "MBBL"}, {"period": "2017-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26649",
+        "units": "MBBL"}, {"period": "2017-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29327", "units": "MBBL"}, {"period": "2017-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29257",
+        "units": "MBBL"}, {"period": "2017-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32264", "units": "MBBL"}, {"period": "2017-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "31699",
+        "units": "MBBL"}, {"period": "2017-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32290", "units": "MBBL"}, {"period": "2017-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "31344",
+        "units": "MBBL"}, {"period": "2017-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "34136", "units": "MBBL"}, {"period": "2017-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "34762",
+        "units": "MBBL"}, {"period": "2017-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "30963", "units": "MBBL"}, {"period": "2017-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26544",
+        "units": "MBBL"}, {"period": "2017-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "28862", "units": "MBBL"}, {"period": "2016-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "32239",
+        "units": "MBBL"}, {"period": "2016-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32419", "units": "MBBL"}, {"period": "2016-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29218",
+        "units": "MBBL"}, {"period": "2016-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29299", "units": "MBBL"}, {"period": "2016-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "31373",
+        "units": "MBBL"}, {"period": "2016-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "36190", "units": "MBBL"}, {"period": "2016-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "31279",
+        "units": "MBBL"}, {"period": "2016-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32952", "units": "MBBL"}, {"period": "2016-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28218",
+        "units": "MBBL"}, {"period": "2016-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "23092", "units": "MBBL"}, {"period": "2016-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22135",
+        "units": "MBBL"}, {"period": "2016-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "25143", "units": "MBBL"}, {"period": "2015-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "23472",
+        "units": "MBBL"}, {"period": "2015-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "22330", "units": "MBBL"}, {"period": "2015-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "18310",
+        "units": "MBBL"}, {"period": "2015-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "18323", "units": "MBBL"}, {"period": "2015-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25161",
+        "units": "MBBL"}, {"period": "2015-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29881", "units": "MBBL"}, {"period": "2015-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27769",
+        "units": "MBBL"}, {"period": "2015-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29444", "units": "MBBL"}, {"period": "2015-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28925",
+        "units": "MBBL"}, {"period": "2015-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29010", "units": "MBBL"}, {"period": "2015-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24663",
+        "units": "MBBL"}, {"period": "2015-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "25619", "units": "MBBL"}, {"period": "2014-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25931",
+        "units": "MBBL"}, {"period": "2014-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24060", "units": "MBBL"}, {"period": "2014-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "22704",
+        "units": "MBBL"}, {"period": "2014-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29516", "units": "MBBL"}, {"period": "2014-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28072",
+        "units": "MBBL"}, {"period": "2014-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "28520", "units": "MBBL"}, {"period": "2014-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29311",
+        "units": "MBBL"}, {"period": "2014-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "30195", "units": "MBBL"}, {"period": "2014-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27264",
+        "units": "MBBL"}, {"period": "2014-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27890", "units": "MBBL"}, {"period": "2014-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26395",
+        "units": "MBBL"}, {"period": "2014-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27687", "units": "MBBL"}, {"period": "2013-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27840",
+        "units": "MBBL"}, {"period": "2013-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27056", "units": "MBBL"}, {"period": "2013-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28560",
+        "units": "MBBL"}, {"period": "2013-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27261", "units": "MBBL"}, {"period": "2013-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27435",
+        "units": "MBBL"}, {"period": "2013-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27332", "units": "MBBL"}, {"period": "2013-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27273",
+        "units": "MBBL"}, {"period": "2013-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29158", "units": "MBBL"}, {"period": "2013-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28470",
+        "units": "MBBL"}, {"period": "2013-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "28417", "units": "MBBL"}, {"period": "2013-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "24084",
+        "units": "MBBL"}, {"period": "2013-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "29067", "units": "MBBL"}, {"period": "2012-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "32198",
+        "units": "MBBL"}, {"period": "2012-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "30328", "units": "MBBL"}, {"period": "2012-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "32487",
+        "units": "MBBL"}, {"period": "2012-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "28883", "units": "MBBL"}, {"period": "2012-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29751",
+        "units": "MBBL"}, {"period": "2012-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "26560", "units": "MBBL"}, {"period": "2012-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28624",
+        "units": "MBBL"}, {"period": "2012-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31525", "units": "MBBL"}, {"period": "2012-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "30638",
+        "units": "MBBL"}, {"period": "2012-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "26768", "units": "MBBL"}, {"period": "2012-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25769",
+        "units": "MBBL"}, {"period": "2012-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27489", "units": "MBBL"}, {"period": "2011-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "28102",
+        "units": "MBBL"}, {"period": "2011-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "24548", "units": "MBBL"}, {"period": "2011-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "26803",
+        "units": "MBBL"}, {"period": "2011-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27186", "units": "MBBL"}, {"period": "2011-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29595",
+        "units": "MBBL"}, {"period": "2011-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31481", "units": "MBBL"}, {"period": "2011-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "33343",
+        "units": "MBBL"}, {"period": "2011-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32330", "units": "MBBL"}, {"period": "2011-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "25245",
+        "units": "MBBL"}, {"period": "2011-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "27347", "units": "MBBL"}, {"period": "2011-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "27485",
+        "units": "MBBL"}, {"period": "2011-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31732", "units": "MBBL"}, {"period": "2010-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "37746",
+        "units": "MBBL"}, {"period": "2010-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "32799", "units": "MBBL"}, {"period": "2010-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29367",
+        "units": "MBBL"}, {"period": "2010-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "37730", "units": "MBBL"}, {"period": "2010-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "40262",
+        "units": "MBBL"}, {"period": "2010-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "37240", "units": "MBBL"}, {"period": "2010-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "35940",
+        "units": "MBBL"}, {"period": "2010-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "39354", "units": "MBBL"}, {"period": "2010-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "42230",
+        "units": "MBBL"}, {"period": "2010-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "39578", "units": "MBBL"}, {"period": "2010-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "35810",
+        "units": "MBBL"}, {"period": "2010-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31768", "units": "MBBL"}, {"period": "2009-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "36332",
+        "units": "MBBL"}, {"period": "2009-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "36854", "units": "MBBL"}, {"period": "2009-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "30824",
+        "units": "MBBL"}, {"period": "2009-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "30808", "units": "MBBL"}, {"period": "2009-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "32749",
+        "units": "MBBL"}, {"period": "2009-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "41350", "units": "MBBL"}, {"period": "2009-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "36647",
+        "units": "MBBL"}, {"period": "2009-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "39775", "units": "MBBL"}, {"period": "2009-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "37362",
+        "units": "MBBL"}, {"period": "2009-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31485", "units": "MBBL"}, {"period": "2009-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "36483",
+        "units": "MBBL"}, {"period": "2009-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "38766", "units": "MBBL"}, {"period": "2008-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "44280",
+        "units": "MBBL"}, {"period": "2008-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "42725", "units": "MBBL"}, {"period": "2008-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47258",
+        "units": "MBBL"}, {"period": "2008-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "41702", "units": "MBBL"}, {"period": "2008-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45953",
+        "units": "MBBL"}, {"period": "2008-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "45031", "units": "MBBL"}, {"period": "2008-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48462",
+        "units": "MBBL"}, {"period": "2008-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51546", "units": "MBBL"}, {"period": "2008-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47027",
+        "units": "MBBL"}, {"period": "2008-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "40219", "units": "MBBL"}, {"period": "2008-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "42812",
+        "units": "MBBL"}, {"period": "2008-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "44402", "units": "MBBL"}, {"period": "2007-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "46563",
+        "units": "MBBL"}, {"period": "2007-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "43019", "units": "MBBL"}, {"period": "2007-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "43214",
+        "units": "MBBL"}, {"period": "2007-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "41545", "units": "MBBL"}, {"period": "2007-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48975",
+        "units": "MBBL"}, {"period": "2007-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46187", "units": "MBBL"}, {"period": "2007-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47212",
+        "units": "MBBL"}, {"period": "2007-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "50280", "units": "MBBL"}, {"period": "2007-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "46936",
+        "units": "MBBL"}, {"period": "2007-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "52311", "units": "MBBL"}, {"period": "2007-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45697",
+        "units": "MBBL"}, {"period": "2007-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "44017", "units": "MBBL"}, {"period": "2006-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45228",
+        "units": "MBBL"}, {"period": "2006-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "44887", "units": "MBBL"}, {"period": "2006-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45399",
+        "units": "MBBL"}, {"period": "2006-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46306", "units": "MBBL"}, {"period": "2006-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55596",
+        "units": "MBBL"}, {"period": "2006-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "55460", "units": "MBBL"}, {"period": "2006-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56134",
+        "units": "MBBL"}, {"period": "2006-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51772", "units": "MBBL"}, {"period": "2006-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "49078",
+        "units": "MBBL"}, {"period": "2006-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "45854", "units": "MBBL"}, {"period": "2006-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "46163",
+        "units": "MBBL"}, {"period": "2006-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "52187", "units": "MBBL"}, {"period": "2005-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55064",
+        "units": "MBBL"}, {"period": "2005-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48452", "units": "MBBL"}, {"period": "2005-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57857",
+        "units": "MBBL"}, {"period": "2005-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56098", "units": "MBBL"}, {"period": "2005-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56441",
+        "units": "MBBL"}, {"period": "2005-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "62946", "units": "MBBL"}, {"period": "2005-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54271",
+        "units": "MBBL"}, {"period": "2005-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57405", "units": "MBBL"}, {"period": "2005-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56080",
+        "units": "MBBL"}, {"period": "2005-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58472", "units": "MBBL"}, {"period": "2005-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54316",
+        "units": "MBBL"}, {"period": "2005-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56982", "units": "MBBL"}, {"period": "2004-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58563",
+        "units": "MBBL"}, {"period": "2004-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58068", "units": "MBBL"}, {"period": "2004-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "59684",
+        "units": "MBBL"}, {"period": "2004-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53860", "units": "MBBL"}, {"period": "2004-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64088",
+        "units": "MBBL"}, {"period": "2004-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57889", "units": "MBBL"}, {"period": "2004-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "59317",
+        "units": "MBBL"}, {"period": "2004-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63652", "units": "MBBL"}, {"period": "2004-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57981",
+        "units": "MBBL"}, {"period": "2004-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56926", "units": "MBBL"}, {"period": "2004-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "51791",
+        "units": "MBBL"}, {"period": "2004-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53962", "units": "MBBL"}, {"period": "2003-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "49951",
+        "units": "MBBL"}, {"period": "2003-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46709", "units": "MBBL"}, {"period": "2003-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "51049",
+        "units": "MBBL"}, {"period": "2003-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58403", "units": "MBBL"}, {"period": "2003-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "65693",
+        "units": "MBBL"}, {"period": "2003-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "62784", "units": "MBBL"}, {"period": "2003-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "68885",
+        "units": "MBBL"}, {"period": "2003-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "66095", "units": "MBBL"}, {"period": "2003-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57128",
+        "units": "MBBL"}, {"period": "2003-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53949", "units": "MBBL"}, {"period": "2003-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45426",
+        "units": "MBBL"}, {"period": "2003-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51312", "units": "MBBL"}, {"period": "2002-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "51957",
+        "units": "MBBL"}, {"period": "2002-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "52338", "units": "MBBL"}, {"period": "2002-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "49640",
+        "units": "MBBL"}, {"period": "2002-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54584", "units": "MBBL"}, {"period": "2002-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55740",
+        "units": "MBBL"}, {"period": "2002-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63558", "units": "MBBL"}, {"period": "2002-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57771",
+        "units": "MBBL"}, {"period": "2002-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56739", "units": "MBBL"}, {"period": "2002-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54278",
+        "units": "MBBL"}, {"period": "2002-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54186", "units": "MBBL"}, {"period": "2002-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48852",
+        "units": "MBBL"}, {"period": "2002-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54804", "units": "MBBL"}, {"period": "2001-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53077",
+        "units": "MBBL"}, {"period": "2001-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51126", "units": "MBBL"}, {"period": "2001-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54351",
+        "units": "MBBL"}, {"period": "2001-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61966", "units": "MBBL"}, {"period": "2001-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64111",
+        "units": "MBBL"}, {"period": "2001-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63828", "units": "MBBL"}, {"period": "2001-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57478",
+        "units": "MBBL"}, {"period": "2001-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "65206", "units": "MBBL"}, {"period": "2001-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64595",
+        "units": "MBBL"}, {"period": "2001-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "65996", "units": "MBBL"}, {"period": "2001-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56495",
+        "units": "MBBL"}, {"period": "2001-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "62214", "units": "MBBL"}, {"period": "2000-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58820",
+        "units": "MBBL"}, {"period": "2000-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "59423", "units": "MBBL"}, {"period": "2000-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64515",
+        "units": "MBBL"}, {"period": "2000-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "66278", "units": "MBBL"}, {"period": "2000-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "71416",
+        "units": "MBBL"}, {"period": "2000-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "71187", "units": "MBBL"}, {"period": "2000-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "67079",
+        "units": "MBBL"}, {"period": "2000-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "64449", "units": "MBBL"}, {"period": "2000-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64617",
+        "units": "MBBL"}, {"period": "2000-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58158", "units": "MBBL"}, {"period": "2000-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50641",
+        "units": "MBBL"}, {"period": "2000-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53135", "units": "MBBL"}, {"period": "1999-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "51067",
+        "units": "MBBL"}, {"period": "1999-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56757", "units": "MBBL"}, {"period": "1999-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "66458",
+        "units": "MBBL"}, {"period": "1999-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61450", "units": "MBBL"}, {"period": "1999-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "66202",
+        "units": "MBBL"}, {"period": "1999-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "70980", "units": "MBBL"}, {"period": "1999-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "66795",
+        "units": "MBBL"}, {"period": "1999-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "70068", "units": "MBBL"}, {"period": "1999-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "66741",
+        "units": "MBBL"}, {"period": "1999-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61990", "units": "MBBL"}, {"period": "1999-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58523",
+        "units": "MBBL"}, {"period": "1999-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56308", "units": "MBBL"}, {"period": "1998-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "64576",
+        "units": "MBBL"}, {"period": "1998-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63062", "units": "MBBL"}, {"period": "1998-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "68338",
+        "units": "MBBL"}, {"period": "1998-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "59504", "units": "MBBL"}, {"period": "1998-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "66497",
+        "units": "MBBL"}, {"period": "1998-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63447", "units": "MBBL"}, {"period": "1998-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56548",
+        "units": "MBBL"}, {"period": "1998-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61551", "units": "MBBL"}, {"period": "1998-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "61529",
+        "units": "MBBL"}, {"period": "1998-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "62015", "units": "MBBL"}, {"period": "1998-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50502",
+        "units": "MBBL"}, {"period": "1998-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58118", "units": "MBBL"}, {"period": "1997-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57918",
+        "units": "MBBL"}, {"period": "1997-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54503", "units": "MBBL"}, {"period": "1997-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "61865",
+        "units": "MBBL"}, {"period": "1997-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61699", "units": "MBBL"}, {"period": "1997-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "61769",
+        "units": "MBBL"}, {"period": "1997-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63674", "units": "MBBL"}, {"period": "1997-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "65620",
+        "units": "MBBL"}, {"period": "1997-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63792", "units": "MBBL"}, {"period": "1997-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "59312",
+        "units": "MBBL"}, {"period": "1997-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "59003", "units": "MBBL"}, {"period": "1997-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55554",
+        "units": "MBBL"}, {"period": "1997-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56397", "units": "MBBL"}, {"period": "1996-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55988",
+        "units": "MBBL"}, {"period": "1996-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "55980", "units": "MBBL"}, {"period": "1996-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "59566",
+        "units": "MBBL"}, {"period": "1996-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "62721", "units": "MBBL"}, {"period": "1996-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "65748",
+        "units": "MBBL"}, {"period": "1996-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63351", "units": "MBBL"}, {"period": "1996-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "62541",
+        "units": "MBBL"}, {"period": "1996-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "60731", "units": "MBBL"}, {"period": "1996-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56480",
+        "units": "MBBL"}, {"period": "1996-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "55428", "units": "MBBL"}, {"period": "1996-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "49087",
+        "units": "MBBL"}, {"period": "1996-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54030", "units": "MBBL"}, {"period": "1995-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "52945",
+        "units": "MBBL"}, {"period": "1995-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51636", "units": "MBBL"}, {"period": "1995-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55935",
+        "units": "MBBL"}, {"period": "1995-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58815", "units": "MBBL"}, {"period": "1995-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57751",
+        "units": "MBBL"}, {"period": "1995-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56061", "units": "MBBL"}, {"period": "1995-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53632",
+        "units": "MBBL"}, {"period": "1995-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "55415", "units": "MBBL"}, {"period": "1995-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "52322",
+        "units": "MBBL"}, {"period": "1995-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54191", "units": "MBBL"}, {"period": "1995-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47362",
+        "units": "MBBL"}, {"period": "1995-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "52462", "units": "MBBL"}, {"period": "1994-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55639",
+        "units": "MBBL"}, {"period": "1994-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54612", "units": "MBBL"}, {"period": "1994-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58596",
+        "units": "MBBL"}, {"period": "1994-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "60872", "units": "MBBL"}, {"period": "1994-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "65299",
+        "units": "MBBL"}, {"period": "1994-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "61991", "units": "MBBL"}, {"period": "1994-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57374",
+        "units": "MBBL"}, {"period": "1994-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57654", "units": "MBBL"}, {"period": "1994-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53271",
+        "units": "MBBL"}, {"period": "1994-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48418", "units": "MBBL"}, {"period": "1994-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45842",
+        "units": "MBBL"}, {"period": "1994-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53970", "units": "MBBL"}, {"period": "1993-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58286",
+        "units": "MBBL"}, {"period": "1993-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56335", "units": "MBBL"}, {"period": "1993-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "56979",
+        "units": "MBBL"}, {"period": "1993-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53301", "units": "MBBL"}, {"period": "1993-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54817",
+        "units": "MBBL"}, {"period": "1993-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "59807", "units": "MBBL"}, {"period": "1993-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58109",
+        "units": "MBBL"}, {"period": "1993-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57259", "units": "MBBL"}, {"period": "1993-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54591",
+        "units": "MBBL"}, {"period": "1993-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56380", "units": "MBBL"}, {"period": "1993-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "51663",
+        "units": "MBBL"}, {"period": "1993-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54952", "units": "MBBL"}, {"period": "1992-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50794",
+        "units": "MBBL"}, {"period": "1992-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "52026", "units": "MBBL"}, {"period": "1992-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53425",
+        "units": "MBBL"}, {"period": "1992-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57806", "units": "MBBL"}, {"period": "1992-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "61563",
+        "units": "MBBL"}, {"period": "1992-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57095", "units": "MBBL"}, {"period": "1992-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "52399",
+        "units": "MBBL"}, {"period": "1992-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53428", "units": "MBBL"}, {"period": "1992-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48707",
+        "units": "MBBL"}, {"period": "1992-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "49005", "units": "MBBL"}, {"period": "1992-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47589",
+        "units": "MBBL"}, {"period": "1992-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51619", "units": "MBBL"}, {"period": "1991-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "52947",
+        "units": "MBBL"}, {"period": "1991-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "49032", "units": "MBBL"}, {"period": "1991-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "55507",
+        "units": "MBBL"}, {"period": "1991-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "58482", "units": "MBBL"}, {"period": "1991-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58957",
+        "units": "MBBL"}, {"period": "1991-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "60272", "units": "MBBL"}, {"period": "1991-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "54078",
+        "units": "MBBL"}, {"period": "1991-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56049", "units": "MBBL"}, {"period": "1991-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45348",
+        "units": "MBBL"}, {"period": "1991-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "50501", "units": "MBBL"}, {"period": "1991-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "44084",
+        "units": "MBBL"}, {"period": "1991-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "43355", "units": "MBBL"}, {"period": "1990-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47069",
+        "units": "MBBL"}, {"period": "1990-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48560", "units": "MBBL"}, {"period": "1990-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48211",
+        "units": "MBBL"}, {"period": "1990-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "51919", "units": "MBBL"}, {"period": "1990-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "61480",
+        "units": "MBBL"}, {"period": "1990-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "63104", "units": "MBBL"}, {"period": "1990-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "57370",
+        "units": "MBBL"}, {"period": "1990-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56583", "units": "MBBL"}, {"period": "1990-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53995",
+        "units": "MBBL"}, {"period": "1990-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "56342", "units": "MBBL"}, {"period": "1990-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50903",
+        "units": "MBBL"}, {"period": "1990-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "54950", "units": "MBBL"}, {"period": "1989-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50978",
+        "units": "MBBL"}, {"period": "1989-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "47282", "units": "MBBL"}, {"period": "1989-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48779",
+        "units": "MBBL"}, {"period": "1989-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "53797", "units": "MBBL"}, {"period": "1989-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "58659",
+        "units": "MBBL"}, {"period": "1989-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "57835", "units": "MBBL"}, {"period": "1989-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "53510",
+        "units": "MBBL"}, {"period": "1989-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48744", "units": "MBBL"}, {"period": "1989-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "44546",
+        "units": "MBBL"}, {"period": "1989-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "47229", "units": "MBBL"}, {"period": "1989-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "46338",
+        "units": "MBBL"}, {"period": "1989-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "47771", "units": "MBBL"}, {"period": "1988-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48688",
+        "units": "MBBL"}, {"period": "1988-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48113", "units": "MBBL"}, {"period": "1988-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "48044",
+        "units": "MBBL"}, {"period": "1988-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "43606", "units": "MBBL"}, {"period": "1988-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "44639",
+        "units": "MBBL"}, {"period": "1988-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "47474", "units": "MBBL"}, {"period": "1988-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "47710",
+        "units": "MBBL"}, {"period": "1988-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "48688", "units": "MBBL"}, {"period": "1988-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45174",
+        "units": "MBBL"}, {"period": "1988-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "42015", "units": "MBBL"}, {"period": "1988-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "39683",
+        "units": "MBBL"}, {"period": "1988-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "43355", "units": "MBBL"}, {"period": "1987-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45245",
+        "units": "MBBL"}, {"period": "1987-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "43496", "units": "MBBL"}, {"period": "1987-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "45468",
+        "units": "MBBL"}, {"period": "1987-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46799", "units": "MBBL"}, {"period": "1987-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50157",
+        "units": "MBBL"}, {"period": "1987-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46411", "units": "MBBL"}, {"period": "1987-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "40753",
+        "units": "MBBL"}, {"period": "1987-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "39892", "units": "MBBL"}, {"period": "1987-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "41183",
+        "units": "MBBL"}, {"period": "1987-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "37442", "units": "MBBL"}, {"period": "1987-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "38691",
+        "units": "MBBL"}, {"period": "1987-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "42133", "units": "MBBL"}, {"period": "1986-12",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "46084",
+        "units": "MBBL"}, {"period": "1986-11", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "44855", "units": "MBBL"}, {"period": "1986-10",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "42388",
+        "units": "MBBL"}, {"period": "1986-09", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "46492", "units": "MBBL"}, {"period": "1986-08",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "50135",
+        "units": "MBBL"}, {"period": "1986-07", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "45515", "units": "MBBL"}, {"period": "1986-06",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "44500",
+        "units": "MBBL"}, {"period": "1986-05", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "38265", "units": "MBBL"}, {"period": "1986-04",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "32275",
+        "units": "MBBL"}, {"period": "1986-03", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "31104", "units": "MBBL"}, {"period": "1986-02",
+        "duoarea": "R20-R30", "area-name": "PADD 3", "product": "EPC0", "product-name":
+        "Crude Oil", "process": "LMV", "process-name": "Movements by Pipeline", "series":
+        "MCRMPP2P31", "series-description": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)", "value": "29399",
+        "units": "MBBL"}, {"period": "1986-01", "duoarea": "R20-R30", "area-name":
+        "PADD 3", "product": "EPC0", "product-name": "Crude Oil", "process": "LMV",
+        "process-name": "Movements by Pipeline", "series": "MCRMPP2P31", "series-description":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)", "value": "37405", "units": "MBBL"}]}, "request": {"command":
+        "/v2/petroleum/move/pipe/data/", "params": {"api_key": "FILTERED", "frequency":
+        "monthly", "data": ["value"], "facets": {"series": ["MCRMPP2P31"]}, "sort":
+        [{"column": "period", "direction": "desc"}], "offset": "0", "length": "5000"}},
+        "apiVersion": "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '4680'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 23 Aug 2026 20:16:06 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d061223ns04pilding3g
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - befb28a0-8f58-46a1-5023-2236464b8359
+    status:
+      code: 200
+      message: OK
+version: 1

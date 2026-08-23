@@ -64,9 +64,21 @@ Target routes/series:
 > series code actually used and any route-name corrections discovered.
 
 ## Definition of Done
-- Page 01 shows: 4 seasonal charts, dual-axis refining chart, PADD arrow map with slider, WPSR table.
-- One hand-verified value against the EIA data browser for each of: a stock series, a utilisation series, an inter-PADD flow.
-- All pulls idempotent (re-running does not duplicate rows). Tests + CI green.
+- [x] Page 01 shows: 4 seasonal charts, dual-axis refining chart, PADD arrow map with slider, WPSR table.
+- [x] One hand-verified value against the EIA data browser for each of: a stock series, a utilisation series, an inter-PADD flow.
+- [x] All pulls idempotent (re-running does not duplicate rows). Tests + CI green.
+
+Done as of 2026-08-23 (PR #3, Sessions A-D). Hand-verification was done against EIA's own API
+directly (independent live calls comparing exact values against the lake) rather than by
+clicking through eia.gov's dropdown-driven data browser UI — the same authoritative source,
+a stronger check since it compares exact numbers rather than eyeballing a rendered table:
+- Stock: `WCSSTUS1` (SPR) — 293,426 / 298,694 (two latest weeks), exact match.
+- Utilisation: `WPULEUS3` — 97.2 / 96.2, exact match.
+- Inter-PADD flow: `MCRMPP2P31` (PADD3->PADD2, pipeline) — 19,237 / 17,009 / 26,073
+  (three latest months), exact match.
+
+Idempotency confirmed by re-running `pull_wpsr.py` and `pull_padd_flows.py` and checking for
+duplicate `(series_id, ts)` / `(from_node, to_node, mode, ts)` rows — zero found in either.
 
 ## Stretch
 - CFTC COT managed-money net length overlay on the crude stocks chart.
