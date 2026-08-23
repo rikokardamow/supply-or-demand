@@ -1,0 +1,880 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/petroleum/move/pipe/facet/series
+  response:
+    body:
+      string: '{"response": {"totalFacets": 413, "facets": [{"id": "MBIMP_R20-R30_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Isobutane-Isobutylene (Thousand Barrels)"}, {"id": "MBIMP_R40-R20_1", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Isobutane-Isobutylene
+        (Thousand Barrels)"}, {"id": "MBNMP_R30-R40_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Normal Butane-Butylene
+        (Thousand Barrels)"}, {"id": "MBNMP_R40-R20_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Midwest (PADD 2) of Normal Butane-Butylene (Thousand
+        Barrels)"}, {"id": "MCRMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil (Thousand Barrels)"}, {"id": "MD0MP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MDGMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand
+        Barrels)"}, {"id": "MDIMPP5P41", "name": "West Coast (PADD 5) Receipts by
+        Pipeline from Rocky Mountain (PADD 4) of Distillate Fuel Oil (Thousand Barrels)"},
+        {"id": "MENMP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Midwest (PADD 2) of Ethane (Thousand Barrels)"}, {"id": "MG6MP_R30-R50_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Other Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MGFMPP4P21",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Finished Motor Gasoline (Thousand Barrels)"}, {"id": "MGRMPP2P11", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Reformulated
+        Motor Gasoline (Thousand Barrels)"}, {"id": "MIIMP_R20-R40_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Isobutane (Thousand
+        Barrels)"}, {"id": "MKEMP_R40-R20_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Midwest (PADD 2) of Kerosene (Thousand Barrels)"}, {"id":
+        "MKJMPP2P41", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain
+        (PADD 4) of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MKJMP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MLPMP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MMSMPP1P21", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Miscellaneous
+        Petroleum Products (Thousand Barrels)"}, {"id": "MO1MP_R20-R10_1", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Reformulated
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO1MP_R30-R50_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Reformulated Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO5MP_R50-R40_1", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Conventional Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO6MP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by
+        Pipeline from Gulf Coast (PADD 3) of Conventional CBOB Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MPAMP_R30-R20_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Midwest (PADD 2) of Propane (Thousand Barrels)"},
+        {"id": "MPAMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Propane (Thousand Barrels)"}, {"id": "MPEMPP2P11",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Total Petroleum Products (Thousand Barrels)"}, {"id": "MPEMPP2P31", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Total Petroleum
+        Products (Thousand Barrels)"}, {"id": "MPEMPP4P31", "name": "Rocky Mountain
+        (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Total Petroleum
+        Products (Thousand Barrels)"}, {"id": "MPPMP_R10-R20_1", "name": "East Coast
+        (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Pentanes Plus (Thousand
+        Barrels)"}, {"id": "MPPMP_R10-R30_1", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Pentanes Plus (Thousand Barrels)"},
+        {"id": "MPRMP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Midwest (PADD 2) of Propane and Propylene (Thousand Barrels)"}, {"id":
+        "MPRMP_R20-R10_1", "name": "Midwest (PADD 2) Receipts by Pipeline from East
+        Coast (PADD 1) of Propane and Propylene (Thousand Barrels)"}, {"id": "MPRMP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Propane and Propylene (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R10-R30_MBBL",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Natural Gas Liquids (Thousand Barrels)"}, {"id": "M_EPLLB0I_LMV_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Isobutane-Isobutylene (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R10-R30_MBBL",
+        "name": "East Coast (PADD I) Receipts by Pipeline from  Gulf Coast (PADD III)
+        of Motor Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R20-R40_MBBL",
+        "name": "Midwest (PADD II) Receipts by Pipeline from  Rocky Mountain (PADD
+        IV) of Motor Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id":
+        "M_EPOBGRR_LMV_R30-R20_MBBL", "name": "Gulf Coast (PADD III) Receipts by Pipeline
+        from  Midwest (PADD II) of Motor Gasoline Blending Components, RBOB (Thousand
+        Barrels)"}, {"id": "M_EPOORDB_LMV_R10-R20_MBBL", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Midwest (PADD 2) of Biodiesel (Thousand Barrels)"},
+        {"id": "M_EPPM_LMV_R20-R10_MBBL", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from East Coast (PADD 1) of Miscellaneous Petroleum Products (Thousand Barrels)"},
+        {"id": "MBCMPP1P31", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MBCMP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MBCMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MBNMP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Normal Butane-Butylene (Thousand Barrels)"}, {"id":
+        "MBUMP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Normal Butane (Thousand Barrels)"}, {"id": "MCRMPP3P21",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of
+        Crude Oil (Thousand Barrels)"}, {"id": "MCRMPP3P51", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from West Coast (PADD 5) of Crude Oil (Thousand Barrels)"},
+        {"id": "MD1MP_R40-R20_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Midwest (PADD 2) of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur
+        (Thousand Barrels)"}, {"id": "MDIMPP3P21", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Distillate Fuel Oil (Thousand Barrels)"},
+        {"id": "METMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Ethane-Ethylene (Thousand Barrels)"}, {"id": "MG6MP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Other Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MG6MP_R40-R50_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from West Coast (PADD
+        5) of Other Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MGFMPP1P21",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Finished Motor Gasoline (Thousand Barrels)"}, {"id": "MGFMPP1P31", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Finished
+        Motor Gasoline (Thousand Barrels)"}, {"id": "MGFMPP4P31", "name": "Rocky Mountain
+        (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MGFMP_R30-R40_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MGRMPP1P31", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Reformulated Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MKEMPP1P21", "name": "East Coast (PADD 1) Receipts by
+        Pipeline from Midwest (PADD 2) of Kerosene (Thousand Barrels)"}, {"id": "MKJMPP4P21",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MKJMPP5P31", "name":
+        "West Coast (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3) of Kerosene-Type
+        Jet Fuel (Thousand Barrels)"}, {"id": "MLPMPP2P31", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Gulf Coast (PADD 3) of Liquified Petroleum Gases
+        (Thousand Barrels)"}, {"id": "MLPMPP3P21", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Liquified Petroleum Gases (Thousand Barrels)"},
+        {"id": "MNGMP_R10-R30_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Hydrocarbon Gas Liquids (Thousand Barrels)"},
+        {"id": "MNGMP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Midwest (PADD 2) of Hydrocarbon Gas Liquids (Thousand Barrels)"}, {"id":
+        "MO3MP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Reformulated RBOB with Alcohol Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MO3MP_R30-R20_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Midwest (PADD 2) of Reformulated RBOB with Alcohol
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO5MP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Conventional Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MO5MP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Midwest (PADD 2) of Conventional Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO5MP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Conventional Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MO6MP_R30-R20_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Midwest (PADD 2) of Conventional CBOB Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MO7MP_R20-R10_1", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Conventional
+        GTAB Gasoline Blending Components (Thousand Barrels)"}, {"id": "MPRMP_R40-R20_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Propane and Propylene (Thousand Barrels)"}, {"id": "MTTMPP4P31", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R30-R20_MBBL",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of
+        Natural Gas Liquids (Thousand Barrels)"}, {"id": "M_EPLLB0I_LMV_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Isobutane-Isobutylene (Thousand Barrels)"}, {"id": "M_EPLLBAN_LMV_R50-R40_1",
+        "name": "West Coast (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Normal Butane (Thousand Barrels)"}, {"id": "M_EPLLEA_LMV_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Ethane (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R20-R30_MBBL", "name":
+        "Midwest (PADD II) Receipts by Pipeline from  Gulf Coast (PADD III) of Motor
+        Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R30-R50_MBBL",
+        "name": "Gulf Coast (PADD III) Receipts by Pipeline from  West Coast (PADD
+        V) of Motor Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id":
+        "M_EPOORDB_LMV_R20-R10_MBBL", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from East Coast (PADD 1) of Biodiesel (Thousand Barrels)"}, {"id": "M_EPPM_LMV_R20-R40_MBBL",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Miscellaneous Petroleum Products (Thousand Barrels)"}, {"id": "MBCMP_R30-R50_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Gasoline Blending Components (Thousand Barrels)"}, {"id": "MBNMP_R30-R20_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of
+        Normal Butane-Butylene (Thousand Barrels)"}, {"id": "MBUMP_R20-R10_1", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Normal
+        Butane (Thousand Barrels)"}, {"id": "MCRMPP2P11", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from East Coast (PADD 1) of Crude Oil (Thousand Barrels)"},
+        {"id": "MCRMPP2P41", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Crude Oil (Thousand Barrels)"}, {"id": "MCRMPP3P41",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Crude Oil (Thousand Barrels)"}, {"id": "MD0MP_R10-R30_1", "name": "East
+        Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Distillate
+        Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MD1MP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Midwest (PADD 2) of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur
+        (Thousand Barrels)"}, {"id": "MDGMPP2P11", "name": "Midwest (PADD 2) Receipts
+        by Pipeline from East Coast (PADD 1) of Distillate Fuel Oil, Greater Than
+        500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDGMP_R30-R50_1", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5) of Distillate
+        Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDIMPP3P11",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Distillate Fuel Oil (Thousand Barrels)"}, {"id": "MDIMPP4P21", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Distillate
+        Fuel Oil (Thousand Barrels)"}, {"id": "MDIMP_R30-R50_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from West Coast (PADD 5) of Distillate Fuel
+        Oil (Thousand Barrels)"}, {"id": "MG4MP_R10-R20_1", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Midwest (PADD 2) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG4MP_R40-R30_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG6MP_R10-R30_1", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Gulf Coast (PADD 3) of Other Conventional Motor
+        Gasoline (Thousand Barrels)"}, {"id": "MGFMPP2P11", "name": "Midwest (PADD
+        2) Receipts by Pipeline from East Coast (PADD 1) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MGFMPP2P31", "name": "Midwest (PADD 2) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Finished Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MGFMP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from East Coast (PADD 1) of Finished Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MGFMP_R30-R50_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from West Coast (PADD 5) of Finished Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MGRMP_R30-R50_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from West Coast (PADD 5) of Reformulated Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MIIMP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Isobutane (Thousand Barrels)"}, {"id":
+        "MKJMPP5P41", "name": "West Coast (PADD 5) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MLPMPP1P21",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MLPMPP3P41", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of
+        Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MLPMPP4P31", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MNGMP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Hydrocarbon Gas Liquids (Thousand Barrels)"}, {"id": "MO1MP_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Reformulated Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO1MP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        Midwest (PADD 2) of Reformulated Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MO6MP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Midwest (PADD 2) of Conventional CBOB Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO6MP_R10-R30_1", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Conventional CBOB Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MO6MP_R30-R40_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Conventional
+        CBOB Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO9MP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Conventional Other Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MPAMP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Midwest (PADD 2) of Propane (Thousand Barrels)"}, {"id": "MPAMP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Propane (Thousand Barrels)"}, {"id": "MPEMPP2P41", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Total Petroleum
+        Products (Thousand Barrels)"}, {"id": "MPRMP_R30-R20_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Propane and Propylene
+        (Thousand Barrels)"}, {"id": "MTTMP_R40-R50_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from West Coast (PADD 5) of Crude Oil and Petroleum
+        Products (Thousand Barrels)"}, {"id": "MTXMP_R30-R50_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from West Coast (PADD 5) of Total Petroleum
+        Products (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R20-R30_MBBL", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Natural Gas Liquids
+        (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R20-R40_MBBL", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Natural Gas Liquids
+        (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R30-R40_MBBL", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Natural Gas
+        Liquids (Thousand Barrels)"}, {"id": "M_EPLLBAI_LMV_R20-R10_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Isobutane (Thousand
+        Barrels)"}, {"id": "M_EPOBGRR_LMV_R40-R20_MBBL", "name": "Rocky Mountain (PADD
+        IV) Receipts by Pipeline from  Midwest (PADD II) of Motor Gasoline Blending
+        Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOORD_LMV_R20-R10_MBBL",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Biodiesel/Renewable Diesel Fuel (Thousand Barrels)"}, {"id": "M_EPOORD_LMV_R30-R50_MBBL",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Biodiesel/Renewable Diesel Fuel (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R30-R10_MBBL",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Biofuels (incl. Fuel Ethanol) (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R30-R50_MBBL",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Biofuels (incl. Fuel Ethanol) (Thousand Barrels)"}, {"id": "M_EPPM_LMV_R40-R20_MBBL",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Miscellaneous Petroleum Products (Thousand Barrels)"}, {"id": "MBUMP_R30-R20_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of
+        Normal Butane (Thousand Barrels)"}, {"id": "MBUMP_R30-R40_1", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Normal
+        Butane (Thousand Barrels)"}, {"id": "MD0MP_R30-R10_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Distillate Fuel
+        Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD0MP_R30-R20_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Distillate
+        Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD0MP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id":
+        "MD0MP_R40-R20_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from
+        Midwest (PADD 2) of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MD1MP_R10-R30_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Distillate Fuel Oil, Greater than 15 to 500 ppm
+        Sulfur (Thousand Barrels)"}, {"id": "MDGMPP3P21", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Midwest (PADD 2) of Distillate Fuel Oil, Greater
+        Than 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDGMPP5P41", "name": "West
+        Coast (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD 4) of Distillate
+        Fuel Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDIMPP1P21",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Distillate Fuel Oil (Thousand Barrels)"}, {"id": "MENMP_R20-R30_1", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Ethane
+        (Thousand Barrels)"}, {"id": "MG4MP_R10-R30_1", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG4MP_R30-R50_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from West Coast (PADD 5) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG4MP_R40-R20_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Midwest (PADD 2) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG4MP_R50-R30_1", "name": "West Coast (PADD
+        5) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MG6MP_R40-R20_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Midwest (PADD 2) of Other Conventional Motor
+        Gasoline (Thousand Barrels)"}, {"id": "MG6MP_R40-R30_1", "name": "Rocky Mountain
+        (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Other Conventional
+        Motor Gasoline (Thousand Barrels)"}, {"id": "MGFMPP5P31", "name": "West Coast
+        (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MGFMP_R40-R50_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from West Coast (PADD 5) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MKEMPP1P31", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Kerosene (Thousand Barrels)"}, {"id":
+        "MKJMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast
+        (PADD 3) of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MKJMPP3P21",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of
+        Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MKJMP_R40-R50_1", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from West Coast (PADD 5) of
+        Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MLPMPP1P31", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Liquified
+        Petroleum Gases (Thousand Barrels)"}, {"id": "MNGMP_R20-R40_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Hydrocarbon
+        Gas Liquids (Thousand Barrels)"}, {"id": "MO1MP_R40-R20_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Reformulated
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R30-R50_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO6MP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        East Coast (PADD 1) of Conventional CBOB Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO6MP_R30-R50_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from West Coast (PADD 5) of Conventional CBOB Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MO6MP_R40-R30_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional
+        CBOB Gasoline Blending Components (Thousand Barrels)"}, {"id": "MPAMP_R20-R40_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Propane (Thousand Barrels)"}, {"id": "MPEMPP3P21", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Total Petroleum Products
+        (Thousand Barrels)"}, {"id": "MPEMPP4P21", "name": "Rocky Mountain (PADD 4)
+        Receipts by Pipeline from Midwest (PADD 2) of Total Petroleum Products (Thousand
+        Barrels)"}, {"id": "MPPMPP2P41", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Pentanes Plus (Thousand Barrels)"}, {"id":
+        "MPRMP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Propane and Propylene (Thousand Barrels)"}, {"id":
+        "MTTMPP1P21", "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest
+        (PADD 2) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id":
+        "MTTMPP3P11", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East
+        Coast (PADD 1) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id":
+        "MTTMPP5P31", "name": "West Coast (PADD 5) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id":
+        "M_EPL0_LMV_R50-R40_MBBL", "name": "West Coast (PADD 5) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Hydrocarbon Gas Liquids (Thousand Barrels)"},
+        {"id": "M_EPL2_LMV_R10-R20_MBBL", "name": "East Coast (PADD 1) Receipts by
+        Pipeline from Midwest (PADD 2) of Natural Gas Liquids (Thousand Barrels)"},
+        {"id": "M_EPL2_LMV_R20-R10_MBBL", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from East Coast (PADD 1) of Natural Gas Liquids (Thousand Barrels)"}, {"id":
+        "M_EPL2_LMV_R40-R30_MBBL", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Natural Gas Liquids (Thousand Barrels)"}, {"id":
+        "M_EPLLB0I_LMV_R10-R30_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Isobutane-Isobutylene (Thousand Barrels)"}, {"id":
+        "M_EPLLB0N_LMV_R10-R30_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Normal Butane-Butylene (Thousand Barrels)"}, {"id":
+        "M_EPLLB0N_LMV_R40-R50_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from West Coast (PADD 5) of Normal Butane-Butylene (Thousand Barrels)"}, {"id":
+        "M_EPLLBAI_LMV_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from East Coast (PADD 1) of Isobutane (Thousand Barrels)"}, {"id": "M_EPLLE_LMV_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Ethane-Ethylene (Thousand Barrels)"}, {"id": "M_EPLLE_LMV_R30-R10_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Ethane-Ethylene
+        (Thousand Barrels)"}, {"id": "M_EPLLNG_LMV_R20-R40_MBBL", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Natural Gasoline
+        (Thousand Barrels)"}, {"id": "M_EPLL_LMV_R50-R40_MBBL", "name": "West Coast
+        (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD 4) of Liquified Petroleum
+        Gases (Thousand Barrels)"}, {"id": "M_EPOORDB_LMV_R30-R10_MBBL", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Biodiesel
+        (Thousand Barrels)"}, {"id": "M_EPOORD_LMV_R10-R20_MBBL", "name": "East Coast
+        (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Biodiesel/Renewable
+        Diesel Fuel (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R10-R20_MBBL", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Biofuels
+        (incl. Fuel Ethanol) (Thousand Barrels)"}, {"id": "MBCMPP1P21", "name": "East
+        Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MBCMPP2P31", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Gulf Coast (PADD 3) of Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MBCMPP5P31", "name": "West Coast (PADD 5) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MBCMP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from East Coast (PADD 1) of Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MBCMP_R40-R50_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from West Coast (PADD 5) of Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MBIMP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by
+        Pipeline from Rocky Mountain (PADD 4) of Isobutane-Isobutylene (Thousand Barrels)"},
+        {"id": "MBIMP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Isobutane-Isobutylene (Thousand Barrels)"},
+        {"id": "MBNMP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Midwest (PADD 2) of Normal Butane-Butylene (Thousand Barrels)"}, {"id":
+        "MBNMP_R20-R10_1", "name": "Midwest (PADD 2) Receipts by Pipeline from East
+        Coast (PADD 1) of Normal Butane-Butylene (Thousand Barrels)"}, {"id": "MBNMP_R20-R40_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Normal Butane-Butylene (Thousand Barrels)"}, {"id": "MBUMP_R10-R20_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Normal Butane (Thousand Barrels)"}, {"id": "MBUMP_R40-R30_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Normal
+        Butane (Thousand Barrels)"}, {"id": "MCRMPP3P11", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from East Coast (PADD 1) of Crude Oil (Thousand Barrels)"},
+        {"id": "MCRMPP4P21", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Midwest (PADD 2) of Crude Oil (Thousand Barrels)"}, {"id": "MD0MP_R20-R40_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD0MP_R40-R30_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD
+        3) of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id":
+        "MD0MP_R50-R40_1", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand
+        Barrels)"}, {"id": "MD1MP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by
+        Pipeline from Gulf Coast (PADD 3) of Distillate Fuel Oil, Greater than 15
+        to 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R30-R40_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of
+        Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MD1MP_R30-R50_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from West Coast (PADD 5) of Distillate Fuel Oil, Greater than 15 to 500 ppm
+        Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R40-R30_1", "name": "Rocky Mountain
+        (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Distillate Fuel
+        Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R40-R50_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from West Coast (PADD
+        5) of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MDGMPP1P31", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand
+        Barrels)"}, {"id": "MDGMPP4P21", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Midwest (PADD 2) of Distillate Fuel Oil, Greater Than 500
+        ppm Sulfur (Thousand Barrels)"}, {"id": "MENMP_R20-R40_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Ethane (Thousand
+        Barrels)"}, {"id": "METMP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Ethane-Ethylene (Thousand Barrels)"},
+        {"id": "MG4MP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Conventional Motor Gasoline (Thousand Barrels)"}, {"id":
+        "MG4MP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Conventional Motor Gasoline (Thousand Barrels)"}, {"id":
+        "MG6MP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Midwest (PADD 2) of Other Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MG6MP_R20-R10_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        East Coast (PADD 1) of Other Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MG6MP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from East Coast (PADD 1) of Other Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MG6MP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Midwest (PADD 2) of Other Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MG6MP_R50-R30_1", "name": "West Coast (PADD 5) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Other Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MGAMPP1P31", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Aviation Gasoline (Thousand Barrels)"}, {"id": "MGAMPP4P31",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD
+        3) of Aviation Gasoline (Thousand Barrels)"}, {"id": "MKEMPP3P21", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Kerosene
+        (Thousand Barrels)"}, {"id": "MKJMPP1P21", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Midwest (PADD 2) of Kerosene-Type Jet Fuel (Thousand Barrels)"},
+        {"id": "MKJMP_R30-R50_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from West Coast (PADD 5) of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id":
+        "MMSMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast
+        (PADD 3) of Miscellaneous Petroleum Products (Thousand Barrels)"}, {"id":
+        "MNGMP_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Midwest (PADD 2) of Hydrocarbon Gas Liquids (Thousand Barrels)"}, {"id": "MNGMP_R40-R30_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD
+        3) of Hydrocarbon Gas Liquids (Thousand Barrels)"}, {"id": "MO1MP_R20-R30_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Reformulated Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO6MP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Conventional CBOB Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO6MP_R40-R50_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from West Coast (PADD 5) of Conventional CBOB Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MO6MP_R50-R30_1", "name": "West Coast
+        (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional CBOB
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO9MP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Conventional Other Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO9MP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Conventional Other Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO9MP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Conventional Other Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MPAMP_R30-R10_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Propane (Thousand
+        Barrels)"}, {"id": "MPEMPP3P11", "name": "Gulf Coast (PADD 3) Receipts by
+        Pipeline from East Coast (PADD 1) of Total Petroleum Products (Thousand Barrels)"},
+        {"id": "MPPMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Pentanes Plus (Thousand Barrels)"}, {"id": "MPPMP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Pentanes Plus (Thousand Barrels)"}, {"id": "MPRMP_R10-R30_1", "name": "East
+        Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Propane and
+        Propylene (Thousand Barrels)"}, {"id": "MTTMPP3P41", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Crude Oil and Petroleum
+        Products (Thousand Barrels)"}, {"id": "MTTMPP3P51", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from West Coast (PADD 5) of Crude Oil and Petroleum
+        Products (Thousand Barrels)"}, {"id": "M_EPL2_LMV_R30-R10_MBBL", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Natural Gas
+        Liquids (Thousand Barrels)"}, {"id": "M_EPLLB0N_LMV_R30-R10_1", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Normal Butane-Butylene
+        (Thousand Barrels)"}, {"id": "M_EPLLEA_LMV_R30-R10_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Ethane (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R10-R20_MBBL", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Midwest (PADD 2) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R20-R10_MBBL", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from East Coast (PADD 1) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R20-R30_MBBL", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from Gulf Coast (PADD 3) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R30-R40_MBBL", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R40-R20_MBBL", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Midwest (PADD 2) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPOORD_LMV_R30-R10_MBBL", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from East Coast (PADD 1) of Biodiesel/Renewable Diesel
+        Fuel (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R10-R30_MBBL", "name": "East
+        Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Biofuels (incl.
+        Fuel Ethanol) (Thousand Barrels)"}, {"id": "MBCMPP3P21", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MBCMP_R20-R40_1", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from Rocky Mountain (PADD 4) of Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MBIMP_R30-R20_1", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from Midwest (PADD 2) of Isobutane-Isobutylene (Thousand
+        Barrels)"}, {"id": "MBIMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Isobutane-Isobutylene (Thousand Barrels)"},
+        {"id": "MBNMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Normal Butane-Butylene (Thousand Barrels)"}, {"id":
+        "MBUMP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Normal Butane (Thousand Barrels)"}, {"id": "MCRMP_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Crude Oil (Thousand Barrels)"}, {"id": "MCRMP_R40-R30_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of Crude Oil
+        (Thousand Barrels)"}, {"id": "MD0MP_R10-R20_1", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Midwest (PADD 2) of Distillate Fuel Oil, 0 to
+        15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD0MP_R30-R50_1", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5) of Distillate
+        Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R20-R40_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MD1MP_R50-R30_1", "name": "West Coast (PADD 5) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Distillate Fuel Oil, Greater than 15 to 500 ppm
+        Sulfur (Thousand Barrels)"}, {"id": "MDGMPP5P31", "name": "West Coast (PADD
+        5) Receipts by Pipeline from Gulf Coast (PADD 3) of Distillate Fuel Oil, Greater
+        Than 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDIMPP2P11", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Distillate Fuel
+        Oil (Thousand Barrels)"}, {"id": "MDIMPP2P31", "name": "Midwest (PADD 2) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Distillate Fuel Oil (Thousand Barrels)"},
+        {"id": "MDIMPP4P31", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Distillate Fuel Oil (Thousand Barrels)"}, {"id":
+        "MDIMPP5P31", "name": "West Coast (PADD 5) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Distillate Fuel Oil (Thousand Barrels)"}, {"id": "MDIMP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Distillate Fuel Oil (Thousand Barrels)"}, {"id": "MENMP_R40-R20_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Ethane (Thousand Barrels)"}, {"id": "METMP_R20-R30_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Ethane-Ethylene
+        (Thousand Barrels)"}, {"id": "METMP_R20-R40_1", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from Rocky Mountain (PADD 4) of Ethane-Ethylene (Thousand
+        Barrels)"}, {"id": "METMP_R40-R20_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Midwest (PADD 2) of Ethane-Ethylene (Thousand Barrels)"},
+        {"id": "MG4MP_R20-R10_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        East Coast (PADD 1) of Conventional Motor Gasoline (Thousand Barrels)"}, {"id":
+        "MG4MP_R50-R40_1", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Conventional Motor Gasoline (Thousand Barrels)"},
+        {"id": "MG6MP_R50-R40_1", "name": "West Coast (PADD 5) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Other Conventional Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MGAMP_R30-R20_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Aviation Gasoline (Thousand Barrels)"},
+        {"id": "MIIMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Isobutane (Thousand Barrels)"}, {"id": "MLPMPP2P41",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MNGMP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Hydrocarbon Gas Liquids (Thousand Barrels)"}, {"id": "MNGMP_R40-R20_1", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Hydrocarbon
+        Gas Liquids (Thousand Barrels)"}, {"id": "MO1MP_R10-R20_1", "name": "East
+        Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Reformulated
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO1MP_R40-R30_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD
+        3) of Reformulated Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO3MP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        East Coast (PADD 1) of Reformulated RBOB with Alcohol Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MO3MP_R50-R30_1", "name": "West Coast (PADD
+        5) Receipts by Pipeline from Gulf Coast (PADD 3) of Reformulated RBOB with
+        Alcohol Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R40-R50_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from West Coast (PADD
+        5) of Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO6MP_R50-R40_1", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Conventional CBOB Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MO9MP_R20-R30_1", "name": "Midwest (PADD 2)
+        Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional Other Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MO9MP_R40-R20_1", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Conventional
+        Other Gasoline Blending Components (Thousand Barrels)"}, {"id": "MPAMP_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Propane (Thousand Barrels)"}, {"id": "MPPMPP3P41", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Pentanes Plus
+        (Thousand Barrels)"}, {"id": "MTTMPP1P31", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Crude Oil and Petroleum Products (Thousand
+        Barrels)"}, {"id": "MTTMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Crude Oil and Petroleum Products (Thousand Barrels)"},
+        {"id": "MTTMPP2P41", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Crude Oil and Petroleum Products (Thousand Barrels)"},
+        {"id": "M_EPL0_LMV_R40-R50_MBBL", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from West Coast (PADD 5) of Hydrocarbon Gas Liquids (Thousand
+        Barrels)"}, {"id": "M_EPL2_LMV_R40-R20_MBBL", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Midwest (PADD 2) of Natural Gas Liquids (Thousand
+        Barrels)"}, {"id": "M_EPLLBAN_LMV_R40-R50_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from West Coast (PADD 5) of Normal Butane (Thousand
+        Barrels)"}, {"id": "M_EPLLEA_LMV_R10-R20_1", "name": "East Coast (PADD 1)
+        Receipts by Pipeline from Midwest (PADD 2) of Ethane (Thousand Barrels)"},
+        {"id": "M_EPLLNG_LMV_R30-R20_MBBL", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Natural Gasoline (Thousand Barrels)"},
+        {"id": "M_EPOBGRR_LMV_R10-R20_MBBL", "name": "East Coast (PADD I) Receipts
+        by Pipeline from  Midwest (PADD II) of Motor Gasoline Blending Components,
+        RBOB (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R30-R10_MBBL", "name": "Gulf
+        Coast (PADD III) Receipts by Pipeline from  East Coast (PADD I) of Motor Gasoline
+        Blending Components, RBOB (Thousand Barrels)"}, {"id": "MBCMPP2P11", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MBCMPP4P21", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MBUMP_R40-R20_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Normal Butane
+        (Thousand Barrels)"}, {"id": "MD0MP_R40-R50_1", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from West Coast (PADD 5) of Distillate Fuel Oil, 0
+        to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD0MP_R50-R30_1", "name": "West
+        Coast (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3) of Distillate
+        Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R10-R20_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MDGMPP1P21", "name": "East Coast (PADD 1) Receipts by Pipeline from
+        Midwest (PADD 2) of Distillate Fuel Oil, Greater Than 500 ppm Sulfur (Thousand
+        Barrels)"}, {"id": "MDGMPP2P41", "name": "Midwest (PADD 2) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Distillate Fuel Oil, Greater Than 500 ppm
+        Sulfur (Thousand Barrels)"}, {"id": "MDGMP_R30-R10_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Distillate Fuel
+        Oil, Greater Than 500 ppm Sulfur (Thousand Barrels)"}, {"id": "MDIMPP1P31",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Distillate Fuel Oil (Thousand Barrels)"}, {"id": "MENMP_R40-R30_1", "name":
+        "Rocky Mountain (PADD 4) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Ethane (Thousand Barrels)"}, {"id": "MG4MP_R30-R10_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Conventional Motor
+        Gasoline (Thousand Barrels)"}, {"id": "MG4MP_R30-R20_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Conventional Motor
+        Gasoline (Thousand Barrels)"}, {"id": "MG4MP_R40-R50_1", "name": "Rocky Mountain
+        (PADD 4) Receipts by Pipeline from West Coast (PADD 5) of Conventional Motor
+        Gasoline (Thousand Barrels)"}, {"id": "MGFMPP2P41", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Finished Motor Gasoline
+        (Thousand Barrels)"}, {"id": "MGRMPP1P21", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Midwest (PADD 2) of Reformulated Motor Gasoline (Thousand
+        Barrels)"}, {"id": "MGRMPP3P21", "name": "Gulf Coast (PADD 3) Receipts by
+        Pipeline from Midwest (PADD 2) of Reformulated Motor Gasoline (Thousand Barrels)"},
+        {"id": "MGRMPP5P31", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Reformulated Motor Gasoline (Thousand Barrels)"}, {"id":
+        "MIIMP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf
+        Coast (PADD 3) of Isobutane (Thousand Barrels)"}, {"id": "MIIMP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Isobutane (Thousand Barrels)"}, {"id": "MIIMP_R40-R20_1", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Isobutane
+        (Thousand Barrels)"}, {"id": "MKEMPP2P11", "name": "Midwest (PADD 2) Receipts
+        by Pipeline from East Coast (PADD 1) of Kerosene (Thousand Barrels)"}, {"id":
+        "MKEMP_R30-R10_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        East Coast (PADD 1) of Kerosene (Thousand Barrels)"}, {"id": "MKJMPP1P31",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Kerosene-Type Jet Fuel (Thousand Barrels)"}, {"id": "MKJMPP2P11", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Kerosene-Type
+        Jet Fuel (Thousand Barrels)"}, {"id": "MNGMP_R20-R30_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of Hydrocarbon Gas
+        Liquids (Thousand Barrels)"}, {"id": "MO1MP_R30-R40_1", "name": "Gulf Coast
+        (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of Reformulated
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO3MP_R30-R50_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from West Coast (PADD 5)
+        of Reformulated RBOB with Alcohol Gasoline Blending Components (Thousand Barrels)"},
+        {"id": "MO5MP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Conventional Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO5MP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Rocky Mountain (PADD 4) of Conventional Gasoline Blending
+        Components (Thousand Barrels)"}, {"id": "MO5MP_R50-R30_1", "name": "West Coast
+        (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MO7MP_R10-R20_1", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Conventional
+        GTAB Gasoline Blending Components (Thousand Barrels)"}, {"id": "MPAMP_R40-R20_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Propane (Thousand Barrels)"}, {"id": "MPEMPP1P21", "name": "East Coast
+        (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Total Petroleum Products
+        (Thousand Barrels)"}, {"id": "MPEMPP1P31", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Total Petroleum Products (Thousand
+        Barrels)"}, {"id": "MPEMPP3P41", "name": "Gulf Coast (PADD 3) Receipts by
+        Pipeline from Rocky Mountain (PADD 4) of Total Petroleum Products (Thousand
+        Barrels)"}, {"id": "MPEMPP5P31", "name": "West Coast (PADD 5) Receipts by
+        Pipeline from Gulf Coast (PADD 3) of Total Petroleum Products (Thousand Barrels)"},
+        {"id": "MPRMP_R20-R30_1", "name": "Midwest (PADD 2) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Propane and Propylene (Thousand Barrels)"}, {"id":
+        "MPRMP_R20-R40_1", "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky
+        Mountain (PADD 4) of Propane and Propylene (Thousand Barrels)"}, {"id": "MTTMPP2P11",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id": "MTTMPP5P41",
+        "name": "West Coast (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id": "MTXMP_R40-R50_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from West Coast (PADD
+        5) of Total Petroleum Products (Thousand Barrels)"}, {"id": "M_EPLLB0I_LMV_R10-R20_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of
+        Isobutane-Isobutylene (Thousand Barrels)"}, {"id": "M_EPLLB0N_LMV_R50-R40_1",
+        "name": "West Coast (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Normal Butane-Butylene (Thousand Barrels)"}, {"id": "M_EPLLBAN_LMV_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Normal Butane (Thousand Barrels)"}, {"id": "M_EPLLBAN_LMV_R30-R10_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Normal
+        Butane (Thousand Barrels)"}, {"id": "M_EPLLEA_LMV_R20-R10_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Ethane (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R40-R30_MBBL", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from Gulf Coast (PADD 3) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLL_LMV_R40-R50_MBBL", "name": "Rocky Mountain (PADD
+        4) Receipts by Pipeline from West Coast (PADD 5) of Liquified Petroleum Gases
+        (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R20-R10_MBBL", "name": "Midwest
+        (PADD II) Receipts by Pipeline from  East Coast (PADD I) of Motor Gasoline
+        Blending Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R30-R40_MBBL",
+        "name": "Gulf Coast (PADD III) Receipts by Pipeline from  Rocky Mountain (PADD
+        IV) of Motor Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id":
+        "M_EPOORD_LMV_R10-R30_MBBL", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Biodiesel/Renewable Diesel Fuel (Thousand Barrels)"},
+        {"id": "M_EPOORD_LMV_R50-R30_MBBL", "name": "West Coast (PADD 5) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Biodiesel/Renewable Diesel Fuel (Thousand
+        Barrels)"}, {"id": "MBCMP_R50-R40_1", "name": "West Coast (PADD 5) Receipts
+        by Pipeline from Rocky Mountain (PADD 4) of Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MCRMPP1P21", "name": "East Coast (PADD 1) Receipts by
+        Pipeline from Midwest (PADD 2) of Crude Oil (Thousand Barrels)"}, {"id": "MD0MP_R20-R30_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Distillate Fuel Oil, 0 to 15 ppm Sulfur (Thousand Barrels)"}, {"id": "MD1MP_R50-R40_1",
+        "name": "West Coast (PADD 5) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Distillate Fuel Oil, Greater than 15 to 500 ppm Sulfur (Thousand Barrels)"},
+        {"id": "MDGMP_R40-R50_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from West Coast (PADD 5) of Distillate Fuel Oil, Greater Than 500 ppm Sulfur
+        (Thousand Barrels)"}, {"id": "MDIMPP2P41", "name": "Midwest (PADD 2) Receipts
+        by Pipeline from Rocky Mountain (PADD 4) of Distillate Fuel Oil (Thousand
+        Barrels)"}, {"id": "MDIMP_R40-R50_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from West Coast (PADD 5) of Distillate Fuel Oil (Thousand Barrels)"},
+        {"id": "MENMP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Ethane (Thousand Barrels)"}, {"id": "METMP_R30-R40_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD
+        4) of Ethane-Ethylene (Thousand Barrels)"}, {"id": "MG4MP_R30-R40_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from Rocky Mountain (PADD 4) of
+        Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MG6MP_R20-R30_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Other Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MG6MP_R20-R40_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4)
+        of Other Conventional Motor Gasoline (Thousand Barrels)"}, {"id": "MGAMPP2P31",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Aviation Gasoline (Thousand Barrels)"}, {"id": "MGAMPP4P21", "name": "Rocky
+        Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2) of Aviation Gasoline
+        (Thousand Barrels)"}, {"id": "MGFMPP3P21", "name": "Gulf Coast (PADD 3) Receipts
+        by Pipeline from Midwest (PADD 2) of Finished Motor Gasoline (Thousand Barrels)"},
+        {"id": "MGFMPP5P41", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Finished Motor Gasoline (Thousand Barrels)"}, {"id":
+        "MGRMPP2P31", "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast
+        (PADD 3) of Reformulated Motor Gasoline (Thousand Barrels)"}, {"id": "MGRMP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Reformulated Motor Gasoline (Thousand Barrels)"}, {"id": "MKEMPP2P31",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from Gulf Coast (PADD 3) of
+        Kerosene (Thousand Barrels)"}, {"id": "MKEMPP2P41", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Kerosene (Thousand
+        Barrels)"}, {"id": "MKJMPP4P31", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Kerosene-Type Jet Fuel (Thousand Barrels)"},
+        {"id": "MKJMP_R30-R40_1", "name": "Gulf Coast (PADD 3) Receipts by Pipeline
+        from Rocky Mountain (PADD 4) of Kerosene-Type Jet Fuel (Thousand Barrels)"},
+        {"id": "MLPMPP2P11", "name": "Midwest (PADD 2) Receipts by Pipeline from East
+        Coast (PADD 1) of Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MLPMPP4P21",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Liquified Petroleum Gases (Thousand Barrels)"}, {"id": "MMSMPP1P31", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Miscellaneous
+        Petroleum Products (Thousand Barrels)"}, {"id": "MMSMPP3P21", "name": "Gulf
+        Coast (PADD 3) Receipts by Pipeline from Midwest (PADD 2) of Miscellaneous
+        Petroleum Products (Thousand Barrels)"}, {"id": "MNGMP_R30-R10_1", "name":
+        "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1) of Hydrocarbon
+        Gas Liquids (Thousand Barrels)"}, {"id": "MO1MP_R20-R40_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from Rocky Mountain (PADD 4) of Reformulated
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO1MP_R30-R10_1",
+        "name": "Gulf Coast (PADD 3) Receipts by Pipeline from East Coast (PADD 1)
+        of Reformulated Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO1MP_R50-R30_1", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Gulf Coast (PADD 3) of Reformulated Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO3MP_R10-R30_1", "name": "East Coast (PADD 1) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Reformulated RBOB with Alcohol Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R10-R20_1", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Conventional
+        Gasoline Blending Components (Thousand Barrels)"}, {"id": "MO5MP_R40-R20_1",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Conventional Gasoline Blending Components (Thousand Barrels)"}, {"id":
+        "MO6MP_R20-R10_1", "name": "Midwest (PADD 2) Receipts by Pipeline from East
+        Coast (PADD 1) of Conventional CBOB Gasoline Blending Components (Thousand
+        Barrels)"}, {"id": "MO6MP_R40-R20_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Midwest (PADD 2) of Conventional CBOB Gasoline Blending Components
+        (Thousand Barrels)"}, {"id": "MO9MP_R10-R20_1", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Midwest (PADD 2) of Conventional Other Gasoline
+        Blending Components (Thousand Barrels)"}, {"id": "MO9MP_R10-R30_1", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3) of Conventional
+        Other Gasoline Blending Components (Thousand Barrels)"}, {"id": "MPAMP_R20-R10_1",
+        "name": "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of
+        Propane (Thousand Barrels)"}, {"id": "MPAMP_R20-R30_1", "name": "Midwest (PADD
+        2) Receipts by Pipeline from Gulf Coast (PADD 3) of Propane (Thousand Barrels)"},
+        {"id": "MPEMPP5P41", "name": "West Coast (PADD 5) Receipts by Pipeline from
+        Rocky Mountain (PADD 4) of Total Petroleum Products (Thousand Barrels)"},
+        {"id": "MPPMPP3P21", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from
+        Midwest (PADD 2) of Pentanes Plus (Thousand Barrels)"}, {"id": "MPPMPP4P21",
+        "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest (PADD 2)
+        of Pentanes Plus (Thousand Barrels)"}, {"id": "MPPMP_R20-R10_1", "name": "Midwest
+        (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Pentanes Plus (Thousand
+        Barrels)"}, {"id": "MPPMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts
+        by Pipeline from Gulf Coast (PADD 3) of Pentanes Plus (Thousand Barrels)"},
+        {"id": "MPRMP_R40-R30_1", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline
+        from Gulf Coast (PADD 3) of Propane and Propylene (Thousand Barrels)"}, {"id":
+        "MTTMPP3P21", "name": "Gulf Coast (PADD 3) Receipts by Pipeline from Midwest
+        (PADD 2) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id":
+        "MTTMPP4P21", "name": "Rocky Mountain (PADD 4) Receipts by Pipeline from Midwest
+        (PADD 2) of Crude Oil and Petroleum Products (Thousand Barrels)"}, {"id":
+        "M_EPLLBAI_LMV_R10-R20_1", "name": "East Coast (PADD 1) Receipts by Pipeline
+        from Midwest (PADD 2) of Isobutane (Thousand Barrels)"}, {"id": "M_EPLLBAI_LMV_R10-R30_1",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Isobutane (Thousand Barrels)"}, {"id": "M_EPLLE_LMV_R10-R20_1", "name":
+        "East Coast (PADD 1) Receipts by Pipeline from Midwest (PADD 2) of Ethane-Ethylene
+        (Thousand Barrels)"}, {"id": "M_EPLLE_LMV_R20-R10_1", "name": "Midwest (PADD
+        2) Receipts by Pipeline from East Coast (PADD 1) of Ethane-Ethylene (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R10-R30_MBBL", "name": "East Coast (PADD
+        1) Receipts by Pipeline from Gulf Coast (PADD 3) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPLLNG_LMV_R30-R10_MBBL", "name": "Gulf Coast (PADD
+        3) Receipts by Pipeline from East Coast (PADD 1) of Natural Gasoline (Thousand
+        Barrels)"}, {"id": "M_EPOBGRR_LMV_R40-R30_MBBL", "name": "Rocky Mountain (PADD
+        IV) Receipts by Pipeline from  Gulf Coast (PADD III) of Motor Gasoline Blending
+        Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOBGRR_LMV_R50-R30_MBBL",
+        "name": "West Coast (PADD V) Receipts by Pipeline from  Gulf Coast (PADD III)
+        of Motor Gasoline Blending Components, RBOB (Thousand Barrels)"}, {"id": "M_EPOORDB_LMV_R10-R30_MBBL",
+        "name": "East Coast (PADD 1) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Biodiesel (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R20-R10_MBBL", "name":
+        "Midwest (PADD 2) Receipts by Pipeline from East Coast (PADD 1) of Biofuels
+        (incl. Fuel Ethanol) (Thousand Barrels)"}, {"id": "M_EPOOR_LMV_R50-R30_MBBL",
+        "name": "West Coast (PADD 5) Receipts by Pipeline from Gulf Coast (PADD 3)
+        of Biofuels (incl. Fuel Ethanol) (Thousand Barrels)"}]}, "request": {"command":
+        "/v2/petroleum/move/pipe/facet/series/", "params": {"api_key": "FILTERED"}},
+        "apiVersion": "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '3499'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 23 Aug 2026 20:32:58 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0619p7utag5snr1s3hg
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - 1c107e74-9027-4140-7f31-fcc4e5d3b1dc
+    status:
+      code: 200
+      message: OK
+version: 1

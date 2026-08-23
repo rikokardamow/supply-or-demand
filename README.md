@@ -15,7 +15,7 @@ pydantic-settings · requests. Lint: ruff. Types: mypy. Tests: pytest + vcrpy ca
 ```bash
 uv sync --all-extras
 cp .env.example .env   # fill in real API keys — this file is git-ignored, never commit it
-uv run python pipelines/eia/pull_crude_stocks.py   # populate the lake
+uv run python pipelines/eia/pull_wpsr.py   # populate the lake
 uv run streamlit run apps/dashboard/app.py
 ```
 
