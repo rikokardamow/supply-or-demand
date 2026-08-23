@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from core.schemas import validate_flows
 from pipelines.eia.client import EIAClient
 
 EXPECTED_COLUMNS = {
@@ -73,3 +74,19 @@ def test_wkly_route_returns_ts_long_conformant_dataframe() -> None:
 
     assert not df.empty
     assert set(df.columns) == EXPECTED_COLUMNS
+
+
+@pytest.mark.vcr
+def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
+    client = EIAClient()
+    df = client.get_flows(
+        route="petroleum/move/pipe",
+        corridors={"MCRMPP2P31": ("PADD3", "PADD2", "pipeline")},
+        frequency="monthly",
+    )
+
+    assert not df.empty
+    validate_flows(df)  # raises on schema mismatch
+    assert (df["from_node"] == "PADD3").all()
+    assert (df["to_node"] == "PADD2").all()
+    assert (df["mode"] == "pipeline").all()

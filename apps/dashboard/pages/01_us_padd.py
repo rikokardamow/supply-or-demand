@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import core.theme  # noqa: F401
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
+from components.padd_map import render_padd_flow_map
 from core.seasonal import seasonal_stats
-from core.storage import read_ts_long
-from core.theme import dual_axis_chart, seasonal_range_chart
+from core.storage import read_flows, read_ts_long
+from core.theme import NAVY, RED, dual_axis_chart, seasonal_range_chart
+from pipelines.eia.transforms import net_balance
 
 GROSS_INPUTS_BY_GEO = {
     "US": "WGIRIUS2",
@@ -73,3 +76,27 @@ else:
         right_label="Utilisation (%)",
     )
     st.plotly_chart(fig, use_container_width=True)
+
+st.subheader("Inter-PADD crude movements")
+render_padd_flow_map()
+
+flows_df = read_flows()
+if flows_df.empty:
+    st.info("No flow data yet — run `pipelines/eia/pull_padd_flows.py`.")
+else:
+    balance = net_balance(flows_df)
+    latest_month = balance["ts"].max()
+    latest_balance = balance[balance["ts"] == latest_month].sort_values("padd")
+
+    bar = go.Figure(
+        go.Bar(
+            x=latest_balance["padd"],
+            y=latest_balance["net_balance"],
+            marker_color=[NAVY if v >= 0 else RED for v in latest_balance["net_balance"]],
+        )
+    )
+    bar.update_layout(
+        title=f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month).strftime('%Y-%m')}",
+        yaxis_title="Net receipts (Mbbl, +receiver / -sender)",
+    )
+    st.plotly_chart(bar, use_container_width=True)

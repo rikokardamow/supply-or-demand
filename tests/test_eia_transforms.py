@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
-from pipelines.eia.transforms import days_of_cover, wpsr_summary
+from pipelines.eia.transforms import days_of_cover, net_balance, wpsr_summary
 
 
 def test_days_of_cover_constant_product_supplied() -> None:
@@ -43,3 +43,38 @@ def test_wpsr_summary_computes_latest_prior_and_delta() -> None:
     assert summary.loc["WCESTUS1", "prior_value"] == 400000.0
     assert summary.loc["WCESTUS1", "delta"] == 20000.0
     assert summary.loc["WPULEUS3", "delta"] == pytest.approx(1.0)
+
+
+def test_net_balance_hand_checked() -> None:
+    ts = pd.Timestamp("2026-05-01")
+    flows = pd.DataFrame(
+        {
+            "from_node": ["PADD3", "PADD2"],
+            "to_node": ["PADD2", "PADD3"],
+            "value": [100.0, 30.0],
+            "ts": [ts, ts],
+        }
+    )
+
+    result = net_balance(flows).set_index("padd")
+
+    # PADD2 receives 100, sends 30 -> net +70. PADD3 receives 30, sends 100 -> net -70.
+    assert result.loc["PADD2", "net_balance"] == 70.0
+    assert result.loc["PADD3", "net_balance"] == -70.0
+
+
+def test_net_balance_handles_padd_with_only_outbound() -> None:
+    ts = pd.Timestamp("2026-05-01")
+    flows = pd.DataFrame(
+        {
+            "from_node": ["PADD3"],
+            "to_node": ["PADD2"],
+            "value": [50.0],
+            "ts": [ts],
+        }
+    )
+
+    result = net_balance(flows).set_index("padd")
+
+    assert result.loc["PADD3", "net_balance"] == -50.0
+    assert result.loc["PADD2", "net_balance"] == 50.0
