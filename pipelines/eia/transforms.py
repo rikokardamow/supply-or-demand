@@ -41,3 +41,18 @@ def wpsr_summary(df: pd.DataFrame) -> pd.DataFrame:
         )
 
     return pd.DataFrame(rows)
+
+
+def net_balance(flows_df: pd.DataFrame) -> pd.DataFrame:
+    """Net inbound minus outbound crude volume per PADD per month, summed across all
+    modes. Positive = net receiver that month, negative = net sender. `flows_df` must
+    have `ts`, `from_node`, `to_node`, `value` columns (the `flows` schema)."""
+    inbound = flows_df.groupby(["ts", "to_node"])["value"].sum().rename("inbound")
+    outbound = flows_df.groupby(["ts", "from_node"])["value"].sum().rename("outbound")
+
+    combined = pd.concat([inbound, outbound], axis=1).fillna(0.0)
+    combined.index.names = ["ts", "padd"]
+    combined = combined.reset_index()
+    combined["net_balance"] = combined["inbound"] - combined["outbound"]
+
+    return combined[["ts", "padd", "net_balance"]]
