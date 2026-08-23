@@ -13,6 +13,14 @@ BASE_URL = "https://api.eia.gov/v2"
 PAGE_SIZE = 5000
 
 
+def _normalise_geo(area_name: str) -> str:
+    if area_name == "U.S.":
+        return "US"
+    if area_name.startswith("PADD "):
+        return "PADD" + area_name.removeprefix("PADD ")
+    return area_name
+
+
 class EIAClient:
     def __init__(self, api_key: str | None = None) -> None:
         self._api_key = api_key or settings.eia_api_key
@@ -49,7 +57,7 @@ class EIAClient:
                 "ts": pd.to_datetime([row["period"] for row in rows]),
                 "value": [float(row["value"]) for row in rows],
                 "unit": [row["units"] for row in rows],
-                "geo": [row.get("area", "") for row in rows],
+                "geo": [_normalise_geo(row.get("area-name", "")) for row in rows],
                 "freq": frequency,
                 "revision_date": pulled_at,
             }
