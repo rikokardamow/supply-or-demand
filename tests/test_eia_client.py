@@ -87,6 +87,16 @@ def test_list_series_returns_id_and_name_facets() -> None:
 
 
 @pytest.mark.vcr
+def test_sndw_route_returns_ts_long_conformant_dataframe() -> None:
+    client = EIAClient()
+    df = client.get_series(route="petroleum/sum/sndw", series=["WCRFPUS2"], frequency="weekly")
+
+    assert not df.empty
+    assert set(df.columns) == EXPECTED_COLUMNS
+    assert (df["geo"] == "US").all()
+
+
+@pytest.mark.vcr
 def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
     client = EIAClient()
     df = client.get_flows(
