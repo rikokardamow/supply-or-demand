@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://agsi.gie.eu/api?country=DE&from=2026-08-20&page=1&to=2026-08-22
+  response:
+    body:
+      string: '{"last_page":1,"total":3,"dataset":"\u003Ca href=\u0022\/data-overview\/eu\u0022\u003EEU\u003C\/a\u003E
+        \u003E DE","gas_day":"2026-08-24","data":[{"name":"Germany","code":"DE","url":"DE","updatedAt":"2026-08-25
+        10:20:51","gasDayStart":"2026-08-22","gasDayEnd":"2026-08-23","gasInStorage":"125.009","consumption":"903.9000","consumptionFull":"13.83","injection":"597.11","withdrawal":"0.3","netWithdrawal":"-596.8","workingGasVolume":"246.539","injectionCapacity":"4292.58","withdrawalCapacity":"7067.36","contractedCapacity":"195.1239","availableCapacity":"58.6043","coveredCapacity":"100","status":"C","trend":"0.28","full":"50.71","info":[]},{"name":"Germany","code":"DE","url":"DE","updatedAt":"2026-08-24
+        17:20:06","gasDayStart":"2026-08-21","gasDayEnd":"2026-08-22","gasInStorage":"124.3137","consumption":"903.9000","consumptionFull":"13.75","injection":"417.09","withdrawal":"11.4","netWithdrawal":"-405.7","workingGasVolume":"246.489","injectionCapacity":"4292.58","withdrawalCapacity":"7067.36","contractedCapacity":"194.1057","availableCapacity":"58.6043","coveredCapacity":"100","status":"C","trend":"0.19","full":"50.43","info":[]},{"name":"Germany","code":"DE","url":"DE","updatedAt":"2026-08-23
+        17:20:06","gasDayStart":"2026-08-20","gasDayEnd":"2026-08-21","gasInStorage":"123.8547","consumption":"903.9000","consumptionFull":"13.7","injection":"261.21","withdrawal":"140","netWithdrawal":"-121.2","workingGasVolume":"246.489","injectionCapacity":"4292.58","withdrawalCapacity":"7067.36","contractedCapacity":"194.1057","availableCapacity":"58.6043","coveredCapacity":"100","status":"C","trend":"0.06","full":"50.25","info":[]}]}'
+    headers:
+      CF-RAY:
+      - a30cb68c3e4d56de-DUB
+      Cache-Control:
+      - no-cache, private
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 25 Aug 2026 18:38:35 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - noindex
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+    status:
+      code: 200
+      message: OK
+version: 1
