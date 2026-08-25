@@ -31,5 +31,6 @@ def _scrub_echoed_api_key(response: dict) -> dict:
 def vcr_config() -> dict[str, object]:
     return {
         "filter_query_parameters": ["api_key"],
+        "filter_headers": ["x-key"],  # GIE's auth header (EIA uses a query param instead)
         "before_record_response": _scrub_echoed_api_key,
     }
