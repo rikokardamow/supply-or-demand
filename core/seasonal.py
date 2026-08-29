@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-_REFERENCE_YEAR = 2001  # non-leap year, used only to align day-of-year across leap/non-leap years
+REFERENCE_YEAR = 2001  # non-leap year, used only to align day-of-year across leap/non-leap years
 
 
 def _drop_leap_day(df: pd.DataFrame) -> pd.DataFrame:
@@ -14,7 +14,7 @@ def _drop_leap_day(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _normalised_doy(ts: pd.Series) -> pd.Series:
-    result: pd.Series = ts.map(lambda d: d.replace(year=_REFERENCE_YEAR)).dt.dayofyear
+    result: pd.Series = ts.map(lambda d: d.replace(year=REFERENCE_YEAR)).dt.dayofyear
     return result
 
 
