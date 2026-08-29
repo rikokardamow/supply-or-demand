@@ -116,12 +116,16 @@ def read_ts_long(
 
 
 def read_flows(
+    source: str | None = None,
     start: datetime | None = None,
     end: datetime | None = None,
 ) -> pd.DataFrame:
     clauses: list[str] = []
     params: list[object] = []
 
+    if source is not None:
+        clauses.append("source = ?")
+        params.append(source)
     if start is not None:
         clauses.append("ts >= ?")
         params.append(start)

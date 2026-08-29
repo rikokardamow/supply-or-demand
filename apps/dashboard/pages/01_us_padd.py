@@ -105,7 +105,7 @@ with tab_refining:
 with tab_flows:
     render_padd_flow_map()
 
-    flows_df = read_flows()
+    flows_df = read_flows(source="eia")
     if flows_df.empty:
         st.info("No flow data yet — run `pipelines/eia/pull_padd_flows.py`.")
     else:
