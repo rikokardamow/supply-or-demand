@@ -51,8 +51,16 @@ Pulls: EU + per-country daily history since 2018 (AGSI: `gasInStorage`, `full` %
 > Add `pull_daily.py` entrypoint for orchestration (Spec 13). Update pipelines/gie/NOTES.md.
 
 ## Definition of Done
-- Page 02 live with 4 visuals; EU + ≥6 countries; daily re-pull idempotent with 5-day revision window.
-- One cross-checked value vs the AGSI+ site. Tests + CI green.
+- [x] Page 02 live with 4 visuals; EU + ≥6 countries; daily re-pull idempotent with 5-day revision window.
+- [x] One cross-checked value vs the AGSI+ site. Tests + CI green.
+
+Done as of 2026-08-29 (PR #5, Sessions A-C). EU + 19 countries pulled (AGSI) / EU + 13
+LNG-terminal countries (ALSI), well past the ≥6 minimum. Cross-verification done against
+GIE's own API directly (independent live calls, exact-value match), same approach as Specs
+00-01, for the same reason: comparing exact numbers is a stronger check than eyeballing the
+agsi.gie.eu/alsi.gie.eu dashboard UI. `pull_daily.py`'s idempotency and revision-refresh
+behaviour verified directly (re-ran it twice; zero duplicate rows; confirmed revision_date
+actually refreshes inside the trailing 5-day window and stays untouched just outside it).
 
 ## Stretch
 - Join TTF front-month (from Spec 07's IB pipeline once built) and plot storage-deviation vs price.
