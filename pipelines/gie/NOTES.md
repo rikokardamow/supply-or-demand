@@ -97,3 +97,14 @@ published units ("10³ m³ LNG"), not `.gwh` (energy-equivalent). **Landlocked E
 have no LNG data** — e.g. Austria's ALSI row comes back with every field as the literal
 string `"-"` and `status: "N"`; `_is_missing()` drops those fields entirely rather than
 storing a fake zero. Verified: 111,756 rows across EU + 13 LNG-terminal countries.
+
+## Provisional vs. revised data — pull_daily.py (Session C)
+`pull_agsi.py`/`pull_alsi.py` are one-off **full historical backfill** scripts (2018-present,
+~3,163 requests each — see the wall-clock-time note above). `pull_daily.py` is the actual
+entrypoint meant for scheduled/orchestrated runs (Spec 13): it re-fetches only the **trailing
+5 days** (`TRAILING_DAYS`) for both AGSI and ALSI, relying on `write_ts_long`'s
+revision-based de-dup (keeps the row with the latest `revision_date` per `series_id`+`ts`) to
+pick up any late revisions GIE publishes for recent gas-days. Verified live: re-running it
+refreshed `revision_date` (to a newer `updatedAt`) for every row inside the trailing window,
+while a row just outside it (6 days back) kept its older `revision_date` untouched — exactly
+the intended behaviour, and zero duplicate rows either way.
