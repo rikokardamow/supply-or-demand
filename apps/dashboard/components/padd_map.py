@@ -46,6 +46,7 @@ def _bearing_degrees(orig_lat: float, orig_lon: float, dest_lat: float, dest_lon
 
 def render_padd_flow_map() -> None:
     df = read_flows()
+    df = df[df["source"] == "eia"]
     if df.empty:
         st.info("No flow data yet — run `pipelines/eia/pull_padd_flows.py`.")
         return
