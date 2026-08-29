@@ -8,6 +8,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from components.kardamow_take import kardamow_take
 from components.padd_map import render_padd_flow_map
 from core.calendars import next_release
 from core.seasonal import seasonal_stats
@@ -46,7 +47,7 @@ _POSITIVE_COLOUR = "#2e7d32"
 _NEGATIVE_COLOUR = RED
 
 
-def _seasonal_section(series_id: str, title: str, unit: str) -> None:
+def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
         st.info(f"No data yet for {series_id} — run `pipelines/eia/pull_wpsr.py`.")
@@ -60,6 +61,8 @@ def _seasonal_section(series_id: str, title: str, unit: str) -> None:
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
     st.plotly_chart(fig, use_container_width=True)
+    if take is not None:
+        kardamow_take(take)
 
 
 def _series_by_ts(series_id: str) -> pd.Series:
@@ -79,10 +82,46 @@ st.title("US PADD — Crude & Product Movements")
 tab_stocks, tab_refining, tab_flows, tab_wpsr = st.tabs(["Stocks", "Refining", "Flows", "WPSR"])
 
 with tab_stocks:
-    _seasonal_section("W_EPC0_SAX_YCUOK_MBBL", "Cushing Crude Stocks — Seasonal Range", " mb")
-    _seasonal_section("WCESTUS1", "US Crude Stocks (ex-SPR) — Seasonal Range", " mb")
-    _seasonal_section("WGTSTUS1", "US Total Gasoline Stocks — Seasonal Range", " mb")
-    _seasonal_section("WDISTUS1", "US Distillate Stocks — Seasonal Range", " mb")
+    _seasonal_section(
+        "W_EPC0_SAX_YCUOK_MBBL",
+        "Cushing Crude Stocks — Seasonal Range",
+        " mb",
+        take=(
+            "Cushing is sitting 7,512 mb under its five-year median — the delivery point "
+            "for WTI running this thin is what keeps the front-month structure bid whenever "
+            "a barrel goes missing anywhere upstream."
+        ),
+    )
+    _seasonal_section(
+        "WCESTUS1",
+        "US Crude Stocks (ex-SPR) — Seasonal Range",
+        " mb",
+        take=(
+            "US crude ex-SPR is basically sat on its own median, down just 1,863 mb — the "
+            "rare series this cycle that isn't telling a scarcity story, which makes it the "
+            "one chart the crude bulls can't point to."
+        ),
+    )
+    _seasonal_section(
+        "WGTSTUS1",
+        "US Total Gasoline Stocks — Seasonal Range",
+        " mb",
+        take=(
+            "Gasoline is 16,912 mb under normal into the tail of driving season — that's "
+            "demand pulling barrels out faster than refiners can replace them, and it's the "
+            "crack spread's real justification, not the headline print."
+        ),
+    )
+    _seasonal_section(
+        "WDISTUS1",
+        "US Distillate Stocks — Seasonal Range",
+        " mb",
+        take=(
+            "Distillate is short its median by 20,504 mb with winter still to build into — "
+            "this is the stock chart that decides whether Europe's heating-oil arbitrage "
+            "stays open or closes the moment the first cold snap hits."
+        ),
+    )
 
 with tab_refining:
     geo = st.selectbox("Region", options=list(GROSS_INPUTS_BY_GEO), index=0)
@@ -101,9 +140,21 @@ with tab_refining:
             right_label="Utilisation (%)",
         )
         st.plotly_chart(fig, use_container_width=True)
+        if geo == "US":
+            kardamow_take(
+                "97.2% utilisation and gross inputs at 17,517 Mbbl/d — US refiners are "
+                "running flat out, which means the product-stock draws above aren't a "
+                "refining problem, they're a demand problem the system can't process its "
+                "way out of."
+            )
 
 with tab_flows:
     render_padd_flow_map()
+    kardamow_take(
+        "Pipeline moved 120,542 Mbbl of the latest month's inter-PADD barrel against a "
+        "combined 16,000 for rail and barge — and 62,026 of that ran Midcontinent to the "
+        "Gulf Coast alone, the corridor that decides whether PADD3 exports or PADD2 refines."
+    )
 
     flows_df = read_flows(source="eia")
     if flows_df.empty:
@@ -125,6 +176,12 @@ with tab_flows:
             yaxis_title="Net receipts (Mbbl, +receiver / -sender)",
         )
         st.plotly_chart(bar, use_container_width=True)
+        kardamow_take(
+            "The Gulf Coast pulled in a net 39,370 Mbbl in the latest month while the "
+            "Rockies and Midcontinent gave up 26,737 and 24,628 between them — PADD3's "
+            "export machine is still being fed by barrels that have nowhere else useful "
+            "to go."
+        )
 
 with tab_wpsr:
     next_wpsr = next_release("wpsr", datetime.now(UTC))
