@@ -44,6 +44,7 @@ def seasonal_range_chart(
     current_year_series: pd.Series,
     title: str,
     unit: str,
+    extra_annotation_line: str | None = None,
 ) -> go.Figure:
     fig = go.Figure()
 
@@ -102,6 +103,8 @@ def seasonal_range_chart(
         lines.append(f"YoY: {yoy_pct:+.1f}%")
     if vs_median is not None:
         lines.append(f"vs median: {vs_median:+,.1f}{unit}")
+    if extra_annotation_line is not None:
+        lines.append(extra_annotation_line)
 
     fig.add_annotation(
         x=last_doy,
