@@ -6,18 +6,25 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 
+from core.seasonal import REFERENCE_YEAR
+
 NAVY = "#0f2a4a"
 LIGHT_BLUE = "#5b9bd5"
 RED = "#c0392b"
 ORANGE = "#e67e22"
 BAND = "rgba(150,150,150,0.25)"
 GRID = "#e6e6e6"
+TRANSPARENT = "rgba(0,0,0,0)"
+
+_MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
+_DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]
+_DOY_TICKTEXT = [d.strftime("%b") for d in _MONTH_STARTS]
 
 
 def register_kardamow_template() -> None:
     template = go.layout.Template()
-    template.layout.paper_bgcolor = "white"
-    template.layout.plot_bgcolor = "white"
+    template.layout.paper_bgcolor = TRANSPARENT
+    template.layout.plot_bgcolor = TRANSPARENT
     template.layout.colorway = [NAVY, LIGHT_BLUE, RED, ORANGE]
     template.layout.xaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
     template.layout.yaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
@@ -118,7 +125,11 @@ def seasonal_range_chart(
         bgcolor="white",
         bordercolor=NAVY,
     )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(
+        title=title,
+        yaxis_title=unit,
+        xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
+    )
     return fig
 
 
