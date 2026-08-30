@@ -60,9 +60,11 @@ secrets are needed in CI.
 
 Live pages today: **US PADD** (crude/product stocks, refining, inter-PADD flows, WPSR
 table), **US Oil Market Overview** (national balance supplementary charts), **EU Gas
-Storage & LNG** (AGSI+/ALSI+ fill, injection vs. send-out, country deviation). See
-`specs/00_INDEX.md` for the full roadmap (13 specs: gas storage, gas flows, power markets,
-refinery cracks, weather, news, AIS vessels, flights, macro/FX, and final orchestration).
+Storage & LNG** (AGSI+/ALSI+ fill, injection vs. send-out, country deviation), **EU Gas
+Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap).
+See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage, gas flows, power
+markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX, and final
+orchestration).
 
 ### Build log
 
@@ -102,7 +104,7 @@ a mid-session request), dual-axis net injection vs. ALSI send-out, and a ranked
 country-deviation bar chart. Cross-checked EU and per-country fill % against GIE's own API
 directly. [PR #5](https://github.com/rikokardamow/energy-dashboard/pull/5).
 
-#### In progress — Spec 03: ENTSOG EU gas flows
+#### v0.4 — Spec 03: ENTSOG EU gas flows
 Session A merged: `pipelines/entsog/` — no-auth client against ENTSOG's Transparency
 Platform (`limit=-1` pulls a full page in one call for both the point directory and
 operational-data endpoints) and a Parquet-cached point directory.
@@ -135,8 +137,17 @@ reusing `padd_map.py`'s line+rotated-triangle-arrow technique (now factored into
 showing. Verified live: arrows render across every corridor (Norway into Germany, Belgium,
 France and Great Britain; Turkey's coast into Bulgaria; France into Spain; LNG terminals as
 sized markers across the Netherlands, Belgium, France, Spain, Poland, Italy and Portugal),
-hover text correct, no exceptions. Session D (physical-vs-nomination gap chart + 15-day
-revision window) still to come.
+hover text correct, no exceptions.
+
+Session D done: the physical-vs-nomination gap chart (`transforms.py::physical_vs_nomination_gap`
+— nomination minus physical, per corridor per day; positive means under-delivery) and the
+15-day revision window. `flows` has no `revision_date` column for `ts_long`-style
+revision-aware de-dup, so a revised value for an already-stored day would otherwise sit
+alongside the stale one rather than replacing it — fixed with a new `replace_window` param
+on `core.storage.write_flows` that drops the affected window's existing rows before writing
+the fresh ones. `pull_daily.py` re-pulls the trailing 15 gas-days on every run using this;
+verified idempotent by running it twice in a row (26,815 rows both times). Spec 03 is now
+fully done — [PR #7](https://github.com/rikokardamow/energy-dashboard/pull/7).
 
 **Fix while writing the previous entry**: adding ENTSOG rows to the shared `flows` table
 (rows use `from_node="NO"` etc.) broke the PADD page's Flows-tab map, which read the whole

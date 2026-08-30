@@ -32,6 +32,7 @@ def _write_partitioned(
     source: str,
     dedup_subset: list[str] | None,
     sort_col: str | None,
+    replace_window: tuple[datetime, datetime] | None = None,
 ) -> None:
     df = df.copy()
     df["_year"] = df["ts"].dt.year
@@ -47,6 +48,10 @@ def _write_partitioned(
             if existing_parts
             else pd.DataFrame(columns=year_df.columns)
         )
+        if replace_window is not None and not existing_df.empty:
+            window_start, window_end = replace_window
+            in_window = (existing_df["ts"] >= window_start) & (existing_df["ts"] <= window_end)
+            existing_df = existing_df.loc[~in_window]
         combined = pd.concat([existing_df, year_df], ignore_index=True)
 
         if sort_col is not None:
@@ -70,9 +75,26 @@ def write_ts_long(df: pd.DataFrame, source: str) -> None:
     )
 
 
-def write_flows(df: pd.DataFrame, source: str) -> None:
+def write_flows(
+    df: pd.DataFrame,
+    source: str,
+    replace_window: tuple[datetime, datetime] | None = None,
+) -> None:
+    """`replace_window`: when given (start, end), every existing row for this source
+    with ts in [start, end] is dropped before the new rows are written. Needed for
+    revision-window re-pulls — unlike ts_long, flows has no revision_date column, so
+    plain full-row de-dup can't tell a revised value from a genuinely new row (they
+    differ, so both would be kept, silently double-counting downstream). Pass the
+    exact window just re-pulled so its stale rows are replaced outright instead."""
     validate_flows(df)
-    _write_partitioned(df, dataset="flows", source=source, dedup_subset=None, sort_col=None)
+    _write_partitioned(
+        df,
+        dataset="flows",
+        source=source,
+        dedup_subset=None,
+        sort_col=None,
+        replace_window=replace_window,
+    )
 
 
 def _read(

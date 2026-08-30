@@ -66,8 +66,18 @@ plus a corridor-aggregated materialised view in DuckDB. Nominations stored along
 > `pull_daily.py` entrypoint. Update CLAUDE.md with the final corridor→pointKey table.
 
 ## Definition of Done
-- ≥8 corridors mapped, validated, documented. Sankey + map + small multiples + gap chart live.
-- Norwegian export figure cross-checked. 15-day revision window implemented. Tests green.
+- [x] ≥8 corridors mapped, validated, documented. Sankey + map + small multiples + gap chart live.
+- [x] Norwegian export figure cross-checked. 15-day revision window implemented. Tests green.
+
+Done as of 2026-08-30 (PR #7, Sessions A-D). 8 corridors / 21 points mapped and validated
+against the live ENTSOG directory (NO_EXPORTS, TAP, TURKSTREAM_EU, ES_FR, UK_BE, GB_IE,
+RU_UA_TRANSIT, LNG_ENTRY). All four visuals live on page 03: Sankey, directional corridor
+map, corridor time-series small multiples, and the physical-vs-nomination gap chart.
+Norwegian export total cross-checked against an independent live API call (exact match,
+same approach as Specs 00-02). 15-day revision window implemented via
+`core.storage.write_flows`'s new `replace_window` param (`flows` has no `revision_date`
+column for `ts_long`-style revision-aware de-dup); verified idempotent by running
+`pull_daily.py` twice in a row with an identical total row count both times.
 
 ## Stretch
 - EU supply-demand balance closure: NO + LNG + other entry − exports ± storage (Spec 02) ≈ implied demand.

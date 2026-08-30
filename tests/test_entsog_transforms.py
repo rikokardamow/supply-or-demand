@@ -6,6 +6,7 @@ from pipelines.entsog.transforms import (
     corridor_aggregate,
     latest_complete_date,
     pair_daily_totals,
+    physical_vs_nomination_gap,
 )
 
 
@@ -134,6 +135,44 @@ def test_sankey_link_totals_reconcile_with_corridor_time_series() -> None:
     corridor_7d_avg = corridor_recent["value"].mean()
 
     assert sankey_corridor_total == corridor_7d_avg
+
+
+def test_physical_vs_nomination_gap_is_nomination_minus_physical() -> None:
+    corridors = {"NO_EXPORTS": [PointSpec("ITP-A", "entry", "NO", "DE")]}
+    flows_df = pd.DataFrame(
+        {
+            "from_node": ["NO", "NO", "NO", "NO"],
+            "to_node": ["DE", "DE", "DE", "DE"],
+            "value": [80.0, 100.0, 90.0, 100.0],
+            "ts": pd.to_datetime(
+                ["2024-01-01", "2024-01-01", "2024-01-02", "2024-01-02"]
+            ),
+            "mode": ["pipeline", "nomination", "pipeline", "nomination"],
+        }
+    )
+
+    result = physical_vs_nomination_gap(flows_df, corridors, "NO_EXPORTS").sort_values("ts")
+
+    assert result["gap"].tolist() == [20.0, 10.0]
+    assert result["physical"].tolist() == [80.0, 90.0]
+    assert result["nomination"].tolist() == [100.0, 100.0]
+
+
+def test_physical_vs_nomination_gap_drops_days_missing_either_side() -> None:
+    corridors = {"NO_EXPORTS": [PointSpec("ITP-A", "entry", "NO", "DE")]}
+    flows_df = pd.DataFrame(
+        {
+            "from_node": ["NO", "NO"],
+            "to_node": ["DE", "DE"],
+            "value": [80.0, 100.0],
+            "ts": pd.to_datetime(["2024-01-01", "2024-01-02"]),
+            "mode": ["pipeline", "nomination"],  # different days, no overlap
+        }
+    )
+
+    result = physical_vs_nomination_gap(flows_df, corridors, "NO_EXPORTS")
+
+    assert result.empty
 
 
 def test_latest_complete_date_is_the_earliest_of_each_group_s_own_latest() -> None:

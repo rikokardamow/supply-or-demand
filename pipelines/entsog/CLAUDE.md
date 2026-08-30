@@ -210,3 +210,34 @@ verified live in the browser instead: arrows render across the expected corridor
 into Germany/Belgium/France/GB, Turkey's coast into Bulgaria, France into Spain, LNG
 terminals as markers across NL/BE/FR/ES/PL/IT/PT), hover text shows the right
 `from_node → to_node: value GWh/d`, no exceptions.
+
+## Session D — revision window, pull_daily.py, gap chart
+
+**`flows` needs a different revision strategy than `ts_long`**: `write_ts_long` keeps the
+latest-`revision_date` row per `(series_id, ts)`, but `flows` (per `core/schemas.py`) has no
+`revision_date` column, and a revised value for an already-stored day has a different
+`value` than the old row — plain full-row de-dup can't tell them apart, so both would be
+kept, silently double-counting downstream. Fixed at the storage layer, not here:
+`core.storage.write_flows` gained an optional `replace_window: tuple[start, end]` — every
+existing row in that window is dropped before the new rows are written, so a re-pull
+replaces outright instead of accumulating. Verified live: ran `pull_daily.py` twice in a
+row, total row count identical both times (26,815 — 13,326 physical + 13,489 nomination).
+
+`pull_daily.py` re-pulls the trailing 15 gas-days (both indicators, every corridor point)
+using `pull_flows.py`'s `pull_all_points()` (promoted from a module-private helper so both
+scripts share it) and passes that same window as `replace_window`. This is the actual
+orchestration entrypoint (Spec 13) — `pull_flows.py`'s 2-year backfill is a one-off.
+
+**Physical-vs-nomination gap** (`transforms.py::physical_vs_nomination_gap`): nomination
+minus physical, per corridor per day — positive means less gas physically flowed than was
+nominated (the spec's under-delivery signal). Built from two `corridor_aggregate` calls
+(`mode="pipeline"` and `mode="nomination"`) inner-joined on `ts`, so a day missing either
+side is dropped rather than compared against an implicit zero. Page section: a selectable
+corridor, a physical-vs-nomination line chart, and the gap itself as a **line, not a bar** —
+an initial `go.Bar` over ~2 years of daily points threw real browser console errors
+(`<rect> attribute width: A negative value is not valid`), confirmed present on other pages
+too (e.g. `02_gas_storage.py`'s small bar charts) so it isn't specific to this chart or a
+regression — but every other daily series in this app already uses a line for exactly this
+reason, so the gap chart was changed to match rather than working around it.
+
+Corridor table above is now final for this spec — no changes since Session B/C.

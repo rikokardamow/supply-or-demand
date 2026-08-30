@@ -45,6 +45,29 @@ def pair_daily_totals(flows_df: pd.DataFrame, mode: str = "pipeline") -> pd.Data
     return result
 
 
+def physical_vs_nomination_gap(
+    flows_df: pd.DataFrame, corridors: dict[str, list[PointSpec]], corridor_name: str
+) -> pd.DataFrame:
+    """Nomination minus physical flow, per day, for one corridor — positive means less
+    gas physically flowed than was nominated (the under-delivery signal from the spec's
+    alpha question). Both sides are built from corridor_aggregate so they're aggregated
+    identically; an inner join drops any day where one side has no data, since a gap
+    needs both real numbers, not a comparison against an implicit zero. Returns columns
+    ["ts", "physical", "nomination", "gap"]."""
+    physical = corridor_aggregate(flows_df, corridors, mode="pipeline")
+    physical = physical[physical["corridor"] == corridor_name].rename(
+        columns={"value": "physical"}
+    )
+    nomination = corridor_aggregate(flows_df, corridors, mode="nomination")
+    nomination = nomination[nomination["corridor"] == corridor_name].rename(
+        columns={"value": "nomination"}
+    )
+
+    merged = physical.merge(nomination, on="ts", how="inner")
+    merged["gap"] = merged["nomination"] - merged["physical"]
+    return merged[["ts", "physical", "nomination", "gap"]]
+
+
 def latest_complete_date(daily_df: pd.DataFrame, group_cols: list[str]) -> pd.Timestamp:
     """The most recent date by which every group (e.g. every corridor pair) has already
     reported. ENTSOG points/operators publish on staggered schedules — confirmed live,
