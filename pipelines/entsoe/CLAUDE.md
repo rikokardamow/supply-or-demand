@@ -150,3 +150,51 @@ has MultiIndex columns per PSR type, and Hydro Pumped Storage has *both* an "Act
 Aggregated" column (generation) and an "Actual Consumption" column (charging demand,
 confirmed live) — only the former belongs in a generation-mix chart. `get_generation` drops
 the latter before melting to long format.
+
+## Session D — pull_daily.py, and a real data-loss bug found via the idempotency check
+
+`pull_prices.py`/`pull_actuals.py`/`pull_flows.py` each now expose a `pull_*()` helper
+(same per-item resilience, just returning a DataFrame instead of writing it) so
+`pull_daily.py` can reuse them with narrower windows rather than duplicating the
+per-zone/per-border loops. Their `main()`s are unchanged one-off full backfills
+(90/14/90 days).
+
+`pull_daily.py` is the actual scheduled entrypoint (Spec 13): day-ahead prices for
+`[today-1, today+2)` (ENTSO-E publishes day D+1's prices ~12:45 CET on day D, per root
+CLAUDE.md's release calendar — the window covers a run any time of day, with a
+one-day margin either side) plus actuals (load, generation, wind/solar forecast,
+cross-border flows) for the prior day only, per the spec's own Session D scope.
+
+**Prices/load/generation/wind-solar-forecast need no revision-window logic at all** —
+day-ahead prices are never revised (see this file's `revision_date` note above) and
+`write_ts_long` already keeps the latest-`revision_date` row per `(series_id, ts)`, so
+re-pulling an overlapping window is naturally idempotent for free.
+
+**Cross-border flows are the one exception, and re-pulling them exposed a real bug**:
+`flows` (per `core/schemas.py`) has no `revision_date` column, so — same as
+`pipelines/entsog`'s Session D — a daily re-pull needs `write_flows`'s
+`replace_window` to avoid double-counting a revised value. But `replace_window`
+previously dropped **every** existing row in the window regardless of which
+`(from_node, to_node)` pair it belonged to. Combined with the per-border resilience
+pattern (one flaky border must never abort the rest), a border whose fetch failed on
+a given run was simply absent from that run's `df` — and `replace_window` had already
+deleted its still-good prior data for the window, replacing it with nothing.
+
+**Caught live, not hypothetically**: running `pull_daily.py` twice in a row, `DE_LU
+-> NL` succeeded on run 1 (96 rows) but hit a 503 on run 2 and was skipped — after
+run 2, `read_flows` showed **zero** rows for `DE_LU -> NL` in that window, confirming
+real data loss, not just a stale-but-present row. Fixed at the storage layer:
+`core.storage._write_partitioned`'s `replace_window` handling now scopes the
+in-window deletion to only the `(from_node, to_node)` pairs actually present in the
+DataFrame being written — a pair missing from this run's pull keeps its existing data
+untouched instead of being wiped. Added
+`tests/test_storage.py::test_write_flows_replace_window_keeps_pairs_missing_from_the_fresh_pull`
+as a regression test. This fix also applies to `pipelines/entsog`'s identical
+`pull_daily.py` pattern, which had the same latent (if less frequently triggered) risk.
+
+**Verified**: after the fix, a third `pull_daily.py` run re-fetched `DE_LU -> NL`
+successfully (88 rows for the trailing window) and every other border that had data
+before the fix still had it — `read_flows` confirmed no border was lost across the
+repair run. Idempotency now holds in the sense that actually matters for a
+confirmed-flaky API: a failed item on any given run leaves prior data untouched
+rather than either duplicating it or deleting it.

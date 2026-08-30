@@ -231,3 +231,22 @@ Added the Ireland panel to `04_eu_power.py` — demand-vs-wind dual-axis chart, 
 gauge (`core.theme.gauge_chart`, new), and an EWIC/Greenlink flow chart. Acceptance
 criterion met: the lake's latest ROI demand values matched a fresh, independent API call
 exactly, zero diff.
+
+Session D (final for this spec): `pull_daily.py` — day-ahead prices for a `[yesterday,
+tomorrow+1)` window (ENTSO-E publishes ~12:45 CET) plus actuals (load, generation,
+wind/solar forecast, cross-border flows) for the prior day only. `pull_prices.py`/
+`pull_actuals.py`/`pull_flows.py` each now expose a reusable `pull_*()` helper so the daily
+entrypoint shares their per-item resilience instead of duplicating it. Running it twice in a
+row surfaced a genuine data-loss bug, not just a flaky-API annoyance: `write_flows`'s
+`replace_window` was dropping every existing row in the re-pulled window regardless of which
+border it belonged to, so a border that failed on one run (a routine occurrence — ENTSO-E's
+confirmed flakiness) had its still-good prior data deleted with nothing to replace it.
+Confirmed live: `DE_LU -> NL` had real data after run 1, then zero rows after run 2 once that
+border's fetch failed. Fixed at the storage layer (`core.storage._write_partitioned`) to
+scope the window deletion to only the pairs present in the fresh pull; added a regression
+test. A third run confirmed the fix — `DE_LU -> NL` was cleanly restored and no other border
+was lost. This also closes an identical latent risk in `pipelines/entsog`'s own daily
+re-pull. Spec 04 is now feature-complete: page 04 (price map, arrow map, mix stack, Ireland
+panel), 13 zones priced (12 with real data, GB's gap confirmed and expected), 12 borders
+mapped (11 with real data), EirGrid adapter isolated in one function, all cross-checks done,
+tests green.

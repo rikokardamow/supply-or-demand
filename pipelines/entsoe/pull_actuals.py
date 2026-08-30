@@ -21,17 +21,20 @@ def _slug(psr_type: str) -> str:
     return psr_type.lower().replace(" ", "_").replace("/", "_").replace("-", "_")
 
 
-def main() -> None:
-    client = ENTSOEClient()
-    end = date.today()
-    start = end - timedelta(days=LOOKBACK_DAYS)
+def pull_actuals(
+    client: ENTSOEClient, zones: list[str], start: date, end: date
+) -> dict[str, pd.DataFrame]:
+    """Shared by main()'s full backfill and pull_daily.py's prior-day re-pull — same
+    per-zone, per-indicator resilience (one flaky zone/indicator must never abort the
+    rest). Returns {"load": ..., "generation": ..., "wind_solar": ...}, each an
+    empty-but-columned ts_long frame if nothing was pulled."""
     pulled_at = datetime.now(UTC)
 
     load_frames = []
     generation_frames = []
     wind_solar_frames = []
 
-    for zone in ZONES:
+    for zone in zones:
         try:
             load = client.get_load(zone, start, end)
         except RuntimeError as exc:
@@ -106,15 +109,30 @@ def main() -> None:
                     )
                 )
 
-    for label, frames in [
-        ("load", load_frames),
-        ("generation", generation_frames),
-        ("wind/solar forecast", wind_solar_frames),
-    ]:
-        if not frames:
+    empty = pd.DataFrame(
+        columns=["series_id", "source", "ts", "value", "unit", "geo", "freq", "revision_date"]
+    )
+    return {
+        "load": pd.concat(load_frames, ignore_index=True) if load_frames else empty,
+        "generation": pd.concat(generation_frames, ignore_index=True)
+        if generation_frames
+        else empty,
+        "wind/solar forecast": pd.concat(wind_solar_frames, ignore_index=True)
+        if wind_solar_frames
+        else empty,
+    }
+
+
+def main() -> None:
+    client = ENTSOEClient()
+    end = date.today()
+    start = end - timedelta(days=LOOKBACK_DAYS)
+
+    actuals = pull_actuals(client, ZONES, start, end)
+    for label, df in actuals.items():
+        if df.empty:
             print(f"no {label} rows pulled", flush=True)
             continue
-        df = pd.concat(frames, ignore_index=True)
         write_ts_long(df, source="entsoe")
         print(f"wrote {len(df)} {label} rows", flush=True)
 

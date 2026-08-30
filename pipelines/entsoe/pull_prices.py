@@ -13,22 +13,23 @@ from pipelines.entsoe.zones import ZONES
 LOOKBACK_DAYS = 90
 
 
-def main() -> None:
-    client = ENTSOEClient()
-    end = date.today()
-    start = end - timedelta(days=LOOKBACK_DAYS)
+def pull_prices(
+    client: ENTSOEClient, zones: list[str], start: date, end: date
+) -> pd.DataFrame:
+    """Shared by main()'s full backfill and pull_daily.py's trailing-window re-pull —
+    same per-zone resilience (one flaky zone must never abort the rest)."""
     pulled_at = datetime.now(UTC)
 
     frames = []
     failed_zones = []
-    for zone in ZONES:
+    for zone in zones:
         try:
             raw = client.get_day_ahead_prices(zone, start, end)
         except RuntimeError as exc:
             # ENTSOEClient already sanitises this to a bare status/type message (never
             # the raw exception — see client.py's leak-prevention rule) — one flaky
-            # zone shouldn't abort an otherwise-successful 13-zone pull; re-run later
-            # to pick up whatever failed.
+            # zone shouldn't abort an otherwise-successful multi-zone pull; re-run
+            # later to pick up whatever failed.
             print(f"{zone}: FAILED ({exc}) — skipping", flush=True)
             failed_zones.append(zone)
             continue
@@ -50,14 +51,26 @@ def main() -> None:
             )
         )
 
-    if not frames:
-        print("no price rows pulled", flush=True)
-        return
-    df = pd.concat(frames, ignore_index=True)
-    write_ts_long(df, source="entsoe")
-    print(f"wrote {len(df)} rows across {len(ZONES) - len(failed_zones)} zones", flush=True)
     if failed_zones:
         print(f"failed zones (re-run to retry): {failed_zones}", flush=True)
+    if not frames:
+        return pd.DataFrame(
+            columns=["series_id", "source", "ts", "value", "unit", "geo", "freq", "revision_date"]
+        )
+    return pd.concat(frames, ignore_index=True)
+
+
+def main() -> None:
+    client = ENTSOEClient()
+    end = date.today()
+    start = end - timedelta(days=LOOKBACK_DAYS)
+
+    df = pull_prices(client, ZONES, start, end)
+    if df.empty:
+        print("no price rows pulled", flush=True)
+        return
+    write_ts_long(df, source="entsoe")
+    print(f"wrote {len(df)} rows across {df['geo'].nunique()} zones", flush=True)
 
 
 if __name__ == "__main__":
