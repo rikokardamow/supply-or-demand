@@ -333,3 +333,84 @@ def fullness_comparison_bars(
         xaxis={"range": [0, 100], "ticksuffix": "%"},
     )
     return fig
+
+
+# Generation-mix PSR-type colours — a deliberate, documented exception to the 4-colour
+# house palette above, per specs/04_entsoe-eu-power.md's own visualisation spec
+# ("renewables greens/blues, thermal greys/navy"). Real ENTSO-E PSR type names,
+# confirmed live (pipelines/entsoe). Not "ad-hoc" in the sense the house-style rule
+# means to prevent — this is one fixed, named mapping reused by every generation-mix
+# chart, not a per-chart improvisation.
+PSR_COLOURS: dict[str, str] = {
+    "Solar": "#f1c40f",
+    "Wind Onshore": "#27ae60",
+    "Wind Offshore": "#16a085",
+    "Hydro Run-of-river and poundage": "#2980b9",
+    "Hydro Water Reservoir": "#2980b9",
+    "Hydro Pumped Storage": LIGHT_BLUE,
+    "Marine": "#1abc9c",
+    "Biomass": "#58d68d",
+    "Geothermal": "#af7ac5",
+    "Other renewable": "#48c9b0",
+    "Nuclear": "#8e44ad",
+    "Fossil Gas": "#7f8c8d",
+    "Fossil Hard coal": "#34495e",
+    "Fossil Brown coal/Lignite": "#2c3e50",
+    "Fossil Oil": "#95a5a6",
+    "Fossil Oil shale": "#95a5a6",
+    "Fossil Coal-derived gas": "#7f8c8d",
+    "Fossil Peat": "#7f8c8d",
+    "Waste": "#943126",
+    "Other": "#bdc3c7",
+}
+PSR_DEFAULT_COLOUR = "#bdc3c7"
+
+
+def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """Stacked area chart, one trace per PSR-type column in `df_wide` (index=ts).
+    Column order controls stacking order — pass renewables-then-thermal for a chart
+    that reads bottom-up the way the spec intends."""
+    fig = go.Figure()
+    for psr_type in df_wide.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=df_wide.index,
+                y=df_wide[psr_type],
+                name=psr_type,
+                mode="lines",
+                stackgroup="one",
+                line={"width": 0.5, "color": PSR_COLOURS.get(psr_type, PSR_DEFAULT_COLOUR)},
+                fillcolor=PSR_COLOURS.get(psr_type, PSR_DEFAULT_COLOUR),
+            )
+        )
+    fig.update_layout(title=title, yaxis_title=unit)
+    return fig
+
+
+def gauge_chart(
+    value: float,
+    title: str,
+    max_value: float = 100.0,
+    thresholds: tuple[float, float] = (50.0, 75.0),
+) -> go.Figure:
+    """A single-value gauge (e.g. Ireland's SNSP %) — green/orange/red bands split at
+    `thresholds`, needle at `value`. `value` and `thresholds` share `max_value`'s scale
+    (e.g. percentage points, 0-100)."""
+    low, high = thresholds
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=value,
+            title={"text": title},
+            gauge={
+                "axis": {"range": [0, max_value]},
+                "bar": {"color": NAVY},
+                "steps": [
+                    {"range": [0, low], "color": "#d5f5e3"},
+                    {"range": [low, high], "color": "#fdebd0"},
+                    {"range": [high, max_value], "color": "#fadbd8"},
+                ],
+            },
+        )
+    )
+    return fig

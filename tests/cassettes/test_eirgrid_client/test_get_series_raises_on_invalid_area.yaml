@@ -1,0 +1,131 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=solaractual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:38 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121538Z-1784bfbb7b8j6wm9hC1AMS39ag0000000cxg000000012x9a
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=solaractual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:40 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121540Z-1784bfbb7b8zgwsxhC1AMSpkmw0000000ct000000000bsmz
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=solaractual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: '{"ErrorMessage":"Invalid Area: ''solaractual''.","LastUpdated":null,"Rows":[],"Status":"Error"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - private
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '93'
+      Content-Security-Policy:
+      - block-all-mixed-content; base-uri 'self'; frame-ancestors 'self'; form-action
+        'self'; object-src 'none';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 30 Aug 2026 12:15:44 GMT
+      Expect-CT:
+      - max-age=86400, enforce
+      Feature-Policy:
+      - microphone 'none'; geolocation 'none'
+      Referrer-Policy:
+      - no-referrer-when-downgrade
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-AspNet-Version:
+      - 4.0.30319
+      X-Cache:
+      - CONFIG_NOCACHE
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Powered-By:
+      - no-cache
+      X-Xss-Protection:
+      - 1; mode=block
+      x-azure-ref:
+      - 20260830T121543Z-1784bfbb7b8v78dzhC1AMSfrag0000000t8g000000018r41
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -8,7 +8,8 @@ this repo follows, and `specs/` for the full spec-driven build plan.
 ## Stack
 
 Python 3.12 · `uv` · pandas · duckdb · pyarrow · plotly · streamlit · pydantic +
-pydantic-settings · requests. Lint: ruff. Types: mypy. Tests: pytest + vcrpy cassettes.
+pydantic-settings · requests · entsoe-py. Lint: ruff. Types: mypy. Tests: pytest + vcrpy
+cassettes.
 
 ## Quick start
 
@@ -61,9 +62,11 @@ secrets are needed in CI.
 Live pages today: **US PADD** (crude/product stocks, refining, inter-PADD flows, WPSR
 table), **US Oil Market Overview** (national balance supplementary charts), **EU Gas
 Storage & LNG** (AGSI+/ALSI+ fill, injection vs. send-out, country deviation), **EU Gas
-Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap).
-See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage, gas flows, power
-markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX, and final
+Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap),
+**EU Power** (ENTSO-E day-ahead price map, cross-border flow map, generation mix, residual
+load, net position). See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage,
+gas flows, power markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX,
+and final
 orchestration).
 
 ### Build log
@@ -164,3 +167,86 @@ fully done — [PR #7](https://github.com/rikokardamow/energy-dashboard/pull/7).
 table without filtering to its own `source="eia"` rows. Fixed by adding a `source` filter
 parameter to `core.storage.read_flows()` itself, so every caller gets it for free — the same
 bug had independently broken a second chart (the Flows tab's net-balance bar) too.
+
+#### In progress — Spec 04: ENTSO-E European power (+ EirGrid)
+Session A: `pipelines/entsoe/` wraps `entsoe-py`'s `EntsoePandasClient` (added as a new
+dependency, approved — pulls in `beautifulsoup4` transitively) rather than a raw REST client
+like `pipelines/entsog`'s, because the Transparency Platform is genuinely flaky — the
+identical query returned `200` once and `503` minutes later during live testing.
+`entsoe-py`'s own retry only covers connection-level errors, not HTTP status codes, so
+`ENTSOEClient` adds its own 503/5xx backoff on top. Pulled 90 days of day-ahead prices for
+DE_LU, FR, NL, IE_SEM into `ts_long` (28,060 rows) — resolution is genuinely per-zone, not
+fixed (DE_LU/FR/NL are 15-minute, IE_SEM is hourly), confirmed live and read from each
+response rather than assumed. Cross-checked yesterday's DE_LU price against an independent
+fresh API call: exact match across all 89 points that day.
+
+**Credential incident**: while live-testing the confirmed 503 flakiness during planning
+(before any code existed), printed a raw `requests.HTTPError` to see what went wrong — its
+default string representation embeds the full request URL, including ENTSO-E's
+`securityToken` query-param auth, leaking the real API key into this transcript. Disclosed
+immediately; the user was asked to rotate the key. `ENTSOEClient` now converts every HTTP
+error to a bare status-code message before it can propagate — see
+`pipelines/entsoe/CLAUDE.md` for the full rule.
+
+Session B: extended price coverage to all **13 zones** (12 with real day-ahead prices; GB
+has a confirmed, genuine data gap — no prices, load, generation, or wind/solar forecast via
+ENTSO-E, matching the spec's own "GB (as available)" caveat, most likely a post-Brexit
+reporting change, not a bug). Pulled generation mix, load, and wind/solar forecast for all
+13 zones (14-day lookback — generation/wind-solar are per-PSR-type, so row counts multiply
+fast across 13 zones) and cross-border physical flows for 12 real interconnector pairs (11
+with data; `SE_4<->DK_1` is empty in both directions, confirmed live, not chased further
+given 11 borders already clears the spec's ≥8 minimum). Page `04_eu_power.py`: a day-ahead
+price map (diverging navy-to-red `Scattergeo`), a cross-border arrow map (same
+line+triangle technique as `padd_map.py`/`entsog_map.py`), a selectable-zone generation-mix
+stacked area (`core.theme.generation_mix_chart`, new — a documented PSR-type colour
+exception to the house palette per the spec's own "renewables greens/blues, thermal
+greys/navy" instruction), residual load, and a ranked net-position bar. Cross-checked a
+DE_LU→FR flow value against an independent fresh API call: exact match across all 88
+points that day.
+
+Every pull script (`pull_prices.py`, `pull_actuals.py`, `pull_flows.py`) now catches a
+failure **per zone/border/indicator individually** and continues rather than aborting the
+whole run — the Transparency Platform's flakiness turned out to be sustained enough that a
+13-item pull routinely has 1-3 items fail on any given run (a different random subset each
+time, confirmed by re-running twice), so re-running to pick up whatever failed is the normal
+workflow here, not an edge case. Also found and fixed a second entsoe-py gotcha:
+`EntsoePandasClient` defaults to no request timeout at all (confirmed by reading
+`EntsoeRawClient`'s source), which hung a pull indefinitely until killed by hand — fixed by
+passing an explicit 45s timeout and retrying on connection-level errors too, not just HTTP
+status codes.
+
+Session C: `pipelines/eirgrid/` — a single-adapter-function client (`EirGridClient._fetch_rows`)
+against EirGrid's public, undocumented, no-key JSON API, pulling 90 days of ROI demand,
+generation, wind, CO2 intensity, and interconnector flows at 15-min resolution (60,487 rows
+across 7 series). Found a genuine, confirmed ~30-day max range per call (not flakiness —
+30 days succeeds, 45+ returns a real error body) — `get_series` now chunks transparently
+into 30-day windows and dedupes the resulting boundary overlap. Two corrections to the
+spec's own text, both confirmed live: there's no solar-specific area (so the SNSP proxy
+formula omits the solar term entirely), and ROI's real interconnectors are **EWIC and
+Greenlink**, not "EWIC/Celtic/Moyle" (Celtic isn't in this API; Moyle serves Northern
+Ireland, a different region). Also confirmed live: timestamps are Ireland local time, not
+UTC; future timestamps within a requested window return `Value: null`; and
+`INTER_NET_ROI == INTER_EWIC + INTER_GRNLK` exactly, with positive meaning import into ROI.
+Added the Ireland panel to `04_eu_power.py` — demand-vs-wind dual-axis chart, an SNSP proxy
+gauge (`core.theme.gauge_chart`, new), and an EWIC/Greenlink flow chart. Acceptance
+criterion met: the lake's latest ROI demand values matched a fresh, independent API call
+exactly, zero diff.
+
+Session D (final for this spec): `pull_daily.py` — day-ahead prices for a `[yesterday,
+tomorrow+1)` window (ENTSO-E publishes ~12:45 CET) plus actuals (load, generation,
+wind/solar forecast, cross-border flows) for the prior day only. `pull_prices.py`/
+`pull_actuals.py`/`pull_flows.py` each now expose a reusable `pull_*()` helper so the daily
+entrypoint shares their per-item resilience instead of duplicating it. Running it twice in a
+row surfaced a genuine data-loss bug, not just a flaky-API annoyance: `write_flows`'s
+`replace_window` was dropping every existing row in the re-pulled window regardless of which
+border it belonged to, so a border that failed on one run (a routine occurrence — ENTSO-E's
+confirmed flakiness) had its still-good prior data deleted with nothing to replace it.
+Confirmed live: `DE_LU -> NL` had real data after run 1, then zero rows after run 2 once that
+border's fetch failed. Fixed at the storage layer (`core.storage._write_partitioned`) to
+scope the window deletion to only the pairs present in the fresh pull; added a regression
+test. A third run confirmed the fix — `DE_LU -> NL` was cleanly restored and no other border
+was lost. This also closes an identical latent risk in `pipelines/entsog`'s own daily
+re-pull. Spec 04 is now feature-complete: page 04 (price map, arrow map, mix stack, Ireland
+panel), 13 zones priced (12 with real data, GB's gap confirmed and expected), 12 borders
+mapped (11 with real data), EirGrid adapter isolated in one function, all cross-checks done,
+tests green.
