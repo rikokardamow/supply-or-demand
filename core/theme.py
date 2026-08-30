@@ -385,3 +385,32 @@ def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Fig
         )
     fig.update_layout(title=title, yaxis_title=unit)
     return fig
+
+
+def gauge_chart(
+    value: float,
+    title: str,
+    max_value: float = 100.0,
+    thresholds: tuple[float, float] = (50.0, 75.0),
+) -> go.Figure:
+    """A single-value gauge (e.g. Ireland's SNSP %) — green/orange/red bands split at
+    `thresholds`, needle at `value`. `value` and `thresholds` share `max_value`'s scale
+    (e.g. percentage points, 0-100)."""
+    low, high = thresholds
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=value,
+            title={"text": title},
+            gauge={
+                "axis": {"range": [0, max_value]},
+                "bar": {"color": NAVY},
+                "steps": [
+                    {"range": [0, low], "color": "#d5f5e3"},
+                    {"range": [low, high], "color": "#fdebd0"},
+                    {"range": [high, max_value], "color": "#fadbd8"},
+                ],
+            },
+        )
+    )
+    return fig

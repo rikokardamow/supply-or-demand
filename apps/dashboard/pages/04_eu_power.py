@@ -1,6 +1,6 @@
-"""EU Power — ENTSO-E day-ahead prices, generation mix, load, and cross-border flows.
-Price map + arrow map + generation-mix stack per Session B of
-specs/04_entsoe-eu-power.md; the EirGrid Ireland panel (Session C) comes later."""
+"""EU Power — ENTSO-E day-ahead prices, generation mix, load, and cross-border flows,
+plus the EirGrid Ireland panel. Price map + arrow map + generation-mix stack (Session B);
+Ireland panel (Session C) per specs/04_entsoe-eu-power.md."""
 
 from __future__ import annotations
 
@@ -10,7 +10,16 @@ import plotly.graph_objects as go
 import streamlit as st
 from components.power_maps import render_flow_map, render_price_map
 from core.storage import read_flows, read_ts_long
-from core.theme import NAVY, RED, generation_mix_chart, simple_time_series_chart
+from core.theme import (
+    LIGHT_BLUE,
+    NAVY,
+    RED,
+    dual_axis_chart,
+    gauge_chart,
+    generation_mix_chart,
+    simple_time_series_chart,
+)
+from pipelines.eirgrid.transforms import snsp_proxy
 from pipelines.entsoe.transforms import net_position, residual_load
 from pipelines.entsoe.zones import BORDERS, ZONES
 
@@ -114,3 +123,50 @@ else:
     st.plotly_chart(bar, use_container_width=True)
 
 st.caption(f"{len(ZONES)} zones covered, {len(BORDERS)} borders flowing.")
+
+
+def _eirgrid_series(field: str) -> pd.Series:
+    df = read_ts_long(series_ids=[f"eirgrid.ROI.{field}"]).sort_values("ts")
+    return df.set_index("ts")["value"]
+
+
+st.subheader("Ireland panel (EirGrid)")
+roi_demand = _eirgrid_series("demand")
+roi_wind = _eirgrid_series("wind")
+
+if roi_demand.empty or roi_wind.empty:
+    st.info("No EirGrid data yet — run `pipelines/eirgrid/pull_ireland.py`.")
+else:
+    fig = dual_axis_chart(
+        roi_demand,
+        roi_wind,
+        title="ROI Demand vs. Wind",
+        left_label="Demand (MW)",
+        right_label="Wind (MW)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    roi_net_import = _eirgrid_series("inter_net")
+    snsp = snsp_proxy(roi_wind, roi_net_import, roi_demand).dropna()
+    latest_snsp_pct = float(snsp.iloc[-1] * 100) if not snsp.empty else 0.0
+    gauge = gauge_chart(latest_snsp_pct, title="SNSP Proxy — latest (%)")
+    st.plotly_chart(gauge, use_container_width=True)
+
+    roi_ewic = _eirgrid_series("inter_ewic")
+    roi_greenlink = _eirgrid_series("inter_greenlink")
+    inter_fig = go.Figure()
+    inter_fig.add_trace(
+        go.Scatter(x=roi_ewic.index, y=roi_ewic.values, name="EWIC", line={"color": NAVY})
+    )
+    inter_fig.add_trace(
+        go.Scatter(
+            x=roi_greenlink.index,
+            y=roi_greenlink.values,
+            name="Greenlink",
+            line={"color": LIGHT_BLUE},
+        )
+    )
+    inter_fig.update_layout(
+        title="Ireland Interconnector Flows (+import / -export)", yaxis_title="MW"
+    )
+    st.plotly_chart(inter_fig, use_container_width=True)

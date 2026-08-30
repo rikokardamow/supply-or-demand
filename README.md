@@ -214,3 +214,20 @@ workflow here, not an edge case. Also found and fixed a second entsoe-py gotcha:
 `EntsoeRawClient`'s source), which hung a pull indefinitely until killed by hand — fixed by
 passing an explicit 45s timeout and retrying on connection-level errors too, not just HTTP
 status codes.
+
+Session C: `pipelines/eirgrid/` — a single-adapter-function client (`EirGridClient._fetch_rows`)
+against EirGrid's public, undocumented, no-key JSON API, pulling 90 days of ROI demand,
+generation, wind, CO2 intensity, and interconnector flows at 15-min resolution (60,487 rows
+across 7 series). Found a genuine, confirmed ~30-day max range per call (not flakiness —
+30 days succeeds, 45+ returns a real error body) — `get_series` now chunks transparently
+into 30-day windows and dedupes the resulting boundary overlap. Two corrections to the
+spec's own text, both confirmed live: there's no solar-specific area (so the SNSP proxy
+formula omits the solar term entirely), and ROI's real interconnectors are **EWIC and
+Greenlink**, not "EWIC/Celtic/Moyle" (Celtic isn't in this API; Moyle serves Northern
+Ireland, a different region). Also confirmed live: timestamps are Ireland local time, not
+UTC; future timestamps within a requested window return `Value: null`; and
+`INTER_NET_ROI == INTER_EWIC + INTER_GRNLK` exactly, with positive meaning import into ROI.
+Added the Ireland panel to `04_eu_power.py` — demand-vs-wind dual-axis chart, an SNSP proxy
+gauge (`core.theme.gauge_chart`, new), and an EWIC/Greenlink flow chart. Acceptance
+criterion met: the lake's latest ROI demand values matched a fresh, independent API call
+exactly, zero diff.

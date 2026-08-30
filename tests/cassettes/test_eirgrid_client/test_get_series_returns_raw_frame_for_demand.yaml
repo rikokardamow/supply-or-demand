@@ -1,0 +1,298 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:14 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121514Z-r196975fb5c46sz4hC1AMS5y4s00000006pg000000019t5s
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:16 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121516Z-r196975fb5cdq46mhC1AMSf5r80000000k40000000003fzh
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:20 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121520Z-r196975fb5cfggm2hC1AMSru1c0000000szg000000006gha
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\"http://www.w3.org/TR/html4/strict.dtd\">\r\n<HTML><HEAD><TITLE>Service
+        Unavailable</TITLE>\r\n<META HTTP-EQUIV=\"Content-Type\" Content=\"text/html;
+        charset=us-ascii\"></HEAD>\r\n<BODY><h2>Service Unavailable</h2>\r\n<hr><p>HTTP
+        Error 503. The service is unavailable.</p>\r\n</BODY></HTML>\r\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '326'
+      Content-Type:
+      - text/html; charset=us-ascii
+      Date:
+      - Sun, 30 Aug 2026 12:15:25 GMT
+      X-Cache:
+      - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20260830T121525Z-r196975fb5cf6456hC1AMSm3cc0000000230000000012txh
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.smartgriddashboard.com/DashboardService.svc/data?area=demandactual&datefrom=20-Aug-2026+00%3A00&dateto=21-Aug-2026+00%3A00&region=ROI
+  response:
+    body:
+      string: '{"ErrorMessage":null,"LastUpdated":"30-Aug-2026 13:15:36","Rows":[{"EffectiveTime":"20-Aug-2026
+        00:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3551},{"EffectiveTime":"20-Aug-2026
+        00:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3568},{"EffectiveTime":"20-Aug-2026
+        00:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3511},{"EffectiveTime":"20-Aug-2026
+        00:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3440},{"EffectiveTime":"20-Aug-2026
+        01:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3422},{"EffectiveTime":"20-Aug-2026
+        01:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3400},{"EffectiveTime":"20-Aug-2026
+        01:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3356},{"EffectiveTime":"20-Aug-2026
+        01:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3299},{"EffectiveTime":"20-Aug-2026
+        02:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3301},{"EffectiveTime":"20-Aug-2026
+        02:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3428},{"EffectiveTime":"20-Aug-2026
+        02:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3402},{"EffectiveTime":"20-Aug-2026
+        02:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3374},{"EffectiveTime":"20-Aug-2026
+        03:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3350},{"EffectiveTime":"20-Aug-2026
+        03:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3337},{"EffectiveTime":"20-Aug-2026
+        03:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3367},{"EffectiveTime":"20-Aug-2026
+        03:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3277},{"EffectiveTime":"20-Aug-2026
+        04:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3295},{"EffectiveTime":"20-Aug-2026
+        04:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3251},{"EffectiveTime":"20-Aug-2026
+        04:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3224},{"EffectiveTime":"20-Aug-2026
+        04:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3217},{"EffectiveTime":"20-Aug-2026
+        05:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3226},{"EffectiveTime":"20-Aug-2026
+        05:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3267},{"EffectiveTime":"20-Aug-2026
+        05:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3263},{"EffectiveTime":"20-Aug-2026
+        05:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3322},{"EffectiveTime":"20-Aug-2026
+        06:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3334},{"EffectiveTime":"20-Aug-2026
+        06:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3437},{"EffectiveTime":"20-Aug-2026
+        06:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3481},{"EffectiveTime":"20-Aug-2026
+        06:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3578},{"EffectiveTime":"20-Aug-2026
+        07:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3671},{"EffectiveTime":"20-Aug-2026
+        07:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3825},{"EffectiveTime":"20-Aug-2026
+        07:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3886},{"EffectiveTime":"20-Aug-2026
+        07:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3975},{"EffectiveTime":"20-Aug-2026
+        08:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4061},{"EffectiveTime":"20-Aug-2026
+        08:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4156},{"EffectiveTime":"20-Aug-2026
+        08:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4198},{"EffectiveTime":"20-Aug-2026
+        08:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4224},{"EffectiveTime":"20-Aug-2026
+        09:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4236},{"EffectiveTime":"20-Aug-2026
+        09:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4235},{"EffectiveTime":"20-Aug-2026
+        09:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4245},{"EffectiveTime":"20-Aug-2026
+        09:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4237},{"EffectiveTime":"20-Aug-2026
+        10:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4183},{"EffectiveTime":"20-Aug-2026
+        10:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4151},{"EffectiveTime":"20-Aug-2026
+        10:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4164},{"EffectiveTime":"20-Aug-2026
+        10:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4188},{"EffectiveTime":"20-Aug-2026
+        11:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4135},{"EffectiveTime":"20-Aug-2026
+        11:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4107},{"EffectiveTime":"20-Aug-2026
+        11:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4122},{"EffectiveTime":"20-Aug-2026
+        11:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4073},{"EffectiveTime":"20-Aug-2026
+        12:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4027},{"EffectiveTime":"20-Aug-2026
+        12:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4039},{"EffectiveTime":"20-Aug-2026
+        12:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4057},{"EffectiveTime":"20-Aug-2026
+        12:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4034},{"EffectiveTime":"20-Aug-2026
+        13:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4007},{"EffectiveTime":"20-Aug-2026
+        13:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3993},{"EffectiveTime":"20-Aug-2026
+        13:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3929},{"EffectiveTime":"20-Aug-2026
+        13:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3948},{"EffectiveTime":"20-Aug-2026
+        14:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3936},{"EffectiveTime":"20-Aug-2026
+        14:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3954},{"EffectiveTime":"20-Aug-2026
+        14:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3954},{"EffectiveTime":"20-Aug-2026
+        14:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3954},{"EffectiveTime":"20-Aug-2026
+        15:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4004},{"EffectiveTime":"20-Aug-2026
+        15:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3982},{"EffectiveTime":"20-Aug-2026
+        15:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3981},{"EffectiveTime":"20-Aug-2026
+        15:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4003},{"EffectiveTime":"20-Aug-2026
+        16:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4028},{"EffectiveTime":"20-Aug-2026
+        16:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4054},{"EffectiveTime":"20-Aug-2026
+        16:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4024},{"EffectiveTime":"20-Aug-2026
+        16:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4061},{"EffectiveTime":"20-Aug-2026
+        17:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4105},{"EffectiveTime":"20-Aug-2026
+        17:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4185},{"EffectiveTime":"20-Aug-2026
+        17:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4233},{"EffectiveTime":"20-Aug-2026
+        17:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4244},{"EffectiveTime":"20-Aug-2026
+        18:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4249},{"EffectiveTime":"20-Aug-2026
+        18:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4262},{"EffectiveTime":"20-Aug-2026
+        18:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4226},{"EffectiveTime":"20-Aug-2026
+        18:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4254},{"EffectiveTime":"20-Aug-2026
+        19:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4247},{"EffectiveTime":"20-Aug-2026
+        19:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4263},{"EffectiveTime":"20-Aug-2026
+        19:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4246},{"EffectiveTime":"20-Aug-2026
+        19:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4239},{"EffectiveTime":"20-Aug-2026
+        20:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4251},{"EffectiveTime":"20-Aug-2026
+        20:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4234},{"EffectiveTime":"20-Aug-2026
+        20:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4234},{"EffectiveTime":"20-Aug-2026
+        20:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4227},{"EffectiveTime":"20-Aug-2026
+        21:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4269},{"EffectiveTime":"20-Aug-2026
+        21:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4255},{"EffectiveTime":"20-Aug-2026
+        21:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4212},{"EffectiveTime":"20-Aug-2026
+        21:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4137},{"EffectiveTime":"20-Aug-2026
+        22:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":4031},{"EffectiveTime":"20-Aug-2026
+        22:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3963},{"EffectiveTime":"20-Aug-2026
+        22:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3872},{"EffectiveTime":"20-Aug-2026
+        22:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3814},{"EffectiveTime":"20-Aug-2026
+        23:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3751},{"EffectiveTime":"20-Aug-2026
+        23:15:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3755},{"EffectiveTime":"20-Aug-2026
+        23:30:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3670},{"EffectiveTime":"20-Aug-2026
+        23:45:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3625},{"EffectiveTime":"21-Aug-2026
+        00:00:00","FieldName":"SYSTEM_DEMAND","Region":"ROI","Value":3567}],"Status":"Success"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - private
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '9495'
+      Content-Security-Policy:
+      - block-all-mixed-content; base-uri 'self'; frame-ancestors 'self'; form-action
+        'self'; object-src 'none';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 30 Aug 2026 12:15:35 GMT
+      Expect-CT:
+      - max-age=86400, enforce
+      Feature-Policy:
+      - microphone 'none'; geolocation 'none'
+      Referrer-Policy:
+      - no-referrer-when-downgrade
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-AspNet-Version:
+      - 4.0.30319
+      X-Cache:
+      - CONFIG_NOCACHE
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Powered-By:
+      - no-cache
+      X-Xss-Protection:
+      - 1; mode=block
+      x-azure-ref:
+      - 20260830T121534Z-r196975fb5cp77g7hC1AMSpvfg0000000gcg00000000y1bs
+    status:
+      code: 200
+      message: OK
+version: 1
