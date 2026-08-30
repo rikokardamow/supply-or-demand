@@ -32,9 +32,20 @@ few seconds' pacing got a mix of `200`/`503` with no pattern by zone. `entsoe-py
 `@retry` decorator (`entsoe.decorators.retry`, confirmed by reading its source) only catches
 connection-level errors (`ConnectionError`, DNS failures, `RemoteDisconnected`) — it does
 **not** retry on HTTP error status codes, so a 503 propagates immediately as
-`requests.exceptions.HTTPError` with no built-in retry. `ENTSOEClient._request_with_retry`
+`requests.exceptions.HTTPError` with no built-in retry. `ENTSOEClient._call`
 adds exponential backoff (capped 60s, 5 attempts) specifically for 503/5xx, same pattern as
 `pipelines/eia`/`pipelines/gie`.
+
+**No default timeout — confirmed live, this actually hung a pull** (Session B):
+`EntsoeRawClient.__init__` defaults `timeout=None` (confirmed by reading its source), passed
+straight through to `requests.get(..., timeout=None)` — meaning no client-side timeout at
+all. A Session B pull hung indefinitely on one zone with no exception ever raised (so the
+503 retry logic never even triggered, since nothing failed — it just never returned).
+Killed by hand after confirming no orphaned process remained. Fixed by passing
+`EntsoePandasClient(api_key=..., timeout=REQUEST_TIMEOUT_SECONDS)` explicitly (45s, matching
+`pipelines/gie`'s own timeout choice) and catching `requests.exceptions.RequestException`
+(timeouts, connection errors — anything with no response at all) alongside `HTTPError` in
+the retry loop, not just HTTP status codes.
 
 ## Zone EIC codes (Session A) — confirmed live via `entsoe.mappings.Area` and real queries
 | Zone | EIC code | Resolution confirmed live |
@@ -85,3 +96,57 @@ testing the 503 flakiness before any code existed — its `str()` embedded the f
 URL including the real `securityToken`. Disclosed immediately, user asked to rotate the key.
 See "Never print a raw exception from this client" above for the resulting rule, and the
 memory file `credential_handling_incidents.md` for the full incident record.
+
+## Session B — generation, load, wind/solar forecast, cross-border flows, page + maps
+
+**Per-item resilience, not just per-request retry**: even with the timeout fix and 503
+backoff, a 13-zone (or 12-border) pull run still routinely has 1-3 items fail after
+exhausting retries — the platform's flakiness is real and sustained, not a rare blip. Every
+pull script (`pull_prices.py`, `pull_actuals.py`, `pull_flows.py`) catches `RuntimeError` per
+zone/border/indicator individually, prints `"{item}: FAILED (...) — skipping"`, and continues
+— one flaky item must never abort an otherwise-successful multi-item pull. Re-running the
+same script again picks up whatever failed last time (`write_ts_long`/`write_flows`'s
+de-dup makes this idempotent) — confirmed live: two consecutive `pull_prices.py` runs each
+failed on a *different* random set of 2-3 zones, and the union of both runs' successes
+covered 12 of 13 zones cleanly.
+
+**GB has a real, confirmed data gap across every indicator** — day-ahead prices, load,
+generation, and wind/solar forecast all returned genuinely empty results (not 503s, not
+timeouts — a clean empty `DataFrame`/`Series`, the `NoMatchingDataError` path). This isn't
+flakiness; it's very likely GB's post-Brexit reporting status to ENTSO-E (no longer full EU
+internal-market obligations) — matches the spec's own "GB (as available)" phrasing
+precisely, so this was anticipated, not a bug. GB's cross-border flows *into* other zones
+(`FR -> GB`, `NL -> GB`, `IE_SEM -> GB`) do have real data — it's GB's own zone-level
+indicators that are missing, not its interconnectors.
+
+**IE_SEM's load is also empty** (generation and wind/solar forecast both work fine for
+IE_SEM) — almost certainly because Ireland's demand/load data is published through EirGrid's
+own systems (Session C's data source) rather than duplicated to ENTSO-E's load indicator.
+Not a gap to solve here; Session C's EirGrid panel is exactly where Irish demand comes from.
+
+**`SE_4 <-> DK_1` cross-border flow has no data in either direction** — confirmed live by
+querying both `SE_4->DK_1` and `DK_1->SE_4` explicitly, both empty. Every other border in
+`zones.py::BORDERS` (11 of 12) has real data, comfortably past the spec's ≥8 minimum, so this
+wasn't chased further — either this specific pair isn't a distinct ENTSO-E-tracked
+cross-border point, or it's aggregated under a different registered pairing.
+
+**Final zone/border coverage** (after 2 pull runs each, unioned): 12 of 13 zones have real
+day-ahead prices (all but GB); 11 of 13 zones have real load (all but IE_SEM/GB); 12 of 13
+zones have real generation and wind/solar forecast data (all but GB); 11 of 12 mapped
+borders have real cross-border flow data (all but `SE_4<->DK_1`).
+
+**Page `04_eu_power.py`**: price map (`components/power_maps.py::render_price_map` —
+Scattergeo markers at representative zone coordinates, diverging navy-to-red colourscale by
+latest price), cross-border arrow map (`render_flow_map`, same line+triangle technique as
+`padd_map.py`/`entsog_map.py`), a selectable-zone generation-mix stacked area
+(`core.theme.generation_mix_chart`, new — a documented PSR-type colour exception to the
+4-colour house palette per the spec's own "renewables greens/blues, thermal greys/navy"
+instruction), residual load (`transforms.py::residual_load`, load minus wind minus solar),
+and a ranked net-position bar (`transforms.py::net_position`, generalised from
+`pipelines/eia/transforms.py::net_balance`'s identical inbound/outbound pattern).
+
+**Generation mix keeps only "Actual Aggregated" columns** — `query_generation`'s response
+has MultiIndex columns per PSR type, and Hydro Pumped Storage has *both* an "Actual
+Aggregated" column (generation) and an "Actual Consumption" column (charging demand,
+confirmed live) — only the former belongs in a generation-mix chart. `get_generation` drops
+the latter before melting to long format.
