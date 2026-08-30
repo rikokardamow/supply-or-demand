@@ -8,7 +8,8 @@ this repo follows, and `specs/` for the full spec-driven build plan.
 ## Stack
 
 Python 3.12 · `uv` · pandas · duckdb · pyarrow · plotly · streamlit · pydantic +
-pydantic-settings · requests. Lint: ruff. Types: mypy. Tests: pytest + vcrpy cassettes.
+pydantic-settings · requests · entsoe-py. Lint: ruff. Types: mypy. Tests: pytest + vcrpy
+cassettes.
 
 ## Quick start
 
@@ -164,3 +165,23 @@ fully done — [PR #7](https://github.com/rikokardamow/energy-dashboard/pull/7).
 table without filtering to its own `source="eia"` rows. Fixed by adding a `source` filter
 parameter to `core.storage.read_flows()` itself, so every caller gets it for free — the same
 bug had independently broken a second chart (the Flows tab's net-balance bar) too.
+
+#### In progress — Spec 04: ENTSO-E European power (+ EirGrid)
+Session A: `pipelines/entsoe/` wraps `entsoe-py`'s `EntsoePandasClient` (added as a new
+dependency, approved — pulls in `beautifulsoup4` transitively) rather than a raw REST client
+like `pipelines/entsog`'s, because the Transparency Platform is genuinely flaky — the
+identical query returned `200` once and `503` minutes later during live testing.
+`entsoe-py`'s own retry only covers connection-level errors, not HTTP status codes, so
+`ENTSOEClient` adds its own 503/5xx backoff on top. Pulled 90 days of day-ahead prices for
+DE_LU, FR, NL, IE_SEM into `ts_long` (28,060 rows) — resolution is genuinely per-zone, not
+fixed (DE_LU/FR/NL are 15-minute, IE_SEM is hourly), confirmed live and read from each
+response rather than assumed. Cross-checked yesterday's DE_LU price against an independent
+fresh API call: exact match across all 89 points that day.
+
+**Credential incident**: while live-testing the confirmed 503 flakiness during planning
+(before any code existed), printed a raw `requests.HTTPError` to see what went wrong — its
+default string representation embeds the full request URL, including ENTSO-E's
+`securityToken` query-param auth, leaking the real API key into this transcript. Disclosed
+immediately; the user was asked to rotate the key. `ENTSOEClient` now converts every HTTP
+error to a bare status-code message before it can propagate — see
+`pipelines/entsoe/CLAUDE.md` for the full rule.
