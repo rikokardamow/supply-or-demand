@@ -132,3 +132,49 @@ def test_write_flows_replace_window_leaves_rows_outside_window_untouched() -> No
 
     assert len(result) == 2
     assert result.iloc[1]["value"] == 200.0
+
+
+def test_write_flows_replace_window_keeps_pairs_missing_from_the_fresh_pull() -> None:
+    # A daily re-pull only ever writes the pairs it successfully fetched this run --
+    # one pair failing (a confirmed-live, routine occurrence) must not delete that
+    # pair's still-good prior data just because it shares the replace_window with
+    # pairs that did come back fresh. Caught live comparing two consecutive
+    # pull_daily.py runs where one border failed on the second run only.
+    no_de = pd.DataFrame(
+        {
+            "source": ["entsog"],
+            "from_node": ["NO"],
+            "to_node": ["DE"],
+            "value": [100.0],
+            "unit": ["GWh/d"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "mode": ["pipeline"],
+        }
+    )
+    fr_es = pd.DataFrame(
+        {
+            "source": ["entsog"],
+            "from_node": ["FR"],
+            "to_node": ["ES"],
+            "value": [50.0],
+            "unit": ["GWh/d"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "mode": ["pipeline"],
+        }
+    )
+    write_flows(pd.concat([no_de, fr_es], ignore_index=True), source="entsog")
+
+    # Re-pull only refreshes FR->ES this time -- NO->DE's fetch failed and was
+    # skipped by the pull script, so it's absent from what's being written.
+    write_flows(
+        fr_es,
+        source="entsog",
+        replace_window=(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-01-01")),
+    )
+
+    result = read_flows(source="entsog")
+
+    assert len(result) == 2
+    no_de_row = result[(result["from_node"] == "NO") & (result["to_node"] == "DE")]
+    assert len(no_de_row) == 1
+    assert no_de_row.iloc[0]["value"] == 100.0

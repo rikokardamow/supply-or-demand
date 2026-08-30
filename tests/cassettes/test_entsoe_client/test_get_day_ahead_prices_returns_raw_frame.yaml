@@ -1,0 +1,693 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      user-agent:
+      - entsoe-py 0.8.0 (github.com/EnergieID/entsoe-py)
+    method: GET
+    uri: https://web-api.tp.entsoe.eu/api?classificationSequence_AttributeInstanceComponent.position=1&contract_MarketAgreement.type=A01&documentType=A44&in_Domain=10Y1001A1001A82H&offset=0&out_Domain=10Y1001A1001A82H&periodEnd=202608222200&periodStart=202608182200
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <Publication_MarketDocument
+        xmlns=\"urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:3\">\n    <mRID>4294bb2ae2fb4bc682d4eea0a0e48bd8</mRID>\n
+        \   <revisionNumber>1</revisionNumber>\n    <type>A44</type>\n    <sender_MarketParticipant.mRID
+        codingScheme=\"A01\">10X1001A1001A450</sender_MarketParticipant.mRID>\n    <sender_MarketParticipant.marketRole.type>A32</sender_MarketParticipant.marketRole.type>\n
+        \   <receiver_MarketParticipant.mRID codingScheme=\"A01\">10X1001A1001A450</receiver_MarketParticipant.mRID>\n
+        \   <receiver_MarketParticipant.marketRole.type>A33</receiver_MarketParticipant.marketRole.type>\n
+        \   <createdDateTime>2026-08-30T09:39:47Z</createdDateTime>\n    <period.timeInterval>\n
+        \     <start>2026-08-18T22:00Z</start>\n      <end>2026-08-22T22:00Z</end>\n
+        \   </period.timeInterval>\n      <TimeSeries>\n        <mRID>1</mRID>\n        <auction.type>A01</auction.type>\n
+        \       <businessType>A62</businessType>\n        <in_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</in_Domain.mRID>\n
+        \       <out_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</out_Domain.mRID>\n
+        \       <contract_MarketAgreement.type>A01</contract_MarketAgreement.type>\n
+        \       <currency_Unit.name>EUR</currency_Unit.name>\n        <price_Measure_Unit.name>MWH</price_Measure_Unit.name>\n
+        \         <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>\n
+        \       <curveType>A03</curveType>\n          <Period>\n            <timeInterval>\n
+        \             <start>2026-08-18T22:00Z</start>\n              <end>2026-08-19T22:00Z</end>\n
+        \           </timeInterval>\n            <resolution>PT15M</resolution>\n
+        \             <Point>\n                <position>1</position>\n                  <price.amount>192</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>2</position>\n
+        \                 <price.amount>179.12</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>3</position>\n                  <price.amount>174.36</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>4</position>\n
+        \                 <price.amount>160.92</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>5</position>\n                  <price.amount>163.46</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>6</position>\n
+        \                 <price.amount>157.81</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>7</position>\n                  <price.amount>156.13</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>8</position>\n
+        \                 <price.amount>153</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>9</position>\n                  <price.amount>156.88</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>10</position>\n
+        \                 <price.amount>151.89</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>11</position>\n                  <price.amount>150.39</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>12</position>\n
+        \                 <price.amount>146.49</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>13</position>\n                  <price.amount>147.52</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>14</position>\n
+        \                 <price.amount>147.94</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>15</position>\n                  <price.amount>146.48</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>16</position>\n
+        \                 <price.amount>147.26</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>17</position>\n                  <price.amount>148.07</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>18</position>\n
+        \                 <price.amount>148.82</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>19</position>\n                  <price.amount>150</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>20</position>\n
+        \                 <price.amount>149.09</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>21</position>\n                  <price.amount>155.03</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>22</position>\n
+        \                 <price.amount>155.34</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>23</position>\n                  <price.amount>161.45</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>24</position>\n
+        \                 <price.amount>174.84</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>25</position>\n                  <price.amount>173.09</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>26</position>\n
+        \                 <price.amount>184.71</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>27</position>\n                  <price.amount>188.92</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>28</position>\n
+        \                 <price.amount>192.23</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>29</position>\n                  <price.amount>197</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>30</position>\n
+        \                 <price.amount>192.85</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>31</position>\n                  <price.amount>191.72</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>32</position>\n
+        \                 <price.amount>188.95</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>33</position>\n                  <price.amount>202</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>34</position>\n
+        \                 <price.amount>194.13</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>35</position>\n                  <price.amount>186.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>36</position>\n
+        \                 <price.amount>180.34</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>37</position>\n                  <price.amount>200</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>38</position>\n
+        \                 <price.amount>179.92</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>39</position>\n                  <price.amount>155</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>40</position>\n
+        \                 <price.amount>143.78</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>41</position>\n                  <price.amount>163</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>42</position>\n
+        \                 <price.amount>154.9</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>43</position>\n                  <price.amount>146.43</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>44</position>\n
+        \                 <price.amount>146.34</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>45</position>\n                  <price.amount>145.69</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>46</position>\n
+        \                 <price.amount>146.02</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>47</position>\n                  <price.amount>142.13</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>48</position>\n
+        \                 <price.amount>138</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>49</position>\n                  <price.amount>143.44</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>50</position>\n
+        \                 <price.amount>135.42</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>51</position>\n                  <price.amount>134.6</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>52</position>\n
+        \                 <price.amount>130.87</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>53</position>\n                  <price.amount>133.2</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>54</position>\n
+        \                 <price.amount>129.43</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>55</position>\n                  <price.amount>126.39</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>56</position>\n
+        \                 <price.amount>123.8</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>57</position>\n                  <price.amount>128.08</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>58</position>\n
+        \                 <price.amount>129.28</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>59</position>\n                  <price.amount>126.8</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>60</position>\n
+        \                 <price.amount>126.93</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>61</position>\n                  <price.amount>125.48</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>62</position>\n
+        \                 <price.amount>129.36</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>63</position>\n                  <price.amount>132.95</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>64</position>\n
+        \                 <price.amount>136.24</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>65</position>\n                  <price.amount>130</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>66</position>\n
+        \                 <price.amount>135</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>67</position>\n                  <price.amount>140.56</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>68</position>\n
+        \                 <price.amount>147.71</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>69</position>\n                  <price.amount>138.08</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>70</position>\n
+        \                 <price.amount>146.02</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>71</position>\n                  <price.amount>156.97</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>72</position>\n
+        \                 <price.amount>173.5</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>73</position>\n                  <price.amount>164.67</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>74</position>\n
+        \                 <price.amount>180</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>75</position>\n                  <price.amount>192</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>76</position>\n
+        \                 <price.amount>198.27</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>77</position>\n                  <price.amount>187.42</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>78</position>\n
+        \                 <price.amount>205.02</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>79</position>\n                  <price.amount>215.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>80</position>\n
+        \                 <price.amount>221.78</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>81</position>\n                  <price.amount>199.57</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>82</position>\n
+        \                 <price.amount>208.87</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>83</position>\n                  <price.amount>212.6</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>84</position>\n
+        \                 <price.amount>216.74</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>85</position>\n                  <price.amount>212.86</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>86</position>\n
+        \                 <price.amount>211.1</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>87</position>\n                  <price.amount>203.54</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>88</position>\n
+        \                 <price.amount>196.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>89</position>\n                  <price.amount>206.89</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>90</position>\n
+        \                 <price.amount>201.18</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>91</position>\n                  <price.amount>198</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>92</position>\n
+        \                 <price.amount>190.32</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>93</position>\n                  <price.amount>196</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>94</position>\n
+        \                 <price.amount>190.1</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>95</position>\n                  <price.amount>185</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>96</position>\n
+        \                 <price.amount>175.09</price.amount>\n              </Point>\n
+        \         </Period>\n      </TimeSeries>\n      <TimeSeries>\n        <mRID>2</mRID>\n
+        \       <auction.type>A01</auction.type>\n        <businessType>A62</businessType>\n
+        \       <in_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</in_Domain.mRID>\n
+        \       <out_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</out_Domain.mRID>\n
+        \       <contract_MarketAgreement.type>A01</contract_MarketAgreement.type>\n
+        \       <currency_Unit.name>EUR</currency_Unit.name>\n        <price_Measure_Unit.name>MWH</price_Measure_Unit.name>\n
+        \         <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>\n
+        \       <curveType>A03</curveType>\n          <Period>\n            <timeInterval>\n
+        \             <start>2026-08-19T22:00Z</start>\n              <end>2026-08-20T22:00Z</end>\n
+        \           </timeInterval>\n            <resolution>PT15M</resolution>\n
+        \             <Point>\n                <position>1</position>\n                  <price.amount>185</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>2</position>\n
+        \                 <price.amount>178.23</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>3</position>\n                  <price.amount>168.62</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>4</position>\n
+        \                 <price.amount>159</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>5</position>\n                  <price.amount>166.11</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>6</position>\n
+        \                 <price.amount>162.91</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>7</position>\n                  <price.amount>162.11</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>8</position>\n
+        \                 <price.amount>158.27</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>9</position>\n                  <price.amount>158.91</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>10</position>\n
+        \                 <price.amount>154.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>11</position>\n                  <price.amount>151.5</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>12</position>\n
+        \                 <price.amount>149.53</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>13</position>\n                  <price.amount>149.15</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>14</position>\n
+        \                 <price.amount>146.95</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>15</position>\n                  <price.amount>148.89</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>16</position>\n
+        \                 <price.amount>146.97</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>17</position>\n                  <price.amount>145.9</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>18</position>\n
+        \                 <price.amount>146.91</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>19</position>\n                  <price.amount>149.56</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>20</position>\n
+        \                 <price.amount>151.6</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>21</position>\n                  <price.amount>148.71</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>22</position>\n
+        \                 <price.amount>154.65</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>23</position>\n                  <price.amount>162.13</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>24</position>\n
+        \                 <price.amount>172.71</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>25</position>\n                  <price.amount>171.64</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>26</position>\n
+        \                 <price.amount>183.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>27</position>\n                  <price.amount>188.22</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>28</position>\n
+        \                 <price.amount>187.35</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>29</position>\n                  <price.amount>195.14</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>30</position>\n
+        \                 <price.amount>188.66</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>31</position>\n                  <price.amount>185.68</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>32</position>\n
+        \                 <price.amount>176.25</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>33</position>\n                  <price.amount>188.96</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>34</position>\n
+        \                 <price.amount>177.63</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>35</position>\n                  <price.amount>165</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>36</position>\n
+        \                 <price.amount>155.4</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>37</position>\n                  <price.amount>170</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>38</position>\n
+        \                 <price.amount>165.11</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>39</position>\n                  <price.amount>147.12</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>40</position>\n
+        \                 <price.amount>135.79</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>41</position>\n                  <price.amount>154.89</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>42</position>\n
+        \                 <price.amount>137.18</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>43</position>\n                  <price.amount>133</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>44</position>\n
+        \                 <price.amount>117.89</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>45</position>\n                  <price.amount>132.96</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>46</position>\n
+        \                 <price.amount>112.6</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>47</position>\n                  <price.amount>103.04</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>48</position>\n
+        \                 <price.amount>89.22</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>49</position>\n                  <price.amount>99.77</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>50</position>\n
+        \                 <price.amount>83.69</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>51</position>\n                  <price.amount>78.09</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>52</position>\n
+        \                 <price.amount>72.97</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>53</position>\n                  <price.amount>73.47</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>54</position>\n
+        \                 <price.amount>68.25</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>55</position>\n                  <price.amount>60.42</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>56</position>\n
+        \                 <price.amount>52.69</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>57</position>\n                  <price.amount>66.88</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>58</position>\n
+        \                 <price.amount>65.18</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>59</position>\n                  <price.amount>72.77</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>60</position>\n
+        \                 <price.amount>72.93</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>61</position>\n                  <price.amount>78.7</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>62</position>\n
+        \                 <price.amount>85.36</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>63</position>\n                  <price.amount>97.36</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>64</position>\n
+        \                 <price.amount>103.41</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>65</position>\n                  <price.amount>73.87</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>66</position>\n
+        \                 <price.amount>99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>67</position>\n                  <price.amount>119.24</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>68</position>\n
+        \                 <price.amount>131.91</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>69</position>\n                  <price.amount>128.09</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>70</position>\n
+        \                 <price.amount>135.63</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>71</position>\n                  <price.amount>151.07</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>72</position>\n
+        \                 <price.amount>162.01</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>73</position>\n                  <price.amount>140.81</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>74</position>\n
+        \                 <price.amount>156.73</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>75</position>\n                  <price.amount>177.35</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>76</position>\n
+        \                 <price.amount>182.09</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>77</position>\n                  <price.amount>180.59</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>78</position>\n
+        \                 <price.amount>189.29</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>79</position>\n                  <price.amount>196.2</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>80</position>\n
+        \                 <price.amount>202.81</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>81</position>\n                  <price.amount>198.85</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>82</position>\n
+        \                 <price.amount>199.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>83</position>\n                  <price.amount>201.56</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>84</position>\n
+        \                 <price.amount>202</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>85</position>\n                  <price.amount>200.64</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>86</position>\n
+        \                 <price.amount>197.67</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>87</position>\n                  <price.amount>195.01</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>88</position>\n
+        \                 <price.amount>189.15</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>89</position>\n                  <price.amount>193.65</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>90</position>\n
+        \                 <price.amount>190</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>91</position>\n                  <price.amount>187.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>92</position>\n
+        \                 <price.amount>180.07</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>93</position>\n                  <price.amount>180.09</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>94</position>\n
+        \                 <price.amount>176</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>95</position>\n                  <price.amount>170.93</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>96</position>\n
+        \                 <price.amount>165.04</price.amount>\n              </Point>\n
+        \         </Period>\n      </TimeSeries>\n      <TimeSeries>\n        <mRID>3</mRID>\n
+        \       <auction.type>A01</auction.type>\n        <businessType>A62</businessType>\n
+        \       <in_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</in_Domain.mRID>\n
+        \       <out_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</out_Domain.mRID>\n
+        \       <contract_MarketAgreement.type>A01</contract_MarketAgreement.type>\n
+        \       <currency_Unit.name>EUR</currency_Unit.name>\n        <price_Measure_Unit.name>MWH</price_Measure_Unit.name>\n
+        \         <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>\n
+        \       <curveType>A03</curveType>\n          <Period>\n            <timeInterval>\n
+        \             <start>2026-08-20T22:00Z</start>\n              <end>2026-08-21T22:00Z</end>\n
+        \           </timeInterval>\n            <resolution>PT15M</resolution>\n
+        \             <Point>\n                <position>1</position>\n                  <price.amount>183.05</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>2</position>\n
+        \                 <price.amount>175</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>3</position>\n                  <price.amount>166.45</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>4</position>\n
+        \                 <price.amount>156.9</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>5</position>\n                  <price.amount>165.55</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>6</position>\n
+        \                 <price.amount>162.28</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>7</position>\n                  <price.amount>159.74</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>8</position>\n
+        \                 <price.amount>154.39</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>9</position>\n                  <price.amount>154.94</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>10</position>\n
+        \                 <price.amount>152.71</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>11</position>\n                  <price.amount>151</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>12</position>\n
+        \                 <price.amount>151.3</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>13</position>\n                  <price.amount>152.65</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>14</position>\n
+        \                 <price.amount>151.11</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>15</position>\n                  <price.amount>151.53</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>16</position>\n
+        \                 <price.amount>150.61</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>17</position>\n                  <price.amount>150.88</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>18</position>\n
+        \                 <price.amount>151.49</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>19</position>\n                  <price.amount>152.57</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>20</position>\n
+        \                 <price.amount>157.9</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>21</position>\n                  <price.amount>152.1</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>22</position>\n
+        \                 <price.amount>157.08</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>23</position>\n                  <price.amount>169.32</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>24</position>\n
+        \                 <price.amount>185</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>25</position>\n                  <price.amount>181.71</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>26</position>\n
+        \                 <price.amount>189.94</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>27</position>\n                  <price.amount>189.93</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>28</position>\n
+        \                 <price.amount>195.26</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>29</position>\n                  <price.amount>193.58</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>30</position>\n
+        \                 <price.amount>194.66</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>31</position>\n                  <price.amount>195.32</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>32</position>\n
+        \                 <price.amount>192</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>33</position>\n                  <price.amount>211.88</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>34</position>\n
+        \                 <price.amount>204.71</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>35</position>\n                  <price.amount>188.2</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>36</position>\n
+        \                 <price.amount>165.55</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>37</position>\n                  <price.amount>193.04</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>38</position>\n
+        \                 <price.amount>175.59</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>39</position>\n                  <price.amount>158.24</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>40</position>\n
+        \                 <price.amount>144.45</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>41</position>\n                  <price.amount>166</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>42</position>\n
+        \                 <price.amount>154.69</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>43</position>\n                  <price.amount>142.59</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>44</position>\n
+        \                 <price.amount>132.72</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>45</position>\n                  <price.amount>139.8</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>46</position>\n
+        \                 <price.amount>142.14</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>47</position>\n                  <price.amount>137</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>48</position>\n
+        \                 <price.amount>136.59</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>49</position>\n                  <price.amount>134.38</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>50</position>\n
+        \                 <price.amount>134.62</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>51</position>\n                  <price.amount>134.77</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>52</position>\n
+        \                 <price.amount>137.07</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>53</position>\n                  <price.amount>140.65</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>54</position>\n
+        \                 <price.amount>138.01</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>55</position>\n                  <price.amount>142.81</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>56</position>\n
+        \                 <price.amount>140.51</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>57</position>\n                  <price.amount>134.35</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>58</position>\n
+        \                 <price.amount>142.05</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>59</position>\n                  <price.amount>144.34</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>60</position>\n
+        \                 <price.amount>143.95</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>61</position>\n                  <price.amount>144.78</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>62</position>\n
+        \                 <price.amount>145</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>63</position>\n                  <price.amount>144.12</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>64</position>\n
+        \                 <price.amount>165.09</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>65</position>\n                  <price.amount>148.6</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>66</position>\n
+        \                 <price.amount>157.97</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>67</position>\n                  <price.amount>167.88</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>68</position>\n
+        \                 <price.amount>191.51</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>69</position>\n                  <price.amount>160.6</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>70</position>\n
+        \                 <price.amount>180.84</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>71</position>\n                  <price.amount>196</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>72</position>\n
+        \                 <price.amount>207.39</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>73</position>\n                  <price.amount>193.49</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>74</position>\n
+        \                 <price.amount>199.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>75</position>\n                  <price.amount>196.37</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>76</position>\n
+        \                 <price.amount>198.11</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>77</position>\n                  <price.amount>205</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>78</position>\n
+        \                 <price.amount>204.34</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>79</position>\n                  <price.amount>199.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>80</position>\n
+        \                 <price.amount>208.33</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>81</position>\n                  <price.amount>206.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>82</position>\n
+        \                 <price.amount>199.56</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>83</position>\n                  <price.amount>200.76</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>84</position>\n
+        \                 <price.amount>208.31</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>85</position>\n                  <price.amount>205.32</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>86</position>\n
+        \                 <price.amount>204.01</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>87</position>\n                  <price.amount>195.96</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>88</position>\n
+        \                 <price.amount>189.57</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>89</position>\n                  <price.amount>192.71</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>90</position>\n
+        \                 <price.amount>188.27</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>91</position>\n                  <price.amount>189.26</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>92</position>\n
+        \                 <price.amount>179.19</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>93</position>\n                  <price.amount>182.37</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>94</position>\n
+        \                 <price.amount>175.8</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>95</position>\n                  <price.amount>171.92</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>96</position>\n
+        \                 <price.amount>163.91</price.amount>\n              </Point>\n
+        \         </Period>\n      </TimeSeries>\n      <TimeSeries>\n        <mRID>4</mRID>\n
+        \       <auction.type>A01</auction.type>\n        <businessType>A62</businessType>\n
+        \       <in_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</in_Domain.mRID>\n
+        \       <out_Domain.mRID codingScheme=\"A01\">10Y1001A1001A82H</out_Domain.mRID>\n
+        \       <contract_MarketAgreement.type>A01</contract_MarketAgreement.type>\n
+        \       <currency_Unit.name>EUR</currency_Unit.name>\n        <price_Measure_Unit.name>MWH</price_Measure_Unit.name>\n
+        \         <classificationSequence_AttributeInstanceComponent.position>1</classificationSequence_AttributeInstanceComponent.position>\n
+        \       <curveType>A03</curveType>\n          <Period>\n            <timeInterval>\n
+        \             <start>2026-08-21T22:00Z</start>\n              <end>2026-08-22T22:00Z</end>\n
+        \           </timeInterval>\n            <resolution>PT15M</resolution>\n
+        \             <Point>\n                <position>1</position>\n                  <price.amount>176.56</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>2</position>\n
+        \                 <price.amount>171.6</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>3</position>\n                  <price.amount>166.27</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>4</position>\n
+        \                 <price.amount>157.6</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>5</position>\n                  <price.amount>164.97</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>6</position>\n
+        \                 <price.amount>161.34</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>7</position>\n                  <price.amount>160.01</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>8</position>\n
+        \                 <price.amount>159.82</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>9</position>\n                  <price.amount>159.97</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>10</position>\n
+        \                 <price.amount>156.91</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>11</position>\n                  <price.amount>159.9</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>12</position>\n
+        \                 <price.amount>158.07</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>13</position>\n                  <price.amount>160.23</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>14</position>\n
+        \                 <price.amount>155.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>15</position>\n                  <price.amount>153.7</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>16</position>\n
+        \                 <price.amount>147.64</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>17</position>\n                  <price.amount>154.29</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>18</position>\n
+        \                 <price.amount>149.62</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>19</position>\n                  <price.amount>145.26</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>20</position>\n
+        \                 <price.amount>144.83</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>21</position>\n                  <price.amount>147.67</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>22</position>\n
+        \                 <price.amount>143.8</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>23</position>\n                  <price.amount>144.19</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>24</position>\n
+        \                 <price.amount>146.37</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>25</position>\n                  <price.amount>153.82</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>26</position>\n
+        \                 <price.amount>156.7</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>27</position>\n                  <price.amount>155.67</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>28</position>\n
+        \                 <price.amount>149.37</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>29</position>\n                  <price.amount>159.74</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>30</position>\n
+        \                 <price.amount>146.89</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>31</position>\n                  <price.amount>139.3</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>32</position>\n
+        \                 <price.amount>130.09</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>33</position>\n                  <price.amount>147.32</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>34</position>\n
+        \                 <price.amount>138</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>35</position>\n                  <price.amount>124.51</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>36</position>\n
+        \                 <price.amount>102.69</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>37</position>\n                  <price.amount>110.75</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>38</position>\n
+        \                 <price.amount>98.63</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>39</position>\n                  <price.amount>85.01</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>40</position>\n
+        \                 <price.amount>66.68</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>41</position>\n                  <price.amount>78.38</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>42</position>\n
+        \                 <price.amount>64.13</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>43</position>\n                  <price.amount>38.57</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>44</position>\n
+        \                 <price.amount>20.1</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>45</position>\n                  <price.amount>41.97</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>46</position>\n
+        \                 <price.amount>20.59</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>47</position>\n                  <price.amount>10.22</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>48</position>\n
+        \                 <price.amount>6.47</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>49</position>\n                  <price.amount>3.02</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>50</position>\n
+        \                 <price.amount>0.96</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>51</position>\n                  <price.amount>0.01</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>52</position>\n
+        \                 <price.amount>0</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>55</position>\n                  <price.amount>-0.01</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>61</position>\n
+        \                 <price.amount>-0.06</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>62</position>\n                  <price.amount>-0.14</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>63</position>\n
+        \                 <price.amount>-0.1</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>64</position>\n                  <price.amount>-0.09</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>65</position>\n
+        \                 <price.amount>-0.01</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>66</position>\n                  <price.amount>0</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>69</position>\n
+        \                 <price.amount>0.01</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>70</position>\n                  <price.amount>2.05</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>71</position>\n
+        \                 <price.amount>39.51</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>72</position>\n                  <price.amount>71.99</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>73</position>\n
+        \                 <price.amount>76.32</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>74</position>\n                  <price.amount>95.15</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>75</position>\n
+        \                 <price.amount>113.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>76</position>\n                  <price.amount>134.83</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>77</position>\n
+        \                 <price.amount>132.5</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>78</position>\n                  <price.amount>141.86</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>79</position>\n
+        \                 <price.amount>157.56</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>80</position>\n                  <price.amount>164.68</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>81</position>\n
+        \                 <price.amount>146.99</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>82</position>\n                  <price.amount>156.78</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>83</position>\n
+        \                 <price.amount>169.75</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>84</position>\n                  <price.amount>183.13</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>85</position>\n
+        \                 <price.amount>172.56</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>86</position>\n                  <price.amount>170.74</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>87</position>\n
+        \                 <price.amount>165.85</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>88</position>\n                  <price.amount>163.66</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>89</position>\n
+        \                 <price.amount>166.18</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>90</position>\n                  <price.amount>158.41</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>91</position>\n
+        \                 <price.amount>152.26</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>92</position>\n                  <price.amount>145.98</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>93</position>\n
+        \                 <price.amount>146.75</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>94</position>\n                  <price.amount>142.34</price.amount>\n
+        \             </Point>\n              <Point>\n                <position>95</position>\n
+        \                 <price.amount>139.28</price.amount>\n              </Point>\n
+        \             <Point>\n                <position>96</position>\n                  <price.amount>136.11</price.amount>\n
+        \             </Point>\n          </Period>\n      </TimeSeries>\n  </Publication_MarketDocument>"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Disposition:
+      - inline; filename="Energy_Prices_202608182200-202608222200.xml"
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/xml
+      Date:
+      - Sun, 30 Aug 2026 09:39:47 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      user-agent:
+      - entsoe-py 0.8.0 (github.com/EnergieID/entsoe-py)
+    method: GET
+    uri: https://web-api.tp.entsoe.eu/api?classificationSequence_AttributeInstanceComponent.position=1&contract_MarketAgreement.type=A01&documentType=A44&in_Domain=10Y1001A1001A82H&offset=100&out_Domain=10Y1001A1001A82H&periodEnd=202608222200&periodStart=202608182200
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Acknowledgement_MarketDocument\n\txmlns=\"urn:iec62325.351:tc57wg16:451-1:acknowledgementdocument:7:0\">\n\t<mRID>ac9fdd57-fe4f-4</mRID>\n\t<createdDateTime>2026-08-30T09:40:03Z</createdDateTime>\n\t<sender_MarketParticipant.mRID
+        codingScheme=\"A01\">10X1001A1001A450</sender_MarketParticipant.mRID>\n\t<sender_MarketParticipant.marketRole.type>A32</sender_MarketParticipant.marketRole.type>\n\t<receiver_MarketParticipant.mRID
+        codingScheme=\"A01\">10X1001A1001A450</receiver_MarketParticipant.mRID>\n\t<receiver_MarketParticipant.marketRole.type>A39</receiver_MarketParticipant.marketRole.type>\n\t<received_MarketDocument.createdDateTime>2026-08-30T09:40:03Z</received_MarketDocument.createdDateTime>\n\t<Reason>\n\t\t<code>999</code>\n\t\t<text>No
+        matching data found for Data item ENERGY_PRICES [12.1.D] (10Y1001A1001A82H,
+        10Y1001A1001A82H) and interval 2026-08-18T22:00:00Z/2026-08-22T22:00:00Z.</text>\n\t</Reason>\n</Acknowledgement_MarketDocument>\n"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Disposition:
+      - inline; filename="acknowledgement.xml"
+      Content-Length:
+      - '963'
+      Content-Type:
+      - text/xml
+      Date:
+      - Sun, 30 Aug 2026 09:40:03 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Vary:
+      - accept-encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: ''
+version: 1
