@@ -126,8 +126,17 @@ gas-day time carries a UTC offset that shifts across DST, breaking `pd.to_dateti
 operators per point** — `ITP-00304` (VIP Pirineos) and `ITP-00008` (TAP)'s nominations are
 reported by both sides of the border with different real values, silently doubling those
 corridors' rows until pinned to the receiving-side operator via ENTSOG's `operatorKey`
-filter. Full detail in `pipelines/entsog/NOTES.md`. Sessions C (directional map) and D (gap
-chart + 15-day revision window) still to come.
+filter. Full detail in `pipelines/entsog/NOTES.md`.
+
+Session C done: `components/entsog_map.py` — a directional `Scattergeo` map of Europe
+reusing `padd_map.py`'s line+rotated-triangle-arrow technique (now factored into a shared
+`components/geo_utils.py` so neither map duplicates it), and Session B's "latest complete
+7-day average" window logic, so the map and the Sankey always agree on which week they're
+showing. Verified live: arrows render across every corridor (Norway into Germany, Belgium,
+France and Great Britain; Turkey's coast into Bulgaria; France into Spain; LNG terminals as
+sized markers across the Netherlands, Belgium, France, Spain, Poland, Italy and Portugal),
+hover text correct, no exceptions. Session D (physical-vs-nomination gap chart + 15-day
+revision window) still to come.
 
 **Fix while writing the previous entry**: adding ENTSOG rows to the shared `flows` table
 (rows use `from_node="NO"` etc.) broke the PADD page's Flows-tab map, which read the whole

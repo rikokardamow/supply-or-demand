@@ -7,6 +7,7 @@ from __future__ import annotations
 import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
+from components.entsog_map import render_entsog_flow_map
 from core.storage import read_flows
 from core.theme import current_vs_prior_year_chart, sankey_chart
 from pipelines.entsog.corridors import CORRIDORS
@@ -45,6 +46,9 @@ else:
         title=f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)",
     )
     st.plotly_chart(fig, use_container_width=True)
+
+    st.subheader("Corridor map")
+    render_entsog_flow_map()
 
     st.subheader("Corridor time series — current vs. prior year")
     corridor_totals = corridor_aggregate(pipeline_df, CORRIDORS, mode="pipeline")

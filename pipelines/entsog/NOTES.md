@@ -112,9 +112,9 @@ pull (not something a schema check would catch):
   where `value` is `""`/`None` before the `float()` conversion (same missing-value pattern as
   GIE's `"-"` handling).
 
-`pull_no_exports.py` therefore only writes 5 of the 7 points' data — confirmed correct: the
-combined total across those 5 (2,535.03 GWh/d for 2026-08-28) matched an independent live
-sum exactly.
+`pull_flows.py` therefore only writes 5 of the 7 NO_EXPORTS points' data — confirmed
+correct: the combined total across those 5 (2,535.03 GWh/d for 2026-08-28) matched an
+independent live sum exactly.
 
 ## Data model — `flows`, at point level (not a corridor-aggregated total)
 Each point is written as its own `flows` row (`from_node`/`to_node` per the point, not a
@@ -182,3 +182,31 @@ directional map is Session C, the physical-vs-nomination gap chart is Session D)
   history, nowhere near the 5-year corridor `core.seasonal` needs. Since the 2-year pull is a
   rolling window rather than calendar years, both years are indexed by "days since window
   start" rather than day-of-year, so they overlay regardless of calendar alignment.
+
+## Session C — directional corridor map
+`components/entsog_map.py::render_entsog_flow_map()` — a `Scattergeo` map of Europe, same
+line+rotated-triangle-arrow technique as `components/padd_map.py` (factored out to a shared
+`components/geo_utils.py::bearing_degrees()` so neither map duplicates it). Reuses Session
+B's `pair_daily_totals`/`latest_complete_date` for the same "latest complete 7-day average"
+window the Sankey uses — same reconciliation logic, same anchor date.
+
+**Map granularity matches the Sankey's, not the corridor table's**: `flows` stores no
+point-identifier column (see above), only `(from_node, to_node)` pairs, so the map draws one
+arrow per pair — not per individual physical point. Where a pair has more than one real point
+(`NO`→`DE` has 3: Emden EPT1/NPT + Dornum; `NO`→`GB` has 2: Easington + St Fergus; `LNG`→`FR`
+has 2: Montoir + Fos), one representative site's coordinate anchors that pair's single marker
+— a visualisation simplification, not a change to what's stored or aggregated.
+
+**Node coordinates are approximate, for visualisation only** (same caveat as
+`padd_map.py`'s `PADD_CENTROIDS`) — real-world locations for each pair's receiving-side entry
+point, plus a representative upstream origin for the from_node labels that name a
+pipeline/exporter rather than a single country (`NO`, `TAP`, `TURKSTREAM`, `RU`). `LNG` pairs
+have no single real upstream origin (ship-borne from many countries) and are drawn as a sized
+marker at the terminal only, not a line — same navy=pipeline/light-blue=ship-borne colour
+convention as `padd_map.py`'s pipeline/tanker_barge split.
+
+No dedicated test file — same precedent as `padd_map.py` (a Streamlit rendering function),
+verified live in the browser instead: arrows render across the expected corridors (Norway
+into Germany/Belgium/France/GB, Turkey's coast into Bulgaria, France into Spain, LNG
+terminals as markers across NL/BE/FR/ES/PL/IT/PT), hover text shows the right
+`from_node → to_node: value GWh/d`, no exceptions.
