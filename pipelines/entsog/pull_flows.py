@@ -2,7 +2,10 @@
 (mode='nomination') for every corridor in corridors.py, at point level — per the spec's
 data model, corridor aggregation is a read-time transform (transforms.py), not baked into
 storage. Supersedes Session A's pull_no_exports.py; NO_EXPORTS is now one of many corridors
-this script covers."""
+this script covers.
+
+pull_all_points() is also used by pull_daily.py (Session D) for the trailing 15-gas-day
+revision-window re-pull — same per-point iteration, different date range and write mode."""
 
 from __future__ import annotations
 
@@ -22,7 +25,7 @@ LOOKBACK_DAYS = 365 * 2
 GetIndicatorFn = Callable[[str, str, date, date, str | None], pd.DataFrame]
 
 
-def _pull_all_points(get_fn: GetIndicatorFn, start: date, end: date, mode: str) -> pd.DataFrame:
+def pull_all_points(get_fn: GetIndicatorFn, start: date, end: date, mode: str) -> pd.DataFrame:
     all_points: list[tuple[str, PointSpec]] = [
         (corridor_name, point)
         for corridor_name, points in CORRIDORS.items()
@@ -67,11 +70,11 @@ def main() -> None:
     end = date.today()
     start = end - timedelta(days=LOOKBACK_DAYS)
 
-    physical = _pull_all_points(client.get_physical_flow, start, end, "pipeline")
+    physical = pull_all_points(client.get_physical_flow, start, end, "pipeline")
     write_flows(physical, source="entsog")
     print(f"wrote {len(physical)} physical-flow rows", flush=True)
 
-    nominations = _pull_all_points(client.get_nomination, start, end, "nomination")
+    nominations = pull_all_points(client.get_nomination, start, end, "nomination")
     write_flows(nominations, source="entsog")
     print(f"wrote {len(nominations)} nomination rows", flush=True)
 

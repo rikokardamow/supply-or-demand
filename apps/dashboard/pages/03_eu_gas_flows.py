@@ -1,17 +1,23 @@
-"""EU Gas Flows — ENTSOG pipeline flows. Sankey + corridor small multiples per Session B
-of specs/03_entsog-eu-gas-flows.md; the directional corridor map (Session C) and the
-physical-vs-nomination gap chart (Session D) come later."""
+"""EU Gas Flows — ENTSOG pipeline flows. Sankey + corridor small multiples (Session B),
+directional corridor map (Session C), physical-vs-nomination gap chart (Session D) —
+per specs/03_entsog-eu-gas-flows.md."""
 
 from __future__ import annotations
 
 import core.theme  # noqa: F401
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from components.entsog_map import render_entsog_flow_map
 from core.storage import read_flows
-from core.theme import current_vs_prior_year_chart, sankey_chart
+from core.theme import LIGHT_BLUE, NAVY, RED, current_vs_prior_year_chart, sankey_chart
 from pipelines.entsog.corridors import CORRIDORS
-from pipelines.entsog.transforms import corridor_aggregate, latest_complete_date, pair_daily_totals
+from pipelines.entsog.transforms import (
+    corridor_aggregate,
+    latest_complete_date,
+    pair_daily_totals,
+    physical_vs_nomination_gap,
+)
 
 SANKEY_WINDOW_DAYS = 7
 
@@ -64,3 +70,54 @@ else:
                 corridor_df, title=corridor_name.replace("_", " "), unit="GWh/d"
             )
             st.plotly_chart(fig, use_container_width=True)
+
+    st.subheader("Physical vs. nomination gap")
+    gap_corridor = st.selectbox("Corridor", options=list(CORRIDORS), key="gap_corridor")
+    gap_df = physical_vs_nomination_gap(flows_df, CORRIDORS, gap_corridor).sort_values("ts")
+
+    if gap_df.empty:
+        st.info(f"No overlapping physical/nomination data yet for {gap_corridor}.")
+    else:
+        corridor_label = gap_corridor.replace("_", " ")
+
+        lines = go.Figure()
+        lines.add_trace(
+            go.Scatter(
+                x=gap_df["ts"],
+                y=gap_df["physical"],
+                name="Physical flow",
+                line={"color": NAVY, "width": 2},
+            )
+        )
+        lines.add_trace(
+            go.Scatter(
+                x=gap_df["ts"],
+                y=gap_df["nomination"],
+                name="Nomination",
+                line={"color": LIGHT_BLUE, "width": 2},
+            )
+        )
+        lines.update_layout(
+            title=f"{corridor_label} — Physical vs. Nomination", yaxis_title="GWh/d"
+        )
+        st.plotly_chart(lines, use_container_width=True)
+
+        # A line, not a bar: with ~2 years of daily points, go.Bar's per-bar width
+        # auto-calculation produces invalid negative widths in the browser (confirmed
+        # live via console errors) — every other daily time series in this app already
+        # uses a line for the same reason.
+        gap_line = go.Figure(
+            go.Scatter(
+                x=gap_df["ts"],
+                y=gap_df["gap"],
+                line={"color": RED, "width": 1.5},
+                fill="tozeroy",
+                fillcolor="rgba(192,57,43,0.2)",
+            )
+        )
+        gap_line.add_hline(y=0, line_color=NAVY, line_width=1)
+        gap_line.update_layout(
+            title=f"{corridor_label} — Nomination minus Physical (under-delivery when positive)",
+            yaxis_title="GWh/d",
+        )
+        st.plotly_chart(gap_line, use_container_width=True)
