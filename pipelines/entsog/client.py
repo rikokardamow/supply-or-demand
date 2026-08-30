@@ -53,13 +53,52 @@ class ENTSOGClient:
         return pd.DataFrame(body["operatorpointdirections"])
 
     def get_physical_flow(
-        self, point_key: str, direction_key: str, start: date, end: date
+        self,
+        point_key: str,
+        direction_key: str,
+        start: date,
+        end: date,
+        operator_key: str | None = None,
     ) -> pd.DataFrame:
         """Raw physical-flow rows for one point+direction, value in kWh/d (unconverted —
-        corridor assembly + kWh->GWh conversion happens in pull_no_exports.py using
-        corridors.py's mapping, same client/pull split as pipelines/eia)."""
-        params = {
-            "indicator": "Physical Flow",
+        corridor assembly + kWh->GWh conversion happens in the pull scripts using
+        corridors.py's mapping, same client/pull split as pipelines/eia).
+
+        Some points are registered to more than one operator (both sides of a
+        cross-border point, or a terminal operator alongside the national TSO) — pass
+        `operator_key` to disambiguate when corridors.py's PointSpec carries one;
+        confirmed live for ITP-00304 (VIP Pirineos), where Enagas and Terega both report
+        real, different "entry" values for the same point+direction and would otherwise
+        double-count."""
+        return self._get_indicator_data(
+            "Physical Flow", point_key, direction_key, start, end, operator_key
+        )
+
+    def get_nomination(
+        self,
+        point_key: str,
+        direction_key: str,
+        start: date,
+        end: date,
+        operator_key: str | None = None,
+    ) -> pd.DataFrame:
+        """Raw nomination rows for one point+direction, same shape as get_physical_flow —
+        used alongside physical flow for the physical-vs-nomination gap (Session D)."""
+        return self._get_indicator_data(
+            "Nomination", point_key, direction_key, start, end, operator_key
+        )
+
+    def _get_indicator_data(
+        self,
+        indicator: str,
+        point_key: str,
+        direction_key: str,
+        start: date,
+        end: date,
+        operator_key: str | None = None,
+    ) -> pd.DataFrame:
+        params: dict[str, Any] = {
+            "indicator": indicator,
             "pointKey": point_key,
             "directionKey": direction_key,
             "from": start.isoformat(),
@@ -67,6 +106,8 @@ class ENTSOGClient:
             "periodType": "day",
             "limit": -1,
         }
+        if operator_key is not None:
+            params["operatorKey"] = operator_key
         try:
             body = self._get("operationaldata.json", params)
         except requests.exceptions.HTTPError as exc:
@@ -95,5 +136,11 @@ class ENTSOGClient:
         if not rows:
             return pd.DataFrame(columns=["ts", "value_kwh_d"])
 
-        ts = pd.to_datetime([r["periodFrom"] for r in rows]).tz_localize(None)
+        # periodFrom is the gas-day label at a fixed local time (e.g. "06:00:00+02:00")
+        # whose UTC offset shifts across DST — parsing the full ISO string over a
+        # multi-year range mixes +01:00/+02:00 and pd.to_datetime rejects that. Only the
+        # calendar date is meaningful for a daily series (same plain-date convention as
+        # pipelines/eia and pipelines/gie), so take the date substring directly rather
+        # than resolving a timezone.
+        ts = pd.to_datetime([r["periodFrom"][:10] for r in rows])
         return pd.DataFrame({"ts": ts, "value_kwh_d": [float(r["value"]) for r in rows]})

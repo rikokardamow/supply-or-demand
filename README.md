@@ -105,15 +105,32 @@ directly. [PR #5](https://github.com/rikokardamow/energy-dashboard/pull/5).
 #### In progress — Spec 03: ENTSOG EU gas flows
 Session A merged: `pipelines/entsog/` — no-auth client against ENTSOG's Transparency
 Platform (`limit=-1` pulls a full page in one call for both the point directory and
-operational-data endpoints), a Parquet-cached point directory, and `corridors.py` mapping
-6 real corridors (Norwegian export points, TAP, TurkStream, and 3 interconnectors) to
-validated `pointKey`/`directionKey` pairs. `pull_no_exports.py` pulls Norwegian pipeline
-exports into the shared `flows` table. [PR #6](https://github.com/rikokardamow/energy-dashboard/pull/6).
-Sessions B–D (full multi-corridor pulls, Sankey chart, directional map,
-physical-vs-nomination gap chart) still to come — no page yet for this spec.
+operational-data endpoints) and a Parquet-cached point directory.
+[PR #6](https://github.com/rikokardamow/energy-dashboard/pull/6).
 
-**Fix while writing this changelog**: adding ENTSOG rows to the shared `flows` table (rows
-use `from_node="NO"` etc.) broke the PADD page's Flows-tab map, which read the whole table
-without filtering to its own `source="eia"` rows. Fixed in `components/padd_map.py` by
-filtering `read_flows()` to `source == "eia"` before plotting — confirmed live (the tab
-crashed with `KeyError: 'NO'` before the fix, renders correctly after).
+Session B done: `corridors.py` now maps **8 corridors** (Norwegian export points, TAP,
+TurkStream, 3 interconnectors, RU→UA transit, and 8 LNG terminals across 6 countries) —
+past the ≥8 minimum. `pull_flows.py` (supersedes Session A's `pull_no_exports.py`) pulled 2
+years of daily physical flows (13,581 rows) and nominations (13,489 rows) for all 21 mapped
+points. `transforms.py::corridor_aggregate` sums point-level rows into corridor-day totals.
+Page `03_eu_gas_flows.py`: a Sankey (raw point-level flows, latest 7-day average) and
+corridor small-multiples (`core.theme.current_vs_prior_year_chart`, new — ENTSOG only has
+~2 years of history, not enough for the 5-year seasonal band `seasonal_range_chart` needs).
+Norwegian export total cross-checked against an independent live API call (exact match:
+2,535.03 GWh/d for 2026-08-28). Sankey-vs-time-series reconciliation verified exactly
+(0.0 GWh/d difference across all 8 corridors) and covered by a regression test.
+
+Two real gotchas fixed along the way: **timestamps** — `periodFrom`'s fixed local
+gas-day time carries a UTC offset that shifts across DST, breaking `pd.to_datetime` over a
+2-year range (fixed by taking the date substring, not resolving the timezone); **multiple
+operators per point** — `ITP-00304` (VIP Pirineos) and `ITP-00008` (TAP)'s nominations are
+reported by both sides of the border with different real values, silently doubling those
+corridors' rows until pinned to the receiving-side operator via ENTSOG's `operatorKey`
+filter. Full detail in `pipelines/entsog/CLAUDE.md`. Sessions C (directional map) and D (gap
+chart + 15-day revision window) still to come.
+
+**Fix while writing the previous entry**: adding ENTSOG rows to the shared `flows` table
+(rows use `from_node="NO"` etc.) broke the PADD page's Flows-tab map, which read the whole
+table without filtering to its own `source="eia"` rows. Fixed by adding a `source` filter
+parameter to `core.storage.read_flows()` itself, so every caller gets it for free — the same
+bug had independently broken a second chart (the Flows tab's net-balance bar) too.

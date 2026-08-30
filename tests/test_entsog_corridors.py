@@ -7,7 +7,11 @@ from pipelines.entsog.corridors import CORRIDORS, validate_corridors
 
 def _directory_covering_all_real_corridors() -> pd.DataFrame:
     rows = [
-        {"pointKey": point.point_key, "directionKey": point.direction_key}
+        {
+            "pointKey": point.point_key,
+            "directionKey": point.direction_key,
+            "operatorKey": point.operator_key or "SOME-OTHER-OPERATOR",
+        }
         for points in CORRIDORS.values()
         for point in points
     ]
@@ -33,4 +37,12 @@ def test_validate_corridors_fails_loudly_on_a_wrong_direction() -> None:
     directory.loc[directory["pointKey"] == "ITP-00105", "directionKey"] = "exit"
 
     with pytest.raises(ValueError, match="ITP-00105"):
+        validate_corridors(directory)
+
+
+def test_validate_corridors_fails_loudly_on_a_wrong_operator_key() -> None:
+    directory = _directory_covering_all_real_corridors()
+    directory.loc[directory["pointKey"] == "ITP-00304", "operatorKey"] = "WRONG-OPERATOR"
+
+    with pytest.raises(ValueError, match="ITP-00304"):
         validate_corridors(directory)
