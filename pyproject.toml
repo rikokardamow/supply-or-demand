@@ -15,6 +15,7 @@ dependencies = [
     "pydantic-settings>=2.3",
     "requests>=2.32",
     "pyarrow>=17.0",
+    "entsoe-py>=0.8",
 ]
 
 [project.optional-dependencies]
