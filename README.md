@@ -62,9 +62,11 @@ secrets are needed in CI.
 Live pages today: **US PADD** (crude/product stocks, refining, inter-PADD flows, WPSR
 table), **US Oil Market Overview** (national balance supplementary charts), **EU Gas
 Storage & LNG** (AGSI+/ALSI+ fill, injection vs. send-out, country deviation), **EU Gas
-Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap).
-See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage, gas flows, power
-markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX, and final
+Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap),
+**EU Power** (ENTSO-E day-ahead price map, cross-border flow map, generation mix, residual
+load, net position). See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage,
+gas flows, power markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX,
+and final
 orchestration).
 
 ### Build log
@@ -185,3 +187,30 @@ default string representation embeds the full request URL, including ENTSO-E's
 immediately; the user was asked to rotate the key. `ENTSOEClient` now converts every HTTP
 error to a bare status-code message before it can propagate — see
 `pipelines/entsoe/CLAUDE.md` for the full rule.
+
+Session B: extended price coverage to all **13 zones** (12 with real day-ahead prices; GB
+has a confirmed, genuine data gap — no prices, load, generation, or wind/solar forecast via
+ENTSO-E, matching the spec's own "GB (as available)" caveat, most likely a post-Brexit
+reporting change, not a bug). Pulled generation mix, load, and wind/solar forecast for all
+13 zones (14-day lookback — generation/wind-solar are per-PSR-type, so row counts multiply
+fast across 13 zones) and cross-border physical flows for 12 real interconnector pairs (11
+with data; `SE_4<->DK_1` is empty in both directions, confirmed live, not chased further
+given 11 borders already clears the spec's ≥8 minimum). Page `04_eu_power.py`: a day-ahead
+price map (diverging navy-to-red `Scattergeo`), a cross-border arrow map (same
+line+triangle technique as `padd_map.py`/`entsog_map.py`), a selectable-zone generation-mix
+stacked area (`core.theme.generation_mix_chart`, new — a documented PSR-type colour
+exception to the house palette per the spec's own "renewables greens/blues, thermal
+greys/navy" instruction), residual load, and a ranked net-position bar. Cross-checked a
+DE_LU→FR flow value against an independent fresh API call: exact match across all 88
+points that day.
+
+Every pull script (`pull_prices.py`, `pull_actuals.py`, `pull_flows.py`) now catches a
+failure **per zone/border/indicator individually** and continues rather than aborting the
+whole run — the Transparency Platform's flakiness turned out to be sustained enough that a
+13-item pull routinely has 1-3 items fail on any given run (a different random subset each
+time, confirmed by re-running twice), so re-running to pick up whatever failed is the normal
+workflow here, not an edge case. Also found and fixed a second entsoe-py gotcha:
+`EntsoePandasClient` defaults to no request timeout at all (confirmed by reading
+`EntsoeRawClient`'s source), which hung a pull indefinitely until killed by hand — fixed by
+passing an explicit 45s timeout and retrying on connection-level errors too, not just HTTP
+status codes.

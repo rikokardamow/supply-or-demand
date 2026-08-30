@@ -1,4 +1,4 @@
-"""Pull 90 days of day-ahead prices for the Session A zone list into ts_long."""
+"""Pull 90 days of day-ahead prices for all 13 covered zones into ts_long."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ import pandas as pd
 from core.storage import write_ts_long
 
 from pipelines.entsoe.client import ENTSOEClient
+from pipelines.entsoe.zones import ZONES
 
-ZONES = ["DE_LU", "FR", "NL", "IE_SEM"]
 LOOKBACK_DAYS = 90
 
 
@@ -20,8 +20,18 @@ def main() -> None:
     pulled_at = datetime.now(UTC)
 
     frames = []
+    failed_zones = []
     for zone in ZONES:
-        raw = client.get_day_ahead_prices(zone, start, end)
+        try:
+            raw = client.get_day_ahead_prices(zone, start, end)
+        except RuntimeError as exc:
+            # ENTSOEClient already sanitises this to a bare status/type message (never
+            # the raw exception — see client.py's leak-prevention rule) — one flaky
+            # zone shouldn't abort an otherwise-successful 13-zone pull; re-run later
+            # to pick up whatever failed.
+            print(f"{zone}: FAILED ({exc}) — skipping", flush=True)
+            failed_zones.append(zone)
+            continue
         print(f"{zone}: {len(raw)} rows", flush=True)
         if raw.empty:
             continue
@@ -40,9 +50,14 @@ def main() -> None:
             )
         )
 
+    if not frames:
+        print("no price rows pulled", flush=True)
+        return
     df = pd.concat(frames, ignore_index=True)
     write_ts_long(df, source="entsoe")
-    print(f"wrote {len(df)} rows across {len(ZONES)} zones", flush=True)
+    print(f"wrote {len(df)} rows across {len(ZONES) - len(failed_zones)} zones", flush=True)
+    if failed_zones:
+        print(f"failed zones (re-run to retry): {failed_zones}", flush=True)
 
 
 if __name__ == "__main__":
