@@ -195,3 +195,57 @@ def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> g
         )
     fig.update_layout(title=title, yaxis_title=unit)
     return fig
+
+
+GREY_LINE = "rgba(120,120,120,0.8)"
+
+
+def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """Navy current-year line vs grey prior-year line, for series with too short a
+    history for seasonal_range_chart's 5-year median/band (e.g. ENTSOG corridors, ~2
+    years of data). `df` has columns ts, value. Since a short pull is a rolling window
+    rather than calendar years, both years are reindexed to days-since-window-start
+    rather than day-of-year, so they overlay regardless of calendar alignment."""
+    df = df.sort_values("ts")
+    max_ts = df["ts"].max()
+    current_start = max_ts - pd.Timedelta(days=364)
+    prior_start = current_start - pd.Timedelta(days=365)
+
+    current = df[df["ts"] >= current_start].copy()
+    current["day_offset"] = (current["ts"] - current_start).dt.days
+
+    prior = df[(df["ts"] >= prior_start) & (df["ts"] < current_start)].copy()
+    prior["day_offset"] = (prior["ts"] - prior_start).dt.days
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=prior["day_offset"],
+            y=prior["value"],
+            line={"color": GREY_LINE, "width": 2},
+            name="Prior year",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=current["day_offset"],
+            y=current["value"],
+            line={"color": NAVY, "width": 2.5},
+            name="Current year",
+        )
+    )
+    fig.update_layout(title=title, yaxis_title=unit, xaxis_title="Days since window start")
+    return fig
+
+
+def sankey_chart(
+    node_labels: list[str], sources: list[int], targets: list[int], values: list[float], title: str
+) -> go.Figure:
+    fig = go.Figure(
+        go.Sankey(
+            node={"label": node_labels, "color": NAVY, "pad": 15, "thickness": 15},
+            link={"source": sources, "target": targets, "value": values, "color": BAND},
+        )
+    )
+    fig.update_layout(title=title)
+    return fig
