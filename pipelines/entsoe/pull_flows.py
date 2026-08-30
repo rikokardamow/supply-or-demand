@@ -14,14 +14,14 @@ from pipelines.entsoe.zones import BORDERS
 LOOKBACK_DAYS = 90
 
 
-def main() -> None:
-    client = ENTSOEClient()
-    end = date.today()
-    start = end - timedelta(days=LOOKBACK_DAYS)
-
+def pull_flows(
+    client: ENTSOEClient, borders: list[tuple[str, str]], start: date, end: date
+) -> pd.DataFrame:
+    """Shared by main()'s full backfill and pull_daily.py's trailing-window re-pull —
+    same per-border resilience (one flaky border must never abort the rest)."""
     frames = []
     failed_borders = []
-    for zone_from, zone_to in BORDERS:
+    for zone_from, zone_to in borders:
         try:
             raw = client.get_crossborder_flow(zone_from, zone_to, start, end)
         except RuntimeError as exc:
@@ -47,14 +47,27 @@ def main() -> None:
             )
         )
 
-    if not frames:
-        print("no flow rows pulled", flush=True)
-        return
-    df = pd.concat(frames, ignore_index=True)
-    write_flows(df, source="entsoe")
-    print(f"wrote {len(df)} rows across {len(BORDERS) - len(failed_borders)} borders", flush=True)
     if failed_borders:
         print(f"failed borders (re-run to retry): {failed_borders}", flush=True)
+    if not frames:
+        return pd.DataFrame(
+            columns=["source", "from_node", "to_node", "value", "unit", "ts", "mode"]
+        )
+    return pd.concat(frames, ignore_index=True)
+
+
+def main() -> None:
+    client = ENTSOEClient()
+    end = date.today()
+    start = end - timedelta(days=LOOKBACK_DAYS)
+
+    df = pull_flows(client, BORDERS, start, end)
+    if df.empty:
+        print("no flow rows pulled", flush=True)
+        return
+    write_flows(df, source="entsoe")
+    n_borders = df[["from_node", "to_node"]].drop_duplicates().shape[0]
+    print(f"wrote {len(df)} rows across {n_borders} borders", flush=True)
 
 
 if __name__ == "__main__":

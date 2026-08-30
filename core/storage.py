@@ -51,6 +51,29 @@ def _write_partitioned(
         if replace_window is not None and not existing_df.empty:
             window_start, window_end = replace_window
             in_window = (existing_df["ts"] >= window_start) & (existing_df["ts"] <= window_end)
+            # Only replace rows for the (from_node, to_node) pairs actually present in
+            # the fresh pull, not every pair the window has ever seen. Without this, a
+            # pair that fails this run (a confirmed-live, routine occurrence — see
+            # pipelines/entsog/NOTES.md and pipelines/entsoe/NOTES.md's per-item
+            # resilience notes) has its still-good prior data deleted by this call and
+            # replaced with nothing, silently losing real data for that pair — caught
+            # live comparing two consecutive pull_daily.py runs where one border (
+            # DE_LU->NL) failed on the second run only.
+            if "from_node" in year_df.columns and "to_node" in year_df.columns:
+                fresh_pairs = set(
+                    zip(year_df["from_node"], year_df["to_node"], strict=True)
+                )
+                pair_in_fresh = pd.Series(
+                    list(
+                        zip(
+                            existing_df["from_node"],
+                            existing_df["to_node"],
+                            strict=True,
+                        )
+                    ),
+                    index=existing_df.index,
+                ).map(lambda pair, pairs=fresh_pairs: pair in pairs)
+                in_window &= pair_in_fresh
             existing_df = existing_df.loc[~in_window]
         combined = pd.concat([existing_df, year_df], ignore_index=True)
 
@@ -80,12 +103,17 @@ def write_flows(
     source: str,
     replace_window: tuple[datetime, datetime] | None = None,
 ) -> None:
-    """`replace_window`: when given (start, end), every existing row for this source
-    with ts in [start, end] is dropped before the new rows are written. Needed for
-    revision-window re-pulls — unlike ts_long, flows has no revision_date column, so
-    plain full-row de-dup can't tell a revised value from a genuinely new row (they
-    differ, so both would be kept, silently double-counting downstream). Pass the
-    exact window just re-pulled so its stale rows are replaced outright instead."""
+    """`replace_window`: when given (start, end), existing rows in [start, end] for
+    the (from_node, to_node) pairs present in `df` are dropped before the new rows are
+    written. Needed for revision-window re-pulls — unlike ts_long, flows has no
+    revision_date column, so plain full-row de-dup can't tell a revised value from a
+    genuinely new row (they differ, so both would be kept, silently double-counting
+    downstream). Pass the exact window just re-pulled so its stale rows are replaced
+    outright instead. Scoped to `df`'s own pairs (not every pair the window has ever
+    seen) so a pair whose fetch failed this run and is absent from `df` keeps its
+    still-good prior data rather than being deleted with nothing to replace it —
+    confirmed live comparing two consecutive pull_daily.py runs where one border
+    failed on the second run only."""
     validate_flows(df)
     _write_partitioned(
         df,
