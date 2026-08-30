@@ -102,6 +102,16 @@ a mid-session request), dual-axis net injection vs. ALSI send-out, and a ranked
 country-deviation bar chart. Cross-checked EU and per-country fill % against GIE's own API
 directly. [PR #5](https://github.com/rikokardamow/energy-dashboard/pull/5).
 
+**Redesign**: the headline section was rebuilt around a country selector (EU + the 6
+small-multiples countries) driving three AGSI-style panels — a Current/M-1/Y-1 fullness
+bar comparison (`core.theme.fullness_comparison_bars`) and two seasonal charts with
+explicit Min/Max/Median lines instead of a shaded band (`core.theme.seasonal_minmaxmean_chart`,
+new), for both fill % and net daily injection/withdrawal. Kept the median-based house
+seasonal maths (`core.seasonal`) rather than switching to a mean just to match the
+reference's label. The small-multiples grid, dual-axis net-injection-vs-send-out chart,
+and country-deviation bar chart are unchanged. Verified live, including switching the
+selector between EU and individual countries.
+
 #### In progress — Spec 03: ENTSOG EU gas flows
 Session A merged: `pipelines/entsog/` — no-auth client against ENTSOG's Transparency
 Platform (`limit=-1` pulls a full page in one call for both the point directory and
