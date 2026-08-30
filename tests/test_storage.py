@@ -72,3 +72,63 @@ def test_read_flows_filters_by_source() -> None:
 
     assert len(result) == 1
     assert result.iloc[0]["from_node"] == "PADD2"
+
+
+def test_write_flows_replace_window_replaces_revised_rows() -> None:
+    # flows has no revision_date column, so a revised value for an already-stored day
+    # differs from the old row and plain full-row de-dup would keep both, silently
+    # double-counting — replace_window must drop the stale row outright instead.
+    old = pd.DataFrame(
+        {
+            "source": ["entsog"],
+            "from_node": ["NO"],
+            "to_node": ["DE"],
+            "value": [100.0],
+            "unit": ["GWh/d"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "mode": ["pipeline"],
+        }
+    )
+    revised = old.copy()
+    revised["value"] = [150.0]
+
+    write_flows(old, source="entsog")
+    write_flows(
+        revised,
+        source="entsog",
+        replace_window=(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-01-01")),
+    )
+
+    result = read_flows(source="entsog")
+
+    assert len(result) == 1
+    assert result.iloc[0]["value"] == 150.0
+
+
+def test_write_flows_replace_window_leaves_rows_outside_window_untouched() -> None:
+    day1 = pd.DataFrame(
+        {
+            "source": ["entsog"],
+            "from_node": ["NO"],
+            "to_node": ["DE"],
+            "value": [100.0],
+            "unit": ["GWh/d"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "mode": ["pipeline"],
+        }
+    )
+    day2 = day1.copy()
+    day2["ts"] = pd.to_datetime(["2024-01-02"])
+    day2["value"] = [200.0]
+
+    write_flows(pd.concat([day1, day2], ignore_index=True), source="entsog")
+    write_flows(
+        day1,
+        source="entsog",
+        replace_window=(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-01-01")),
+    )
+
+    result = read_flows(source="entsog").sort_values("ts")
+
+    assert len(result) == 2
+    assert result.iloc[1]["value"] == 200.0

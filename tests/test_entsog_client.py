@@ -57,3 +57,15 @@ def test_get_physical_flow_drops_rows_with_empty_string_value() -> None:
 
     assert df.empty
     assert list(df.columns) == ["ts", "value_kwh_d"]
+
+
+@pytest.mark.vcr
+def test_get_nomination_returns_raw_kwh_values() -> None:
+    # Same endpoint/shape as get_physical_flow, just indicator=Nomination — confirms
+    # the client's indicator param actually reaches the request (not hardcoded).
+    client = ENTSOGClient()
+    df = client.get_nomination("ITP-00105", "entry", date(2026, 8, 25), date(2026, 8, 28))
+
+    assert not df.empty
+    assert set(df.columns) == {"ts", "value_kwh_d"}
+    assert df["value_kwh_d"].dtype.kind == "f"

@@ -16,6 +16,36 @@ Physical Flow values arrive in `kWh/d`. GWh/d = kWh/d ÷ 1,000,000 (not ÷1,000 
 1000x too large). Confirmed against a real value: Emden EPT1 (`ITP-00105`) on 2026-08-25 was
 287,678,693 kWh/d = 287.68 GWh/d, a plausible single-point flow rate.
 
+## Timestamps — take the date, don't resolve the timezone
+`periodFrom` is the gas-day label at a fixed local time with a real UTC offset
+(`"2026-08-01T06:00:00+02:00"` in August, `"...T06:00:00+01:00"` in March) — the offset
+shifts across DST. Parsing the full ISO string with `pd.to_datetime` over a multi-year range
+mixes `+01:00`/`+02:00` and **raises** (`ValueError: Mixed timezones detected`) — hit live
+running Session B's 2-year pull, not something a 30-day Session A test window surfaces. Only
+the calendar date matters for a daily series (same plain-date convention as
+`pipelines/eia`/`pipelines/gie`), so `ENTSOGClient._get_indicator_data` takes the date
+substring (`periodFrom[:10]`) rather than resolving a timezone.
+
+## Multiple operators per point — pass `operator_key` where it matters
+Several points in the directory are registered to **more than one operator** — confirmed
+live by checking every corridor point's `(pointKey, directionKey)` against the directory.
+Most of these are harmless (the second operator's rows come back with `value=""` for the
+indicator actually being pulled, already dropped by the existing empty-string handling). Two
+are not, and would silently double-count if left unfiltered:
+- **`ITP-00304` (VIP Pirineos, ES_FR)** — both `ES-TSO-0006` (Enagas) and `FR-TSO-0002`
+  (Terega) report real, materially different "entry" values for **both** Physical Flow and
+  Nomination (confirmed live: Enagas ~1.3–7M kWh/d, Terega ~16–34k kWh/d, same days).
+- **`ITP-00008` (TAP Melendugno)** — `AL-TSO-0001` (TAP AG)'s Physical Flow rows are empty
+  (harmless), but its **Nomination** rows are real, alongside `IT-TSO-0001` (Snam Rete Gas)'s
+  — doubles nomination row counts (1458 vs. the expected ~729) if unfiltered.
+
+Fix: `client.get_physical_flow`/`get_nomination` accept an optional `operator_key`, added to
+the request params (`operatorKey` — a real, documented ENTSOG filter param, confirmed live to
+filter server-side). `corridors.py`'s `PointSpec.operator_key` carries it for these two
+points, pinned to the **receiving side** per the existing entry/exit convention below. Every
+other point's ambiguity was checked and found harmless before deciding not to pin it —
+don't assume a second operator is always safe to ignore; check the actual values first.
+
 ## Direction convention — always the receiving TSO's "entry"
 Every cross-border point appears twice in the directory: the sending country's TSO reports
 `"exit"`, the receiving country's TSO reports `"entry"` for the same physical flow. This
@@ -30,23 +60,39 @@ project always uses the **receiving side's `"entry"`** row (e.g. Emden: Thysseng
   `from_node` names the **pipeline itself** (`"TAP"`, `"TURKSTREAM"`) rather than guessing a
   country code that isn't clearly correct.
 
-## Corridor → pointKey table (Session A; RU_UA_TRANSIT/LNG_ENTRY come in Session B)
+## Corridor → pointKey table (final — 8 corridors, 21 points, Sessions A+B)
 All found live via `GET /operatorpointdirections.json`, not guessed:
 
-| Corridor | pointKey | direction | from_node | to_node | label |
-|---|---|---|---|---|---|
-| NO_EXPORTS | `ITP-00105` | entry | NO | DE | Emden EPT1 (Thyssengas) |
-| NO_EXPORTS | `ITP-00075` | entry | NO | DE | Emden NPT (Thyssengas) |
-| NO_EXPORTS | `ITP-00126` | entry | NO | DE | Dornum (Open Grid Europe) |
-| NO_EXPORTS | `ITP-00106` | entry | NO | BE | Zeebrugge ZPT |
-| NO_EXPORTS | `ITP-00519` | entry | NO | FR | Dunkerque DKB |
-| NO_EXPORTS | `ITP-00091` | entry | NO | GB | Easington |
-| NO_EXPORTS | `ITP-00022` | entry | NO | GB | St. Fergus |
-| TAP | `ITP-00008` | entry | TAP | IT | Melendugno |
-| TURKSTREAM_EU | `ITP-00549` | entry | TURKSTREAM | BG | Strandzha 2 / Malkoclar |
-| ES_FR | `ITP-00304` | entry | FR | ES | VIP Pirineos (Enagas side) |
-| UK_BE | `ITP-00005` | entry | BE | GB | Bacton (IUK) |
-| GB_IE | `ITP-00495` | entry | GB | IE | Moffat (IE) |
+| Corridor | pointKey | direction | operator_key | from_node | to_node | label |
+|---|---|---|---|---|---|---|
+| NO_EXPORTS | `ITP-00105` | entry | — | NO | DE | Emden EPT1 (Thyssengas) |
+| NO_EXPORTS | `ITP-00075` | entry | — | NO | DE | Emden NPT (Thyssengas) |
+| NO_EXPORTS | `ITP-00126` | entry | — | NO | DE | Dornum (Open Grid Europe) |
+| NO_EXPORTS | `ITP-00106` | entry | — | NO | BE | Zeebrugge ZPT |
+| NO_EXPORTS | `ITP-00519` | entry | — | NO | FR | Dunkerque DKB |
+| NO_EXPORTS | `ITP-00091` | entry | — | NO | GB | Easington |
+| NO_EXPORTS | `ITP-00022` | entry | — | NO | GB | St. Fergus |
+| TAP | `ITP-00008` | entry | `IT-TSO-0001` | TAP | IT | Melendugno |
+| TURKSTREAM_EU | `ITP-00549` | entry | — | TURKSTREAM | BG | Strandzha 2 / Malkoclar |
+| ES_FR | `ITP-00304` | entry | `ES-TSO-0006` | FR | ES | VIP Pirineos (Enagas side) |
+| UK_BE | `ITP-00005` | entry | — | BE | GB | Bacton (IUK) |
+| GB_IE | `ITP-00495` | entry | — | GB | IE | Moffat (IE) |
+| RU_UA_TRANSIT | `ITP-00184` | entry | — | RU | UA | Sudzha (Gas TSO UA side) |
+| LNG_ENTRY | `LNG-00027` | entry | — | LNG | NL | Gate Terminal |
+| LNG_ENTRY | `LNG-00017` | entry | — | LNG | BE | Zeebrugge LNG |
+| LNG_ENTRY | `LNG-00024` | entry | — | LNG | FR | Montoir de Bretagne |
+| LNG_ENTRY | `LNG-00029` | entry | — | LNG | FR | Fos (Tonkin/Cavaou) |
+| LNG_ENTRY | `LNG-00012` | entry | — | LNG | ES | Barcelona |
+| LNG_ENTRY | `LNG-00006` | entry | — | LNG | PL | Świnoujście |
+| LNG_ENTRY | `LNG-00004` | entry | — | LNG | IT | OLT LNG / Livorno |
+| LNG_ENTRY | `LNG-00026` | entry | — | LNG | PT | Sines |
+
+RU_UA_TRANSIT is genuinely thin history (456/731 days in the 2-year pull) — Ukraine transit
+via Sudzha stopped partway through the window, kept per the spec's "may be zero/dormant,
+keep for history". LNG_ENTRY picks one representative terminal per major EU LNG-importing
+country from the directory's `pointType == "LNG Entry point"` rows, not every terminal
+ENTSOG tracks — `from_node="LNG"` since it's ship-borne, no single upstream country, same
+convention as TAP/TURKSTREAM_EU.
 
 Note some names have multiple candidate points (e.g. Dornum has 3: `ITP-00188` Gasunie
 Deutschland, `ITP-00126` Open Grid Europe, `ITP-00525` GASPOOL) — `ITP-00126` was picked as
@@ -66,9 +112,9 @@ pull (not something a schema check would catch):
   where `value` is `""`/`None` before the `float()` conversion (same missing-value pattern as
   GIE's `"-"` handling).
 
-`pull_no_exports.py` therefore only writes 5 of the 7 points' data — confirmed correct: the
-combined total across those 5 (2,535.03 GWh/d for 2026-08-28) matched an independent live
-sum exactly.
+`pull_flows.py` therefore only writes 5 of the 7 NO_EXPORTS points' data — confirmed
+correct: the combined total across those 5 (2,535.03 GWh/d for 2026-08-28) matched an
+independent live sum exactly.
 
 ## Data model — `flows`, at point level (not a corridor-aggregated total)
 Each point is written as its own `flows` row (`from_node`/`to_node` per the point, not a
@@ -98,3 +144,100 @@ does plain full-row de-dup, not revision-aware de-dup. The API does provide a re
 consumes it yet — Session D's "15-day revision window" (re-pull trailing gas-days) may need to
 either extend the `flows` schema or handle revision logic entirely in the pull script instead
 of relying on storage-level de-dup; decide then, don't guess now.
+
+**Re-pulling a corrected historical backfill**: `write_flows`'s de-dup is exact-row-match, not
+an overwrite — re-running `pull_flows.py` after a client/corridor fix does *not* remove old
+wrong rows already on disk if their values differ from the corrected ones (they just sit
+alongside as extra rows forever). Hit this directly fixing the operator-disambiguation bug
+above — had to delete `data/lake/flows/source=entsog/` before re-running once the fix
+landed. `data/` is git-ignored pipeline output, safe to clear and regenerate; do the same for
+any future correction to a full-backfill script.
+
+## Session B — nominations, corridor aggregation, and the page
+`pull_flows.py` (supersedes Session A's `pull_no_exports.py`) pulls the full 2-year window
+for every point in every corridor, for **both** indicators: Physical Flow → `flows` with
+`mode="pipeline"`, Nomination → `flows` with `mode="nomination"` (per the spec's data model).
+14,311 physical-flow rows + a comparable nomination count across the 21 points, confirmed
+correct after the operator-disambiguation fix (re-run showed ES_FR/TAP row counts back to
+~1/day instead of ~2/day).
+
+`transforms.py::corridor_aggregate(flows_df, CORRIDORS, mode="pipeline")` sums point-level
+rows into one (corridor, day) total. This works from `(from_node, to_node)` pairs alone — the
+`flows` schema has no point-identifier column — which is safe here because no two corridors
+in `CORRIDORS` share a pair (checked, not assumed).
+
+Page `03_eu_gas_flows.py` (Session B scope: Sankey + corridor small multiples only — the
+directional map is Session C, the physical-vs-nomination gap chart is Session D):
+- **Sankey**: built from the *raw* point-level `(from_node, to_node)` pairs (not
+  corridor-collapsed), averaged over the trailing 7 days — this is what makes "Sankey totals
+  reconcile with corridor time-series totals" a real, checkable equality rather than an
+  approximation: summing every Sankey link that belongs to a given corridor (by the same
+  `(from_node, to_node)` membership `corridor_aggregate` uses) equals that corridor's own
+  aggregated total for the same window, because both are the same sum over the same rows.
+  A country code can legitimately appear as both a Sankey source and target (e.g. `FR`
+  receives from `NO_EXPORTS` and separately feeds `ES` via `ES_FR`) — that's a real hub
+  re-export relationship, not a bug.
+- **Corridor time series**: `core.theme.current_vs_prior_year_chart` (new — navy current
+  year vs. grey prior year), not `seasonal_range_chart`, because ENTSOG only has ~2 years of
+  history, nowhere near the 5-year corridor `core.seasonal` needs. Since the 2-year pull is a
+  rolling window rather than calendar years, both years are indexed by "days since window
+  start" rather than day-of-year, so they overlay regardless of calendar alignment.
+
+## Session C — directional corridor map
+`components/entsog_map.py::render_entsog_flow_map()` — a `Scattergeo` map of Europe, same
+line+rotated-triangle-arrow technique as `components/padd_map.py` (factored out to a shared
+`components/geo_utils.py::bearing_degrees()` so neither map duplicates it). Reuses Session
+B's `pair_daily_totals`/`latest_complete_date` for the same "latest complete 7-day average"
+window the Sankey uses — same reconciliation logic, same anchor date.
+
+**Map granularity matches the Sankey's, not the corridor table's**: `flows` stores no
+point-identifier column (see above), only `(from_node, to_node)` pairs, so the map draws one
+arrow per pair — not per individual physical point. Where a pair has more than one real point
+(`NO`→`DE` has 3: Emden EPT1/NPT + Dornum; `NO`→`GB` has 2: Easington + St Fergus; `LNG`→`FR`
+has 2: Montoir + Fos), one representative site's coordinate anchors that pair's single marker
+— a visualisation simplification, not a change to what's stored or aggregated.
+
+**Node coordinates are approximate, for visualisation only** (same caveat as
+`padd_map.py`'s `PADD_CENTROIDS`) — real-world locations for each pair's receiving-side entry
+point, plus a representative upstream origin for the from_node labels that name a
+pipeline/exporter rather than a single country (`NO`, `TAP`, `TURKSTREAM`, `RU`). `LNG` pairs
+have no single real upstream origin (ship-borne from many countries) and are drawn as a sized
+marker at the terminal only, not a line — same navy=pipeline/light-blue=ship-borne colour
+convention as `padd_map.py`'s pipeline/tanker_barge split.
+
+No dedicated test file — same precedent as `padd_map.py` (a Streamlit rendering function),
+verified live in the browser instead: arrows render across the expected corridors (Norway
+into Germany/Belgium/France/GB, Turkey's coast into Bulgaria, France into Spain, LNG
+terminals as markers across NL/BE/FR/ES/PL/IT/PT), hover text shows the right
+`from_node → to_node: value GWh/d`, no exceptions.
+
+## Session D — revision window, pull_daily.py, gap chart
+
+**`flows` needs a different revision strategy than `ts_long`**: `write_ts_long` keeps the
+latest-`revision_date` row per `(series_id, ts)`, but `flows` (per `core/schemas.py`) has no
+`revision_date` column, and a revised value for an already-stored day has a different
+`value` than the old row — plain full-row de-dup can't tell them apart, so both would be
+kept, silently double-counting downstream. Fixed at the storage layer, not here:
+`core.storage.write_flows` gained an optional `replace_window: tuple[start, end]` — every
+existing row in that window is dropped before the new rows are written, so a re-pull
+replaces outright instead of accumulating. Verified live: ran `pull_daily.py` twice in a
+row, total row count identical both times (26,815 — 13,326 physical + 13,489 nomination).
+
+`pull_daily.py` re-pulls the trailing 15 gas-days (both indicators, every corridor point)
+using `pull_flows.py`'s `pull_all_points()` (promoted from a module-private helper so both
+scripts share it) and passes that same window as `replace_window`. This is the actual
+orchestration entrypoint (Spec 13) — `pull_flows.py`'s 2-year backfill is a one-off.
+
+**Physical-vs-nomination gap** (`transforms.py::physical_vs_nomination_gap`): nomination
+minus physical, per corridor per day — positive means less gas physically flowed than was
+nominated (the spec's under-delivery signal). Built from two `corridor_aggregate` calls
+(`mode="pipeline"` and `mode="nomination"`) inner-joined on `ts`, so a day missing either
+side is dropped rather than compared against an implicit zero. Page section: a selectable
+corridor, a physical-vs-nomination line chart, and the gap itself as a **line, not a bar** —
+an initial `go.Bar` over ~2 years of daily points threw real browser console errors
+(`<rect> attribute width: A negative value is not valid`), confirmed present on other pages
+too (e.g. `02_gas_storage.py`'s small bar charts) so it isn't specific to this chart or a
+regression — but every other daily series in this app already uses a line for exactly this
+reason, so the gap chart was changed to match rather than working around it.
+
+Corridor table above is now final for this spec — no changes since Session B/C.
