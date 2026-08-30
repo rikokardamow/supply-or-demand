@@ -9,14 +9,14 @@ via a small rotated triangle marker placed most of the way along each corridor l
 
 from __future__ import annotations
 
-import math
-
 import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY, RED
+
+from components.geo_utils import bearing_degrees
 
 PADD_CENTROIDS: dict[str, tuple[float, float]] = {
     # Approximate regional centroids for visualisation only, not precise geographic centres.
@@ -34,14 +34,6 @@ MODE_COLOURS = {
 }
 
 _ARROWHEAD_FRACTION = 0.85  # how far along the line the direction marker sits
-
-
-def _bearing_degrees(orig_lat: float, orig_lon: float, dest_lat: float, dest_lon: float) -> float:
-    # Flat-plane approximation (fine at US-domestic scale) matching Plotly's marker
-    # angle convention: 0 = pointing up/north, increasing clockwise.
-    dx = dest_lon - orig_lon
-    dy = dest_lat - orig_lat
-    return math.degrees(math.atan2(dx, dy))
 
 
 def render_padd_flow_map() -> None:
@@ -97,7 +89,7 @@ def render_padd_flow_map() -> None:
 
         arrow_lat = orig_lat + _ARROWHEAD_FRACTION * (dest_lat - orig_lat)
         arrow_lon = orig_lon + _ARROWHEAD_FRACTION * (dest_lon - orig_lon)
-        bearing = _bearing_degrees(orig_lat, orig_lon, dest_lat, dest_lon)
+        bearing = bearing_degrees(orig_lat, orig_lon, dest_lat, dest_lon)
         fig.add_trace(
             go.Scattergeo(
                 lat=[arrow_lat],
