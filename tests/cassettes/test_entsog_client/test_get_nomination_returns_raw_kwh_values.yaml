@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://transparency.entsog.eu/api/v1/operationaldata.json?directionKey=entry&from=2026-08-25&indicator=Nomination&limit=-1&periodType=day&pointKey=ITP-00105&to=2026-08-28
+  response:
+    body:
+      string: '{"meta":{"limit":-1,"offset":0,"fields":["id","dataSet","indicator","periodType","periodFrom","periodTo","operatorKey","tsoEicCode","operatorLabel","pointKey","pointLabel","tsoItemIdentifier","directionKey","unit","itemRemarks","generalRemarks","value","lastUpdateDateTime","isUnlimited","flowStatus","interruptionType","restorationInformation","capacityType","capacityBookingStatus","isCamRelevant","isNA","originalPeriodFrom","isCmpRelevant","bookingPlatformKey","bookingPlatformLabel","bookingPlatformURL","interruptionCalculationRemark","pointType","idPointType","isArchived"],"sort":"","query":{"indicator":["Nomination"],"pointKey":"ITP-00105","directionKey":"entry","from":"2026-08-25","to":"2026-08-28","periodType":"day","periodize":false,"includeExemptions":true},"include":false,"strict":false,"forceDownload":false,"meta":null,"timezone":"CET","macropoint":false,"count":4,"total":5},"operationaldata":[{"id":"1Nominationday2026-08-252026-08-26DE-TSO-0002ITP-00105entrykWh\/d","dataSet":1,"indicator":"Nomination","periodType":"day","periodFrom":"2026-08-25T06:00:00+02:00","periodTo":"2026-08-26T06:00:00+02:00","operatorKey":"DE-TSO-0002","tsoEicCode":"21X-DE-G-A0A0A-U","operatorLabel":"Thyssengas","pointKey":"ITP-00105","pointLabel":"Emden
+        (EPT1) (Thyssengas)","tsoItemIdentifier":"21Z000000000145T","directionKey":"entry","unit":"kWh\/d","itemRemarks":null,"generalRemarks":null,"value":71322024,"lastUpdateDateTime":"2026-08-24T15:10:09+02:00","isUnlimited":null,"flowStatus":"","interruptionType":null,"restorationInformation":null,"capacityType":null,"capacityBookingStatus":null,"isCamRelevant":true,"isNA":null,"originalPeriodFrom":null,"isCmpRelevant":true,"bookingPlatformKey":"PRISMA","bookingPlatformLabel":null,"bookingPlatformURL":"https:\/\/platform.prisma-capacity.eu\/","interruptionCalculationRemark":null,"pointType":"Cross-Border
+        Transmission IP between EU and Non-EU (import)","idPointType":1,"isArchived":false},{"id":"1Nominationday2026-08-262026-08-27DE-TSO-0002ITP-00105entrykWh\/d","dataSet":1,"indicator":"Nomination","periodType":"day","periodFrom":"2026-08-26T06:00:00+02:00","periodTo":"2026-08-27T06:00:00+02:00","operatorKey":"DE-TSO-0002","tsoEicCode":"21X-DE-G-A0A0A-U","operatorLabel":"Thyssengas","pointKey":"ITP-00105","pointLabel":"Emden
+        (EPT1) (Thyssengas)","tsoItemIdentifier":"21Z000000000145T","directionKey":"entry","unit":"kWh\/d","itemRemarks":null,"generalRemarks":null,"value":71322024,"lastUpdateDateTime":"2026-08-25T15:26:50+02:00","isUnlimited":null,"flowStatus":"","interruptionType":null,"restorationInformation":null,"capacityType":null,"capacityBookingStatus":null,"isCamRelevant":true,"isNA":null,"originalPeriodFrom":null,"isCmpRelevant":true,"bookingPlatformKey":"PRISMA","bookingPlatformLabel":null,"bookingPlatformURL":"https:\/\/platform.prisma-capacity.eu\/","interruptionCalculationRemark":null,"pointType":"Cross-Border
+        Transmission IP between EU and Non-EU (import)","idPointType":1,"isArchived":false},{"id":"1Nominationday2026-08-272026-08-28DE-TSO-0002ITP-00105entrykWh\/d","dataSet":1,"indicator":"Nomination","periodType":"day","periodFrom":"2026-08-27T06:00:00+02:00","periodTo":"2026-08-28T06:00:00+02:00","operatorKey":"DE-TSO-0002","tsoEicCode":"21X-DE-G-A0A0A-U","operatorLabel":"Thyssengas","pointKey":"ITP-00105","pointLabel":"Emden
+        (EPT1) (Thyssengas)","tsoItemIdentifier":"21Z000000000145T","directionKey":"entry","unit":"kWh\/d","itemRemarks":null,"generalRemarks":null,"value":71322024,"lastUpdateDateTime":"2026-08-26T15:11:49+02:00","isUnlimited":null,"flowStatus":"","interruptionType":null,"restorationInformation":null,"capacityType":null,"capacityBookingStatus":null,"isCamRelevant":true,"isNA":null,"originalPeriodFrom":null,"isCmpRelevant":true,"bookingPlatformKey":"PRISMA","bookingPlatformLabel":null,"bookingPlatformURL":"https:\/\/platform.prisma-capacity.eu\/","interruptionCalculationRemark":null,"pointType":"Cross-Border
+        Transmission IP between EU and Non-EU (import)","idPointType":1,"isArchived":false},{"id":"1Nominationday2026-08-282026-08-29DE-TSO-0002ITP-00105entrykWh\/d","dataSet":1,"indicator":"Nomination","periodType":"day","periodFrom":"2026-08-28T06:00:00+02:00","periodTo":"2026-08-29T06:00:00+02:00","operatorKey":"DE-TSO-0002","tsoEicCode":"21X-DE-G-A0A0A-U","operatorLabel":"Thyssengas","pointKey":"ITP-00105","pointLabel":"Emden
+        (EPT1) (Thyssengas)","tsoItemIdentifier":"21Z000000000145T","directionKey":"entry","unit":"kWh\/d","itemRemarks":null,"generalRemarks":null,"value":71322024,"lastUpdateDateTime":"2026-08-27T15:17:50+02:00","isUnlimited":null,"flowStatus":"","interruptionType":null,"restorationInformation":null,"capacityType":null,"capacityBookingStatus":null,"isCamRelevant":true,"isNA":null,"originalPeriodFrom":null,"isCmpRelevant":true,"bookingPlatformKey":"PRISMA","bookingPlatformLabel":null,"bookingPlatformURL":"https:\/\/platform.prisma-capacity.eu\/","interruptionCalculationRemark":null,"pointType":"Cross-Border
+        Transmission IP between EU and Non-EU (import)","idPointType":1,"isArchived":false}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Headers:
+      - Accept,Origin,DNT,user_token,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range
+      Access-Control-Allow-Methods:
+      - GET,POST,OPTIONS,PUT,DELETE,PATCH
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 30 Aug 2026 08:02:08 GMT
+      Server:
+      - nginx/1.24.0 (Ubuntu)
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      expires:
+      - '-1'
+      pragma:
+      - no-cache
+    status:
+      code: 200
+      message: OK
+version: 1
