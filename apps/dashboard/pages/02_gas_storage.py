@@ -11,8 +11,22 @@ import streamlit as st
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
-from core.theme import NAVY, RED, dual_axis_chart, seasonal_range_chart
-from pipelines.gie.transforms import country_deviation, days_to_full_or_empty, net_flow
+from core.theme import (
+    NAVY,
+    RED,
+    dual_axis_chart,
+    fullness_comparison_bars,
+    seasonal_minmaxmean_chart,
+    seasonal_range_chart,
+)
+from pipelines.gie.transforms import (
+    country_deviation,
+    days_to_full_or_empty,
+    nearest_value_at_offset,
+    net_flow,
+)
+
+GEO_OPTIONS = ["EU", "DE", "NL", "FR", "IT", "AT", "PL"]
 
 SMALL_MULTIPLES_COUNTRIES = ["DE", "NL", "FR", "IT", "AT", "PL"]
 
@@ -82,40 +96,98 @@ def _worm_chart(
     )
 
 
-def _eu_headline_section() -> None:
-    extra_line = None
-    injection = _series_by_ts("agsi.EU.injection")
-    withdrawal = _series_by_ts("agsi.EU.withdrawal")
-    working_gas_volume = _latest_value("agsi.EU.working_gas_volume")
-    latest_fill = _latest_value("agsi.EU.full_pct")
+def _net_flow_df(geo: str) -> pd.DataFrame:
+    injection = _series_by_ts(f"agsi.{geo}.injection")
+    withdrawal = _series_by_ts(f"agsi.{geo}.withdrawal")
+    if injection.empty or withdrawal.empty:
+        return pd.DataFrame(columns=["ts", "value"])
+    return net_flow(injection, withdrawal).reset_index()
 
-    have_inputs = (
-        not injection.empty
-        and not withdrawal.empty
-        and working_gas_volume is not None
-        and latest_fill is not None
+
+def _fullness_bars_section(geo: str) -> None:
+    fill_series = _series_by_ts(f"agsi.{geo}.full_pct")
+    twh_series = _series_by_ts(f"agsi.{geo}.gas_in_storage")
+    if fill_series.empty or twh_series.empty:
+        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
+        return
+
+    latest_ts = fill_series.index.max()
+    rows = [("Current", float(fill_series.iloc[-1]), float(twh_series.iloc[-1]))]
+    for label, days_back in [("M-1", 30), ("Y-1", 365)]:
+        target = latest_ts - pd.Timedelta(days=days_back)
+        pct = nearest_value_at_offset(fill_series, target)
+        twh = nearest_value_at_offset(twh_series, target)
+        if pct is not None and twh is not None:
+            rows.append((label, pct, twh))
+
+    fig = fullness_comparison_bars(
+        rows,
+        unit_abs="TWh",
+        date_label=latest_ts.strftime("%d-%b-%Y"),
+        title=f"{geo} Storage Fullness",
     )
-    if have_inputs:
+    st.plotly_chart(fig, use_container_width=True)
+
+    injection = _series_by_ts(f"agsi.{geo}.injection")
+    withdrawal = _series_by_ts(f"agsi.{geo}.withdrawal")
+    working_gas_volume = _latest_value(f"agsi.{geo}.working_gas_volume")
+    if not injection.empty and not withdrawal.empty and working_gas_volume is not None:
         avg_rate = net_flow(injection, withdrawal).rolling(7).mean().iloc[-1]
         if pd.notna(avg_rate):
             days, direction = days_to_full_or_empty(
-                latest_fill, working_gas_volume, float(avg_rate)
+                rows[0][1], working_gas_volume, float(avg_rate)
             )
             if days is not None:
-                extra_line = f"Days to {direction}: {days:.0f}"
+                st.caption(f"At the current 7-day pace: {days:.0f} days to {direction}.")
 
-    fig = _worm_chart(
-        "agsi.EU.full_pct", "EU Gas Storage Fill % — Seasonal Range", extra_line
-    )
+
+def _fullness_seasonal_section(geo: str) -> None:
+    fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", f"{geo} Storage Fullness — Seasonal", "%")
     if fig is None:
-        st.info("No EU data yet — run `pipelines/gie/pull_agsi.py`.")
+        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
         return
     st.plotly_chart(fig, use_container_width=True)
-    kardamow_take(
-        "Europe's storage is well behind its own median, and the current injection pace "
-        "gets it full past 1 November — the date the market actually prices, which is why "
-        "this chart is doing more for TTF than the flat price admits."
+    if geo == "EU":
+        kardamow_take(
+            "Europe's storage is well behind its own median, and the current injection "
+            "pace gets it full past 1 November — the date the market actually prices, "
+            "which is why this chart is doing more for TTF than the flat price admits."
+        )
+
+
+def _net_flow_seasonal_section(geo: str) -> None:
+    net_df = _net_flow_df(geo)
+    if net_df.empty:
+        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
+        return
+
+    stats = seasonal_stats(net_df, value_col="value")
+    current_year = net_df["ts"].dt.year.max()
+    current = net_df[net_df["ts"].dt.year == current_year].sort_values("ts")
+    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
+    current_year_series = current.set_index(reference_doy)["value"]
+
+    fig = seasonal_minmaxmean_chart(
+        stats,
+        current_year_series,
+        title=f"{geo} Net Daily Injection/Withdrawal — Seasonal",
+        unit="GWh/d",
     )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure | None:
+    df = read_ts_long(series_ids=[series_id])
+    if df.empty:
+        return None
+
+    stats = seasonal_stats(df, value_col="value")
+    current_year = df["ts"].dt.year.max()
+    current = df[df["ts"].dt.year == current_year].sort_values("ts")
+    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
+    current_year_series = current.set_index(reference_doy)["value"]
+
+    return seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit=unit)
 
 
 def _small_multiples_section() -> None:
@@ -192,8 +264,11 @@ def _country_deviation_section() -> None:
 
 st.title("EU Gas Storage & LNG (GIE AGSI+/ALSI+)")
 
-st.subheader("EU headline")
-_eu_headline_section()
+st.subheader("Storage headline")
+selected_geo = st.selectbox("Country", options=GEO_OPTIONS, index=0)
+_fullness_bars_section(selected_geo)
+_fullness_seasonal_section(selected_geo)
+_net_flow_seasonal_section(selected_geo)
 
 st.subheader("Country small multiples")
 _small_multiples_section()

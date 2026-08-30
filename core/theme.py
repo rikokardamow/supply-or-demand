@@ -195,3 +195,87 @@ def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> g
         )
     fig.update_layout(title=title, yaxis_title=unit)
     return fig
+
+
+GREY_LINE_THIN = "rgba(150,150,150,0.9)"
+
+
+def seasonal_minmaxmean_chart(
+    stats_df: pd.DataFrame,
+    current_year_series: pd.Series,
+    title: str,
+    unit: str,
+) -> go.Figure:
+    """Same lo/hi/median inputs as seasonal_range_chart, drawn as explicit Min/Median/Max
+    lines instead of a shaded band — a Kardamow-coloured take on the AGSI-style storage
+    dashboard layout (navy current year, orange median matching this house's existing
+    median convention, grey min/max). Deliberately still "median", not "mean" — this
+    house's seasonal maths is median-based throughout (core.seasonal), and this chart
+    doesn't silently switch statistic just to match a reference screenshot's label."""
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=stats_df.index,
+            y=stats_df["lo"],
+            line={"color": GREY_LINE_THIN, "width": 1},
+            name="Min",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=stats_df.index,
+            y=stats_df["hi"],
+            line={"color": GREY_LINE_THIN, "width": 1},
+            name="Max",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=stats_df.index,
+            y=stats_df["median"],
+            line={"color": ORANGE, "width": 2},
+            name="Median",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=current_year_series.index,
+            y=current_year_series.values,
+            line={"color": NAVY, "width": 2.5},
+            name="Current year",
+        )
+    )
+    fig.update_layout(
+        title=title,
+        yaxis_title=unit,
+        xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
+    )
+    return fig
+
+
+def fullness_comparison_bars(
+    rows: list[tuple[str, float, float]], unit_abs: str, date_label: str, title: str
+) -> go.Figure:
+    """Horizontal bar comparison — e.g. Current / M-1 / Y-1 — each row (label, pct,
+    absolute_value), labelled "XX.X% (YYY unit)" per bar. `rows` is drawn top-to-bottom in
+    the order given (Plotly draws categorical y-axes bottom-to-top, so this reverses it)."""
+    ordered = list(reversed(rows))
+    labels = [label for label, _, _ in ordered]
+    pcts = [pct for _, pct, _ in ordered]
+    text = [f"{pct:.1f}% ({abs_value:,.0f} {unit_abs})" for _, pct, abs_value in ordered]
+
+    fig = go.Figure(
+        go.Bar(
+            x=pcts,
+            y=labels,
+            orientation="h",
+            marker={"color": LIGHT_BLUE},
+            text=text,
+            textposition="outside",
+        )
+    )
+    fig.update_layout(
+        title=f"{title} <span style='font-size:0.7em'>{date_label}</span>",
+        xaxis={"range": [0, 100], "ticksuffix": "%"},
+    )
+    return fig

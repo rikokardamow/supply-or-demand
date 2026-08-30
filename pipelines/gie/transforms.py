@@ -33,6 +33,23 @@ def days_to_full_or_empty(
     return None, None
 
 
+def nearest_value_at_offset(
+    series: pd.Series, target_ts: pd.Timestamp, tolerance_days: int = 5
+) -> float | None:
+    """The series value nearest `target_ts` (e.g. "30 days ago", "365 days ago") — GIE's
+    daily data won't always land exactly on the target date, so this finds the closest
+    real observation instead of requiring an exact match. Returns None if the nearest
+    point is further than `tolerance_days` away (no meaningful M-1/Y-1 comparison)."""
+    if series.empty:
+        return None
+    index_series = series.index.to_series()
+    diffs = (index_series - target_ts).abs()
+    nearest_ts = diffs.idxmin()
+    if diffs.loc[nearest_ts] > pd.Timedelta(days=tolerance_days):
+        return None
+    return float(series.loc[nearest_ts])
+
+
 def country_deviation(fill_by_country: dict[str, pd.DataFrame]) -> pd.DataFrame:
     """For each country's fill-% history (columns: ts, value), the latest value vs.
     the seasonal median at the same day-of-year, ranked descending (biggest surplus
