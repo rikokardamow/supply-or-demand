@@ -97,6 +97,35 @@ def test_sndw_route_returns_ts_long_conformant_dataframe() -> None:
 
 
 @pytest.mark.vcr
+def test_production_route_returns_ts_long_conformant_dataframe() -> None:
+    client = EIAClient()
+    df = client.get_series(route="natural-gas/prod/sum", series=["N9070US2"], frequency="monthly")
+
+    assert not df.empty
+    assert set(df.columns) == EXPECTED_COLUMNS
+    assert (df["geo"] == "US").all()
+
+
+@pytest.mark.vcr
+def test_lng_exports_cross_checks_against_pipeline_plus_total() -> None:
+    # Confirmed live (Spec 05 Session C): the spec's originally-named
+    # natural-gas/move/poe2 route only has partial per-destination-country series
+    # that sum to a small fraction of real exports -- natural-gas/sum/lsum has the
+    # genuine pre-aggregated national total instead. This cross-check (pipeline +
+    # LNG == combined total, all three from the same route) is why.
+    client = EIAClient()
+    df = client.get_series(
+        route="natural-gas/sum/lsum",
+        series=["N9130US2", "N9132US2", "N9133US2"],
+        frequency="monthly",
+    )
+
+    latest_ts = df["ts"].max()
+    latest = df[df["ts"] == latest_ts].set_index("series_id")["value"]
+    assert latest["N9132US2"] + latest["N9133US2"] == pytest.approx(latest["N9130US2"], abs=1.0)
+
+
+@pytest.mark.vcr
 def test_gas_storage_area_name_is_literal_na() -> None:
     # Documents a real API gotcha (confirmed live, Spec 05 Session A): this route
     # never populates area-name at all -- it's the literal string "NA" for every
