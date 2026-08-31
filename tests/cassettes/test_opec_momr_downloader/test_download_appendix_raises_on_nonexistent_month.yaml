@@ -1,0 +1,165 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://opec.org/assets/assetdb/momr-appendix-december-2099.xlsx
+  response:
+    body:
+      string: '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+        <html><head>
+
+        <title>302 Found</title>
+
+        </head><body>
+
+        <h1>Found</h1>
+
+        <p>The document has moved <a href="https://www.opec.org/404.html">here</a>.</p>
+
+        </body></html>
+
+        '
+    headers:
+      CF-RAY:
+      - a33ca67e9e95b191-DUB
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=iso-8859-1
+      Date:
+      - Mon, 31 Aug 2026 14:15:58 GMT
+      Location:
+      - https://www.opec.org/404.html
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Frame-Options:
+      - SAMEORIGIN
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - BYPASS
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://www.opec.org/404.html
+  response:
+    body:
+      string: '<!DOCTYPE html><html lang="en-US"><head><title>Just a moment...</title><meta
+        http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible"
+        content="IE=Edge"><meta name="robots" content="noindex,nofollow"><meta name="viewport"
+        content="width=device-width,initial-scale=1"><meta http-equiv="content-security-policy"
+        content="default-src &#39;none&#39;; script-src &#39;nonce-z1Afx7h45z11lui3xACvx4&#39;
+        &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-src-attr &#39;none&#39;;
+        style-src &#39;unsafe-inline&#39;; img-src &#39;self&#39; https://challenges.cloudflare.com;
+        connect-src &#39;self&#39; https://challenges.cloudflare.com; frame-src &#39;self&#39;
+        https://challenges.cloudflare.com blob:; child-src &#39;self&#39; https://challenges.cloudflare.com
+        blob:; worker-src blob:; form-action http: https:; base-uri &#39;self&#39;"><style>*{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe
+        UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe
+        UI Emoji","Segoe UI Symbol","Noto Color Emoji"}body{display:flex;flex-direction:column;height:100vh;min-height:100vh}.main-content{margin:8rem
+        auto;padding-left:1.5rem;max-width:60rem}@media (width <= 720px){.main-content{margin-top:4rem}}#challenge-error-text{background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI0IyMEYwMyIgZD0iTTE2IDNhMTMgMTMgMCAxIDAgMTMgMTNBMTMuMDE1IDEzLjAxNSAwIDAgMCAxNiAzbTAgMjRhMTEgMTEgMCAxIDEgMTEtMTEgMTEuMDEgMTEuMDEgMCAwIDEtMTEgMTEiLz48cGF0aCBmaWxsPSIjQjIwRjAzIiBkPSJNMTcuMDM4IDE4LjYxNUgxNC44N0wxNC41NjMgOS41aDIuNzgzem0tMS4wODQgMS40MjdxLjY2IDAgMS4wNTcuMzg4LjQwNy4zODkuNDA3Ljk5NCAwIC41OTYtLjQwNy45ODQtLjM5Ny4zOS0xLjA1Ny4zODktLjY1IDAtMS4wNTYtLjM4OS0uMzk4LS4zODktLjM5OC0uOTg0IDAtLjU5Ny4zOTgtLjk4NS40MDYtLjM5NyAxLjA1Ni0uMzk3Ii8+PC9zdmc+");background-repeat:no-repeat;background-size:contain;padding-left:34px}</style><meta
+        http-equiv="refresh" content="360"></head><body><div class="main-wrapper"
+        role="main"><div class="main-content"><noscript><div class="h2"><span id="challenge-error-text">Enable
+        JavaScript and cookies to continue</span></div></noscript></div></div><script
+        nonce="z1Afx7h45z11lui3xACvx4">(function(){window._cf_chl_opt = {cFPWv: ''b'',cH:
+        ''RTTyCl1P.VZdgd7vkGF8zhAJkojVw77I14bXkLCiiss-1788185758-1.2.1.1-M4pdZKnEw4SMuZklZgd2jORDPrH58SkRmgouiSXXvwykEm0vfo_RoWj530lu4OiW'',cITimeS:
+        ''1788185758'',cN: ''z1Afx7h45z11lui3xACvx4'',cRay: ''a33ca68168d12981'',cTplB:
+        ''0'',cTplC:0,cTplO:0,cTplV:5,cType: ''managed'',cUPMDTk:"/404.html?__cf_chl_tk=LjTCSJ10q9kTBAfx_E5VJjvghEptxw1A4VIpETRa.zk-1788185758-1.0.1.1-UZ_1bcPcWuJL6cya8k3dZ.vIL_ZnyNAlZtOkuD85nr4",cvId:
+        ''3'',cZone: ''www.opec.org'',fa:"/404.html?__cf_chl_f_tk=LjTCSJ10q9kTBAfx_E5VJjvghEptxw1A4VIpETRa.zk-1788185758-1.0.1.1-UZ_1bcPcWuJL6cya8k3dZ.vIL_ZnyNAlZtOkuD85nr4",md:
+        ''kq9c5bXhBtvAELP5F3nATDtLsM7ZW5CL8NFWVOwxU4c-1788185758-1.2.1.1-ajPLSH2trhadt2H56C4ttN773rZZWrGP9_pAw9sjjyjvafg2IAda2Ti7QH_Cgsb4UjnC3n9EInIJgx41fkta05jgS5KgQXwELf9d.2Ed6rT3qPPbs5jvBf92rdqykOaD0Lr3eDzi02cKBZG6p4JW_udPl_0Tggm345rwJtzWAWba6TivAhUW9zAK68SY7gG40fjveQwhC2WnKLGKFiKvMQ1Uwh5DtniM0rhbFUxo2XIXHtxz3U8.uV1r21jOAPYRMccCuL5PPmNYf2E5fLlfv_dE7D719RUMSsv8b0YnQPL5vP8Z2iQmbTdgpxwy_RD71LuKuw8FJq95i8fSFeQkH_N_ZKHeVdfiBc4nCZhChZ3aEOkA.Rh._02pRyMVQMgtwlvNTO3Gyx03KbmIDX2ixaDzEjw8Ml9syuO7VewMOStqoFA5E8hbQbOc7zDCki6hDBU5XJvD0MSWwiGqJS8ed0RliY_oXGmyoh_MFx5MCrh6Z.DJelURg58N9xPcQf2XOZI4U0x7ko6QRufe3gZ.9A2lPYiA1Yy4.ctPrmEDXNgNpWz8QNpUhenjd0s01oaGPbQtXChqijQyAIywSh7_HvARH9gs.LCDVfwVND0ljpxieax6JNzjQGSe8fY4q3xzaITPrCsBbO1yZDSQiyhICVxhCyT9aFUneJDlVrlWh2Nbcl6VfK5z1oPB1sp23bwpWda2WtkEuMB3YOv.MQQ4tNtsu378caUStS.a5qklC3vsyLaO5qYgRjO9DeHABIYR1QvrEu1vDP9dx.Jc9p76bMF4etZO2Bu4JqGfI1RI7HCp5uN99Mm_LkgpZBdGf8EsQrdJGJep4eqRESNsBRBtHgbh4wq9hm8yF8lmF2Ma.FDa1DTij5TqM.FiMzmDlWmDU4QFUcxd7c5MFvtBIEkfpyisQeFovxNdAa3tx9Dhx5stua3qxTHW9d73t4Lia2uuKTih_okJF1KIwEI5xbBi6NAFTgPDl4Aa__OMZu1U6DHb2VTw623ebbYkoPkwjMCDY4Yt_ojLO7eumeu3lEsi98dEWSrHpqb24xHHPLchNfs'',mdrd:
+        ''LCZUk.M1Kdnsfk56x5ofDSeQCKiGkjVNzygR5qhCTrI-1788185758-1.2.1.1-tZWzBWWJFy2S20RVjNbhwbJ3Rt56LPKA575GMX8uEabo2sl1DZJFhLDjwC9t66XCg9.8aO1.BCns.3pwQCD3DP5WCUrb9f40uWGDm3hDE2K_9gA2ztbBDlXkxf1efKNbY3dx1BjmsKidW7DtlRoXF4CXeh_eEXa4WSBtgL6rLnXlKHfzoI9aSaWTHqc.wrXR_i2OftKcvnFg2mW0xL8gADjj3ZqsB4ORAlqQ7S_p_PSv1HIQqpP_5p02U9msumUfnvYxDmT6_96uDmwi9i0sQA'',};var
+        a = document.createElement(''script'');a.nonce = ''z1Afx7h45z11lui3xACvx4'';a.src
+        = ''/cdn-cgi/challenge-platform/h/b/orchestrate/chl_page/v1?ray=a33ca68168d12981'';window._cf_chl_opt.cOgUHash
+        = location.hash === '''' && location.href.indexOf(''#'') !== -1 ? ''#'' :
+        location.hash;window._cf_chl_opt.cOgUQuery = location.search === '''' && location.href.slice(0,
+        location.href.length - window._cf_chl_opt.cOgUHash.length).indexOf(''?'')
+        !== -1 ? ''?'' : location.search;if (window.history && window.history.replaceState)
+        {var ogU = location.pathname + window._cf_chl_opt.cOgUQuery + window._cf_chl_opt.cOgUHash;history.replaceState(null,
+        null,"/404.html?__cf_chl_rt_tk=LjTCSJ10q9kTBAfx_E5VJjvghEptxw1A4VIpETRa.zk-1788185758-1.0.1.1-UZ_1bcPcWuJL6cya8k3dZ.vIL_ZnyNAlZtOkuD85nr4"+
+        window._cf_chl_opt.cOgUHash);a.onload = function() {history.replaceState(null,
+        null, ogU);}}document.getElementsByTagName(''head'')[0].appendChild(a);}());</script></body></html>'
+    headers:
+      Accept-Ch:
+      - Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile,
+        Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List,
+        Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile,
+        UA-Model, UA-Platform-Version, UA-Platform, UA
+      CF-RAY:
+      - a33ca68168d12981-DUB
+      Cf-Mitigated:
+      - challenge
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - 'default-src ''none''; script-src ''nonce-z1Afx7h45z11lui3xACvx4'' ''unsafe-eval''
+        https://challenges.cloudflare.com; script-src-attr ''none''; style-src ''unsafe-inline'';
+        img-src ''self'' https://challenges.cloudflare.com; connect-src ''self'' https://challenges.cloudflare.com;
+        frame-src ''self'' https://challenges.cloudflare.com blob:; child-src ''self''
+        https://challenges.cloudflare.com blob:; worker-src blob:; form-action http:
+        https:; base-uri ''self'''
+      Content-Type:
+      - text/html; charset=UTF-8
+      Critical-Ch:
+      - Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile,
+        Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List,
+        Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile,
+        UA-Model, UA-Platform-Version, UA-Platform, UA
+      Cross-Origin-Embedder-Policy:
+      - require-corp
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-origin
+      Date:
+      - Mon, 31 Aug 2026 14:15:58 GMT
+      Origin-Agent-Cluster:
+      - ?1
+      Permissions-Policy:
+      - accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*
+      Referrer-Policy:
+      - same-origin
+      Server:
+      - cloudflare
+      Server-Timing:
+      - chlray;desc="a33ca68168d12981"
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - accept-encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      alt-svc:
+      - h3=":443"; ma=86400
+    status:
+      code: 403
+      message: Forbidden
+version: 1

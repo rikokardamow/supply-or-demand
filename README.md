@@ -296,3 +296,87 @@ monthly-production entrypoints — verified idempotent live (identical row count
 consecutive runs each). Spec 05 is now feature-complete: page 05 (storage worm + regionals,
 production-vs-exports, 2 ISO tabs with 3 visuals each), feedgas documented as unavailable,
 tests green.
+
+#### In progress — Spec 06: OPEC / global supply monitoring (MOMR + JODI + Baker Hughes)
+Session A: `pipelines/opec_momr/` downloads and parses OPEC's MOMR Excel appendix
+(`opec.org/assets/assetdb/momr-appendix-{month}-{year}.xlsx`, confirmed live, no key). Per
+explicit direction, captures **every labelled row across all 5 data sheets** (400+ series
+from one issue) rather than a curated subset — full regional/country breakdowns for demand,
+non-DoC production, OECD stocks, oil-on-water, and rig counts, all available for future
+charts without a second pass. Found none of the 5 sheets is a long monthly history — each is
+a snapshot/outlook table (a handful of years + trailing quarters + occasionally one or two
+actual months) — which is exactly why `revision_date` = the MOMR's own publication month
+matters; real history only builds up by pulling every month. Found Table 11-2 already *is*
+OPEC's own precomputed revision-vs-last-month table, simplifying the spec's planned
+waterfall transform considerably. Caught and fixed two real parsing bugs during development:
+annual headers are real ints not strings, and the header row itself was being misread as a
+data row before a fix. Also caught a genuine cross-vintage collision — an annual column and
+a quarterly column both map to the same representative date, which silently collided under
+`ts_long`'s de-dup key until every series_id was suffixed with its own granularity. New
+precedents for this project: caching a raw downloaded file (not parsed data) under
+`data/raw/opec/`, and a `tests/fixtures/` fixture-test convention (the real ~145 KB workbook
+checked in directly). Confirmed gap matching the spec's own two-session split: no sheet has
+per-country DoC crude production, only an OPEC-wide aggregate — exactly what Session B's
+Camelot PDF fallback is for. Acceptance criterion met: parsed 2026 annual world demand
+(105.74 mb/d) matches the real MOMR cell exactly.
+
+Session B: tried Camelot first, as the spec calls for — the PDF's own download endpoint
+(`momr.opec.org/pdf-download/`) returns a 403, and Camelot's lattice mode needs a system
+Ghostscript install (a Windows UAC-gated installer this automated session couldn't approve
+itself; the user ran it). With Ghostscript installed and a real user-provided PDF in hand,
+the premise turned out to be moot: the MOMR PDF has a full, clean, digitally-native text
+layer, not a scan — reading it directly with `pypdfium2` and a handful of regexes extracted
+the one table missing from Excel (per-country DoC crude production, 22 countries) more
+simply and reliably than image-based table detection would have. Verified independently:
+summing every OPEC member country this parser found for July 2026 (23,633) matched the
+PDF's own printed "Total OPEC" line (23,632) to within OPEC's own rounding disclaimer.
+Per the spec's "if unstable, stop and document" allowance, Camelot itself was uninstalled
+again once this was confirmed — it's not a project dependency. `quotas.csv` seeded from
+OPEC's own 2 August 2026 press release (published as an embedded PNG image, not HTML or a
+PDF table — read visually) — 7 of the "Voluntary 8" group's countries have current targets;
+UAE already reached its separate ceiling and isn't part of the recurring table, and every
+other DoC country has no quota seeded yet. Page 06 gained a production-vs-quota grouped-bar
+chart and a revision-waterfall chart (both new `core.theme` primitives), verified live
+in-browser with real data (e.g. Oman 110% compliance, Saudi Arabia 70%).
+
+Session C: `pipelines/jodi/` bulk-downloads JODI-Oil's annual "primary" (crude oil) CSV and
+filters to crude production/refinery intake/closing stocks for the top-15 producers. Found
+a genuine reporting gap, confirmed live: Russia, Iraq, Iran, UAE, and Brazil — all major
+real-world producers — have zero production data in JODI's primary table for all of 2026,
+so "top 15" was computed from what JODI actually has (averaged across all available 2026
+months, not just the latest, since a handful of otherwise-reporting countries have one-off
+monthly gaps too) rather than assumed from other sources. Also found the two annual-CSV
+filename patterns differ for the current (still-updating) year vs. closed years, and that
+`OBS_VALUE` carries two distinct non-numeric markers (`"-"` not reported, `"x"` confidential/
+inapplicable-unit) that both need dropping before conversion. Monthly entrypoint confirmed
+idempotent live (identical row count across two consecutive runs). No page work this
+session — pure data ingestion, per the spec.
+
+Session D (final for this spec): `pipelines/baker_hughes/` scrapes the current weekly
+North America rig count XLSX. Found there's no guessable URL, unlike OPEC's Excel
+appendix — the file lives at a fresh random UUID (`rigcount.bakerhughes.com/static-files/
+{uuid}`) each week, so the pipeline scrapes the landing page for the link labelled
+"North America Rig Count Report - New Report" (a stable label distinguishing it from the
+archived report link beside it). A HEAD request (confirmed live to return the same
+`Content-Disposition` filename as a GET, with no body) resolves the report date and avoids
+re-downloading the ~8 MB file on a cache hit. The `NAM Weekly` sheet is already a long
+granular table (~188,000 rows, ~2.7 years of history) rather than a snapshot, so — unlike
+MOMR — no vintage-tracking scheme was needed; ingestion time is used for `revision_date`,
+matching `pipelines/eia`'s convention. Aggregated to three levels (country total, country×
+drill-target, country×drill-target×state) rather than full per-county granularity, judged
+excessive for now. Confirmed real values: US oil rigs = 447, US total = 588 (2026-08-28
+report). Page 06 gained a single-series US oil rig count chart — a true dual-axis rigs-vs-
+WTI chart waits for Spec 07 (Henry Hub/WTI), per the spec's own note. Pull confirmed
+idempotent live (5,935 rows / 63 series, unchanged across two consecutive runs).
+
+Close-out: pulled a second real MOMR vintage (July 2026, alongside August) to satisfy the
+Definition of Done's "≥2 vintages stored" — confirmed live via the same URL pattern
+Session A found, no synthetic data. Also added the oil-on-water navy-area chart (page 06's
+Visualisation spec item 3, not assigned to any single session but the data was already
+captured in Session A and otherwise unused) — a new `core.theme.time_series_area_chart`
+primitive. With two vintages now stored, the revision waterfall shows genuine non-zero bars
+and the oil-on-water series' quarterly range extended back to 2024.
+
+Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall,
+oil-on-water, US rig count), MOMR/JODI/Baker Hughes pipelines all green, ≥2 MOMR vintages
+stored, tests passing.
