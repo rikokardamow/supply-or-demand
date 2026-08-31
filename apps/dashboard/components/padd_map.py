@@ -1,6 +1,10 @@
 """PADD inter-region crude flow map — directional lines sized by monthly volume,
 coloured by transport mode, with a month slider and mode filter.
 
+Uses go.Scattermapbox with the free, no-token "open-street-map" style for real street
+tiles (moved off go.Scattergeo's flat continent-outline projection as part of the
+dashboard's institutional-look redesign — see root NOTES.md's chart house style).
+
 Note: Plotly annotations only support geo-referenced *anchor* coordinates (xref/yref =
 "geo"), not geo-referenced *arrow-tail* coordinates (axref/ayref only accept "pixel" or
 a cartesian x/y-axis ref) — confirmed against the installed plotly version, so a
@@ -15,8 +19,6 @@ import plotly.graph_objects as go
 import streamlit as st
 from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY, RED
-
-from components.geo_utils import bearing_degrees
 
 PADD_CENTROIDS: dict[str, tuple[float, float]] = {
     # Approximate regional centroids for visualisation only, not precise geographic centres.
@@ -54,10 +56,12 @@ def render_padd_flow_map() -> None:
     month_df = df[(df["ts"] == selected_month) & (df["mode"].isin(selected_modes))]
 
     fig = go.Figure()
-    fig.update_geos(scope="usa")
+    fig.update_layout(
+        mapbox={"style": "open-street-map", "center": {"lat": 39, "lon": -98}, "zoom": 3}
+    )
 
     fig.add_trace(
-        go.Scattergeo(
+        go.Scattermapbox(
             lat=[lat for lat, _ in PADD_CENTROIDS.values()],
             lon=[lon for _, lon in PADD_CENTROIDS.values()],
             text=list(PADD_CENTROIDS),
@@ -76,7 +80,7 @@ def render_padd_flow_map() -> None:
         width = 1 + 5 * (row["value"] / max_value) if max_value else 1
 
         fig.add_trace(
-            go.Scattergeo(
+            go.Scattermapbox(
                 lat=[orig_lat, dest_lat],
                 lon=[orig_lon, dest_lon],
                 mode="lines",
@@ -89,13 +93,18 @@ def render_padd_flow_map() -> None:
 
         arrow_lat = orig_lat + _ARROWHEAD_FRACTION * (dest_lat - orig_lat)
         arrow_lon = orig_lon + _ARROWHEAD_FRACTION * (dest_lon - orig_lon)
-        bearing = bearing_degrees(orig_lat, orig_lon, dest_lat, dest_lon)
         fig.add_trace(
-            go.Scattergeo(
+            go.Scattermapbox(
                 lat=[arrow_lat],
                 lon=[arrow_lon],
                 mode="markers",
-                marker={"symbol": "triangle-up", "angle": bearing, "size": 10, "color": colour},
+                # A plain circle, not a rotated arrow -- confirmed live that
+                # Scattermapbox's free raster styles ("open-street-map",
+                # "carto-positron") ship no icon sprite at all, so ANY marker.symbol
+                # silently fails to render ("Image ... could not be loaded" in the
+                # console) regardless of name. Direction is still conveyed by this
+                # dot's position near the destination end of its line.
+                marker={"size": 10, "color": colour},
                 showlegend=False,
                 hovertext=(
                     f"{row['from_node']} → {row['to_node']} ({row['mode']}): "
