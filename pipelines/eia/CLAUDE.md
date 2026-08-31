@@ -103,3 +103,44 @@ cartesian x-axis ref. Confirmed by triggering the actual `ValueError` live, not 
 Directional flow lines on a `Scattergeo` map are drawn instead as `mode="lines"` traces plus
 a separate rotated `marker={"symbol": "triangle-up", "angle": bearing}` trace positioned
 partway along the line — `Scattergeo`'s marker `angle` property does work.
+
+## Spec 05 Session A — natural gas storage, and a route where area-name is useless
+
+Route `natural-gas/stor/wkly` (weekly working gas storage) — 8 series confirmed live via
+`list_series()` (the spec only names the Lower-48 code plus "regional... incl.
+salt/non-salt" generically):
+
+| Series ID | Region | `duoarea` | `process` |
+|---|---|---|---|
+| `NW2_EPG0_SWO_R48_BCF` | Lower 48 (L48) | R48 | SWO |
+| `NW2_EPG0_SWO_R31_BCF` | East | R31 | SWO |
+| `NW2_EPG0_SWO_R32_BCF` | Midwest | R32 | SWO |
+| `NW2_EPG0_SWO_R33_BCF` | South Central (aggregate) | R33 | SWO |
+| `NW2_EPG0_SSO_R33_BCF` | South Central — Salt | R33 | SSO |
+| `NW2_EPG0_SNO_R33_BCF` | South Central — Nonsalt | R33 | SNO |
+| `NW2_EPG0_SWO_R34_BCF` | Mountain | R34 | SWO |
+| `NW2_EPG0_SWO_R35_BCF` | Pacific | R35 | SWO |
+
+Cross-checked live: Salt (248 BCF) + Nonsalt (813 BCF) = South Central aggregate (1061 BCF)
+exactly for the same period — the three R33 series are additive, not overlapping.
+
+**`area-name` is the literal string `"NA"` for every row on this route, confirmed live** —
+not a genuine missing-value case like Cushing's real `"NA"` (see above), this route simply
+never populates the field regardless of region. `EIAClient.get_series`'s existing
+`_normalise_geo(area-name)` path would silently collapse all 8 series to `geo="NA"`. Fixed
+by adding an optional `geo_map: dict[str, str] | None = None` parameter to `get_series` —
+when given, `geo` is looked up per `series_id` instead of derived from `area-name`. `None`
+(the default) leaves every other route's existing behaviour untouched.
+`pipelines/eia/pull_gas_storage.py`'s `STORAGE_GEO_MAP` is the map for this route. Reach for
+`geo_map` on any future route where `area-name` turns out to be similarly unusable — check
+first via `_fetch_rows`/`list_series` rather than assuming `_normalise_geo` is always enough.
+
+16 years of weekly history available (2010-01-01 onward, 869 rows for L48 alone as of
+2026-08-21) — ample for `core.seasonal.seasonal_stats`'s 5-year corridor.
+
+Page `05_us_gas_power.py` (Session A scope only — ISO tabs and production/exports are later
+sessions): L48 headline worm chart + a 7-region small-multiples grid, both via
+`core.seasonal.seasonal_stats` + `core.theme.seasonal_range_chart` — the same pattern
+already used by `01_us_padd.py` (petroleum) and `02_gas_storage.py` (GIE), no new chart
+primitive needed. Acceptance criterion met: the lake's latest L48 value (3184 BCF,
+2026-08-21) matched a fresh, independent `EIAClient.get_series` call exactly.

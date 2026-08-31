@@ -250,3 +250,18 @@ re-pull. Spec 04 is now feature-complete: page 04 (price map, arrow map, mix sta
 panel), 13 zones priced (12 with real data, GB's gap confirmed and expected), 12 borders
 mapped (11 with real data), EirGrid adapter isolated in one function, all cross-checks done,
 tests green.
+
+#### In progress — Spec 05: US natural gas & power (EIA + gridstatus)
+Session A: pulled weekly Lower-48 + regional natural gas working storage (8 series, 6,952
+rows) via the existing `EIAClient`, confirmed live via `list_series()` — the spec only names
+the Lower-48 code, the 7 regional codes (East, Midwest, Mountain, Pacific, South Central
+aggregate + Salt + Nonsalt) were discovered, not guessed. Cross-checked live: Salt (248 BCF)
++ Nonsalt (813 BCF) = South Central aggregate (1061 BCF) exactly. Found a real client
+gotcha: this route's `area-name` field is the literal string `"NA"` for every row regardless
+of region (not a genuine missing-value case) — `EIAClient.get_series` gained an optional
+`geo_map` parameter so a pull script can override `geo` per series_id when `area-name` isn't
+usable, leaving every other route's existing area-name-based behaviour untouched. Page 05:
+L48 headline worm chart + 7-region small multiples, reusing the exact
+`seasonal_stats`/`seasonal_range_chart` pattern already built for `01_us_padd.py`/
+`02_gas_storage.py`. Acceptance criterion met: the lake's latest L48 value (3,184 BCF,
+2026-08-21) matched a fresh, independent API call exactly.
