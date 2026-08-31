@@ -250,3 +250,49 @@ re-pull. Spec 04 is now feature-complete: page 04 (price map, arrow map, mix sta
 panel), 13 zones priced (12 with real data, GB's gap confirmed and expected), 12 borders
 mapped (11 with real data), EirGrid adapter isolated in one function, all cross-checks done,
 tests green.
+
+#### In progress — Spec 05: US natural gas & power (EIA + gridstatus)
+Session A: pulled weekly Lower-48 + regional natural gas working storage (8 series, 6,952
+rows) via the existing `EIAClient`, confirmed live via `list_series()` — the spec only names
+the Lower-48 code, the 7 regional codes (East, Midwest, Mountain, Pacific, South Central
+aggregate + Salt + Nonsalt) were discovered, not guessed. Cross-checked live: Salt (248 BCF)
++ Nonsalt (813 BCF) = South Central aggregate (1061 BCF) exactly. Found a real client
+gotcha: this route's `area-name` field is the literal string `"NA"` for every row regardless
+of region (not a genuine missing-value case) — `EIAClient.get_series` gained an optional
+`geo_map` parameter so a pull script can override `geo` per series_id when `area-name` isn't
+usable, leaving every other route's existing area-name-based behaviour untouched. Page 05:
+L48 headline worm chart + 7-region small multiples, reusing the exact
+`seasonal_stats`/`seasonal_range_chart` pattern already built for `01_us_padd.py`/
+`02_gas_storage.py`. Acceptance criterion met: the lake's latest L48 value (3,184 BCF,
+2026-08-21) matched a fresh, independent API call exactly.
+
+Session B: added `pipelines/gridstatus_iso/` for ISO real-time load, fuel mix, and
+hub/zone-level LMP. The spec's own ERCOT+PJM pairing didn't survive contact with reality:
+ERCOT's website is behind Incapsula bot-protection (every endpoint gridstatus needs returns
+403), and PJM needs a free Data Miner 2 API key the user can't obtain (network membership
+required). MISO was tried next but dropped too — its real-time load/fuel-mix API only
+serves "today" for the current year, with no genuine historical path via gridstatus.
+Landed on **CAISO + NYISO**, both confirmed to support a real 60-day range for all three
+data types with no credentials needed. Also caught and fixed a real dependency conflict:
+`gridstatus`'s latest release (0.36.0) hard-requires `plotly~=6.0`, clashing with this
+project's `plotly<6.0` pin used by every existing chart — pinned `gridstatus==0.34.0`
+instead (the newest release before that pin was introduced). Page 05 gained ISO tabs: a
+fuel-mix stack, load-vs-net-load, and an hour×day LMP heatmap (`core.theme.hour_day_heatmap`,
+new) per ISO. Verified live: CAISO load cross-checked against an independent fresh pull,
+exact match.
+
+Session C (final for this spec): monthly US dry natural gas production + LNG exports into
+`ts_long`, dual-axis chart on page 05. Another spec-text correction, confirmed live: the
+spec's named `natural-gas/move/poe2` route has no usable national LNG export total — its
+per-destination-country series (17 of them) summed to only ~88,544 MMcf for the latest
+month, a small fraction of reality. `natural-gas/sum/lsum` has the genuine pre-aggregated
+total instead, cross-checked live (pipeline exports + LNG exports == that route's own
+combined total, exact to EIA's own rounding) — ~502,812 MMcf/month (≈16.8 Bcf/d), a
+plausible real figure. Feedgas confirmed to have no distinct EIA series at all across every
+route checked — documented as out of scope rather than faked, with a caption on the page.
+Both this session's and Session A's pull scripts are cheap full-history re-pulls (nowhere
+near ENTSO-E/EirGrid's scale), so they already serve directly as Spec 13's weekly-storage/
+monthly-production entrypoints — verified idempotent live (identical row counts across two
+consecutive runs each). Spec 05 is now feature-complete: page 05 (storage worm + regionals,
+production-vs-exports, 2 ISO tabs with 3 visuals each), feedgas documented as unavailable,
+tests green.

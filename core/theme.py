@@ -362,6 +362,21 @@ PSR_COLOURS: dict[str, str] = {
     "Fossil Peat": "#7f8c8d",
     "Waste": "#943126",
     "Other": "#bdc3c7",
+    # gridstatus (MISO/CAISO) fuel-mix names, confirmed live (Spec 05 Session B) --
+    # a distinct naming convention from ENTSO-E's PSR types, mapped onto the same
+    # fixed palette rather than introducing a second dict.
+    "Natural Gas": "#7f8c8d",
+    "Coal": "#34495e",
+    "Large Hydro": "#2980b9",
+    "Small Hydro": "#2980b9",
+    "Hydro": "#2980b9",
+    "Battery Storage": LIGHT_BLUE,
+    "Batteries": LIGHT_BLUE,
+    "Imports": "#bdc3c7",
+    "Biogas": "#58d68d",
+    "Dual Fuel": "#7f8c8d",
+    "Other Fossil Fuels": "#95a5a6",
+    "Other Renewables": "#48c9b0",
 }
 PSR_DEFAULT_COLOUR = "#bdc3c7"
 
@@ -413,4 +428,29 @@ def gauge_chart(
             },
         )
     )
+    return fig
+
+
+def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """Hour-of-day (x) x calendar day (y) heatmap -- `df` indexed by an hourly
+    DatetimeIndex, single value column. Same navy-to-red diverging colourscale as
+    `components/power_maps.py`'s price map, for the same reason (a price/cost
+    signal, not a volume) -- reused here rather than introduced ad-hoc."""
+    pivot = df.copy()
+    index = pd.DatetimeIndex(pivot.index)
+    pivot["_day"] = index.date
+    pivot["_hour"] = index.hour
+    value_col = pivot.columns[0]
+    grid = pivot.pivot_table(index="_day", columns="_hour", values=value_col)
+
+    fig = go.Figure(
+        go.Heatmap(
+            z=grid.to_numpy(),
+            x=grid.columns,
+            y=[d.isoformat() for d in grid.index],
+            colorscale=[[0, NAVY], [0.5, "#f5f5f5"], [1, RED]],
+            colorbar={"title": unit},
+        )
+    )
+    fig.update_layout(title=title, xaxis_title="Hour of day", yaxis_title="Date")
     return fig

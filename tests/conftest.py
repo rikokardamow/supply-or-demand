@@ -30,7 +30,13 @@ def _scrub_echoed_api_key(response: dict) -> dict:
 @pytest.fixture(scope="module")
 def vcr_config() -> dict[str, object]:
     return {
-        "filter_query_parameters": ["api_key", "securityToken"],  # ENTSO-E's query-param auth
+        "filter_query_parameters": [
+            "api_key",
+            "securityToken",
+            "_",  # CAISO's cache-busting timestamp param (confirmed live) -- changes
+            # every request, which breaks vcrpy's default query-string cassette
+            # matching on replay unless stripped from both sides the same way.
+        ],
         "filter_headers": ["x-key"],  # GIE's auth header (EIA uses a query param instead)
         "before_record_response": _scrub_echoed_api_key,
     }

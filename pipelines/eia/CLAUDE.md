@@ -103,3 +103,87 @@ cartesian x-axis ref. Confirmed by triggering the actual `ValueError` live, not 
 Directional flow lines on a `Scattergeo` map are drawn instead as `mode="lines"` traces plus
 a separate rotated `marker={"symbol": "triangle-up", "angle": bearing}` trace positioned
 partway along the line — `Scattergeo`'s marker `angle` property does work.
+
+## Spec 05 Session A — natural gas storage, and a route where area-name is useless
+
+Route `natural-gas/stor/wkly` (weekly working gas storage) — 8 series confirmed live via
+`list_series()` (the spec only names the Lower-48 code plus "regional... incl.
+salt/non-salt" generically):
+
+| Series ID | Region | `duoarea` | `process` |
+|---|---|---|---|
+| `NW2_EPG0_SWO_R48_BCF` | Lower 48 (L48) | R48 | SWO |
+| `NW2_EPG0_SWO_R31_BCF` | East | R31 | SWO |
+| `NW2_EPG0_SWO_R32_BCF` | Midwest | R32 | SWO |
+| `NW2_EPG0_SWO_R33_BCF` | South Central (aggregate) | R33 | SWO |
+| `NW2_EPG0_SSO_R33_BCF` | South Central — Salt | R33 | SSO |
+| `NW2_EPG0_SNO_R33_BCF` | South Central — Nonsalt | R33 | SNO |
+| `NW2_EPG0_SWO_R34_BCF` | Mountain | R34 | SWO |
+| `NW2_EPG0_SWO_R35_BCF` | Pacific | R35 | SWO |
+
+Cross-checked live: Salt (248 BCF) + Nonsalt (813 BCF) = South Central aggregate (1061 BCF)
+exactly for the same period — the three R33 series are additive, not overlapping.
+
+**`area-name` is the literal string `"NA"` for every row on this route, confirmed live** —
+not a genuine missing-value case like Cushing's real `"NA"` (see above), this route simply
+never populates the field regardless of region. `EIAClient.get_series`'s existing
+`_normalise_geo(area-name)` path would silently collapse all 8 series to `geo="NA"`. Fixed
+by adding an optional `geo_map: dict[str, str] | None = None` parameter to `get_series` —
+when given, `geo` is looked up per `series_id` instead of derived from `area-name`. `None`
+(the default) leaves every other route's existing behaviour untouched.
+`pipelines/eia/pull_gas_storage.py`'s `STORAGE_GEO_MAP` is the map for this route. Reach for
+`geo_map` on any future route where `area-name` turns out to be similarly unusable — check
+first via `_fetch_rows`/`list_series` rather than assuming `_normalise_geo` is always enough.
+
+16 years of weekly history available (2010-01-01 onward, 869 rows for L48 alone as of
+2026-08-21) — ample for `core.seasonal.seasonal_stats`'s 5-year corridor.
+
+Page `05_us_gas_power.py` (Session A scope only — ISO tabs and production/exports are later
+sessions): L48 headline worm chart + a 7-region small-multiples grid, both via
+`core.seasonal.seasonal_stats` + `core.theme.seasonal_range_chart` — the same pattern
+already used by `01_us_padd.py` (petroleum) and `02_gas_storage.py` (GIE), no new chart
+primitive needed. Acceptance criterion met: the lake's latest L48 value (3184 BCF,
+2026-08-21) matched a fresh, independent `EIAClient.get_series` call exactly.
+
+## Session C — production/exports, and a correction to the spec's named LNG export route
+
+`pull_production_exports.py` pulls two national monthly series: `natural-gas/prod/sum`'s
+`N9070US2` ("U.S. Dry Natural Gas Production", MMcf) and `natural-gas/sum/lsum`'s
+`N9133US2` ("Liquefied U.S. Natural Gas Exports", MMcf). Both `area-name`-normalise to
+`geo="US"` cleanly (unlike the storage route above) — no `geo_map` needed here.
+
+**The spec's own named route for LNG exports, `natural-gas/move/poe2`, doesn't have a
+usable national total — confirmed live, not assumed.** That route (and `natural-gas/
+move/expc`, checked as an alternative) only publish **per-destination-country** series
+(e.g. `NGM_EPG0_ENG_NUS-NCA_MMCF` = "...to Canada"). Summing every "U.S. Liquefied Natural
+Gas Exports to <country>" series found under `poe2` (17 series, confirmed via
+`list_series()`) totalled only ~88,544 MMcf for the latest month — a small fraction of the
+real figure. `natural-gas/sum/lsum` (a genuine summary route, discovered by walking
+`GET /v2/natural-gas/` → `sum` → its sub-routes rather than guessing) has the real,
+pre-aggregated national total instead: confirmed live via an exact cross-check —
+`N9132US2` (pipeline exports) + `N9133US2` (LNG exports) == `N9130US2` (combined total
+exports), all three from the same route, matching to within EIA's own rounding (1 MMcf on
+~816,601). `N9133US2` alone (~502,812 MMcf/month ≈ 16.8 Bcf/d for the latest month) is a
+plausible real-world US LNG export rate; the `poe2` route's per-country sum was not.
+`tests/test_eia_client.py::test_lng_exports_cross_checks_against_pipeline_plus_total`
+encodes this check as a regression test.
+
+**Feedgas** (gas consumed at LNG liquefaction facilities before export) has no distinct EIA
+API series at all — confirmed by inspecting every route above; only the total export
+volume is tracked. Documented here and surfaced as a caption on the page rather than
+approximated or faked, per the spec's own "treat feedgas as out of scope" note and the
+Definition of Done's "no fake series" requirement.
+
+**Idempotency**: both `pull_gas_storage.py` (Session A) and `pull_production_exports.py`
+are cheap full-history re-pulls (869 and 353 rows/series respectively — nowhere near
+ENTSO-E/EirGrid's scale), so unlike those pipelines' Session-D-style trailing-window daily
+entrypoints, no separate "narrow window" script is needed here. Both already serve
+directly as the "weekly [storage]/monthly [production+exports] entrypoint" Spec 13 will
+schedule (storage Thursdays per root `CLAUDE.md`'s release calendar; production/exports
+whenever EIA's monthly report lands) — `write_ts_long`'s revision-based de-dup makes a
+full re-pull naturally idempotent. Verified live: ran both scripts twice in a row, row
+counts identical both times (353 production / 353 LNG exports / 6,952 storage rows).
+
+Page section: a production-vs-LNG-exports dual-axis chart (`core.theme.dual_axis_chart`,
+navy production / light-blue exports — the same primitive already used elsewhere, no new
+chart type needed), with the feedgas caveat as an `st.caption`.
