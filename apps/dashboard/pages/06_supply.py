@@ -8,6 +8,7 @@ from __future__ import annotations
 import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
+from components.card import card
 from core.storage import read_ts_long
 from core.theme import (
     production_vs_quota_chart,
@@ -34,15 +35,15 @@ def _production_vs_quota_section() -> None:
     latest = long_df[long_df["ts"] == latest_ts].set_index("country")["value"]
 
     result = production_vs_quota(latest, quotas)
-    fig = production_vs_quota_chart(
-        result, title=f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}", unit="tb/d"
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "Quota is each country's most recently announced voluntary-adjustment target "
-        "(not necessarily the same month as the actual shown) — see "
-        "pipelines/opec_momr/NOTES.md."
-    )
+    title = f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}"
+    fig = production_vs_quota_chart(result, title=title, unit="tb/d")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "Quota is each country's most recently announced voluntary-adjustment target "
+            "(not necessarily the same month as the actual shown) — see "
+            "pipelines/opec_momr/NOTES.md."
+        )
 
 
 def _revision_waterfall_section() -> None:
@@ -64,14 +65,14 @@ def _revision_waterfall_section() -> None:
     if result.empty:
         st.info(f"No non-zero revisions for {period:%B %Y}.")
         return
-    fig = revision_waterfall_chart(
-        result, title=f"MOMR Revision Waterfall — {period:%B %Y}", unit="mb/d"
-    )
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "OPEC's own precomputed change-vs-last-month figures (Table 11-2) — not "
-        "re-derived from consecutive vintages."
-    )
+    title = f"MOMR Revision Waterfall — {period:%B %Y}"
+    fig = revision_waterfall_chart(result, title=title, unit="mb/d")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "OPEC's own precomputed change-vs-last-month figures (Table 11-2) — not "
+            "re-derived from consecutive vintages."
+        )
 
 
 def _oil_on_water_section() -> None:
@@ -83,13 +84,15 @@ def _oil_on_water_section() -> None:
         return
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
-    fig = time_series_area_chart(series, title="Oil-on-Water (OECD)", unit="mb")
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "OPEC's own MOMR appendix (Table 11-3) trailing-quarters view, combined across "
-        "stored vintages — not a continuous monthly series. Floating storage joins in "
-        "Spec 11."
-    )
+    title = "Oil-on-Water (OECD)"
+    fig = time_series_area_chart(series, title=title, unit="mb")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "OPEC's own MOMR appendix (Table 11-3) trailing-quarters view, combined "
+            "across stored vintages — not a continuous monthly series. Floating "
+            "storage joins in Spec 11."
+        )
 
 
 def _rig_count_section() -> None:
@@ -99,12 +102,14 @@ def _rig_count_section() -> None:
         return
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
-    fig = simple_time_series_chart(series, title="US Oil Rig Count", unit="rigs")
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "Rig count vs. WTI stays a single series (navy) until Spec 07 (Henry "
-        "Hub/WTI) exists — see pipelines/baker_hughes/NOTES.md."
-    )
+    title = "US Oil Rig Count"
+    fig = simple_time_series_chart(series, title=title, unit="rigs")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "Rig count vs. WTI stays a single series (navy) until Spec 07 (Henry "
+            "Hub/WTI) exists — see pipelines/baker_hughes/NOTES.md."
+        )
 
 
 def _slug(label: str) -> str:
