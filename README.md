@@ -369,5 +369,14 @@ report). Page 06 gained a single-series US oil rig count chart — a true dual-a
 WTI chart waits for Spec 07 (Henry Hub/WTI), per the spec's own note. Pull confirmed
 idempotent live (5,935 rows / 63 series, unchanged across two consecutive runs).
 
-Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall, US rig
-count), MOMR/JODI/Baker Hughes pipelines all green, tests passing.
+Close-out: pulled a second real MOMR vintage (July 2026, alongside August) to satisfy the
+Definition of Done's "≥2 vintages stored" — confirmed live via the same URL pattern
+Session A found, no synthetic data. Also added the oil-on-water navy-area chart (page 06's
+Visualisation spec item 3, not assigned to any single session but the data was already
+captured in Session A and otherwise unused) — a new `core.theme.time_series_area_chart`
+primitive. With two vintages now stored, the revision waterfall shows genuine non-zero bars
+and the oil-on-water series' quarterly range extended back to 2024.
+
+Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall,
+oil-on-water, US rig count), MOMR/JODI/Baker Hughes pipelines all green, ≥2 MOMR vintages
+stored, tests passing.
