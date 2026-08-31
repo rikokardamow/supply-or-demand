@@ -8,6 +8,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from components.card import card
 from components.entsog_map import render_entsog_flow_map
 from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY, RED, current_vs_prior_year_chart, sankey_chart
@@ -44,17 +45,14 @@ else:
     targets = link_totals["to_node"].map(node_index).tolist()
     values = link_totals["value"].tolist()
 
-    fig = sankey_chart(
-        node_labels,
-        sources,
-        targets,
-        values,
-        title=f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)",
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    sankey_title = f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)"
+    fig = sankey_chart(node_labels, sources, targets, values, title=sankey_title)
+    with card(sankey_title):
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Corridor map")
-    render_entsog_flow_map()
+    with card("EU Gas Corridor Map"):
+        render_entsog_flow_map()
 
     st.subheader("Corridor time series — current vs. prior year")
     corridor_totals = corridor_aggregate(pipeline_df, CORRIDORS, mode="pipeline")
@@ -66,10 +64,10 @@ else:
             if corridor_df.empty:
                 st.info(f"No data yet for {corridor_name}.")
                 continue
-            fig = current_vs_prior_year_chart(
-                corridor_df, title=corridor_name.replace("_", " "), unit="GWh/d"
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            corridor_title = corridor_name.replace("_", " ")
+            fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
+            with card(corridor_title):
+                st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Physical vs. nomination gap")
     gap_corridor = st.selectbox("Corridor", options=list(CORRIDORS), key="gap_corridor")
@@ -97,10 +95,10 @@ else:
                 line={"color": LIGHT_BLUE, "width": 2},
             )
         )
-        lines.update_layout(
-            title=f"{corridor_label} — Physical vs. Nomination", yaxis_title="GWh/d"
-        )
-        st.plotly_chart(lines, use_container_width=True)
+        lines_title = f"{corridor_label} — Physical vs. Nomination"
+        lines.update_layout(title=lines_title, yaxis_title="GWh/d")
+        with card(lines_title):
+            st.plotly_chart(lines, use_container_width=True)
 
         # A line, not a bar: with ~2 years of daily points, go.Bar's per-bar width
         # auto-calculation produces invalid negative widths in the browser (confirmed
@@ -116,8 +114,7 @@ else:
             )
         )
         gap_line.add_hline(y=0, line_color=NAVY, line_width=1)
-        gap_line.update_layout(
-            title=f"{corridor_label} — Nomination minus Physical (under-delivery when positive)",
-            yaxis_title="GWh/d",
-        )
-        st.plotly_chart(gap_line, use_container_width=True)
+        gap_title = f"{corridor_label} — Nomination minus Physical (under-delivery when positive)"
+        gap_line.update_layout(title=gap_title, yaxis_title="GWh/d")
+        with card(gap_title):
+            st.plotly_chart(gap_line, use_container_width=True)

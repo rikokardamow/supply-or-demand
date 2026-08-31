@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import core.theme  # noqa: F401
 import streamlit as st
+from components.card import card
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
@@ -25,9 +26,10 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     current_year_series = current.set_index(reference_doy)["value"]
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
 
 
 def _simple_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
@@ -38,9 +40,10 @@ def _simple_section(series_id: str, title: str, unit: str, take: str | None = No
 
     series = df.set_index("ts")["value"]
     fig = simple_time_series_chart(series, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
 
 
 def _four_week_avg_overlay(
@@ -62,9 +65,10 @@ def _four_week_avg_overlay(
     current_year = int(combined_df["ts"].dt.year.max())
     stats = seasonal_stats(combined_df, value_col="value", years=range(2018, current_year + 1))
     fig = multi_year_overlay_chart(stats, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
 
 
 st.title("US Oil Market Overview")

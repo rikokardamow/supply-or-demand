@@ -41,6 +41,16 @@ White background; navy `#0f2a4a` primary series; light blue `#5b9bd5` secondary;
 accents/highlights; orange `#e67e22` seasonal median; grey `rgba(150,150,150,0.25)` seasonal band;
 light grid `#e6e6e6`; horizontal legend top-left; direct annotations near last point
 ("Latest / YoY / vs median") instead of relying on legends; dual axes navy-left / light-blue-right.
+Charts use the Inter font (`template.layout.font`) to match the app's own typography.
+
+## Dashboard layout — institutional look
+Explicit light theme locked via `.streamlit/config.toml` (white canvas, dark-navy sidebar,
+Inter font) — never rely on the viewer's OS/browser dark-mode preference. Every chart
+section is wrapped in `apps.dashboard.components.card.card(title)` (a bordered
+`st.container`) instead of a bare `st.subheader` — group multiple related charts under a
+plain `st.subheader` label with one `card(...)` per individual chart underneath, matching
+the existing pages. Maps use `go.Scattermapbox` with the free `"open-street-map"` style
+(no Mapbox token) — never `go.Scattergeo`, which only renders a flat continent outline.
 
 ## When unsure
 Prefer the smallest change that satisfies the spec's acceptance criteria. If an API responds
