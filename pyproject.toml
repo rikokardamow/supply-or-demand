@@ -19,6 +19,7 @@ dependencies = [
     "gridstatus==0.34.0",
     "openpyxl>=3.1",
     "pypdfium2>=4",
+    "beautifulsoup4>=4.12",
 ]
 
 [project.optional-dependencies]
