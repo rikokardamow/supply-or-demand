@@ -498,3 +498,19 @@ def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figu
     )
     fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
     return fig
+
+
+def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+    """Single navy filled-area time series -- "Exhibit-1 style" per the OPEC
+    supply spec's oil-on-water note (a plain filled line, not a seasonal band)."""
+    fig = go.Figure(
+        go.Scatter(
+            x=series.index,
+            y=series.values,
+            line={"color": NAVY, "width": 2},
+            fill="tozeroy",
+            fillcolor="rgba(15,42,74,0.15)",
+        )
+    )
+    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    return fig

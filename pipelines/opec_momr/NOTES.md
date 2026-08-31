@@ -233,3 +233,26 @@ both render live with real data on page `06_supply.py`, verified in-browser (gro
 with correct compliance %, e.g. Oman 110%, Saudi Arabia 70%; waterfall with real
 positive/negative bars for 2026 annual, OPEC's own most-revised year at time of writing).
 `pytest`/`ruff`/`mypy` all clean.
+
+## Second vintage pulled (Session D close-out)
+The spec's Definition of Done requires "≥2 vintages stored" for the MOMR Excel tables —
+only the August 2026 issue existed after Session A/B. Confirmed the July 2026 appendix is
+still live at the same URL pattern (`momr-appendix-july-2026.xlsx`, HTTP 200) and pulled it
+the same way `pull_momr.py` would, stamped with its own real `revision_date` (2026-07-01).
+The lake now holds two genuine vintages (2026-07-01 and 2026-08-01, 2,281 rows / 488 series
+combined) — no synthetic/backdated data involved, just a second real monthly issue OPEC
+had already published. Also visible with two vintages: the revision waterfall now has real
+non-zero bars for periods beyond the single-vintage case it launched with in Session B.
+
+## Oil-on-water chart (Session D close-out)
+The Visualisation spec's item 3 ("Oil-on-water time series, navy area, Exhibit-1 style")
+wasn't assigned to any specific session, but the data was already captured in Session A
+(Table 11-3's `momr.oecd_stocks.closing_stock_levels_mb.oilonwater.quarterly`) and unused.
+Added as page 06's third chart, using a new `core.theme.time_series_area_chart` primitive
+(plain navy filled line — distinct from `seasonal_range_chart`'s banded style, since there's
+no multi-year seasonal comparison here, just one line). Because Table 11-3 is itself a
+trailing-quarters snapshot (not deep history), the series shown is the union of quarters
+across every stored vintage, with `write_ts_long`'s revision-based de-dup already resolving
+any overlap in favour of the newest vintage — this is why pulling the second (July 2026)
+vintage also usefully extended this chart's date range back to 2024-04, not just satisfying
+the DoD vintage-count requirement.

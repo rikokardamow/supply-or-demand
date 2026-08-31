@@ -9,7 +9,12 @@ import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
 from core.storage import read_ts_long
-from core.theme import production_vs_quota_chart, revision_waterfall_chart, simple_time_series_chart
+from core.theme import (
+    production_vs_quota_chart,
+    revision_waterfall_chart,
+    simple_time_series_chart,
+    time_series_area_chart,
+)
 from pipelines.opec_momr.transforms import load_quotas, production_vs_quota, revision_waterfall
 
 
@@ -69,6 +74,24 @@ def _revision_waterfall_section() -> None:
     )
 
 
+def _oil_on_water_section() -> None:
+    long_df = read_ts_long(
+        series_ids=["momr.oecd_stocks.closing_stock_levels_mb.oilonwater.quarterly"]
+    )
+    if long_df.empty:
+        st.info("No data yet — run `pipelines/opec_momr/pull_momr.py`.")
+        return
+
+    series = long_df.sort_values("ts").set_index("ts")["value"]
+    fig = time_series_area_chart(series, title="Oil-on-Water (OECD)", unit="mb")
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "OPEC's own MOMR appendix (Table 11-3) trailing-quarters view, combined across "
+        "stored vintages — not a continuous monthly series. Floating storage joins in "
+        "Spec 11."
+    )
+
+
 def _rig_count_section() -> None:
     long_df = read_ts_long(series_ids=["bh.rigs.united_states.oil"])
     if long_df.empty:
@@ -102,6 +125,9 @@ _production_vs_quota_section()
 
 st.subheader("MOMR revision waterfall")
 _revision_waterfall_section()
+
+st.subheader("Oil-on-water")
+_oil_on_water_section()
 
 st.subheader("US rig count")
 _rig_count_section()
