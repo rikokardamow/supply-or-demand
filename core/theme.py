@@ -12,6 +12,7 @@ NAVY = "#0f2a4a"
 LIGHT_BLUE = "#5b9bd5"
 RED = "#c0392b"
 ORANGE = "#e67e22"
+GREY = "#95a5a6"
 BAND = "rgba(150,150,150,0.25)"
 GRID = "#e6e6e6"
 TRANSPARENT = "rgba(0,0,0,0)"
@@ -453,4 +454,63 @@ def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
         )
     )
     fig.update_layout(title=title, xaxis_title="Hour of day", yaxis_title="Date")
+    return fig
+
+
+def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """Grouped bars, navy actual vs grey quota, one group per row -- `df` needs
+    columns "country", "actual_kbd", "quota_kbd", "compliance_pct" (exact shape
+    of pipelines/opec_momr/transforms.py::production_vs_quota's output). Each
+    actual bar is labelled with its compliance % directly, per the spec's own
+    "grouped bars + compliance % labels" visualisation note."""
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=df["country"],
+            y=df["actual_kbd"],
+            name="Actual",
+            marker_color=NAVY,
+            text=[f"{pct:.0f}%" for pct in df["compliance_pct"]],
+            textposition="outside",
+        )
+    )
+    fig.add_trace(
+        go.Bar(x=df["country"], y=df["quota_kbd"], name="Quota", marker_color=GREY)
+    )
+    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    return fig
+
+
+def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """`df` needs columns "label", "value" (exact shape of
+    pipelines/opec_momr/transforms.py::revision_waterfall's output) -- red for a
+    downward revision, navy for an upward one, per the spec's own "red down,
+    navy up" note."""
+    fig = go.Figure(
+        go.Waterfall(
+            x=df["label"],
+            y=df["value"],
+            measure=["relative"] * len(df),
+            increasing={"marker": {"color": NAVY}},
+            decreasing={"marker": {"color": RED}},
+            connector={"line": {"color": GRID}},
+        )
+    )
+    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    return fig
+
+
+def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+    """Single navy filled-area time series -- "Exhibit-1 style" per the OPEC
+    supply spec's oil-on-water note (a plain filled line, not a seasonal band)."""
+    fig = go.Figure(
+        go.Scatter(
+            x=series.index,
+            y=series.values,
+            line={"color": NAVY, "width": 2},
+            fill="tozeroy",
+            fillcolor="rgba(15,42,74,0.15)",
+        )
+    )
+    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
     return fig
