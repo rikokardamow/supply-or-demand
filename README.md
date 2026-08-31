@@ -296,3 +296,26 @@ monthly-production entrypoints — verified idempotent live (identical row count
 consecutive runs each). Spec 05 is now feature-complete: page 05 (storage worm + regionals,
 production-vs-exports, 2 ISO tabs with 3 visuals each), feedgas documented as unavailable,
 tests green.
+
+#### In progress — Spec 06: OPEC / global supply monitoring (MOMR + JODI + Baker Hughes)
+Session A: `pipelines/opec_momr/` downloads and parses OPEC's MOMR Excel appendix
+(`opec.org/assets/assetdb/momr-appendix-{month}-{year}.xlsx`, confirmed live, no key). Per
+explicit direction, captures **every labelled row across all 5 data sheets** (400+ series
+from one issue) rather than a curated subset — full regional/country breakdowns for demand,
+non-DoC production, OECD stocks, oil-on-water, and rig counts, all available for future
+charts without a second pass. Found none of the 5 sheets is a long monthly history — each is
+a snapshot/outlook table (a handful of years + trailing quarters + occasionally one or two
+actual months) — which is exactly why `revision_date` = the MOMR's own publication month
+matters; real history only builds up by pulling every month. Found Table 11-2 already *is*
+OPEC's own precomputed revision-vs-last-month table, simplifying the spec's planned
+waterfall transform considerably. Caught and fixed two real parsing bugs during development:
+annual headers are real ints not strings, and the header row itself was being misread as a
+data row before a fix. Also caught a genuine cross-vintage collision — an annual column and
+a quarterly column both map to the same representative date, which silently collided under
+`ts_long`'s de-dup key until every series_id was suffixed with its own granularity. New
+precedents for this project: caching a raw downloaded file (not parsed data) under
+`data/raw/opec/`, and a `tests/fixtures/` fixture-test convention (the real ~145 KB workbook
+checked in directly). Confirmed gap matching the spec's own two-session split: no sheet has
+per-country DoC crude production, only an OPEC-wide aggregate — exactly what Session B's
+Camelot PDF fallback is for. Acceptance criterion met: parsed 2026 annual world demand
+(105.74 mb/d) matches the real MOMR cell exactly.

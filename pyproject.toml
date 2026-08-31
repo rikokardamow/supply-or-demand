@@ -17,6 +17,7 @@ dependencies = [
     "pyarrow>=17.0",
     "entsoe-py>=0.8",
     "gridstatus==0.34.0",
+    "openpyxl>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -78,6 +79,7 @@ module = [
     "vcr.*",
     "pyarrow.*",
     "gridstatus.*",
+    "openpyxl.*",
 ]
 ignore_missing_imports = true
 
