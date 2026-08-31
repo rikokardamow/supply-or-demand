@@ -144,3 +144,46 @@ sessions): L48 headline worm chart + a 7-region small-multiples grid, both via
 already used by `01_us_padd.py` (petroleum) and `02_gas_storage.py` (GIE), no new chart
 primitive needed. Acceptance criterion met: the lake's latest L48 value (3184 BCF,
 2026-08-21) matched a fresh, independent `EIAClient.get_series` call exactly.
+
+## Session C — production/exports, and a correction to the spec's named LNG export route
+
+`pull_production_exports.py` pulls two national monthly series: `natural-gas/prod/sum`'s
+`N9070US2` ("U.S. Dry Natural Gas Production", MMcf) and `natural-gas/sum/lsum`'s
+`N9133US2` ("Liquefied U.S. Natural Gas Exports", MMcf). Both `area-name`-normalise to
+`geo="US"` cleanly (unlike the storage route above) — no `geo_map` needed here.
+
+**The spec's own named route for LNG exports, `natural-gas/move/poe2`, doesn't have a
+usable national total — confirmed live, not assumed.** That route (and `natural-gas/
+move/expc`, checked as an alternative) only publish **per-destination-country** series
+(e.g. `NGM_EPG0_ENG_NUS-NCA_MMCF` = "...to Canada"). Summing every "U.S. Liquefied Natural
+Gas Exports to <country>" series found under `poe2` (17 series, confirmed via
+`list_series()`) totalled only ~88,544 MMcf for the latest month — a small fraction of the
+real figure. `natural-gas/sum/lsum` (a genuine summary route, discovered by walking
+`GET /v2/natural-gas/` → `sum` → its sub-routes rather than guessing) has the real,
+pre-aggregated national total instead: confirmed live via an exact cross-check —
+`N9132US2` (pipeline exports) + `N9133US2` (LNG exports) == `N9130US2` (combined total
+exports), all three from the same route, matching to within EIA's own rounding (1 MMcf on
+~816,601). `N9133US2` alone (~502,812 MMcf/month ≈ 16.8 Bcf/d for the latest month) is a
+plausible real-world US LNG export rate; the `poe2` route's per-country sum was not.
+`tests/test_eia_client.py::test_lng_exports_cross_checks_against_pipeline_plus_total`
+encodes this check as a regression test.
+
+**Feedgas** (gas consumed at LNG liquefaction facilities before export) has no distinct EIA
+API series at all — confirmed by inspecting every route above; only the total export
+volume is tracked. Documented here and surfaced as a caption on the page rather than
+approximated or faked, per the spec's own "treat feedgas as out of scope" note and the
+Definition of Done's "no fake series" requirement.
+
+**Idempotency**: both `pull_gas_storage.py` (Session A) and `pull_production_exports.py`
+are cheap full-history re-pulls (869 and 353 rows/series respectively — nowhere near
+ENTSO-E/EirGrid's scale), so unlike those pipelines' Session-D-style trailing-window daily
+entrypoints, no separate "narrow window" script is needed here. Both already serve
+directly as the "weekly [storage]/monthly [production+exports] entrypoint" Spec 13 will
+schedule (storage Thursdays per root `CLAUDE.md`'s release calendar; production/exports
+whenever EIA's monthly report lands) — `write_ts_long`'s revision-based de-dup makes a
+full re-pull naturally idempotent. Verified live: ran both scripts twice in a row, row
+counts identical both times (353 production / 353 LNG exports / 6,952 storage rows).
+
+Page section: a production-vs-LNG-exports dual-axis chart (`core.theme.dual_axis_chart`,
+navy production / light-blue exports — the same primitive already used elsewhere, no new
+chart type needed), with the feedgas caveat as an `st.caption`.

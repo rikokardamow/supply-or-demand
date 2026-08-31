@@ -280,3 +280,19 @@ instead (the newest release before that pin was introduced). Page 05 gained ISO 
 fuel-mix stack, load-vs-net-load, and an hour×day LMP heatmap (`core.theme.hour_day_heatmap`,
 new) per ISO. Verified live: CAISO load cross-checked against an independent fresh pull,
 exact match.
+
+Session C (final for this spec): monthly US dry natural gas production + LNG exports into
+`ts_long`, dual-axis chart on page 05. Another spec-text correction, confirmed live: the
+spec's named `natural-gas/move/poe2` route has no usable national LNG export total — its
+per-destination-country series (17 of them) summed to only ~88,544 MMcf for the latest
+month, a small fraction of reality. `natural-gas/sum/lsum` has the genuine pre-aggregated
+total instead, cross-checked live (pipeline exports + LNG exports == that route's own
+combined total, exact to EIA's own rounding) — ~502,812 MMcf/month (≈16.8 Bcf/d), a
+plausible real figure. Feedgas confirmed to have no distinct EIA series at all across every
+route checked — documented as out of scope rather than faked, with a caption on the page.
+Both this session's and Session A's pull scripts are cheap full-history re-pulls (nowhere
+near ENTSO-E/EirGrid's scale), so they already serve directly as Spec 13's weekly-storage/
+monthly-production entrypoints — verified idempotent live (identical row counts across two
+consecutive runs each). Spec 05 is now feature-complete: page 05 (storage worm + regionals,
+production-vs-exports, 2 ISO tabs with 3 visuals each), feedgas documented as unavailable,
+tests green.

@@ -1,6 +1,7 @@
 """US Natural Gas & Power (EIA + gridstatus). Session A scope (specs/05_us-gas-power.md):
 Lower-48 storage worm chart + regional small multiples. Session B: CAISO/NYISO tabs
-(mix stack, load/net-load, LMP heatmap). Production/exports land in a later session."""
+(mix stack, load/net-load, LMP heatmap). Session C: monthly dry production vs. LNG
+exports dual-axis chart."""
 
 from __future__ import annotations
 
@@ -12,6 +13,7 @@ from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
 from core.theme import dual_axis_chart, generation_mix_chart, hour_day_heatmap, seasonal_range_chart
 from pipelines.eia.pull_gas_storage import STORAGE_GEO_MAP
+from pipelines.eia.pull_production_exports import LNG_EXPORTS_SERIES, PRODUCTION_SERIES
 from pipelines.gridstatus_iso.hubs import HUBS
 from pipelines.gridstatus_iso.transforms import net_load
 
@@ -155,6 +157,26 @@ def _iso_lmp_section(iso: str) -> None:
     st.plotly_chart(fig, use_container_width=True)
 
 
+def _production_exports_section() -> None:
+    production = _series_by_ts(PRODUCTION_SERIES[0])
+    lng_exports = _series_by_ts(LNG_EXPORTS_SERIES[0])
+    if production.empty or lng_exports.empty:
+        st.info("No data yet — run `pipelines/eia/pull_production_exports.py`.")
+        return
+    fig = dual_axis_chart(
+        production,
+        lng_exports,
+        title="US Dry Natural Gas Production vs. LNG Exports",
+        left_label="Dry production (MMcf)",
+        right_label="LNG exports (MMcf)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "LNG feedgas (gas consumed at liquefaction facilities before export) has no "
+        "distinct EIA API series and is not shown — see pipelines/eia/CLAUDE.md."
+    )
+
+
 def _iso_tab(iso: str) -> None:
     st.subheader(f"{iso} fuel mix")
     _iso_mix_section(iso)
@@ -168,6 +190,9 @@ st.title("US Natural Gas & Power (EIA + gridstatus)")
 
 st.subheader("Storage headline")
 _headline_section()
+
+st.subheader("Production vs. LNG exports")
+_production_exports_section()
 
 st.subheader("Regional small multiples")
 _small_multiples_section()
