@@ -97,6 +97,36 @@ def test_sndw_route_returns_ts_long_conformant_dataframe() -> None:
 
 
 @pytest.mark.vcr
+def test_gas_storage_area_name_is_literal_na() -> None:
+    # Documents a real API gotcha (confirmed live, Spec 05 Session A): this route
+    # never populates area-name at all -- it's the literal string "NA" for every
+    # row, not a genuine missing-value case like Cushing's -- which is why
+    # get_series needs an explicit geo_map for this route rather than relying on
+    # _normalise_geo(area-name).
+    client = EIAClient()
+    rows = client._fetch_rows(
+        route="natural-gas/stor/wkly", series=["NW2_EPG0_SWO_R48_BCF"], frequency="weekly"
+    )
+
+    assert rows
+    assert all(row["area-name"] == "NA" for row in rows)
+
+
+@pytest.mark.vcr
+def test_get_series_geo_map_overrides_area_name() -> None:
+    client = EIAClient()
+    df = client.get_series(
+        route="natural-gas/stor/wkly",
+        series=["NW2_EPG0_SWO_R48_BCF"],
+        frequency="weekly",
+        geo_map={"NW2_EPG0_SWO_R48_BCF": "L48"},
+    )
+
+    assert not df.empty
+    assert (df["geo"] == "L48").all()
+
+
+@pytest.mark.vcr
 def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
     client = EIAClient()
     df = client.get_flows(

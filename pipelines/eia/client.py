@@ -60,9 +60,25 @@ class EIAClient:
         result: list[dict[str, str]] = response.json()["response"]["facets"]
         return result
 
-    def get_series(self, route: str, series: list[str], frequency: str) -> pd.DataFrame:
+    def get_series(
+        self,
+        route: str,
+        series: list[str],
+        frequency: str,
+        geo_map: dict[str, str] | None = None,
+    ) -> pd.DataFrame:
+        """`geo_map`: some routes (e.g. natural-gas/stor/wkly, confirmed live) never
+        populate `area-name` at all — it comes back as the literal string "NA" for
+        every row, not a genuine missing-value case. Pass an explicit
+        {series_id: geo_label} map for those routes instead of relying on
+        `_normalise_geo(area-name)`. Default None preserves every existing caller's
+        area-name-based behaviour unchanged."""
         rows = self._fetch_rows(route, series, frequency)
         pulled_at = datetime.now(UTC)
+        if geo_map is not None:
+            geo = [geo_map[row["series"]] for row in rows]
+        else:
+            geo = [_normalise_geo(row.get("area-name", "")) for row in rows]
         return pd.DataFrame(
             {
                 "series_id": [row["series"] for row in rows],
@@ -70,7 +86,7 @@ class EIAClient:
                 "ts": pd.to_datetime([row["period"] for row in rows]),
                 "value": [float(row["value"]) for row in rows],
                 "unit": [row["units"] for row in rows],
-                "geo": [_normalise_geo(row.get("area-name", "")) for row in rows],
+                "geo": geo,
                 "freq": frequency,
                 "revision_date": pulled_at,
             }
