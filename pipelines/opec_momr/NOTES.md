@@ -132,3 +132,104 @@ parsed 2026 annual world demand = 105.739323 mb/d, matching the real Table 11-1 
 exactly (this is also the headline "2026 world oil demand forecast" figure OPEC's own MOMR
 reports). Oil-on-water and OECD stocks by region (the freight-adjacent pieces) both
 captured. `pytest`/`ruff`/`mypy` all clean.
+
+## Session B — per-country DoC crude production, without Camelot after all
+
+The spec calls for a Camelot lattice-mode PDF parse as the fallback for the one table
+genuinely missing from Excel (per-country DoC crude production, confirmed in Session A).
+**Tried it, live, in this order, before writing any Camelot code:**
+1. `momr.opec.org/pdf-download/` (the PDF's own download link) returns a **403** — a
+   different, less stable endpoint than the Excel appendix's clean static URL.
+2. Camelot's lattice mode needs a system **Ghostscript** install (not a pip package) — this
+   needed the user to manually run the installer and approve a Windows UAC prompt (this
+   automated session can't click through UAC itself). Confirmed installed successfully
+   (`gswin64c.exe --version` → `10.07.1`) after that.
+3. With a real MOMR PDF in hand (user-provided, since step 1 is blocked) and Ghostscript
+   installed, the underlying premise turned out to be moot: **the MOMR PDF has a full,
+   clean, digitally-native text layer, not a scan** — `pypdfium2`'s plain
+   `get_textpage().get_text_range()` returns every row of Table 5-7 ("DoC crude oil
+   production based on secondary sources, tb/d") as clean, regex-parseable text, with no
+   image-based table-structure detection needed at all.
+
+**Decision, per the spec's own "if unstable, stop and document" allowance**: parse the
+PDF's embedded text directly (`pdf_parser.py`) instead of using Camelot — simpler, more
+reliable (no lattice/stream-mode ambiguity, no Ghostscript runtime dependency for anyone
+running this pipeline later), and verified accurate independently: summing every OPEC
+member country this parser extracted for July 2026 (23,633) against the PDF's own printed
+"Total OPEC" line for the same month (23,632) matched to within OPEC's own "totals may not
+add up due to independent rounding" disclaimer — not a parsing error. Ghostscript stays
+installed on this machine (harmless, and available if a future session ever does need
+Camelot for a genuinely scanned document), but nothing in this codebase depends on it —
+`camelot-py`/`opencv-python-headless`/`playa-pdf` were installed then **uninstalled again**
+once this was confirmed, so they're not project dependencies.
+
+**Real parsing gotchas, found by testing against the live file**:
+- Table 5-7's data rows appear in the extracted text **after** both its own title *and*
+  the next table's title (Table 5-8, "based on direct communication") — a two-column PDF
+  layout quirk (captions read first, then each table's actual data block). The real anchor
+  for where the data starts is the `"Secondary Change"` / `"sources <periods>"` header pair
+  that follows the narrative paragraph, not literal proximity to the `"Table 5 - 7"` string.
+- Header periods are two annual + three quarterly + **the latest 3 actual months** (this
+  issue: May/Jun/Jul 2026) — the month columns are two space-separated tokens each (`"May
+  26"`), and "26" alone is ambiguous about century, so the real calendar months are
+  cross-anchored from the page's own narrative sentence (`"Total DoC crude oil production
+  averaged 37.66 mb/d in July 2026..."`) rather than guessed.
+- Every data row has **one more value token than period columns** — a trailing
+  `"Jul/Jun"`-style change column with no corresponding header entry (mirrors the Excel
+  appendix's own change columns, e.g. Table 11-4's `"25/24"`, which are similarly skipped).
+- `".."` is OPEC's own "not available" marker (confirmed live in Table 5-8's messier
+  direct-communication rows) — dropped, not treated as zero or an error.
+- Table 5-8 additionally has footnote-asterisked alternate figures for Saudi Arabia
+  (`"7.010*"`) — not parsed here at all; only Table 5-7 (secondary sources) is, matching
+  the spec's own example series_id (`momr.prod.saudi.secondary`).
+
+**Unit and `geo` differ from the Excel appendix parser**: `tb/d` (thousand barrels/day,
+matching `quotas.csv`'s `kbd` convention directly, no conversion needed) rather than
+Excel's `mb/d`; `geo` is the real country name here (e.g. `"Saudi Arabia"`), not the
+Excel parser's `"WORLD"` simplification — per-country compliance is this table's entire
+point. `series_id` convention: `momr.doc_crude_secondary.{country_slug}.{freq_word}`.
+
+## `quotas.csv` — hand-maintained, sourced from OPEC's own press release
+No quota/reference-production table exists anywhere in the MOMR itself (checked: searched
+every page for "quota"/"baseline"/"voluntary adjustment", found only unrelated economic-
+outlook prose). The spec's own data model already anticipated this
+(`pipelines/opec_momr/quotas.csv`, hand-maintained). Seeded from OPEC's own 2 August 2026
+press release (the "Voluntary 8" group's September 2026 required-production table) —
+**published as an embedded PNG image on opec.org's press-release page, not HTML text or a
+PDF table** (confirmed live: no `<table>` elements on the page at all, just one `<img>`),
+read visually to transcribe the 7 real figures into the CSV.
+
+**Known coverage gap**: only 7 of the group's countries appear in these monthly increment
+announcements (Saudi Arabia, Russia, Iraq, Kuwait, Kazakhstan, Algeria, Oman) — UAE, also
+part of the "Voluntary 8", already reached its own separately-negotiated ceiling earlier
+and isn't part of the recurring monthly-adjustment table. Every other DoC country (Nigeria,
+Congo, Gabon, Equatorial Guinea, Libya, IR Iran, Venezuela, and the non-OPEC DoC members)
+has no current "quota" figure seeded at all — they either have no formal target under the
+current framework or one wasn't readily available from a single primary source in this
+session's timebox. **This file needs ongoing manual updates** as OPEC+ announces new
+monthly levels (roughly monthly, per the group's own meeting cadence) — it is explicitly
+not a "set once" file.
+
+## `transforms.py::production_vs_quota` — a known simplification
+Compares the latest *actual* production month against each country's most recently
+announced quota row, **regardless of whether their reference months match** — OPEC+
+announces a month's target about a month ahead of when it takes effect (this session: the
+September 2026 target vs. July 2026 actuals, a ~2-month gap by the nature of the
+announcement cycle). A precise point-in-time comparison would need `quotas.csv` to carry a
+full history matched to each actual month; revisit if that becomes the sole open item.
+
+## `transforms.py::revision_waterfall` and new chart primitives
+Reads `Table 11-2`'s already-precomputed deltas directly (Session A's own finding — OPEC
+publishes "current minus last month" itself; nothing here re-derives it from two stored
+vintages). `core.theme.production_vs_quota_chart` (grouped bars, navy actual / grey quota,
+compliance % as bar-top text) and `core.theme.revision_waterfall_chart` (`go.Waterfall`,
+navy up / red down) are both new, reusable house-style primitives — a new `GREY = "#95a5a6"`
+constant was added alongside the existing `NAVY`/`LIGHT_BLUE`/`RED`/`ORANGE` for the quota
+bars, since no solid grey fill colour existed yet (only semi-transparent line greys).
+
+## Verified (Session B)
+Real PDF pull: 176 rows across 22 countries. Production-vs-quota and revision-waterfall
+both render live with real data on page `06_supply.py`, verified in-browser (grouped bars
+with correct compliance %, e.g. Oman 110%, Saudi Arabia 70%; waterfall with real
+positive/negative bars for 2026 annual, OPEC's own most-revised year at time of writing).
+`pytest`/`ruff`/`mypy` all clean.
