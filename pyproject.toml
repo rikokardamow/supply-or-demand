@@ -16,6 +16,7 @@ dependencies = [
     "requests>=2.32",
     "pyarrow>=17.0",
     "entsoe-py>=0.8",
+    "gridstatus==0.34.0",
 ]
 
 [project.optional-dependencies]
@@ -76,6 +77,7 @@ module = [
     "duckdb.*",
     "vcr.*",
     "pyarrow.*",
+    "gridstatus.*",
 ]
 ignore_missing_imports = true
 

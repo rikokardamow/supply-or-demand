@@ -1,16 +1,49 @@
 """US Natural Gas & Power (EIA + gridstatus). Session A scope (specs/05_us-gas-power.md):
-Lower-48 storage worm chart + regional small multiples. ISO tabs and production/exports
-land in later sessions."""
+Lower-48 storage worm chart + regional small multiples. Session B: CAISO/NYISO tabs
+(mix stack, load/net-load, LMP heatmap). Production/exports land in a later session."""
 
 from __future__ import annotations
 
 import core.theme  # noqa: F401
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
-from core.theme import seasonal_range_chart
+from core.theme import dual_axis_chart, generation_mix_chart, hour_day_heatmap, seasonal_range_chart
 from pipelines.eia.pull_gas_storage import STORAGE_GEO_MAP
+from pipelines.gridstatus_iso.hubs import HUBS
+from pipelines.gridstatus_iso.transforms import net_load
+
+# Renewables first, thermal last -- same stacking convention as 04_eu_power.py's
+# generation mix. Fuel-type names are each ISO's own gridstatus column names,
+# confirmed live (Spec 05 Session B) -- CAISO and NYISO don't share a naming scheme.
+_ISO_FUEL_ORDER = {
+    "CAISO": [
+        "Solar",
+        "Wind",
+        "Geothermal",
+        "Biomass",
+        "Biogas",
+        "Small Hydro",
+        "Large Hydro",
+        "Batteries",
+        "Nuclear",
+        "Natural Gas",
+        "Coal",
+        "Imports",
+        "Other",
+    ],
+    "NYISO": [
+        "Wind",
+        "Hydro",
+        "Other Renewables",
+        "Nuclear",
+        "Natural Gas",
+        "Dual Fuel",
+        "Other Fossil Fuels",
+    ],
+}
 
 L48_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
 
@@ -61,6 +94,76 @@ def _small_multiples_section() -> None:
             st.plotly_chart(fig, use_container_width=True)
 
 
+def _series_by_ts(series_id: str) -> pd.Series:
+    df = read_ts_long(series_ids=[series_id]).sort_values("ts")
+    return df.set_index("ts")["value"]
+
+
+def _slug(name: str) -> str:
+    return name.lower().replace(" ", "_").replace("-", "_")
+
+
+def _iso_mix_section(iso: str) -> None:
+    fuels = _ISO_FUEL_ORDER[iso]
+    series_ids = [f"gridstatus.{iso}.fuel_mix.{_slug(fuel)}" for fuel in fuels]
+    long_df = read_ts_long(series_ids=series_ids)
+    if long_df.empty:
+        st.info(f"No fuel-mix data yet for {iso} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        return
+
+    slug_to_fuel = {_slug(f): f for f in fuels}
+    long_df = long_df.copy()
+    long_df["fuel"] = long_df["series_id"].str.split(".").str[-1].map(slug_to_fuel)
+    wide = long_df.pivot_table(index="ts", columns="fuel", values="value").fillna(0.0)
+    ordered_cols = [f for f in fuels if f in wide.columns]
+    fig = generation_mix_chart(wide[ordered_cols], title=f"{iso} Fuel Mix", unit="MW")
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _iso_load_section(iso: str) -> None:
+    load = _series_by_ts(f"gridstatus.{iso}.load")
+    if load.empty:
+        st.info(f"No load data yet for {iso} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        return
+
+    fuels = _ISO_FUEL_ORDER[iso]
+    empty = pd.Series(dtype=float)
+    wind = _series_by_ts(f"gridstatus.{iso}.fuel_mix.{_slug('Wind')}") if "Wind" in fuels else empty
+    solar = (
+        _series_by_ts(f"gridstatus.{iso}.fuel_mix.{_slug('Solar')}") if "Solar" in fuels else empty
+    )
+
+    net = net_load(load, wind, solar)
+    fig = dual_axis_chart(
+        load,
+        net,
+        title=f"{iso} Load vs. Net Load",
+        left_label="Load (MW)",
+        right_label="Net load (MW)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _iso_lmp_section(iso: str) -> None:
+    hubs = HUBS[iso]
+    hub = st.selectbox("Hub / zone", options=hubs, key=f"{iso}_hub")
+    series = _series_by_ts(f"gridstatus.{iso}.lmp.{_slug(hub)}")
+    if series.empty:
+        st.info(f"No LMP data yet for {iso} {hub} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        return
+    fig = hour_day_heatmap(series.to_frame("value"), title=f"{iso} {hub} LMP", unit="USD/MWh")
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _iso_tab(iso: str) -> None:
+    st.subheader(f"{iso} fuel mix")
+    _iso_mix_section(iso)
+    st.subheader(f"{iso} load vs. net load")
+    _iso_load_section(iso)
+    st.subheader(f"{iso} LMP — hour x day")
+    _iso_lmp_section(iso)
+
+
 st.title("US Natural Gas & Power (EIA + gridstatus)")
 
 st.subheader("Storage headline")
@@ -68,5 +171,12 @@ _headline_section()
 
 st.subheader("Regional small multiples")
 _small_multiples_section()
+
+st.subheader("ISO real-time signals")
+_caiso_tab, _nyiso_tab = st.tabs(["CAISO", "NYISO"])
+with _caiso_tab:
+    _iso_tab("CAISO")
+with _nyiso_tab:
+    _iso_tab("NYISO")
 
 st.caption(f"{len(STORAGE_GEO_MAP)} storage regions covered.")
