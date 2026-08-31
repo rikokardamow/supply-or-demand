@@ -319,3 +319,22 @@ checked in directly). Confirmed gap matching the spec's own two-session split: n
 per-country DoC crude production, only an OPEC-wide aggregate — exactly what Session B's
 Camelot PDF fallback is for. Acceptance criterion met: parsed 2026 annual world demand
 (105.74 mb/d) matches the real MOMR cell exactly.
+
+Session B: tried Camelot first, as the spec calls for — the PDF's own download endpoint
+(`momr.opec.org/pdf-download/`) returns a 403, and Camelot's lattice mode needs a system
+Ghostscript install (a Windows UAC-gated installer this automated session couldn't approve
+itself; the user ran it). With Ghostscript installed and a real user-provided PDF in hand,
+the premise turned out to be moot: the MOMR PDF has a full, clean, digitally-native text
+layer, not a scan — reading it directly with `pypdfium2` and a handful of regexes extracted
+the one table missing from Excel (per-country DoC crude production, 22 countries) more
+simply and reliably than image-based table detection would have. Verified independently:
+summing every OPEC member country this parser found for July 2026 (23,633) matched the
+PDF's own printed "Total OPEC" line (23,632) to within OPEC's own rounding disclaimer.
+Per the spec's "if unstable, stop and document" allowance, Camelot itself was uninstalled
+again once this was confirmed — it's not a project dependency. `quotas.csv` seeded from
+OPEC's own 2 August 2026 press release (published as an embedded PNG image, not HTML or a
+PDF table — read visually) — 7 of the "Voluntary 8" group's countries have current targets;
+UAE already reached its separate ceiling and isn't part of the recurring table, and every
+other DoC country has no quota seeded yet. Page 06 gained a production-vs-quota grouped-bar
+chart and a revision-waterfall chart (both new `core.theme` primitives), verified live
+in-browser with real data (e.g. Oman 110% compliance, Saudi Arabia 70%).
