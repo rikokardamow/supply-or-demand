@@ -265,3 +265,18 @@ L48 headline worm chart + 7-region small multiples, reusing the exact
 `seasonal_stats`/`seasonal_range_chart` pattern already built for `01_us_padd.py`/
 `02_gas_storage.py`. Acceptance criterion met: the lake's latest L48 value (3,184 BCF,
 2026-08-21) matched a fresh, independent API call exactly.
+
+Session B: added `pipelines/gridstatus_iso/` for ISO real-time load, fuel mix, and
+hub/zone-level LMP. The spec's own ERCOT+PJM pairing didn't survive contact with reality:
+ERCOT's website is behind Incapsula bot-protection (every endpoint gridstatus needs returns
+403), and PJM needs a free Data Miner 2 API key the user can't obtain (network membership
+required). MISO was tried next but dropped too — its real-time load/fuel-mix API only
+serves "today" for the current year, with no genuine historical path via gridstatus.
+Landed on **CAISO + NYISO**, both confirmed to support a real 60-day range for all three
+data types with no credentials needed. Also caught and fixed a real dependency conflict:
+`gridstatus`'s latest release (0.36.0) hard-requires `plotly~=6.0`, clashing with this
+project's `plotly<6.0` pin used by every existing chart — pinned `gridstatus==0.34.0`
+instead (the newest release before that pin was introduced). Page 05 gained ISO tabs: a
+fuel-mix stack, load-vs-net-load, and an hour×day LMP heatmap (`core.theme.hour_day_heatmap`,
+new) per ISO. Verified live: CAISO load cross-checked against an independent fresh pull,
+exact match.
