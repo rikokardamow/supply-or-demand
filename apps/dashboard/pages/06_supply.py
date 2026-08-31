@@ -1,6 +1,7 @@
-"""OPEC / Global Supply Monitoring (MOMR + JODI + Baker Hughes). Session B scope
-(specs/06_opec-supply.md): DoC production-vs-quota grouped bars, and the MOMR
-revision waterfall. JODI and Baker Hughes land in later sessions."""
+"""OPEC / Global Supply Monitoring (MOMR + JODI + Baker Hughes). Session B:
+DoC production-vs-quota grouped bars, MOMR revision waterfall. Session D: US
+oil rig count. Rigs vs. WTI stays a single series until Spec 07 (Henry
+Hub/WTI) exists, per the spec's own "until then rigs only" note."""
 
 from __future__ import annotations
 
@@ -8,7 +9,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
 from core.storage import read_ts_long
-from core.theme import production_vs_quota_chart, revision_waterfall_chart
+from core.theme import production_vs_quota_chart, revision_waterfall_chart, simple_time_series_chart
 from pipelines.opec_momr.transforms import load_quotas, production_vs_quota, revision_waterfall
 
 
@@ -68,6 +69,21 @@ def _revision_waterfall_section() -> None:
     )
 
 
+def _rig_count_section() -> None:
+    long_df = read_ts_long(series_ids=["bh.rigs.united_states.oil"])
+    if long_df.empty:
+        st.info("No data yet — run `pipelines/baker_hughes/pull_rigs.py`.")
+        return
+
+    series = long_df.sort_values("ts").set_index("ts")["value"]
+    fig = simple_time_series_chart(series, title="US Oil Rig Count", unit="rigs")
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "Rig count vs. WTI stays a single series (navy) until Spec 07 (Henry "
+        "Hub/WTI) exists — see pipelines/baker_hughes/CLAUDE.md."
+    )
+
+
 def _slug(label: str) -> str:
     return label.lower().replace(" ", "_")
 
@@ -86,3 +102,6 @@ _production_vs_quota_section()
 
 st.subheader("MOMR revision waterfall")
 _revision_waterfall_section()
+
+st.subheader("US rig count")
+_rig_count_section()

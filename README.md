@@ -351,3 +351,23 @@ filename patterns differ for the current (still-updating) year vs. closed years,
 inapplicable-unit) that both need dropping before conversion. Monthly entrypoint confirmed
 idempotent live (identical row count across two consecutive runs). No page work this
 session — pure data ingestion, per the spec.
+
+Session D (final for this spec): `pipelines/baker_hughes/` scrapes the current weekly
+North America rig count XLSX. Found there's no guessable URL, unlike OPEC's Excel
+appendix — the file lives at a fresh random UUID (`rigcount.bakerhughes.com/static-files/
+{uuid}`) each week, so the pipeline scrapes the landing page for the link labelled
+"North America Rig Count Report - New Report" (a stable label distinguishing it from the
+archived report link beside it). A HEAD request (confirmed live to return the same
+`Content-Disposition` filename as a GET, with no body) resolves the report date and avoids
+re-downloading the ~8 MB file on a cache hit. The `NAM Weekly` sheet is already a long
+granular table (~188,000 rows, ~2.7 years of history) rather than a snapshot, so — unlike
+MOMR — no vintage-tracking scheme was needed; ingestion time is used for `revision_date`,
+matching `pipelines/eia`'s convention. Aggregated to three levels (country total, country×
+drill-target, country×drill-target×state) rather than full per-county granularity, judged
+excessive for now. Confirmed real values: US oil rigs = 447, US total = 588 (2026-08-28
+report). Page 06 gained a single-series US oil rig count chart — a true dual-axis rigs-vs-
+WTI chart waits for Spec 07 (Henry Hub/WTI), per the spec's own note. Pull confirmed
+idempotent live (5,935 rows / 63 series, unchanged across two consecutive runs).
+
+Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall, US rig
+count), MOMR/JODI/Baker Hughes pipelines all green, tests passing.
