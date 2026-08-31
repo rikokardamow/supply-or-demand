@@ -380,3 +380,33 @@ and the oil-on-water series' quarterly range extended back to 2024.
 Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall,
 oil-on-water, US rig count), MOMR/JODI/Baker Hughes pipelines all green, ≥2 MOMR vintages
 stored, tests passing.
+
+#### Spec 07 (refinery cracks, IB Gateway) — deferred
+Needs a locally-running IB Gateway/TWS with the API enabled per the spec's own manual-prep
+step — confirmed live that none of the standard ports (7497/7496/4002/4001) are listening
+on this machine. Skipped for now in favour of Spec 08, which has no such local-service
+prerequisite; revisit once IB Gateway is set up.
+
+#### In progress — Spec 08: Weather overlay (Open-Meteo + ECMWF)
+Session A: `pipelines/weather/` pulls Open-Meteo HDD/CDD (no key) for 14 cities (9 EU,
+5 US), population-weighted EU/US aggregates, and a climatology-vs-forecast page. Confirmed
+live: both the forecast and archive endpoints accept **batched, comma-separated multi-city
+requests**, returning a JSON array in input order — one request per EU/US group instead of
+one per city. Also found the spec's own wind param name is stale (`windspeed_10m_max`
+doesn't work; the real one is `wind_speed_10m_max`). Hit — and worked around — two distinct
+real rate limits (per-minute and per-hour); redesigned the climatology builder to compute
+directly from the lake's own already-backfilled history (`core.seasonal.seasonal_stats`,
+2020 excluded automatically) rather than making a second expensive archive call, avoiding
+the rate limit entirely for that step. Population weights sourced from a single consistent
+source (macrotrends.net 2024 metro-area populations) for all 14 cities. Per user request,
+extended beyond the spec's own visualisation spec: a US mirror of the EU HDD-vs-gas-storage
+dual-axis chart (net-withdrawal derived as `-level.diff()` from Spec 05's EIA storage level,
+since EIA has no injection/withdrawal split unlike GIE's AGSI), plus NYC/LA CDD-anomaly-vs-
+ISO-load dual-axis charts joining Spec 05's gridstatus data. A real scale-mismatch bug was
+caught and fixed live in-browser: joining a 90-day weather-anomaly window against a
+multi-year gas-storage series on the same dual-axis chart stretched the shared x-axis to
+the wider series' full range, squashing the weather trace to an invisible sliver — fixed by
+trimming the other series to the same recent window before charting. Acceptance criterion
+met: Dublin's real recorded temperatures give manual HDD values matching the lake's stored
+figures exactly (within rounding). ECMWF anomaly maps (Session B) and wind + a combined
+daily entrypoint (Session C) still to come.

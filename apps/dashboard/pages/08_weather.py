@@ -1,0 +1,205 @@
+"""Weather Overlay (Open-Meteo). Session A scope (specs/08_weather.md): population-
+weighted EU/US HDD history+forecast vs. climatology (visual 1), and dual-axis HDD/CDD
+anomaly charts linking weather to gas storage and power demand (visual 2 plus 3 more
+added per user request -- see pipelines/weather/NOTES.md). ECMWF anomaly maps and wind
+land in later sessions."""
+
+from __future__ import annotations
+
+import core.theme  # noqa: F401
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+from components.kardamow_take import kardamow_take
+from core.seasonal import seasonal_stats
+from core.storage import read_ts_long
+from core.theme import NAVY, dual_axis_chart, seasonal_range_chart
+from pipelines.gie.transforms import net_flow
+from pipelines.weather.climatology import build_climatology
+from pipelines.weather.gas_proxy import net_withdrawal
+
+US_STORAGE_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
+ANOMALY_HISTORY_WINDOW_DAYS = 90
+
+
+def _series_by_ts(series_id: str, source: str | None = None) -> pd.Series:
+    df = read_ts_long(series_ids=[series_id])
+    if source is not None:
+        df = df[df["source"] == source]
+    return df.sort_values("ts").set_index("ts")["value"]
+
+
+def _recent_cutoff(
+    series_id: str, days: int = ANOMALY_HISTORY_WINDOW_DAYS
+) -> pd.Timestamp | None:
+    """The anomaly series below only plots a trailing window, not full history --
+    other series joined onto the same dual-axis chart (e.g. gas storage, which has
+    years of history) need trimming to the same recent window, or their much wider
+    date range squashes the weather trace to an invisible sliver at the chart's edge."""
+    history = _series_by_ts(series_id, source="open_meteo")
+    if history.empty:
+        return None
+    cutoff: pd.Timestamp = history.index.max() - pd.Timedelta(days=days)
+    return cutoff
+
+
+def _trim_recent(series: pd.Series, cutoff: pd.Timestamp | None) -> pd.Series:
+    if cutoff is None:
+        return series
+    return series[series.index >= cutoff]
+
+
+def _anomaly_series(series_id: str, forecast_series_id: str | None = None) -> pd.Series:
+    """Recent history (trailing window) plus the forecast horizon, each minus the
+    climatological daily normal for that day-of-year -- built from the already-cached
+    Parquet in pipelines/weather/climatology.py, not a live API call."""
+    climatology = build_climatology()
+    clim_lookup = climatology.loc[climatology["series_id"] == series_id].set_index("doy")[
+        "climatology"
+    ]
+    if clim_lookup.empty:
+        return pd.Series(dtype=float)
+
+    parts = [_series_by_ts(series_id, source="open_meteo").tail(ANOMALY_HISTORY_WINDOW_DAYS)]
+    if forecast_series_id is not None:
+        parts.append(_series_by_ts(forecast_series_id, source="open_meteo_forecast"))
+    combined = pd.concat(parts)
+    if combined.empty:
+        return pd.Series(dtype=float)
+
+    doy = pd.Index([ts.replace(year=2001).dayofyear for ts in combined.index])
+    baseline = clim_lookup.reindex(doy).to_numpy()
+    return pd.Series(combined.to_numpy() - baseline, index=combined.index)
+
+
+def _climatology_section(region: str) -> None:
+    series_id = f"hdd.{region}.popw"
+    history = _series_by_ts(series_id, source="open_meteo")
+    if history.empty:
+        st.info("No data yet — run `pipelines/weather/pull_weather.py`.")
+        return
+
+    history_df = history.reset_index()
+    history_df.columns = ["ts", "value"]
+    stats = seasonal_stats(history_df, value_col="value")
+    current_year = history_df["ts"].dt.year.max()
+    current = history_df[history_df["ts"].dt.year == current_year].sort_values("ts")
+    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
+    current_year_series = current.set_index(reference_doy)["value"]
+
+    fig = seasonal_range_chart(
+        stats,
+        current_year_series,
+        title=f"{region.upper()} Population-Weighted HDD — Seasonal",
+        unit="degree-days",
+    )
+
+    forecast = _series_by_ts(f"{series_id}.forecast", source="open_meteo_forecast")
+    if not forecast.empty:
+        forecast_doy = [ts.replace(year=2001).dayofyear for ts in forecast.index]
+        fig.add_trace(
+            go.Scatter(
+                x=forecast_doy,
+                y=forecast.to_numpy(),
+                mode="lines",
+                name="Forecast",
+                line={"color": NAVY, "width": 2, "dash": "dash"},
+            )
+        )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def _eu_hdd_vs_gas_section() -> None:
+    cutoff = _recent_cutoff("hdd.eu.popw")
+    injection = _trim_recent(_series_by_ts("agsi.EU.injection"), cutoff)
+    withdrawal = _trim_recent(_series_by_ts("agsi.EU.withdrawal"), cutoff)
+    hdd_anomaly = _anomaly_series("hdd.eu.popw", "hdd.eu.popw.forecast")
+    if injection.empty or withdrawal.empty or hdd_anomaly.empty:
+        st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 02's pulls.")
+        return
+
+    eu_net_withdrawal = net_flow(withdrawal, injection)
+    fig = dual_axis_chart(
+        hdd_anomaly,
+        eu_net_withdrawal,
+        title="EU HDD Anomaly vs. Gas Net-Withdrawal",
+        left_label="HDD anomaly (degree-days)",
+        right_label="Net withdrawal (GWh/d)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    kardamow_take(
+        "Colder-than-normal EU weather shows up in storage draws within days, not weeks — "
+        "this is the fastest-moving read on whether a cold snap is actually pulling gas out "
+        "of the ground or just making headlines."
+    )
+
+
+def _us_hdd_vs_gas_section() -> None:
+    level = _series_by_ts(US_STORAGE_SERIES_ID)
+    hdd_anomaly = _anomaly_series("hdd.us.popw", "hdd.us.popw.forecast")
+    if level.empty or hdd_anomaly.empty:
+        st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 05's pulls.")
+        return
+
+    # net_withdrawal needs the point before the trimmed window to diff against, so
+    # compute it on the full series first and only trim the result afterwards.
+    cutoff = _recent_cutoff("hdd.us.popw")
+    us_net_withdrawal = _trim_recent(net_withdrawal(level), cutoff)
+    fig = dual_axis_chart(
+        hdd_anomaly,
+        us_net_withdrawal,
+        title="US HDD Anomaly vs. Gas Storage Net-Withdrawal",
+        left_label="HDD anomaly (degree-days)",
+        right_label="Net withdrawal (BCF/week)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "EIA's storage route publishes a weekly level, not a daily injection/withdrawal "
+        "split like GIE's AGSI — net withdrawal here is the week-over-week drop, so this "
+        "series is weekly while the HDD anomaly is daily."
+    )
+
+
+def _cdd_vs_load_section(city: str, iso: str) -> None:
+    cdd_anomaly = _anomaly_series(f"cdd.{city}.f65", f"cdd.{city}.f65.forecast")
+    load = _series_by_ts(f"gridstatus.{iso}.load")
+    if cdd_anomaly.empty or load.empty:
+        st.info(
+            f"No data yet for {iso} — run `pipelines/weather/pull_weather.py` "
+            "and Spec 05's pulls."
+        )
+        return
+
+    fig = dual_axis_chart(
+        cdd_anomaly,
+        load,
+        title=f"{city.replace('_', ' ').title()} CDD Anomaly vs. {iso} Load",
+        left_label="CDD anomaly (degree-days)",
+        right_label="Load (MW)",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        f"{iso}'s load pull keeps a trailing 60-day window (see pipelines/gridstatus_iso/"
+        "NOTES.md), so this chart covers a recent window, not deep seasonal history."
+    )
+
+
+st.title("Weather Overlay")
+
+st.subheader("Population-weighted HDD vs. climatology")
+col_eu, col_us = st.columns(2)
+with col_eu:
+    _climatology_section("eu")
+with col_us:
+    _climatology_section("us")
+
+st.subheader("EU weather vs. gas storage")
+_eu_hdd_vs_gas_section()
+
+st.subheader("US weather vs. gas storage")
+_us_hdd_vs_gas_section()
+
+st.subheader("Cooling demand vs. power load")
+_cdd_vs_load_section("new_york", "NYISO")
+_cdd_vs_load_section("los_angeles", "CAISO")
