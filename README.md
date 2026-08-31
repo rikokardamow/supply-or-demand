@@ -338,3 +338,16 @@ UAE already reached its separate ceiling and isn't part of the recurring table, 
 other DoC country has no quota seeded yet. Page 06 gained a production-vs-quota grouped-bar
 chart and a revision-waterfall chart (both new `core.theme` primitives), verified live
 in-browser with real data (e.g. Oman 110% compliance, Saudi Arabia 70%).
+
+Session C: `pipelines/jodi/` bulk-downloads JODI-Oil's annual "primary" (crude oil) CSV and
+filters to crude production/refinery intake/closing stocks for the top-15 producers. Found
+a genuine reporting gap, confirmed live: Russia, Iraq, Iran, UAE, and Brazil — all major
+real-world producers — have zero production data in JODI's primary table for all of 2026,
+so "top 15" was computed from what JODI actually has (averaged across all available 2026
+months, not just the latest, since a handful of otherwise-reporting countries have one-off
+monthly gaps too) rather than assumed from other sources. Also found the two annual-CSV
+filename patterns differ for the current (still-updating) year vs. closed years, and that
+`OBS_VALUE` carries two distinct non-numeric markers (`"-"` not reported, `"x"` confidential/
+inapplicable-unit) that both need dropping before conversion. Monthly entrypoint confirmed
+idempotent live (identical row count across two consecutive runs). No page work this
+session — pure data ingestion, per the spec.
