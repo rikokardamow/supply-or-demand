@@ -10,6 +10,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from components.card import card
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
@@ -87,12 +88,8 @@ def _climatology_section(region: str) -> None:
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_range_chart(
-        stats,
-        current_year_series,
-        title=f"{region.upper()} Population-Weighted HDD — Seasonal",
-        unit="degree-days",
-    )
+    title = f"{region.upper()} Population-Weighted HDD — Seasonal"
+    fig = seasonal_range_chart(stats, current_year_series, title=title, unit="degree-days")
 
     forecast = _series_by_ts(f"{series_id}.forecast", source="open_meteo_forecast")
     if not forecast.empty:
@@ -107,7 +104,8 @@ def _climatology_section(region: str) -> None:
             )
         )
 
-    st.plotly_chart(fig, use_container_width=True)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def _eu_hdd_vs_gas_section() -> None:
@@ -120,19 +118,21 @@ def _eu_hdd_vs_gas_section() -> None:
         return
 
     eu_net_withdrawal = net_flow(withdrawal, injection)
+    title = "EU HDD Anomaly vs. Gas Net-Withdrawal"
     fig = dual_axis_chart(
         hdd_anomaly,
         eu_net_withdrawal,
-        title="EU HDD Anomaly vs. Gas Net-Withdrawal",
+        title=title,
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (GWh/d)",
     )
-    st.plotly_chart(fig, use_container_width=True)
-    kardamow_take(
-        "Colder-than-normal EU weather shows up in storage draws within days, not weeks — "
-        "this is the fastest-moving read on whether a cold snap is actually pulling gas out "
-        "of the ground or just making headlines."
-    )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        kardamow_take(
+            "Colder-than-normal EU weather shows up in storage draws within days, not "
+            "weeks — this is the fastest-moving read on whether a cold snap is actually "
+            "pulling gas out of the ground or just making headlines."
+        )
 
 
 def _us_hdd_vs_gas_section() -> None:
@@ -146,19 +146,22 @@ def _us_hdd_vs_gas_section() -> None:
     # compute it on the full series first and only trim the result afterwards.
     cutoff = _recent_cutoff("hdd.us.popw")
     us_net_withdrawal = _trim_recent(net_withdrawal(level), cutoff)
+    title = "US HDD Anomaly vs. Gas Storage Net-Withdrawal"
     fig = dual_axis_chart(
         hdd_anomaly,
         us_net_withdrawal,
-        title="US HDD Anomaly vs. Gas Storage Net-Withdrawal",
+        title=title,
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (BCF/week)",
     )
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "EIA's storage route publishes a weekly level, not a daily injection/withdrawal "
-        "split like GIE's AGSI — net withdrawal here is the week-over-week drop, so this "
-        "series is weekly while the HDD anomaly is daily."
-    )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "EIA's storage route publishes a weekly level, not a daily injection/"
+            "withdrawal split like GIE's AGSI — net withdrawal here is the "
+            "week-over-week drop, so this series is weekly while the HDD anomaly "
+            "is daily."
+        )
 
 
 def _cdd_vs_load_section(city: str, iso: str) -> None:
@@ -171,18 +174,21 @@ def _cdd_vs_load_section(city: str, iso: str) -> None:
         )
         return
 
+    title = f"{city.replace('_', ' ').title()} CDD Anomaly vs. {iso} Load"
     fig = dual_axis_chart(
         cdd_anomaly,
         load,
-        title=f"{city.replace('_', ' ').title()} CDD Anomaly vs. {iso} Load",
+        title=title,
         left_label="CDD anomaly (degree-days)",
         right_label="Load (MW)",
     )
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        f"{iso}'s load pull keeps a trailing 60-day window (see pipelines/gridstatus_iso/"
-        "NOTES.md), so this chart covers a recent window, not deep seasonal history."
-    )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            f"{iso}'s load pull keeps a trailing 60-day window (see "
+            "pipelines/gridstatus_iso/NOTES.md), so this chart covers a recent "
+            "window, not deep seasonal history."
+        )
 
 
 st.title("Weather Overlay")
