@@ -380,3 +380,23 @@ and the oil-on-water series' quarterly range extended back to 2024.
 Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfall,
 oil-on-water, US rig count), MOMR/JODI/Baker Hughes pipelines all green, ≥2 MOMR vintages
 stored, tests passing.
+
+#### v0.8 — Dashboard redesign: institutional light theme, cards, real map tiles
+Cross-cutting change, not tied to a spec — a visual redesign against reference screenshots
+of professional energy/intelligence dashboards. Locks an explicit light theme
+(`.streamlit/config.toml`: white canvas, dark-navy sidebar, Inter font) instead of silently
+following the viewer's OS/browser dark-mode preference — this also fixed a real bug:
+`seasonal_range_chart`'s annotation box and light-grey gridlines were nearly illegible
+against a dark background that was never actually guaranteed. Every chart section across
+all 7 existing pages now wraps in a new `apps.dashboard.components.card.card(title)`
+bordered container instead of a bare `st.subheader`. Maps (`padd_map.py`, `power_maps.py`,
+`entsog_map.py`) moved from Plotly's flat `Scattergeo` projection to `Scattermapbox` with
+the free `open-street-map` tile style — real street tiles, no Mapbox token, no new
+dependency. Found live that Scattermapbox's free raster styles ship no icon sprite at all,
+so the existing rotated-triangle direction markers were silently failing to render; fixed
+by switching to plain circle markers. Also rolled out two further patterns from the same
+design survey (World Monitor, Conflict Dashboard, War Watch) to every page: a segmented-
+control time-range pill row on each page's longest raw time series, and a collapsible
+filter panel (checkboxes + live latest-value counts) on each page's biggest fixed list
+(stock series, corridors, zones, regions, quota countries). Verified live in-browser on
+every page, including forcing the browser to dark mode to confirm the theme lock holds.
