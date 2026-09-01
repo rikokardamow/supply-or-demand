@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import core.theme  # noqa: F401
 import streamlit as st
+from components.card import card
 from core.storage import warehouse
 
 st.set_page_config(page_title="Kardamow Energy Dashboard", layout="wide")
@@ -14,5 +15,5 @@ status = con.execute(
     "SELECT source, count(*) AS n_rows, max(ts) AS last_ts FROM ts_long GROUP BY source"
 ).df()
 
-st.subheader("Lake status")
-st.dataframe(status, use_container_width=True)
+with card("Lake status"):
+    st.dataframe(status, use_container_width=True)

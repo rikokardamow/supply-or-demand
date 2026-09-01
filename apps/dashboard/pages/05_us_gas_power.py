@@ -9,6 +9,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from components.card import card
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
 from core.theme import dual_axis_chart, generation_mix_chart, hour_day_heatmap, seasonal_range_chart
@@ -61,6 +62,8 @@ _SMALL_MULTIPLE_SERIES = [
     ("NW2_EPG0_SNO_R33_BCF", "South Central — Nonsalt"),
 ]
 
+PRODUCTION_EXPORTS_RANGE_DAYS = {"1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
+
 
 def _worm_chart(series_id: str, title: str) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
@@ -77,23 +80,59 @@ def _worm_chart(series_id: str, title: str) -> go.Figure | None:
 
 
 def _headline_section() -> None:
-    fig = _worm_chart(L48_SERIES_ID, "Lower 48 Working Gas Storage — Seasonal")
+    title = "Lower 48 Working Gas Storage — Seasonal"
+    fig = _worm_chart(L48_SERIES_ID, title)
     if fig is None:
         st.info("No data yet — run `pipelines/eia/pull_gas_storage.py`.")
         return
-    st.plotly_chart(fig, use_container_width=True)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+
+
+def _region_filter_panel() -> list[tuple[str, str]]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for series_id, _label in _SMALL_MULTIPLE_SERIES:
+        st.session_state.setdefault(f"gas_power_region_filter_{series_id}", True)
+    selected_count = sum(
+        st.session_state[f"gas_power_region_filter_{sid}"] for sid, _ in _SMALL_MULTIPLE_SERIES
+    )
+
+    with st.expander(
+        f"Filter regions ({selected_count} of {len(_SMALL_MULTIPLE_SERIES)} shown)"
+    ):
+        filter_cols = st.columns(3)
+        for i, (series_id, label) in enumerate(_SMALL_MULTIPLE_SERIES):
+            latest = _series_by_ts(series_id)
+            value = float(latest.iloc[-1]) if not latest.empty else None
+            checkbox_label = f"{label} — {value:,.0f} BCF" if value is not None else label
+            with filter_cols[i % 3]:
+                st.checkbox(checkbox_label, key=f"gas_power_region_filter_{series_id}")
+
+    return [
+        item
+        for item in _SMALL_MULTIPLE_SERIES
+        if st.session_state[f"gas_power_region_filter_{item[0]}"]
+    ]
 
 
 def _small_multiples_section() -> None:
+    selected = _region_filter_panel()
+    if not selected:
+        st.info("No regions selected — check at least one above.")
+        return
+
     cols = st.columns(3)
-    for i, (series_id, label) in enumerate(_SMALL_MULTIPLE_SERIES):
-        fig = _worm_chart(series_id, f"{label} — Seasonal")
+    for i, (series_id, label) in enumerate(selected):
+        title = f"{label} — Seasonal"
+        fig = _worm_chart(series_id, title)
         with cols[i % 3]:
             if fig is None:
                 st.info(f"No data yet for {label}.")
                 continue
             fig.update_layout(height=320, showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
+            with card(title):
+                st.plotly_chart(fig, use_container_width=True)
 
 
 def _series_by_ts(series_id: str) -> pd.Series:
@@ -118,8 +157,10 @@ def _iso_mix_section(iso: str) -> None:
     long_df["fuel"] = long_df["series_id"].str.split(".").str[-1].map(slug_to_fuel)
     wide = long_df.pivot_table(index="ts", columns="fuel", values="value").fillna(0.0)
     ordered_cols = [f for f in fuels if f in wide.columns]
-    fig = generation_mix_chart(wide[ordered_cols], title=f"{iso} Fuel Mix", unit="MW")
-    st.plotly_chart(fig, use_container_width=True)
+    title = f"{iso} Fuel Mix"
+    fig = generation_mix_chart(wide[ordered_cols], title=title, unit="MW")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def _iso_load_section(iso: str) -> None:
@@ -136,14 +177,12 @@ def _iso_load_section(iso: str) -> None:
     )
 
     net = net_load(load, wind, solar)
+    title = f"{iso} Load vs. Net Load"
     fig = dual_axis_chart(
-        load,
-        net,
-        title=f"{iso} Load vs. Net Load",
-        left_label="Load (MW)",
-        right_label="Net load (MW)",
+        load, net, title=title, left_label="Load (MW)", right_label="Net load (MW)"
     )
-    st.plotly_chart(fig, use_container_width=True)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def _iso_lmp_section(iso: str) -> None:
@@ -153,8 +192,10 @@ def _iso_lmp_section(iso: str) -> None:
     if series.empty:
         st.info(f"No LMP data yet for {iso} {hub} — run `pipelines/gridstatus_iso/pull_iso.py`.")
         return
-    fig = hour_day_heatmap(series.to_frame("value"), title=f"{iso} {hub} LMP", unit="USD/MWh")
-    st.plotly_chart(fig, use_container_width=True)
+    title = f"{iso} {hub} LMP"
+    fig = hour_day_heatmap(series.to_frame("value"), title=title, unit="USD/MWh")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def _production_exports_section() -> None:
@@ -163,18 +204,34 @@ def _production_exports_section() -> None:
     if production.empty or lng_exports.empty:
         st.info("No data yet — run `pipelines/eia/pull_production_exports.py`.")
         return
+
+    time_range = st.segmented_control(
+        "Time range",
+        options=list(PRODUCTION_EXPORTS_RANGE_DAYS),
+        default="2Y",
+        required=True,
+        key="gas_power_production_exports_range",
+    )
+    days = PRODUCTION_EXPORTS_RANGE_DAYS[time_range]
+    if days is not None:
+        cutoff = production.index.max() - pd.Timedelta(days=days)
+        production = production[production.index >= cutoff]
+        lng_exports = lng_exports[lng_exports.index >= cutoff]
+
+    title = "US Dry Natural Gas Production vs. LNG Exports"
     fig = dual_axis_chart(
         production,
         lng_exports,
-        title="US Dry Natural Gas Production vs. LNG Exports",
+        title=title,
         left_label="Dry production (MMcf)",
         right_label="LNG exports (MMcf)",
     )
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(
-        "LNG feedgas (gas consumed at liquefaction facilities before export) has no "
-        "distinct EIA API series and is not shown — see pipelines/eia/CLAUDE.md."
-    )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "LNG feedgas (gas consumed at liquefaction facilities before export) has no "
+            "distinct EIA API series and is not shown — see pipelines/eia/CLAUDE.md."
+        )
 
 
 def _iso_tab(iso: str) -> None:

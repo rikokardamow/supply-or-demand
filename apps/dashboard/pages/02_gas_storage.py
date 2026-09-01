@@ -8,6 +8,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from components.card import card
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
@@ -29,6 +30,10 @@ from pipelines.gie.transforms import (
 GEO_OPTIONS = ["EU", "DE", "NL", "FR", "IT", "AT", "PL"]
 
 SMALL_MULTIPLES_COUNTRIES = ["DE", "NL", "FR", "IT", "AT", "PL"]
+
+# Daily-cadence equivalent of a live-dashboard time-range pill row (e.g. 1h/6h/24h/
+# All) -- our series are daily, not intraday, so the windows are months/years instead.
+NET_FLOW_RANGE_DAYS = {"3M": 90, "6M": 182, "1Y": 365, "2Y": 730, "All": None}
 
 _COUNTRY_TAKES = {
     "DE": (
@@ -126,33 +131,36 @@ def _fullness_bars_section(geo: str) -> None:
         date_label=latest_ts.strftime("%d-%b-%Y"),
         title=f"{geo} Storage Fullness",
     )
-    st.plotly_chart(fig, use_container_width=True)
+    with card(f"{geo} Storage Fullness"):
+        st.plotly_chart(fig, use_container_width=True)
 
-    injection = _series_by_ts(f"agsi.{geo}.injection")
-    withdrawal = _series_by_ts(f"agsi.{geo}.withdrawal")
-    working_gas_volume = _latest_value(f"agsi.{geo}.working_gas_volume")
-    if not injection.empty and not withdrawal.empty and working_gas_volume is not None:
-        avg_rate = net_flow(injection, withdrawal).rolling(7).mean().iloc[-1]
-        if pd.notna(avg_rate):
-            days, direction = days_to_full_or_empty(
-                rows[0][1], working_gas_volume, float(avg_rate)
-            )
-            if days is not None:
-                st.caption(f"At the current 7-day pace: {days:.0f} days to {direction}.")
+        injection = _series_by_ts(f"agsi.{geo}.injection")
+        withdrawal = _series_by_ts(f"agsi.{geo}.withdrawal")
+        working_gas_volume = _latest_value(f"agsi.{geo}.working_gas_volume")
+        if not injection.empty and not withdrawal.empty and working_gas_volume is not None:
+            avg_rate = net_flow(injection, withdrawal).rolling(7).mean().iloc[-1]
+            if pd.notna(avg_rate):
+                days, direction = days_to_full_or_empty(
+                    rows[0][1], working_gas_volume, float(avg_rate)
+                )
+                if days is not None:
+                    st.caption(f"At the current 7-day pace: {days:.0f} days to {direction}.")
 
 
 def _fullness_seasonal_section(geo: str) -> None:
-    fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", f"{geo} Storage Fullness — Seasonal", "%")
+    title = f"{geo} Storage Fullness — Seasonal"
+    fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", title, "%")
     if fig is None:
         st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
         return
-    st.plotly_chart(fig, use_container_width=True)
-    if geo == "EU":
-        kardamow_take(
-            "Europe's storage is well behind its own median, and the current injection "
-            "pace gets it full past 1 November — the date the market actually prices, "
-            "which is why this chart is doing more for TTF than the flat price admits."
-        )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if geo == "EU":
+            kardamow_take(
+                "Europe's storage is well behind its own median, and the current injection "
+                "pace gets it full past 1 November — the date the market actually prices, "
+                "which is why this chart is doing more for TTF than the flat price admits."
+            )
 
 
 def _net_flow_seasonal_section(geo: str) -> None:
@@ -167,13 +175,10 @@ def _net_flow_seasonal_section(geo: str) -> None:
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_minmaxmean_chart(
-        stats,
-        current_year_series,
-        title=f"{geo} Net Daily Injection/Withdrawal — Seasonal",
-        unit="GWh/d",
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    title = f"{geo} Net Daily Injection/Withdrawal — Seasonal"
+    fig = seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit="GWh/d")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure | None:
@@ -190,19 +195,48 @@ def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure |
     return seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit=unit)
 
 
+def _country_filter_panel() -> list[str]:
+    """Collapsible filter panel (accordion + checkboxes + live counts), the pattern
+    from warwatch.ch's Types/Parties filter groups -- each option shows that
+    country's latest fill % rather than a bare label."""
+    for country in SMALL_MULTIPLES_COUNTRIES:
+        st.session_state.setdefault(f"gas_storage_filter_{country}", True)
+    selected_count = sum(
+        st.session_state[f"gas_storage_filter_{c}"] for c in SMALL_MULTIPLES_COUNTRIES
+    )
+
+    with st.expander(
+        f"Filter countries ({selected_count} of {len(SMALL_MULTIPLES_COUNTRIES)} shown)"
+    ):
+        filter_cols = st.columns(3)
+        for i, country in enumerate(SMALL_MULTIPLES_COUNTRIES):
+            latest = _latest_value(f"agsi.{country}.full_pct")
+            label = f"{country} — {latest:.0f}% full" if latest is not None else country
+            with filter_cols[i % 3]:
+                st.checkbox(label, key=f"gas_storage_filter_{country}")
+
+    return [c for c in SMALL_MULTIPLES_COUNTRIES if st.session_state[f"gas_storage_filter_{c}"]]
+
+
 def _small_multiples_section() -> None:
+    selected = _country_filter_panel()
+    if not selected:
+        st.info("No countries selected — check at least one above.")
+        return
+
     cols = st.columns(3)
-    for i, country in enumerate(SMALL_MULTIPLES_COUNTRIES):
+    for i, country in enumerate(selected):
         fig = _worm_chart(f"agsi.{country}.full_pct", f"{country} Fill %")
         with cols[i % 3]:
             if fig is None:
                 st.info(f"No data yet for {country}.")
                 continue
             fig.update_layout(height=320, showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
-            take = _COUNTRY_TAKES.get(country)
-            if take is not None:
-                kardamow_take(take)
+            with card(f"{country} Fill %"):
+                st.plotly_chart(fig, use_container_width=True)
+                take = _COUNTRY_TAKES.get(country)
+                if take is not None:
+                    kardamow_take(take)
 
 
 def _net_injection_vs_sendout_section() -> None:
@@ -214,6 +248,20 @@ def _net_injection_vs_sendout_section() -> None:
         st.info("No data yet — run `pipelines/gie/pull_agsi.py` and `pull_alsi.py`.")
         return
 
+    time_range = st.segmented_control(
+        "Time range",
+        options=list(NET_FLOW_RANGE_DAYS),
+        default="1Y",
+        required=True,
+        key="gas_storage_net_flow_range",
+    )
+    days = NET_FLOW_RANGE_DAYS[time_range]
+    if days is not None:
+        cutoff = injection.index.max() - pd.Timedelta(days=days)
+        injection = injection[injection.index >= cutoff]
+        withdrawal = withdrawal[withdrawal.index >= cutoff]
+        send_out = send_out[send_out.index >= cutoff]
+
     net_injection = net_flow(injection, withdrawal)
     fig = dual_axis_chart(
         net_injection,
@@ -222,12 +270,13 @@ def _net_injection_vs_sendout_section() -> None:
         left_label="Net injection (GWh/d)",
         right_label="LNG send-out (GWh/d)",
     )
-    st.plotly_chart(fig, use_container_width=True)
-    kardamow_take(
-        "LNG send-out is running slightly ahead of net storage injection — the import "
-        "terminals are doing more of the day-to-day balancing than the storage system "
-        "itself right now, with the fill deficit above still unclosed."
-    )
+    with card("EU Net Injection vs. ALSI Send-Out"):
+        st.plotly_chart(fig, use_container_width=True)
+        kardamow_take(
+            "LNG send-out is running slightly ahead of net storage injection — the import "
+            "terminals are doing more of the day-to-day balancing than the storage system "
+            "itself right now, with the fill deficit above still unclosed."
+        )
 
 
 def _country_deviation_section() -> None:
@@ -253,13 +302,14 @@ def _country_deviation_section() -> None:
         title="Country Fill % vs. Seasonal Median (ranked)",
         yaxis_title="Deviation (percentage points)",
     )
-    st.plotly_chart(bar, use_container_width=True)
-    kardamow_take(
-        "Rank the six by deviation from median and the split is geographic, not random — "
-        "Poland and Italy near normal, Germany and the Netherlands the worst by 20-plus "
-        "points — the shortfall concentrates in the countries that lean hardest on "
-        "pipeline gas that isn't coming back."
-    )
+    with card("Country Fill % vs. Seasonal Median (ranked)"):
+        st.plotly_chart(bar, use_container_width=True)
+        kardamow_take(
+            "Rank the six by deviation from median and the split is geographic, not "
+            "random — Poland and Italy near normal, Germany and the Netherlands the "
+            "worst by 20-plus points — the shortfall concentrates in the countries that "
+            "lean hardest on pipeline gas that isn't coming back."
+        )
 
 
 st.title("EU Gas Storage & LNG (GIE AGSI+/ALSI+)")

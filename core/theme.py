@@ -26,6 +26,7 @@ def register_kardamow_template() -> None:
     template = go.layout.Template()
     template.layout.paper_bgcolor = TRANSPARENT
     template.layout.plot_bgcolor = TRANSPARENT
+    template.layout.font = {"family": "Inter, sans-serif", "color": "#1a2733"}
     template.layout.colorway = [NAVY, LIGHT_BLUE, RED, ORANGE]
     template.layout.xaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
     template.layout.yaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
