@@ -101,3 +101,52 @@ lake's stored `hdd.dublin.c18` values (11, 9, 10, 12, 13) exactly within roundin
 verified live in-browser: all 5 sections render with real data, forecast dashed line and
 climatology band both visible, no console errors beyond pre-existing/unrelated dev-server
 noise.
+
+## Session B — ECMWF anomaly maps
+
+**ECMWF Open Data (`ecmwf-opendata`), no key, CC BY 4.0.** `Client(source="ecmwf")`
+defaults to `model="ifs"`, `resol="0p25"`; `Client.retrieve(type="fc", step=[...],
+param=["2t"], target=...)` downloads a real GRIB2 (confirmed live: ~1.3MB for a 2-step
+global 2t field). **`Client.latest(**request)` returns just the run datetime without
+downloading the field** — `ecmwf_client.fetch_2t_forecast` uses this for a cheap
+cache-hit check (cache key is the real forecast run datetime, not "today", since a run
+can lag the calendar date). ECMWF's own terms require the CC BY 4.0 attribution line
+printed on every download — carried onto page 08 as a caption under each map.
+
+**GRIB2 structure via `xarray`+`cfgrib`** (confirmed live, not assumed): variable `t2m`
+(Kelvin), dims `(step, latitude, longitude)`, `latitude` 90→-90, **`longitude` already
+in -180..180** (not 0..360 — no wraparound conversion needed against the EU/CONUS
+bounding boxes). `step` is `timedelta64[ns]`; `valid_time` is a per-step coordinate.
+
+**Climatology grid is a deliberate simplification, not the spec's literal ERA5/CDS
+grid.** The spec text says "ERA5 2010-2024 monthly climatology grid" — that needs a
+separate Copernicus CDS account/key not otherwise used by this project. Per the spec's
+own "choose the simplest that works" allowance, `climatology_grid.py` instead computes a
+coarse (3° spacing) EU/CONUS grid from a **3-year same-calendar-day normal**
+(2022/2023/2024) via Open-Meteo's archive endpoint. Confirmed live: a single archive call
+happily batches 100+ locations (126-point EU grid, 189-point CONUS grid tested) for one
+day — but there is **no multi-year-single-day batch mode**, so one archive call per
+reference year is unavoidable; this is why the window is kept to 3 years rather than a
+wider 5+ year normal (keeps runtime/API load small, distinct from the multi-year
+rate-limit issue in `climatology.py` above, which this deliberately avoids repeating).
+
+**`map_assets` is a Parquet file, not a real DuckDB table.** The spec's Data Model section
+names "DuckDB table `map_assets`" — no precedent for a *persisted* (non-in-memory) DuckDB
+file exists anywhere in this codebase (`core.storage.warehouse()` only registers views
+over Parquet globs). `anomaly_maps.py` writes `data/lake/maps/manifest.parquet` instead —
+same manifest-row semantics, swappable for a real DuckDB file later without changing any
+caller, without introducing a first-of-its-kind architectural pattern unilaterally this
+session.
+
+**Cartopy installs cleanly on Windows via plain `pip install cartopy`** (v0.25.0 confirmed
+live) — modern wheels (shapely 2.1.2, pyproj 3.7.2) bundle their own GEOS/PROJ binaries,
+no system install needed. Renders real coastlines/borders via Natural Earth shapefiles
+(downloaded from `naturalearth.s3.amazonaws.com` on first use, cached after). No
+matplotlib-only fallback was needed.
+
+Verified: 4 real anomaly maps rendered (EU/CONUS × D+3/D+7) with real coastlines and a
+real diverging anomaly pattern (e.g. a cold pocket over Scandinavia, warm pocket over
+southern Spain/Balkans for EU D+3). Page 08's region/step selector confirmed live in a
+browser: switching region (Europe↔CONUS) and step (D+3↔D+7) correctly swaps the
+displayed map and its date/title, reading only from the manifest — no direct API calls
+from the page.

@@ -45,6 +45,7 @@ manual_settlements/*.csv
 *.parquet
 *.duckdb
 data/raw/
+data/lake/maps/
 
 # Logs
 *.log
