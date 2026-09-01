@@ -18,6 +18,26 @@ from core.theme import (
 )
 from pipelines.opec_momr.transforms import load_quotas, production_vs_quota, revision_waterfall
 
+RIG_COUNT_RANGE_DAYS = {"6M": 182, "1Y": 365, "2Y": 730, "All": None}
+
+
+def _country_filter_panel(countries: list[str], latest: pd.Series) -> list[str]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for country in countries:
+        st.session_state.setdefault(f"supply_quota_filter_{country}", True)
+    selected_count = sum(st.session_state[f"supply_quota_filter_{c}"] for c in countries)
+
+    with st.expander(f"Filter countries ({selected_count} of {len(countries)} shown)"):
+        filter_cols = st.columns(3)
+        for i, country in enumerate(countries):
+            value = latest.get(country)
+            label = f"{country} — {value:,.0f} tb/d" if value is not None else country
+            with filter_cols[i % 3]:
+                st.checkbox(label, key=f"supply_quota_filter_{country}")
+
+    return [c for c in countries if st.session_state[f"supply_quota_filter_{c}"]]
+
 
 def _production_vs_quota_section() -> None:
     quotas = load_quotas()
@@ -34,7 +54,13 @@ def _production_vs_quota_section() -> None:
     latest_ts = long_df["ts"].max()
     latest = long_df[long_df["ts"] == latest_ts].set_index("country")["value"]
 
+    selected_countries = _country_filter_panel(countries, latest)
+    if not selected_countries:
+        st.info("No countries selected — check at least one above.")
+        return
+
     result = production_vs_quota(latest, quotas)
+    result = result[result["country"].isin(selected_countries)]
     title = f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}"
     fig = production_vs_quota_chart(result, title=title, unit="tb/d")
     with card(title):
@@ -102,6 +128,19 @@ def _rig_count_section() -> None:
         return
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
+
+    time_range = st.segmented_control(
+        "Time range",
+        options=list(RIG_COUNT_RANGE_DAYS),
+        default="2Y",
+        required=True,
+        key="supply_rig_count_range",
+    )
+    days = RIG_COUNT_RANGE_DAYS[time_range]
+    if days is not None:
+        cutoff = series.index.max() - pd.Timedelta(days=days)
+        series = series[series.index >= cutoff]
+
     title = "US Oil Rig Count"
     fig = simple_time_series_chart(series, title=title, unit="rigs")
     with card(title):

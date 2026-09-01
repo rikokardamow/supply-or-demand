@@ -53,9 +53,31 @@ def _slug(psr_type: str) -> str:
     return psr_type.lower().replace(" ", "_").replace("/", "_").replace("-", "_")
 
 
+IRELAND_RANGE_DAYS = {"1M": 30, "3M": 90, "6M": 182, "1Y": 365, "All": None}
+
+
 def _series_by_ts(series_id: str) -> pd.Series:
     df = read_ts_long(series_ids=[series_id]).sort_values("ts")
     return df.set_index("ts")["value"]
+
+
+def _zone_filter_panel(latest_net: pd.DataFrame) -> list[str]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for zone in ZONES:
+        st.session_state.setdefault(f"eu_power_zone_filter_{zone}", True)
+    selected_count = sum(st.session_state[f"eu_power_zone_filter_{z}"] for z in ZONES)
+
+    with st.expander(f"Filter zones ({selected_count} of {len(ZONES)} shown)"):
+        filter_cols = st.columns(3)
+        zone_values = latest_net.set_index("zone")["net_position"]
+        for i, zone in enumerate(ZONES):
+            value = zone_values.get(zone)
+            label = f"{zone} — {value:,.0f} MW" if value is not None else zone
+            with filter_cols[i % 3]:
+                st.checkbox(label, key=f"eu_power_zone_filter_{zone}")
+
+    return [z for z in ZONES if st.session_state[f"eu_power_zone_filter_{z}"]]
 
 
 st.title("EU Power (ENTSO-E)")
@@ -114,20 +136,27 @@ else:
     net_df = net_position(power_df)
     latest_ts = net_df["ts"].max()
     latest_net = net_df[net_df["ts"] == latest_ts].sort_values("net_position", ascending=False)
-    bar = go.Figure(
-        go.Bar(
-            x=latest_net["zone"],
-            y=latest_net["net_position"],
-            marker_color=[NAVY if v >= 0 else RED for v in latest_net["net_position"]],
+
+    selected_zones = _zone_filter_panel(latest_net)
+    latest_net = latest_net[latest_net["zone"].isin(selected_zones)]
+
+    if latest_net.empty:
+        st.info("No zones selected — check at least one above.")
+    else:
+        bar = go.Figure(
+            go.Bar(
+                x=latest_net["zone"],
+                y=latest_net["net_position"],
+                marker_color=[NAVY if v >= 0 else RED for v in latest_net["net_position"]],
+            )
         )
-    )
-    net_position_title = f"Net Export Position — {pd.Timestamp(latest_ts)}"
-    bar.update_layout(
-        title=net_position_title,
-        yaxis_title="Net position (MW, +export / -import)",
-    )
-    with card(net_position_title):
-        st.plotly_chart(bar, use_container_width=True)
+        net_position_title = f"Net Export Position — {pd.Timestamp(latest_ts)}"
+        bar.update_layout(
+            title=net_position_title,
+            yaxis_title="Net position (MW, +export / -import)",
+        )
+        with card(net_position_title):
+            st.plotly_chart(bar, use_container_width=True)
 
 st.caption(f"{len(ZONES)} zones covered, {len(BORDERS)} borders flowing.")
 
@@ -144,6 +173,19 @@ roi_wind = _eirgrid_series("wind")
 if roi_demand.empty or roi_wind.empty:
     st.info("No EirGrid data yet — run `pipelines/eirgrid/pull_ireland.py`.")
 else:
+    ireland_range = st.segmented_control(
+        "Time range",
+        options=list(IRELAND_RANGE_DAYS),
+        default="3M",
+        required=True,
+        key="eu_power_ireland_range",
+    )
+    ireland_days = IRELAND_RANGE_DAYS[ireland_range]
+    if ireland_days is not None:
+        ireland_cutoff = roi_demand.index.max() - pd.Timedelta(days=ireland_days)
+        roi_demand = roi_demand[roi_demand.index >= ireland_cutoff]
+        roi_wind = roi_wind[roi_wind.index >= ireland_cutoff]
+
     fig = dual_axis_chart(
         roi_demand,
         roi_wind,
@@ -163,6 +205,9 @@ else:
 
     roi_ewic = _eirgrid_series("inter_ewic")
     roi_greenlink = _eirgrid_series("inter_greenlink")
+    if ireland_days is not None:
+        roi_ewic = roi_ewic[roi_ewic.index >= ireland_cutoff]
+        roi_greenlink = roi_greenlink[roi_greenlink.index >= ireland_cutoff]
     inter_fig = go.Figure()
     inter_fig.add_trace(
         go.Scatter(x=roi_ewic.index, y=roi_ewic.values, name="EWIC", line={"color": NAVY})

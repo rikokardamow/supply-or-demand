@@ -31,6 +31,10 @@ GEO_OPTIONS = ["EU", "DE", "NL", "FR", "IT", "AT", "PL"]
 
 SMALL_MULTIPLES_COUNTRIES = ["DE", "NL", "FR", "IT", "AT", "PL"]
 
+# Daily-cadence equivalent of a live-dashboard time-range pill row (e.g. 1h/6h/24h/
+# All) -- our series are daily, not intraday, so the windows are months/years instead.
+NET_FLOW_RANGE_DAYS = {"3M": 90, "6M": 182, "1Y": 365, "2Y": 730, "All": None}
+
 _COUNTRY_TAKES = {
     "DE": (
         "Germany's the weakest link in European storage, a full 31 points under median — "
@@ -191,9 +195,37 @@ def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure |
     return seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit=unit)
 
 
+def _country_filter_panel() -> list[str]:
+    """Collapsible filter panel (accordion + checkboxes + live counts), the pattern
+    from warwatch.ch's Types/Parties filter groups -- each option shows that
+    country's latest fill % rather than a bare label."""
+    for country in SMALL_MULTIPLES_COUNTRIES:
+        st.session_state.setdefault(f"gas_storage_filter_{country}", True)
+    selected_count = sum(
+        st.session_state[f"gas_storage_filter_{c}"] for c in SMALL_MULTIPLES_COUNTRIES
+    )
+
+    with st.expander(
+        f"Filter countries ({selected_count} of {len(SMALL_MULTIPLES_COUNTRIES)} shown)"
+    ):
+        filter_cols = st.columns(3)
+        for i, country in enumerate(SMALL_MULTIPLES_COUNTRIES):
+            latest = _latest_value(f"agsi.{country}.full_pct")
+            label = f"{country} — {latest:.0f}% full" if latest is not None else country
+            with filter_cols[i % 3]:
+                st.checkbox(label, key=f"gas_storage_filter_{country}")
+
+    return [c for c in SMALL_MULTIPLES_COUNTRIES if st.session_state[f"gas_storage_filter_{c}"]]
+
+
 def _small_multiples_section() -> None:
+    selected = _country_filter_panel()
+    if not selected:
+        st.info("No countries selected — check at least one above.")
+        return
+
     cols = st.columns(3)
-    for i, country in enumerate(SMALL_MULTIPLES_COUNTRIES):
+    for i, country in enumerate(selected):
         fig = _worm_chart(f"agsi.{country}.full_pct", f"{country} Fill %")
         with cols[i % 3]:
             if fig is None:
@@ -215,6 +247,20 @@ def _net_injection_vs_sendout_section() -> None:
     if injection.empty or withdrawal.empty or send_out.empty:
         st.info("No data yet — run `pipelines/gie/pull_agsi.py` and `pull_alsi.py`.")
         return
+
+    time_range = st.segmented_control(
+        "Time range",
+        options=list(NET_FLOW_RANGE_DAYS),
+        default="1Y",
+        required=True,
+        key="gas_storage_net_flow_range",
+    )
+    days = NET_FLOW_RANGE_DAYS[time_range]
+    if days is not None:
+        cutoff = injection.index.max() - pd.Timedelta(days=days)
+        injection = injection[injection.index >= cutoff]
+        withdrawal = withdrawal[withdrawal.index >= cutoff]
+        send_out = send_out[send_out.index >= cutoff]
 
     net_injection = net_flow(injection, withdrawal)
     fig = dual_axis_chart(
