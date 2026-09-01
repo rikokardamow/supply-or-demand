@@ -408,8 +408,24 @@ multi-year gas-storage series on the same dual-axis chart stretched the shared x
 the wider series' full range, squashing the weather trace to an invisible sliver — fixed by
 trimming the other series to the same recent window before charting. Acceptance criterion
 met: Dublin's real recorded temperatures give manual HDD values matching the lake's stored
-figures exactly (within rounding). ECMWF anomaly maps (Session B) and wind + a combined
-daily entrypoint (Session C) still to come.
+figures exactly (within rounding). Wind + a combined daily entrypoint (Session C) still to
+come.
+
+Session B: ECMWF Open Data (`ecmwf-opendata`, no key, CC BY 4.0) IFS 2m-temperature
+forecast at D+3/D+7, rendered as anomaly maps (`pipelines/weather/anomaly_maps.py`, via
+`cartopy` — confirmed live to install and render cleanly on Windows via plain `pip
+install`, no system GEOS/PROJ needed) against a coarse EU/CONUS climatology grid. The
+spec's own "ERA5 2010-2024 climatology grid" was simplified to a 3-year (2022/2023/2024)
+same-calendar-day normal computed from Open-Meteo's archive endpoint (confirmed live: no
+multi-year-single-day batch mode exists, so this keeps the number of archive calls small
+rather than pulling a full CDS-sourced ERA5 grid, which would need a separate Copernicus
+account not otherwise used by this project). The spec's "DuckDB table `map_assets`" was
+implemented as a Parquet manifest file instead — no precedent for a persisted (non-view)
+DuckDB file exists elsewhere in this codebase. `Client.latest()` (metadata-only, no
+download) confirmed live as a cheap way to cache-check against the real forecast run
+datetime. Page 08 got a new region/D+3/D+7 map section, reading only the manifest — never
+calling ECMWF/Open-Meteo directly from the page — verified live in-browser (switching
+region and step correctly swaps the displayed map).
 
 #### v0.8 — Dashboard redesign: institutional light theme, cards, real map tiles
 Cross-cutting change, not tied to a spec — a visual redesign against reference screenshots

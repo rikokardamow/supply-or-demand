@@ -16,8 +16,12 @@ from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
 from core.theme import NAVY, dual_axis_chart, seasonal_range_chart
 from pipelines.gie.transforms import net_flow
+from pipelines.weather.anomaly_maps import read_manifest
 from pipelines.weather.climatology import build_climatology
 from pipelines.weather.gas_proxy import net_withdrawal
+
+ANOMALY_MAP_REGIONS = {"eu": "Europe", "conus": "CONUS"}
+ANOMALY_MAP_STEPS = {"D+3": 72, "D+7": 168}
 
 US_STORAGE_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
 ANOMALY_HISTORY_WINDOW_DAYS = 90
@@ -220,6 +224,49 @@ def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
         )
 
 
+def _anomaly_maps_section() -> None:
+    """Reads pipelines/weather's own manifest.parquet (never calls ECMWF/Open-Meteo
+    directly, per root NOTES.md's "pages read the lake, never call APIs" rule) and
+    displays the map matching the region/step picked below. A stale-map badge (>24h
+    old) is Session C's job, per the spec's own session split -- not added here."""
+    manifest = read_manifest()
+    if manifest.empty:
+        st.info("No maps yet — run `pipelines/weather/pull_anomaly_maps.py`.")
+        return
+
+    region_cols = st.columns(2)
+    with region_cols[0]:
+        region = st.selectbox(
+            "Region",
+            options=list(ANOMALY_MAP_REGIONS),
+            format_func=lambda r: ANOMALY_MAP_REGIONS[r],
+        )
+    with region_cols[1]:
+        step_label = st.segmented_control(
+            "Forecast step",
+            options=list(ANOMALY_MAP_STEPS),
+            default="D+3",
+            required=True,
+            key="weather_anomaly_map_step",
+        )
+    step_hours = ANOMALY_MAP_STEPS[step_label]
+
+    rows = manifest[(manifest["region"] == region) & (manifest["step_hours"] == step_hours)]
+    if rows.empty:
+        st.info(f"No {ANOMALY_MAP_REGIONS[region]} {step_label} map yet.")
+        return
+
+    latest = rows.sort_values("rendered_at").iloc[-1]
+    with card(f"{ANOMALY_MAP_REGIONS[region]} 2m-Temp Anomaly — {step_label}"):
+        st.image(latest["path"])
+        st.caption(
+            f"Valid {pd.Timestamp(latest['valid_time']):%Y-%m-%d} · rendered "
+            f"{pd.Timestamp(latest['rendered_at']):%Y-%m-%d %H:%M UTC} · "
+            "IFS HRES 2t (ECMWF Open Data, CC BY 4.0) vs a 3-year recent-normal grid "
+            "— see pipelines/weather/NOTES.md for why 3 years, not a full ERA5 normal."
+        )
+
+
 st.title("Weather Overlay")
 
 st.subheader("Population-weighted HDD vs. climatology")
@@ -228,6 +275,9 @@ with col_eu:
     _climatology_section("eu")
 with col_us:
     _climatology_section("us")
+
+st.subheader("2m-temperature anomaly maps")
+_anomaly_maps_section()
 
 anomaly_range = st.segmented_control(
     "Anomaly window",
