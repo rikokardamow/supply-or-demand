@@ -64,10 +64,9 @@ table), **US Oil Market Overview** (national balance supplementary charts), **EU
 Storage & LNG** (AGSI+/ALSI+ fill, injection vs. send-out, country deviation), **EU Gas
 Flows** (ENTSOG corridor Sankey, directional map, time series, physical-vs-nomination gap),
 **EU Power** (ENTSO-E day-ahead price map, cross-border flow map, generation mix, residual
-load, net position). See `specs/00_INDEX.md` for the full roadmap (13 specs: gas storage,
+load, net position). See `specs/00_INDEX.md` for the full roadmap (14 specs: gas storage,
 gas flows, power markets, refinery cracks, weather, news, AIS vessels, flights, macro/FX,
-and final
-orchestration).
+orchestration, and a final cross-spec analytics layer).
 
 ### Build log
 

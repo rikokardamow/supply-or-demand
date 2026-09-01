@@ -36,6 +36,10 @@ dropped into the repo (under `specs/`) and worked through one session at a time,
 11 AIS vessels                           ── hardest; do last
 12 Flights (OpenSky)                     ── small; OAuth2
 13 Orchestration, tests, CI              ── after pipelines exist
+14 Analytics layer                       ── cross-spec, adds no new data sources of its own
+                                             beyond §0.4 (EIA storage capacity, CFTC COT);
+                                             run its lettered sessions (14-A..14-H) only once
+                                             each session's "Depends on" specs are done
 ```
 
 ## Calendar mapping (from the master plan)
@@ -54,6 +58,7 @@ dropped into the repo (under `specs/`) and worked through one session at a time,
 | 15 | 12 |
 | 16–18 | 11 |
 | 19–20 | 13 + polish |
+| 21+ | 14 (analytics layer, one lettered session at a time) |
 
 ## Non-negotiable house rules (repeated in every spec)
 
