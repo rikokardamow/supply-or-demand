@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.gdeltproject.org/api/v2/doc/doc?format=json&maxrecords=10&mode=artlist&query=%28%22refinery%22+OR+%22pipeline%22%29+AND+%28outage+OR+fire+OR+explosion+OR+%22force+majeure%22%29&timespan=7d
+  response:
+    body:
+      string: 'Please limit requests to one every 5 seconds or contact kalev.leetaru5@gmail.com
+        for larger queries. All high-traffic users should switch to our ngrams dataset:
+        https://blog.gdeltproject.org/using-the-new-web-ngrams-dataset-to-find-relevant-coverage/.
+        For trend analysis, please see our daily newsletter briefings: https://blog.gdeltproject.org/announcing-our-new-daily-todays-trends-on-capitol-hill-todays-media-trends-newsletter-briefings/.
+
+
+        '
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '444'
+      Date:
+      - Tue, 01 Sep 2026 20:30:25 GMT
+      Keep-Alive:
+      - timeout=5, max=20
+      Server:
+      - GDELT Server
+    status:
+      code: 429
+      message: Too Many Requests
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.gdeltproject.org/api/v2/doc/doc?format=json&maxrecords=10&mode=artlist&query=%28%22refinery%22+OR+%22pipeline%22%29+AND+%28outage+OR+fire+OR+explosion+OR+%22force+majeure%22%29&timespan=7d
+  response:
+    body:
+      string: "{\"articles\": [ { \"url\": \"https://www.mediafax.ro/externe/ucraina-ataca-infrastructura-rusiei-explozii-la-o-rafinarie-lukoil-si-un-urias-depozit-wildberries-23796193\",
+        \"url_mobile\": \"\", \"title\": \"Ucraina atac\u0103 infrastructura Rusiei
+        : Explozii la o rafin\u0103rie Lukoil \u0219i un uria\u0219 depozit Wildberries\",
+        \"seendate\": \"20260826T080000Z\", \"socialimage\": \"https://www.mediafax.ro/wp-content/uploads/2026/08/drona-ucraineana-fp-1.jpg\",
+        \"domain\": \"mediafax.ro\", \"language\": \"Romanian\", \"sourcecountry\":
+        \"Romania\" },{ \"url\": \"https://oilprice.com/Energy/Energy-General/US-Oil-Rig-Count-Falls-by-5-as-Gas-Rigs-Rise.html\",
+        \"url_mobile\": \"https://oilprice.com/Energy/Energy-General/US-Oil-Rig-Count-Falls-by-5-as-Gas-Rigs-Rise.amp.html\",
+        \"title\": \"U . S . Oil Rig Count Falls by 5 as Gas Rigs Rise\", \"seendate\":
+        \"20260828T213000Z\", \"socialimage\": \"\", \"domain\": \"oilprice.com\",
+        \"language\": \"English\", \"sourcecountry\": \"United States\" },{ \"url\":
+        \"https://www.tribunnews.com/internasional/7875431/perang-drone-makin-dalam-gudang-amunisi-ukraina-meledak-kilang-minyak-rusia-diserang\",
+        \"url_mobile\": \"https://m.tribunnews.com/internasional/7875431/perang-drone-makin-dalam-gudang-amunisi-ukraina-meledak-kilang-minyak-rusia-diserang\",
+        \"title\": \"Perang Drone Makin Dalam : Gudang Amunisi Ukraina Meledak , Kilang
+        Minyak Rusia Diserang\", \"seendate\": \"20260830T101500Z\", \"socialimage\":
+        \"https://asset.tribunnews.com/xj9_GH74mno_BeJuzlFSZNDp2bE=/1200x675/filters:upscale():quality(30):format(webp):focal(0.5x0.5:0.5x0.5)/tribunnews/foto/bank/originals/Gudang-Amunisi-Ukraina-diserang-drone-Rusia.jpg\",
+        \"domain\": \"tribunnews.com\", \"language\": \"Indonesian\", \"sourcecountry\":
+        \"Indonesia\" },{ \"url\": \"https://www.tribunnews.com/internasional/7875317/ukraina-serang-kilang-minyak-dan-pangkalan-udara-rusia-dalam-serangan-malam-hari\",
+        \"url_mobile\": \"https://m.tribunnews.com/internasional/7875317/ukraina-serang-kilang-minyak-dan-pangkalan-udara-rusia-dalam-serangan-malam-hari\",
+        \"title\": \"Ukraina Serang Kilang Minyak dan Pangkalan Udara Rusia dalam
+        Serangan Malam Hari\", \"seendate\": \"20260830T041500Z\", \"socialimage\":
+        \"https://asset.tribunnews.com/9ViBTcblof_zTv-u-s1nk-bIYdk=/1200x675/filters:upscale():quality(30):format(webp):focal(0.5x0.5:0.5x0.5)/tribunnews/foto/bank/originals/serangan-Ukraina-terhadap-kilang-minyak-di-kota-Kirishi.jpg\",
+        \"domain\": \"tribunnews.com\", \"language\": \"Indonesian\", \"sourcecountry\":
+        \"Indonesia\" },{ \"url\": \"https://peakoil.com/publicpolicy/six-months-of-war-leaves-gulf-oil-trapped-between-two-chokepoints\",
+        \"url_mobile\": \"\", \"title\": \"Six months of war leaves Gulf oil trapped
+        between two chokepoints \_| Peak Oil News and Message Boards\", \"seendate\":
+        \"20260829T023000Z\", \"socialimage\": \"\", \"domain\": \"peakoil.com\",
+        \"language\": \"English\", \"sourcecountry\": \"United States\" },{ \"url\":
+        \"https://hotair.com/john-s-2/2026/08/26/russias-4th-largest-refinery-is-burning-n3818386\",
+        \"url_mobile\": \"https://hotair.com/john-s-2/2026/08/26/russias-4th-largest-refinery-is-burning-n3818386/amp\",
+        \"title\": \"Russia 4th Largest Refinery Is Burning\", \"seendate\": \"20260826T200000Z\",
+        \"socialimage\": \"https://media.townhall.com/cdn/hodl/2026/218/b85bfca7-b199-42b1-9bdd-bd97e500a962.jpg\",
+        \"domain\": \"hotair.com\", \"language\": \"English\", \"sourcecountry\":
+        \"United States\" },{ \"url\": \"https://redstate.com/streiff/2026/08/31/a-polish-drone-factory-hit-an-italian-ammo-plant-burns-this-is-the-warm-up-the-war-is-coming-n2206316\",
+        \"url_mobile\": \"\", \"title\": \"A Polish Drone Factory Hit , an Italian
+        Ammo Plant Burns . This Is the Warm - Up ; the War Is Coming . \", \"seendate\":
+        \"20260831T233000Z\", \"socialimage\": \"https://media.townhall.com/cdn/hodl/2025/213/ec168a26-5268-49e6-83c0-571ac3d0ac55-1200x630.jpg\",
+        \"domain\": \"redstate.com\", \"language\": \"English\", \"sourcecountry\":
+        \"United States\" },{ \"url\": \"https://www.hinews.cn/page?n=2840172&m=1&s=1044\",
+        \"url_mobile\": \"\", \"title\": \"\u6D77\u5357\u5F00\u5C55\u5316\u5DE5\u56ED\u533A\u706D\u706B\u6551\u63F4\u7EFC\u5408\u5B9E\u6218\u6F14\u7EC3
+        - \u5357\u6D77\u7F51\", \"seendate\": \"20260827T120000Z\", \"socialimage\":
+        \"\", \"domain\": \"hinews.cn\", \"language\": \"Chinese\", \"sourcecountry\":
+        \"China\" },{ \"url\": \"https://vietgiaitri.com/ukraine-phong-hoa-luc-danh-trung-can-cu-khong-quan-nha-may-loc-dau-nga-20260831i7762419/\",
+        \"url_mobile\": \"\", \"title\": \"Ukraine ph\xF3ng h\u1ECFa l\u1EF1c , \u0111\xE1nh
+        tr\xFAng c\u0103n c\u1EE9 kh\xF4ng qu\xE2n , nh\xE0 m\xE1y l\u1ECDc d\u1EA7u
+        Nga - Th\u1EBF gi\u1EDBi\", \"seendate\": \"20260831T011500Z\", \"socialimage\":
+        \"https://t.vietgiaitri.com/2026/8/11/ukraine-phong-hoa-luc-danh-trung-can-cu-khong-quan-nha-may-loc-dau-nga-800x576-fd1-7762419.webp\",
+        \"domain\": \"vietgiaitri.com\", \"language\": \"Vietnamese\", \"sourcecountry\":
+        \"Vietnam\" },{ \"url\": \"https://www.rtp.pt/noticias/guerra-na-ucrania/russia-diz-estar-a-preparar-ataques-massivos-contra-a-infraestrutura-energetica-ucraniana_n1762354\",
+        \"url_mobile\": \"\", \"title\": \"R\xFAssia diz estar a preparar  ataques
+        massivos  contra a infraestrutura energ\xE9tica ucraniana\", \"seendate\":
+        \"20260830T101500Z\", \"socialimage\": \"https://cdn-images.rtp.pt/icm/noticias/images/df/df62edc49d02d3da54a037a8aba85dbf?&q=90&rect=0,0,1499,822&auto=format\",
+        \"domain\": \"rtp.pt\", \"language\": \"Portuguese\", \"sourcecountry\": \"Portugal\"
+        }] }"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - public, max-age=900
+      Connection:
+      - Keep-Alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 01 Sep 2026 20:30:51 GMT
+      Keep-Alive:
+      - timeout=5, max=20
+      Server:
+      - GDELT Server
+      Timing-Allow-Origin:
+      - '*'
+      Transfer-Encoding:
+      - chunked
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

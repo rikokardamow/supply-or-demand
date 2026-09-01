@@ -30,6 +30,18 @@ class FlowsRecord(BaseModel):
     mode: str
 
 
+class EventsRecord(BaseModel):
+    event_id: str
+    ts: datetime
+    headline: str
+    source: str
+    url: str
+    tags: list[str]
+    geo: str
+    commodity: str
+    severity: int
+
+
 TS_LONG_SCHEMA = pa.schema(
     [
         pa.field("series_id", pa.string()),
@@ -52,6 +64,20 @@ FLOWS_SCHEMA = pa.schema(
         pa.field("unit", pa.string()),
         pa.field("ts", pa.timestamp("us")),
         pa.field("mode", pa.string()),
+    ]
+)
+
+EVENTS_SCHEMA = pa.schema(
+    [
+        pa.field("event_id", pa.string()),
+        pa.field("ts", pa.timestamp("us")),
+        pa.field("headline", pa.string()),
+        pa.field("source", pa.string()),
+        pa.field("url", pa.string()),
+        pa.field("tags", pa.list_(pa.string())),
+        pa.field("geo", pa.string()),
+        pa.field("commodity", pa.string()),
+        pa.field("severity", pa.int64()),
     ]
 )
 
@@ -82,3 +108,7 @@ def validate_ts_long(df: pd.DataFrame) -> None:
 
 def validate_flows(df: pd.DataFrame) -> None:
     _validate_columns(df, FLOWS_SCHEMA)
+
+
+def validate_events(df: pd.DataFrame) -> None:
+    _validate_columns(df, EVENTS_SCHEMA)
