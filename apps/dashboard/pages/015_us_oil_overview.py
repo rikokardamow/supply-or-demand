@@ -5,11 +5,58 @@ Cushing stock charts)."""
 from __future__ import annotations
 
 import core.theme  # noqa: F401
+import pandas as pd
 import streamlit as st
+from components.card import card
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
 from core.theme import multi_year_overlay_chart, seasonal_range_chart, simple_time_series_chart
+
+PRODUCTION_RANGE_DAYS = {"6M": 182, "1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
+
+PRODUCTION_INFO = [
+    (
+        "WCRFPUS2",
+        "US Crude Oil Production Estimate",
+        "Mbbl/d",
+        (
+            "Production is up 3.3% on the year at 13,830 Mbbl/d — the shale machine keeps "
+            "answering every price signal with more barrels, which is exactly the ceiling "
+            "that caps how far this complex can run."
+        ),
+    ),
+    (
+        "WCREXUS2",
+        "Total US Oil Exports",
+        "Mbbl/d",
+        (
+            "Crude exports are down 7% on the year — someone's keeping more of the marginal "
+            "barrel at home, and with domestic stocks still light, that's the more plausible "
+            "read than weaker demand abroad."
+        ),
+    ),
+    (
+        "WCSSTUS1",
+        "US Strategic Petroleum Reserves",
+        "Mbbl",
+        (
+            "The SPR is down 27.3% on the year — that's not a rounding adjustment, it's a "
+            "strategic buffer spent down to a level where the next real supply shock has "
+            "nowhere near the cushion it used to."
+        ),
+    ),
+    (
+        "WTTEXUS2",
+        "Total US Oil and Fuel Export",
+        "Mbbl/d",
+        (
+            "Total oil and fuel exports are up 9.5% even as crude exports alone are falling "
+            "— the US is exporting more of its barrel as refined product now, not as crude, "
+            "and that's a refining-margin story as much as a trade one."
+        ),
+    ),
+]
 
 
 def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
@@ -25,22 +72,58 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     current_year_series = current.set_index(reference_doy)["value"]
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
 
 
-def _simple_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
+def _simple_section(
+    series_id: str,
+    title: str,
+    unit: str,
+    take: str | None = None,
+    window_days: int | None = None,
+) -> None:
     df = read_ts_long(series_ids=[series_id]).sort_values("ts")
     if df.empty:
         st.info(f"No data yet for {series_id} — run `pipelines/eia/pull_wpsr.py`.")
         return
 
     series = df.set_index("ts")["value"]
+    if window_days is not None:
+        cutoff = series.index.max() - pd.Timedelta(days=window_days)
+        series = series[series.index >= cutoff]
     fig = simple_time_series_chart(series, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
+
+
+def _latest_value(series_id: str) -> float | None:
+    df = read_ts_long(series_ids=[series_id]).sort_values("ts")
+    return float(df["value"].iloc[-1]) if not df.empty else None
+
+
+def _production_filter_panel() -> list[tuple[str, str, str, str]]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for series_id, _label, _unit, _take in PRODUCTION_INFO:
+        st.session_state.setdefault(f"oil_overview_filter_{series_id}", True)
+    selected_count = sum(
+        st.session_state[f"oil_overview_filter_{sid}"] for sid, _, _, _ in PRODUCTION_INFO
+    )
+
+    with st.expander(f"Filter metrics ({selected_count} of {len(PRODUCTION_INFO)} shown)"):
+        filter_cols = st.columns(2)
+        for i, (series_id, label, unit, _take) in enumerate(PRODUCTION_INFO):
+            latest = _latest_value(series_id)
+            checkbox_label = f"{label} — {latest:,.0f} {unit}" if latest is not None else label
+            with filter_cols[i % 2]:
+                st.checkbox(checkbox_label, key=f"oil_overview_filter_{series_id}")
+
+    return [item for item in PRODUCTION_INFO if st.session_state[f"oil_overview_filter_{item[0]}"]]
 
 
 def _four_week_avg_overlay(
@@ -62,9 +145,10 @@ def _four_week_avg_overlay(
     current_year = int(combined_df["ts"].dt.year.max())
     stats = seasonal_stats(combined_df, value_col="value", years=range(2018, current_year + 1))
     fig = multi_year_overlay_chart(stats, title=title, unit=unit)
-    st.plotly_chart(fig, use_container_width=True)
-    if take is not None:
-        kardamow_take(take)
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        if take is not None:
+            kardamow_take(take)
 
 
 st.title("US Oil Market Overview")
@@ -92,46 +176,21 @@ _seasonal_section(
 )
 
 st.subheader("Production, exports & reserves")
-_simple_section(
-    "WCRFPUS2",
-    "US Crude Oil Production Estimate",
-    "Mbbl/d",
-    take=(
-        "Production is up 3.3% on the year at 13,830 Mbbl/d — the shale machine keeps "
-        "answering every price signal with more barrels, which is exactly the ceiling that "
-        "caps how far this complex can run."
-    ),
-)
-_simple_section(
-    "WCREXUS2",
-    "Total US Oil Exports",
-    "Mbbl/d",
-    take=(
-        "Crude exports are down 7% on the year — someone's keeping more of the marginal "
-        "barrel at home, and with domestic stocks still light, that's the more plausible "
-        "read than weaker demand abroad."
-    ),
-)
-_simple_section(
-    "WCSSTUS1",
-    "US Strategic Petroleum Reserves",
-    "Mbbl",
-    take=(
-        "The SPR is down 27.3% on the year — that's not a rounding adjustment, it's a "
-        "strategic buffer spent down to a level where the next real supply shock has "
-        "nowhere near the cushion it used to."
-    ),
-)
-_simple_section(
-    "WTTEXUS2",
-    "Total US Oil and Fuel Export",
-    "Mbbl/d",
-    take=(
-        "Total oil and fuel exports are up 9.5% even as crude exports alone are falling — "
-        "the US is exporting more of its barrel as refined product now, not as crude, and "
-        "that's a refining-margin story as much as a trade one."
-    ),
-)
+selected_metrics = _production_filter_panel()
+if not selected_metrics:
+    st.info("No metrics selected — check at least one above.")
+else:
+    production_range = st.segmented_control(
+        "Time range",
+        options=list(PRODUCTION_RANGE_DAYS),
+        default="2Y",
+        required=True,
+        key="oil_overview_range",
+    )
+    for series_id, title, unit, take in selected_metrics:
+        _simple_section(
+            series_id, title, unit, take=take, window_days=PRODUCTION_RANGE_DAYS[production_range]
+        )
 
 st.subheader("Demand (4-week average, by year)")
 _four_week_avg_overlay(

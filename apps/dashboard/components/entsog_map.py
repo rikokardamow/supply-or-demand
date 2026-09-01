@@ -1,8 +1,11 @@
-"""ENTSOG directional corridor map — Europe scattergeo, arrows sized by the latest
-complete 7-day average flow (same window logic as page 03's Sankey, via
-pipelines.entsog.transforms). Styled after padd_map.py's arrow convention: navy for
+"""ENTSOG directional corridor map — Europe Scattermapbox (real open-street-map tiles,
+no token needed, per the dashboard's institutional-look redesign), dots sized by the
+latest complete 7-day average flow (same window logic as page 03's Sankey, via
+pipelines.entsog.transforms). Styled after padd_map.py's convention: navy for
 pipeline corridors, light blue for LNG (ship-borne, matching padd_map's
-tanker_barge=light-blue colour semantics — "how did this gas travel").
+tanker_barge=light-blue colour semantics — "how did this gas travel"). Direction
+markers are plain circles, not rotated arrows -- padd_map.py's comment explains why
+(the free raster basemap styles ship no icon sprite).
 
 The `flows` table stores no per-point identifier (see pipelines/entsog/NOTES.md), only
 (from_node, to_node) pairs — same granularity the Sankey operates at — so this map draws
@@ -18,8 +21,6 @@ import streamlit as st
 from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY
 from pipelines.entsog.transforms import latest_complete_date, pair_daily_totals
-
-from components.geo_utils import bearing_degrees
 
 _ARROWHEAD_FRACTION = 0.85
 _WINDOW_DAYS = 7
@@ -75,7 +76,9 @@ def render_entsog_flow_map() -> None:
     link_totals = link_totals[link_totals["value"] > 0]
 
     fig = go.Figure()
-    fig.update_geos(scope="europe")
+    fig.update_layout(
+        mapbox={"style": "open-street-map", "center": {"lat": 50, "lon": 10}, "zoom": 3.3}
+    )
 
     max_value = link_totals["value"].max() if not link_totals.empty else 1.0
     for _, row in link_totals.iterrows():
@@ -91,7 +94,7 @@ def render_entsog_flow_map() -> None:
         if origin is not None:
             orig_lat, orig_lon = origin
             fig.add_trace(
-                go.Scattergeo(
+                go.Scattermapbox(
                     lat=[orig_lat, dest_lat],
                     lon=[orig_lon, dest_lon],
                     mode="lines",
@@ -103,18 +106,15 @@ def render_entsog_flow_map() -> None:
             )
             arrow_lat = orig_lat + _ARROWHEAD_FRACTION * (dest_lat - orig_lat)
             arrow_lon = orig_lon + _ARROWHEAD_FRACTION * (dest_lon - orig_lon)
-            bearing = bearing_degrees(orig_lat, orig_lon, dest_lat, dest_lon)
             fig.add_trace(
-                go.Scattergeo(
+                go.Scattermapbox(
                     lat=[arrow_lat],
                     lon=[arrow_lon],
                     mode="markers",
-                    marker={
-                        "symbol": "triangle-up",
-                        "angle": bearing,
-                        "size": 10,
-                        "color": colour,
-                    },
+                    # A plain circle, not a rotated arrow -- see padd_map.py's
+                    # comment: the free raster styles ship no icon sprite, so
+                    # marker.symbol silently fails to render regardless of name.
+                    marker={"size": 10, "color": colour},
                     showlegend=False,
                     hovertext=(
                         f"{row['from_node']} → {row['to_node']}: "
@@ -126,7 +126,7 @@ def render_entsog_flow_map() -> None:
         else:
             # LNG: no single upstream origin — a sized marker at the terminal itself.
             fig.add_trace(
-                go.Scattergeo(
+                go.Scattermapbox(
                     lat=[dest_lat],
                     lon=[dest_lon],
                     mode="markers",

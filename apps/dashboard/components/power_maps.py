@@ -1,6 +1,8 @@
 """ENTSO-E power maps — price choropleth-style map and cross-border flow arrow map.
-Same Scattergeo + line/arrow technique as padd_map.py/entsog_map.py (bearing_degrees
-shared via components/geo_utils.py)."""
+Same Scattermapbox + line/dot technique as padd_map.py/entsog_map.py — real
+open-street-map tiles, no token needed, per the dashboard's institutional-look
+redesign (root NOTES.md's chart house style). Direction markers are plain circles,
+not rotated arrows -- see padd_map.py's comment on why."""
 
 from __future__ import annotations
 
@@ -10,8 +12,6 @@ import streamlit as st
 from core.storage import read_flows, read_ts_long
 from core.theme import NAVY, RED
 from pipelines.entsoe.zones import ZONES
-
-from components.geo_utils import bearing_degrees
 
 _ARROWHEAD_FRACTION = 0.85
 
@@ -57,7 +57,7 @@ def render_price_map() -> None:
         return
 
     fig = go.Figure(
-        go.Scattergeo(
+        go.Scattermapbox(
             lat=lats,
             lon=lons,
             text=[f"{v:,.0f}" for v in values],
@@ -71,12 +71,16 @@ def render_price_map() -> None:
                 "colorscale": [[0, NAVY], [0.5, "#f5f5f5"], [1, RED]],
                 "cmid": sum(values) / len(values),
                 "colorbar": {"title": "EUR/MWh"},
-                "line": {"width": 1, "color": "white"},
+                # No marker.line (outline) here -- unlike Scattergeo.Marker,
+                # Scattermapbox.Marker doesn't support one at all (confirmed live:
+                # a real ValueError, not silently dropped).
             },
             showlegend=False,
         )
     )
-    fig.update_geos(scope="europe")
+    fig.update_layout(
+        mapbox={"style": "open-street-map", "center": {"lat": 50, "lon": 10}, "zoom": 3.3}
+    )
     latest_ts = latest["ts"].max()
     fig.update_layout(title=f"Day-Ahead Price by Zone — {pd.Timestamp(latest_ts)}")
     st.plotly_chart(fig, use_container_width=True)
@@ -96,7 +100,9 @@ def render_flow_map() -> None:
     link_totals = link_totals[link_totals["value"].abs() > 0]
 
     fig = go.Figure()
-    fig.update_geos(scope="europe")
+    fig.update_layout(
+        mapbox={"style": "open-street-map", "center": {"lat": 50, "lon": 10}, "zoom": 3.3}
+    )
 
     max_value = link_totals["value"].abs().max() if not link_totals.empty else 1.0
     for _, row in link_totals.iterrows():
@@ -109,7 +115,7 @@ def render_flow_map() -> None:
         width = 1 + 5 * (abs(row["value"]) / max_value) if max_value else 1
 
         fig.add_trace(
-            go.Scattergeo(
+            go.Scattermapbox(
                 lat=[orig_lat, dest_lat],
                 lon=[orig_lon, dest_lon],
                 mode="lines",
@@ -121,13 +127,15 @@ def render_flow_map() -> None:
         )
         arrow_lat = orig_lat + _ARROWHEAD_FRACTION * (dest_lat - orig_lat)
         arrow_lon = orig_lon + _ARROWHEAD_FRACTION * (dest_lon - orig_lon)
-        bearing = bearing_degrees(orig_lat, orig_lon, dest_lat, dest_lon)
         fig.add_trace(
-            go.Scattergeo(
+            go.Scattermapbox(
                 lat=[arrow_lat],
                 lon=[arrow_lon],
                 mode="markers",
-                marker={"symbol": "triangle-up", "angle": bearing, "size": 10, "color": NAVY},
+                # A plain circle, not a rotated arrow -- see padd_map.py's comment:
+                # the free raster styles ship no icon sprite, so marker.symbol
+                # silently fails to render regardless of name.
+                marker={"size": 10, "color": NAVY},
                 showlegend=False,
                 hovertext=(
                     f"{row['from_node']} → {row['to_node']}: {row['value']:,.0f} MW"
