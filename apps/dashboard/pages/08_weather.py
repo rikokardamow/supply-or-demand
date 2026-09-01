@@ -22,6 +22,13 @@ from pipelines.weather.gas_proxy import net_withdrawal
 US_STORAGE_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
 ANOMALY_HISTORY_WINDOW_DAYS = 90
 
+# User-adjustable version of the constant above, via the time-range pill row added to
+# the page body -- kept as a separate dict so the pill's own default (90D) still lines
+# up with the original fixed window.
+ANOMALY_RANGE_DAYS = {"30D": 30, "90D": 90, "180D": 182, "1Y": 365}
+
+CDD_LOAD_INFO = [("new_york", "NYISO"), ("los_angeles", "CAISO")]
+
 
 def _series_by_ts(series_id: str, source: str | None = None) -> pd.Series:
     df = read_ts_long(series_ids=[series_id])
@@ -50,7 +57,11 @@ def _trim_recent(series: pd.Series, cutoff: pd.Timestamp | None) -> pd.Series:
     return series[series.index >= cutoff]
 
 
-def _anomaly_series(series_id: str, forecast_series_id: str | None = None) -> pd.Series:
+def _anomaly_series(
+    series_id: str,
+    forecast_series_id: str | None = None,
+    window_days: int = ANOMALY_HISTORY_WINDOW_DAYS,
+) -> pd.Series:
     """Recent history (trailing window) plus the forecast horizon, each minus the
     climatological daily normal for that day-of-year -- built from the already-cached
     Parquet in pipelines/weather/climatology.py, not a live API call."""
@@ -61,7 +72,7 @@ def _anomaly_series(series_id: str, forecast_series_id: str | None = None) -> pd
     if clim_lookup.empty:
         return pd.Series(dtype=float)
 
-    parts = [_series_by_ts(series_id, source="open_meteo").tail(ANOMALY_HISTORY_WINDOW_DAYS)]
+    parts = [_series_by_ts(series_id, source="open_meteo").tail(window_days)]
     if forecast_series_id is not None:
         parts.append(_series_by_ts(forecast_series_id, source="open_meteo_forecast"))
     combined = pd.concat(parts)
@@ -108,11 +119,11 @@ def _climatology_section(region: str) -> None:
         st.plotly_chart(fig, use_container_width=True)
 
 
-def _eu_hdd_vs_gas_section() -> None:
-    cutoff = _recent_cutoff("hdd.eu.popw")
+def _eu_hdd_vs_gas_section(window_days: int) -> None:
+    cutoff = _recent_cutoff("hdd.eu.popw", window_days)
     injection = _trim_recent(_series_by_ts("agsi.EU.injection"), cutoff)
     withdrawal = _trim_recent(_series_by_ts("agsi.EU.withdrawal"), cutoff)
-    hdd_anomaly = _anomaly_series("hdd.eu.popw", "hdd.eu.popw.forecast")
+    hdd_anomaly = _anomaly_series("hdd.eu.popw", "hdd.eu.popw.forecast", window_days)
     if injection.empty or withdrawal.empty or hdd_anomaly.empty:
         st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 02's pulls.")
         return
@@ -135,16 +146,16 @@ def _eu_hdd_vs_gas_section() -> None:
         )
 
 
-def _us_hdd_vs_gas_section() -> None:
+def _us_hdd_vs_gas_section(window_days: int) -> None:
     level = _series_by_ts(US_STORAGE_SERIES_ID)
-    hdd_anomaly = _anomaly_series("hdd.us.popw", "hdd.us.popw.forecast")
+    hdd_anomaly = _anomaly_series("hdd.us.popw", "hdd.us.popw.forecast", window_days)
     if level.empty or hdd_anomaly.empty:
         st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 05's pulls.")
         return
 
     # net_withdrawal needs the point before the trimmed window to diff against, so
     # compute it on the full series first and only trim the result afterwards.
-    cutoff = _recent_cutoff("hdd.us.popw")
+    cutoff = _recent_cutoff("hdd.us.popw", window_days)
     us_net_withdrawal = _trim_recent(net_withdrawal(level), cutoff)
     title = "US HDD Anomaly vs. Gas Storage Net-Withdrawal"
     fig = dual_axis_chart(
@@ -164,8 +175,26 @@ def _us_hdd_vs_gas_section() -> None:
         )
 
 
-def _cdd_vs_load_section(city: str, iso: str) -> None:
-    cdd_anomaly = _anomaly_series(f"cdd.{city}.f65", f"cdd.{city}.f65.forecast")
+def _city_filter_panel() -> list[tuple[str, str]]:
+    """Collapsible filter panel (accordion + checkboxes) -- see 02_gas_storage.py's
+    _country_filter_panel for the same convention (no live counts here since a CDD
+    anomaly doesn't have a single meaningful "latest" headline number)."""
+    for city, _iso in CDD_LOAD_INFO:
+        st.session_state.setdefault(f"weather_city_filter_{city}", True)
+    selected_count = sum(st.session_state[f"weather_city_filter_{c}"] for c, _ in CDD_LOAD_INFO)
+
+    with st.expander(f"Filter cities ({selected_count} of {len(CDD_LOAD_INFO)} shown)"):
+        filter_cols = st.columns(2)
+        for i, (city, iso) in enumerate(CDD_LOAD_INFO):
+            label = f"{city.replace('_', ' ').title()} ({iso})"
+            with filter_cols[i % 2]:
+                st.checkbox(label, key=f"weather_city_filter_{city}")
+
+    return [item for item in CDD_LOAD_INFO if st.session_state[f"weather_city_filter_{item[0]}"]]
+
+
+def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
+    cdd_anomaly = _anomaly_series(f"cdd.{city}.f65", f"cdd.{city}.f65.forecast", window_days)
     load = _series_by_ts(f"gridstatus.{iso}.load")
     if cdd_anomaly.empty or load.empty:
         st.info(
@@ -200,12 +229,25 @@ with col_eu:
 with col_us:
     _climatology_section("us")
 
+anomaly_range = st.segmented_control(
+    "Anomaly window",
+    options=list(ANOMALY_RANGE_DAYS),
+    default="90D",
+    required=True,
+    key="weather_anomaly_range",
+)
+anomaly_days = ANOMALY_RANGE_DAYS[anomaly_range]
+
 st.subheader("EU weather vs. gas storage")
-_eu_hdd_vs_gas_section()
+_eu_hdd_vs_gas_section(anomaly_days)
 
 st.subheader("US weather vs. gas storage")
-_us_hdd_vs_gas_section()
+_us_hdd_vs_gas_section(anomaly_days)
 
 st.subheader("Cooling demand vs. power load")
-_cdd_vs_load_section("new_york", "NYISO")
-_cdd_vs_load_section("los_angeles", "CAISO")
+selected_cities = _city_filter_panel()
+if not selected_cities:
+    st.info("No cities selected — check at least one above.")
+else:
+    for city, iso in selected_cities:
+        _cdd_vs_load_section(city, iso, anomaly_days)
