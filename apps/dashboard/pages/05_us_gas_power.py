@@ -62,6 +62,8 @@ _SMALL_MULTIPLE_SERIES = [
     ("NW2_EPG0_SNO_R33_BCF", "South Central — Nonsalt"),
 ]
 
+PRODUCTION_EXPORTS_RANGE_DAYS = {"1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
+
 
 def _worm_chart(series_id: str, title: str) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
@@ -87,9 +89,41 @@ def _headline_section() -> None:
         st.plotly_chart(fig, use_container_width=True)
 
 
+def _region_filter_panel() -> list[tuple[str, str]]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for series_id, _label in _SMALL_MULTIPLE_SERIES:
+        st.session_state.setdefault(f"gas_power_region_filter_{series_id}", True)
+    selected_count = sum(
+        st.session_state[f"gas_power_region_filter_{sid}"] for sid, _ in _SMALL_MULTIPLE_SERIES
+    )
+
+    with st.expander(
+        f"Filter regions ({selected_count} of {len(_SMALL_MULTIPLE_SERIES)} shown)"
+    ):
+        filter_cols = st.columns(3)
+        for i, (series_id, label) in enumerate(_SMALL_MULTIPLE_SERIES):
+            latest = _series_by_ts(series_id)
+            value = float(latest.iloc[-1]) if not latest.empty else None
+            checkbox_label = f"{label} — {value:,.0f} BCF" if value is not None else label
+            with filter_cols[i % 3]:
+                st.checkbox(checkbox_label, key=f"gas_power_region_filter_{series_id}")
+
+    return [
+        item
+        for item in _SMALL_MULTIPLE_SERIES
+        if st.session_state[f"gas_power_region_filter_{item[0]}"]
+    ]
+
+
 def _small_multiples_section() -> None:
+    selected = _region_filter_panel()
+    if not selected:
+        st.info("No regions selected — check at least one above.")
+        return
+
     cols = st.columns(3)
-    for i, (series_id, label) in enumerate(_SMALL_MULTIPLE_SERIES):
+    for i, (series_id, label) in enumerate(selected):
         title = f"{label} — Seasonal"
         fig = _worm_chart(series_id, title)
         with cols[i % 3]:
@@ -170,6 +204,20 @@ def _production_exports_section() -> None:
     if production.empty or lng_exports.empty:
         st.info("No data yet — run `pipelines/eia/pull_production_exports.py`.")
         return
+
+    time_range = st.segmented_control(
+        "Time range",
+        options=list(PRODUCTION_EXPORTS_RANGE_DAYS),
+        default="2Y",
+        required=True,
+        key="gas_power_production_exports_range",
+    )
+    days = PRODUCTION_EXPORTS_RANGE_DAYS[time_range]
+    if days is not None:
+        cutoff = production.index.max() - pd.Timedelta(days=days)
+        production = production[production.index >= cutoff]
+        lng_exports = lng_exports[lng_exports.index >= cutoff]
+
     title = "US Dry Natural Gas Production vs. LNG Exports"
     fig = dual_axis_chart(
         production,
