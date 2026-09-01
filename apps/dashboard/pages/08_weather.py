@@ -1,8 +1,9 @@
-"""Weather Overlay (Open-Meteo). Session A scope (specs/08_weather.md): population-
-weighted EU/US HDD history+forecast vs. climatology (visual 1), and dual-axis HDD/CDD
-anomaly charts linking weather to gas storage and power demand (visual 2 plus 3 more
-added per user request -- see pipelines/weather/NOTES.md). ECMWF anomaly maps and wind
-land in later sessions."""
+"""Weather Overlay (Open-Meteo + ECMWF). Session A: population-weighted EU/US HDD
+history+forecast vs. climatology (visual 1), and dual-axis HDD/CDD anomaly charts
+linking weather to gas storage and power demand (visual 2 plus 3 more added per user
+request -- see pipelines/weather/NOTES.md). Session B: cartopy anomaly maps (visual 3).
+Session C: DE/DK/IE wind forecast cross-check vs. ENTSO-E (visual 4) and a stale-map
+badge on the anomaly-map section."""
 
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ from pipelines.weather.gas_proxy import net_withdrawal
 
 ANOMALY_MAP_REGIONS = {"eu": "Europe", "conus": "CONUS"}
 ANOMALY_MAP_STEPS = {"D+3": 72, "D+7": 168}
+STALE_MAP_THRESHOLD_HOURS = 24
 
 US_STORAGE_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
 ANOMALY_HISTORY_WINDOW_DAYS = 90
@@ -32,6 +34,12 @@ ANOMALY_HISTORY_WINDOW_DAYS = 90
 ANOMALY_RANGE_DAYS = {"30D": 30, "90D": 90, "180D": 182, "1Y": 365}
 
 CDD_LOAD_INFO = [("new_york", "NYISO"), ("los_angeles", "CAISO")]
+
+# (country, ENTSO-E zone) -- pipelines/weather/wind_locations.csv's own country set,
+# cross-checked against pipelines/entsoe/zones.py's ZONES (DE_LU/DK_1/IE_SEM all real
+# covered zones there).
+WIND_CROSSCHECK_INFO = [("DE", "DE_LU"), ("DK", "DK_1"), ("IE", "IE_SEM")]
+WIND_PSR_TYPES = ("wind_onshore", "wind_offshore")
 
 
 def _series_by_ts(series_id: str, source: str | None = None) -> pd.Series:
@@ -224,14 +232,23 @@ def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
         )
 
 
+def _map_age_hours(rendered_at: pd.Timestamp, now: pd.Timestamp | None = None) -> float:
+    """`now` is injectable so the >STALE_MAP_THRESHOLD_HOURS branch is testable without
+    monkeypatching a clock -- defaults to the real current time for the page's own call."""
+    if now is None:
+        now = pd.Timestamp.now(tz="UTC")
+    return (now - rendered_at).total_seconds() / 3600
+
+
 def _anomaly_maps_section() -> None:
     """Reads pipelines/weather's own manifest.parquet (never calls ECMWF/Open-Meteo
     directly, per root NOTES.md's "pages read the lake, never call APIs" rule) and
-    displays the map matching the region/step picked below. A stale-map badge (>24h
-    old) is Session C's job, per the spec's own session split -- not added here."""
+    displays the map matching the region/step picked below, with a stale-map badge if
+    the displayed map is more than STALE_MAP_THRESHOLD_HOURS old -- a sign
+    `pipelines/weather/pull_daily.py` hasn't run recently."""
     manifest = read_manifest()
     if manifest.empty:
-        st.info("No maps yet — run `pipelines/weather/pull_anomaly_maps.py`.")
+        st.info("No maps yet — run `pipelines/weather/pull_daily.py`.")
         return
 
     region_cols = st.columns(2)
@@ -257,13 +274,95 @@ def _anomaly_maps_section() -> None:
         return
 
     latest = rows.sort_values("rendered_at").iloc[-1]
+    rendered_at = pd.Timestamp(latest["rendered_at"])
+    age_hours = _map_age_hours(rendered_at)
+
     with card(f"{ANOMALY_MAP_REGIONS[region]} 2m-Temp Anomaly — {step_label}"):
         st.image(latest["path"])
+        if age_hours > STALE_MAP_THRESHOLD_HOURS:
+            st.warning(
+                f"This map is {age_hours:.0f}h old — `pipelines/weather/pull_daily.py` "
+                "may not have run recently."
+            )
         st.caption(
             f"Valid {pd.Timestamp(latest['valid_time']):%Y-%m-%d} · rendered "
-            f"{pd.Timestamp(latest['rendered_at']):%Y-%m-%d %H:%M UTC} · "
+            f"{rendered_at:%Y-%m-%d %H:%M UTC} · "
             "IFS HRES 2t (ECMWF Open Data, CC BY 4.0) vs a 3-year recent-normal grid "
             "— see pipelines/weather/NOTES.md for why 3 years, not a full ERA5 normal."
+        )
+
+
+def _entsoe_wind_forecast(zone: str) -> pd.Series:
+    """Daily-mean MW, summed across onshore + offshore (whichever exist for `zone` --
+    a landlocked zone simply has no offshore series, read_ts_long just returns fewer
+    rows for it, nothing to special-case). ENTSO-E's day-ahead forecast is sub-daily
+    (15-min/hourly, per pipelines/entsoe/NOTES.md) -- resampled to a daily mean here
+    so it lines up with Open-Meteo's own daily wind index for the cross-check chart."""
+    series_ids = [f"entsoe.{zone}.forecast.{psr}" for psr in WIND_PSR_TYPES]
+    df = read_ts_long(series_ids=series_ids)
+    if df.empty:
+        return pd.Series(dtype=float)
+
+    totals = df.groupby("ts")["value"].sum()
+    daily_mean = totals.groupby(pd.DatetimeIndex(totals.index).floor("D")).mean()
+    return daily_mean
+
+
+def _wind_filter_panel() -> list[tuple[str, str]]:
+    """Same collapsible-panel convention as _city_filter_panel above."""
+    for country, _zone in WIND_CROSSCHECK_INFO:
+        st.session_state.setdefault(f"weather_wind_filter_{country}", True)
+    selected_count = sum(
+        st.session_state[f"weather_wind_filter_{c}"] for c, _ in WIND_CROSSCHECK_INFO
+    )
+
+    with st.expander(f"Filter countries ({selected_count} of {len(WIND_CROSSCHECK_INFO)} shown)"):
+        filter_cols = st.columns(3)
+        for i, (country, zone) in enumerate(WIND_CROSSCHECK_INFO):
+            with filter_cols[i % 3]:
+                st.checkbox(f"{country} ({zone})", key=f"weather_wind_filter_{country}")
+
+    return [
+        item
+        for item in WIND_CROSSCHECK_INFO
+        if st.session_state[f"weather_wind_filter_{item[0]}"]
+    ]
+
+
+def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
+    wind_index = _series_by_ts(
+        f"wind.{country.lower()}.10m_max_kmh.forecast", source="open_meteo_forecast"
+    )
+    entsoe_wind = _entsoe_wind_forecast(zone)
+    if wind_index.empty or entsoe_wind.empty:
+        st.info(
+            f"No data yet for {country} — run `pipelines/weather/pull_daily.py` and "
+            "Spec 04's ENTSO-E pulls."
+        )
+        return
+
+    cutoff = wind_index.index.max() - pd.Timedelta(days=window_days)
+    wind_index = _trim_recent(wind_index, cutoff)
+    entsoe_wind = _trim_recent(entsoe_wind, cutoff)
+
+    title = f"{country} Wind Forecast Cross-Check"
+    fig = dual_axis_chart(
+        wind_index,
+        entsoe_wind,
+        title=title,
+        left_label="10m wind speed, daily max (km/h)",
+        right_label=f"ENTSO-E {zone} wind forecast, daily mean (MW)",
+    )
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "Two independent sources, not a unit conversion, and not a same-day "
+            "overlap — `pipelines/entsoe/pull_daily.py` only ever ingests the prior "
+            "day's ENTSO-E wind forecast (a trailing window, by that pipeline's own "
+            "design), while Open-Meteo's forecast looks ahead. This chart shows the "
+            "ENTSO-E-observed wind pattern for the last ~2 weeks transitioning into "
+            "Open-Meteo's own forward outlook, not a strict timing cross-check — see "
+            "pipelines/weather/NOTES.md."
         )
 
 
@@ -301,3 +400,11 @@ if not selected_cities:
 else:
     for city, iso in selected_cities:
         _cdd_vs_load_section(city, iso, anomaly_days)
+
+st.subheader("Wind forecast cross-check")
+selected_wind_countries = _wind_filter_panel()
+if not selected_wind_countries:
+    st.info("No countries selected — check at least one above.")
+else:
+    for country, zone in selected_wind_countries:
+        _wind_vs_entsoe_section(country, zone, anomaly_days)

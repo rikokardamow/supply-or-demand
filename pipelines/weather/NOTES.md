@@ -150,3 +150,67 @@ southern Spain/Balkans for EU D+3). Page 08's region/step selector confirmed liv
 browser: switching region (Europe↔CONUS) and step (D+3↔D+7) correctly swaps the
 displayed map and its date/title, reading only from the manifest — no direct API calls
 from the page.
+
+## Session C — wind index, pull_daily.py, stale-map badge
+
+**Wind locations are a small separate CSV, not an extension of `cities.csv`.**
+`wind_locations.csv` holds one representative point per country (Berlin/DE,
+Copenhagen/DK, Dublin/IE — Dublin's coordinates match `cities.csv` exactly) plus each
+country's ENTSO-E bidding-zone code, for the spec's own DE/DK/IE wind cross-check.
+`population_weight`/`base` don't apply to a wind index, so this didn't belong in
+`cities.csv`. `wind.py::wind_forecast_to_ts_long` reuses `client.py`'s existing
+`wind_max_kmh` column (already parsed since Session A, no new API shape) —
+`series_id` is `wind.{country}.10m_max_kmh`, `geo` is the country (not the city), since
+the cross-check is against a whole ENTSO-E bidding zone.
+
+**`pull_daily.py` is the real scheduled entrypoint** (Spec 13), distinct from
+`pull_weather.py`'s one-off multi-year history backfill: refreshes the 16-day Open-Meteo
+forecast (HDD/CDD + wind index) and re-renders the 4 ECMWF anomaly maps. Re-pulling an
+overlapping forecast window is naturally idempotent via `write_ts_long`'s own
+`(series_id, ts)` de-dup (keep latest `revision_date`) — same reasoning as
+`pipelines/entsoe/pull_daily.py`, no extra logic needed.
+
+**The ECMWF Open Data portal has its own real rate limit, separate from Open-Meteo's**
+— confirmed live: a `pull_daily.py` run hit `HTTP 429 Too Many Requests` five times in a
+row before succeeding. Unlike Open-Meteo's 429s (handled by this pipeline's own
+`client.py::_get`), this 429 is handled entirely *inside* `ecmwf-opendata` itself — its
+`Client.retrieve` prints `"Recovering from HTTP error [429 Too Many Requests], attempt N
+of 500"` and retries with a 120s wait, with no code needed in this pipeline to handle it.
+Confirmed this resolves on its own (the run still completed, just slower) — nothing to
+fix here, just don't be alarmed seeing 429s in a `pull_daily.py` run's console output.
+
+**The manifest accumulates one row per distinct `(region, step_hours, valid_time)`, not
+just 4 rows total.** Confirmed live: running `pull_daily.py` a second time on the same
+day (a newer ECMWF forecast cycle had published in the interim) added 4 *new* manifest
+rows rather than overwriting the first 4 — `valid_time` differed, so the de-dup key
+didn't match. `_anomaly_maps_section`'s own `rows.sort_values("rendered_at").iloc[-1]`
+already picks the newest row per region/step regardless, so display is unaffected, but
+the manifest (and `data/lake/maps/`'s PNG files) will grow unbounded over many days —
+not cleaned up here; a future session could add retention/pruning if this becomes a
+real disk-space concern.
+
+**The wind cross-check chart is honest about a real, confirmed-live timing gap, not a
+same-window overlap.** `pipelines/entsoe/pull_daily.py` only ever ingests the *prior
+day's* ENTSO-E wind/solar forecast (`ACTUALS_LOOKBACK_DAYS = 1`, a trailing window by
+that pipeline's own design, shared across load/generation/wind-forecast alike) — but
+Open-Meteo's wind index looks *forward* 16 days. Confirmed live in-browser: the two
+series on page 08's wind cross-check chart don't overlap at all (ENTSO-E data ending
+~3 days before Open-Meteo's forecast begins) — this isn't stale data, it's how both
+pipelines' own ingestion windows are shaped. The chart's caption says this plainly
+rather than implying a same-day correlation that doesn't exist. Flagged as a follow-up
+(not fixed here, cross-spec scope): `pipelines/entsoe/pull_daily.py` could pull
+wind/solar forecast for a forward window instead of/alongside the backward one, since
+unlike load/generation it's inherently a forecast, not an actual.
+
+**Stale-map badge**: `apps/dashboard/pages/08_weather.py::_map_age_hours` takes an
+injectable `now` so the >24h branch is testable without monkeypatching a clock (sanity-
+checked directly rather than via a new pytest-for-a-Streamlit-page pattern, since no
+precedent for unit-testing a page file exists elsewhere in this codebase — pages are
+verified live in-browser instead, same as every other session's page work).
+
+**Verified**: a real `pull_daily.py` run wrote 512 HDD/CDD forecast rows, 48 wind
+forecast rows (3 countries × 16 days), and re-rendered all 4 anomaly maps. Page 08's
+new "Wind forecast cross-check" section confirmed live in-browser for all three
+countries (DE/DK/IE), each showing real data on both axes; the anomaly-map section's
+fresh timestamps confirmed the stale-map badge correctly stays hidden right after a
+run (age well under 24h).
