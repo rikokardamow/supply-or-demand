@@ -408,8 +408,7 @@ multi-year gas-storage series on the same dual-axis chart stretched the shared x
 the wider series' full range, squashing the weather trace to an invisible sliver — fixed by
 trimming the other series to the same recent window before charting. Acceptance criterion
 met: Dublin's real recorded temperatures give manual HDD values matching the lake's stored
-figures exactly (within rounding). Wind + a combined daily entrypoint (Session C) still to
-come.
+figures exactly (within rounding).
 
 Session B: ECMWF Open Data (`ecmwf-opendata`, no key, CC BY 4.0) IFS 2m-temperature
 forecast at D+3/D+7, rendered as anomaly maps (`pipelines/weather/anomaly_maps.py`, via
@@ -426,6 +425,23 @@ download) confirmed live as a cheap way to cache-check against the real forecast
 datetime. Page 08 got a new region/D+3/D+7 map section, reading only the manifest — never
 calling ECMWF/Open-Meteo directly from the page — verified live in-browser (switching
 region and step correctly swaps the displayed map).
+
+Session C: a 10m-wind-speed forecast index for DE/DK/IE (`pipelines/weather/wind.py`,
+one representative point per country in a new small `wind_locations.csv`, reusing
+`client.py`'s existing wind field) and `pull_daily.py` — the real scheduled entrypoint
+(Spec 13), distinct from `pull_weather.py`'s one-off history backfill: refreshes the
+16-day forecast (HDD/CDD + wind) and re-renders the 4 ECMWF anomaly maps daily. Also
+added a stale-map badge (>24h since render) to page 08's anomaly-map section. A real,
+confirmed-live gotcha found and documented rather than glossed over: the wind
+cross-check chart's two series don't actually overlap in time —
+`pipelines/entsoe/pull_daily.py` only ever ingests the *prior day's* ENTSO-E wind
+forecast (a trailing window by that pipeline's own design), while Open-Meteo's wind
+index looks 16 days forward — so the chart honestly shows a recent-observed-into-
+forecast transition, not a same-day correlation check; flagged as a follow-up to widen
+ENTSO-E's own forecast pull to a forward window instead. Spec 08 is now
+feature-complete: HDD/CDD history+forecast+climatology, ≥2 anomaly maps auto-rendering
+daily (4, confirmed via a real `pull_daily.py` run), the dual-axis weather-vs-gas
+charts, and the wind cross-check are all live; tests green.
 
 #### v0.8 — Dashboard redesign: institutional light theme, cards, real map tiles
 Cross-cutting change, not tied to a spec — a visual redesign against reference screenshots
