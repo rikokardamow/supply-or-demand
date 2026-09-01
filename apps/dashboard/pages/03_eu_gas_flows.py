@@ -21,6 +21,31 @@ from pipelines.entsog.transforms import (
 )
 
 SANKEY_WINDOW_DAYS = 7
+GAP_RANGE_DAYS = {"3M": 90, "6M": 182, "1Y": 365, "All": None}
+
+
+def _corridor_filter_panel(corridor_totals: pd.DataFrame) -> list[str]:
+    """Collapsible filter panel (accordion + checkboxes + live counts) -- see
+    02_gas_storage.py's _country_filter_panel for the same convention."""
+    for corridor_name in CORRIDORS:
+        st.session_state.setdefault(f"eu_gas_flows_filter_{corridor_name}", True)
+    selected_count = sum(
+        st.session_state[f"eu_gas_flows_filter_{c}"] for c in CORRIDORS
+    )
+
+    with st.expander(f"Filter corridors ({selected_count} of {len(CORRIDORS)} shown)"):
+        filter_cols = st.columns(2)
+        for i, corridor_name in enumerate(CORRIDORS):
+            corridor_df = corridor_totals[corridor_totals["corridor"] == corridor_name]
+            latest = (
+                corridor_df.sort_values("ts")["value"].iloc[-1] if not corridor_df.empty else None
+            )
+            label = corridor_name.replace("_", " ")
+            checkbox_label = f"{label} — {latest:,.0f} GWh/d" if latest is not None else label
+            with filter_cols[i % 2]:
+                st.checkbox(checkbox_label, key=f"eu_gas_flows_filter_{corridor_name}")
+
+    return [c for c in CORRIDORS if st.session_state[f"eu_gas_flows_filter_{c}"]]
 
 st.title("EU Gas Flows (ENTSOG)")
 
@@ -56,18 +81,22 @@ else:
 
     st.subheader("Corridor time series — current vs. prior year")
     corridor_totals = corridor_aggregate(pipeline_df, CORRIDORS, mode="pipeline")
+    selected_corridors = _corridor_filter_panel(corridor_totals)
 
-    cols = st.columns(2)
-    for i, corridor_name in enumerate(CORRIDORS):
-        corridor_df = corridor_totals[corridor_totals["corridor"] == corridor_name]
-        with cols[i % 2]:
-            if corridor_df.empty:
-                st.info(f"No data yet for {corridor_name}.")
-                continue
-            corridor_title = corridor_name.replace("_", " ")
-            fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
-            with card(corridor_title):
-                st.plotly_chart(fig, use_container_width=True)
+    if not selected_corridors:
+        st.info("No corridors selected — check at least one above.")
+    else:
+        cols = st.columns(2)
+        for i, corridor_name in enumerate(selected_corridors):
+            corridor_df = corridor_totals[corridor_totals["corridor"] == corridor_name]
+            with cols[i % 2]:
+                if corridor_df.empty:
+                    st.info(f"No data yet for {corridor_name}.")
+                    continue
+                corridor_title = corridor_name.replace("_", " ")
+                fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
+                with card(corridor_title):
+                    st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Physical vs. nomination gap")
     gap_corridor = st.selectbox("Corridor", options=list(CORRIDORS), key="gap_corridor")
@@ -77,6 +106,18 @@ else:
         st.info(f"No overlapping physical/nomination data yet for {gap_corridor}.")
     else:
         corridor_label = gap_corridor.replace("_", " ")
+
+        gap_range = st.segmented_control(
+            "Time range",
+            options=list(GAP_RANGE_DAYS),
+            default="6M",
+            required=True,
+            key="eu_gas_flows_gap_range",
+        )
+        gap_days = GAP_RANGE_DAYS[gap_range]
+        if gap_days is not None:
+            gap_cutoff = gap_df["ts"].max() - pd.Timedelta(days=gap_days)
+            gap_df = gap_df[gap_df["ts"] >= gap_cutoff]
 
         lines = go.Figure()
         lines.add_trace(

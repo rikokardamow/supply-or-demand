@@ -41,6 +41,51 @@ UTILISATION_BY_GEO = {
     "PADD5": "W_NA_YUP_R50_PER",
 }
 
+REFINING_RANGE_DAYS = {"3M": 90, "6M": 182, "1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
+
+STOCKS_INFO = [
+    (
+        "W_EPC0_SAX_YCUOK_MBBL",
+        "Cushing Crude Stocks",
+        " mb",
+        (
+            "Cushing is sitting 7,512 mb under its five-year median — the delivery point "
+            "for WTI running this thin is what keeps the front-month structure bid "
+            "whenever a barrel goes missing anywhere upstream."
+        ),
+    ),
+    (
+        "WCESTUS1",
+        "US Crude Stocks (ex-SPR)",
+        " mb",
+        (
+            "US crude ex-SPR is basically sat on its own median, down just 1,863 mb — "
+            "the rare series this cycle that isn't telling a scarcity story, which makes "
+            "it the one chart the crude bulls can't point to."
+        ),
+    ),
+    (
+        "WGTSTUS1",
+        "US Total Gasoline Stocks",
+        " mb",
+        (
+            "Gasoline is 16,912 mb under normal into the tail of driving season — that's "
+            "demand pulling barrels out faster than refiners can replace them, and it's "
+            "the crack spread's real justification, not the headline print."
+        ),
+    ),
+    (
+        "WDISTUS1",
+        "US Distillate Stocks",
+        " mb",
+        (
+            "Distillate is short its median by 20,504 mb with winter still to build into "
+            "— this is the stock chart that decides whether Europe's heating-oil "
+            "arbitrage stays open or closes the moment the first cold snap hits."
+        ),
+    ),
+]
+
 # Plain red/green for this table's up/down convention, distinct from core.theme's chart
 # palette — NOTES.md's "no ad-hoc colours" rule governs charts, not this kind of
 # tabular conditional formatting.
@@ -71,6 +116,32 @@ def _series_by_ts(series_id: str) -> pd.Series:
     return df.set_index("ts")["value"]
 
 
+def _latest_value(series_id: str) -> float | None:
+    series = _series_by_ts(series_id)
+    return float(series.iloc[-1]) if not series.empty else None
+
+
+def _stocks_filter_panel() -> list[tuple[str, str, str, str]]:
+    """Collapsible filter panel (accordion + checkboxes + live latest-value counts),
+    the pattern from warwatch.ch's filter groups -- see 02_gas_storage.py's
+    _country_filter_panel for the same convention."""
+    for series_id, _label, _unit, _take in STOCKS_INFO:
+        st.session_state.setdefault(f"padd_stocks_filter_{series_id}", True)
+    selected_count = sum(
+        st.session_state[f"padd_stocks_filter_{sid}"] for sid, _, _, _ in STOCKS_INFO
+    )
+
+    with st.expander(f"Filter stock series ({selected_count} of {len(STOCKS_INFO)} shown)"):
+        filter_cols = st.columns(2)
+        for i, (series_id, label, unit, _take) in enumerate(STOCKS_INFO):
+            latest = _latest_value(series_id)
+            checkbox_label = f"{label} — {latest:,.0f}{unit}" if latest is not None else label
+            with filter_cols[i % 2]:
+                st.checkbox(checkbox_label, key=f"padd_stocks_filter_{series_id}")
+
+    return [item for item in STOCKS_INFO if st.session_state[f"padd_stocks_filter_{item[0]}"]]
+
+
 def _sign_colour(value: float) -> str:
     if pd.isna(value):
         return ""
@@ -83,50 +154,14 @@ st.title("US PADD — Crude & Product Movements")
 tab_stocks, tab_refining, tab_flows, tab_wpsr = st.tabs(["Stocks", "Refining", "Flows", "WPSR"])
 
 with tab_stocks:
-    with card("Cushing Crude Stocks"):
-        _seasonal_section(
-            "W_EPC0_SAX_YCUOK_MBBL",
-            "Cushing Crude Stocks — Seasonal Range",
-            " mb",
-            take=(
-                "Cushing is sitting 7,512 mb under its five-year median — the delivery point "
-                "for WTI running this thin is what keeps the front-month structure bid "
-                "whenever a barrel goes missing anywhere upstream."
-            ),
-        )
-    with card("US Crude Stocks (ex-SPR)"):
-        _seasonal_section(
-            "WCESTUS1",
-            "US Crude Stocks (ex-SPR) — Seasonal Range",
-            " mb",
-            take=(
-                "US crude ex-SPR is basically sat on its own median, down just 1,863 mb — "
-                "the rare series this cycle that isn't telling a scarcity story, which makes "
-                "it the one chart the crude bulls can't point to."
-            ),
-        )
-    with card("US Total Gasoline Stocks"):
-        _seasonal_section(
-            "WGTSTUS1",
-            "US Total Gasoline Stocks — Seasonal Range",
-            " mb",
-            take=(
-                "Gasoline is 16,912 mb under normal into the tail of driving season — that's "
-                "demand pulling barrels out faster than refiners can replace them, and it's "
-                "the crack spread's real justification, not the headline print."
-            ),
-        )
-    with card("US Distillate Stocks"):
-        _seasonal_section(
-            "WDISTUS1",
-            "US Distillate Stocks — Seasonal Range",
-            " mb",
-            take=(
-                "Distillate is short its median by 20,504 mb with winter still to build into "
-                "— this is the stock chart that decides whether Europe's heating-oil "
-                "arbitrage stays open or closes the moment the first cold snap hits."
-            ),
-        )
+    selected_stocks = _stocks_filter_panel()
+    if not selected_stocks:
+        st.info("No series selected — check at least one above.")
+    else:
+        stock_cols = st.columns(2)
+        for i, (series_id, label, unit, take) in enumerate(selected_stocks):
+            with stock_cols[i % 2], card(label):
+                _seasonal_section(series_id, f"{label} — Seasonal Range", unit, take=take)
 
 with tab_refining:
     geo = st.selectbox("Region", options=list(GROSS_INPUTS_BY_GEO), index=0)
@@ -137,6 +172,19 @@ with tab_refining:
     if gross_inputs.empty or utilisation.empty:
         st.info(f"No refining data yet for {geo} — run `pipelines/eia/pull_wpsr.py`.")
     else:
+        time_range = st.segmented_control(
+            "Time range",
+            options=list(REFINING_RANGE_DAYS),
+            default="2Y",
+            required=True,
+            key="padd_refining_range",
+        )
+        days = REFINING_RANGE_DAYS[time_range]
+        if days is not None:
+            cutoff = gross_inputs.index.max() - pd.Timedelta(days=days)
+            gross_inputs = gross_inputs[gross_inputs.index >= cutoff]
+            utilisation = utilisation[utilisation.index >= cutoff]
+
         with card(f"{geo} Refinery Gross Inputs vs. Utilisation"):
             fig = dual_axis_chart(
                 gross_inputs,
