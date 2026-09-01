@@ -19,6 +19,12 @@ def _scrub_echoed_api_key(response: dict) -> dict:
     except ValueError:
         return response
 
+    if not isinstance(payload, dict):
+        # Some APIs (e.g. Open-Meteo's batched multi-city responses) return a
+        # top-level JSON array, not an object -- nothing to scrub, and EIA's own
+        # echoed-api_key body this hook targets is always a dict.
+        return response
+
     params = payload.get("request", {}).get("params", {})
     if "api_key" in params:
         params["api_key"] = "FILTERED"

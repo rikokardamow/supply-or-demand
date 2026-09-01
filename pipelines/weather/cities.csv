@@ -1,0 +1,15 @@
+city,country,lat,lon,base,population_weight
+dublin,IE,53.35,-6.26,c18,0.0338
+london,GB,51.51,-0.13,c18,0.2564
+amsterdam,NL,52.37,4.90,c18,0.0311
+frankfurt,DE,50.11,8.68,c18,0.0211
+paris,FR,48.85,2.35,c18,0.2966
+madrid,ES,40.42,-3.70,c18,0.1784
+milan,IT,45.46,9.19,c18,0.0831
+warsaw,PL,52.23,21.01,c18,0.0473
+vienna,AT,48.21,16.37,c18,0.0523
+new_york,US,40.71,-74.01,f65,0.3536
+chicago,US,41.88,-87.63,f65,0.1679
+houston,US,29.76,-95.37,f65,0.1280
+atlanta,US,33.75,-84.39,f65,0.1150
+los_angeles,US,34.05,-118.24,f65,0.2355

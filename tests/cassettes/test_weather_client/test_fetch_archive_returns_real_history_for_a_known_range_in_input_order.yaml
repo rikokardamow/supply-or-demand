@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://archive-api.open-meteo.com/v1/archive?daily=temperature_2m_mean%2Ctemperature_2m_min%2Ctemperature_2m_max%2Cwind_speed_10m_max&end_date=2024-01-05&latitude=53.35%2C40.71&longitude=-6.26%2C-74.01&start_date=2024-01-01&timezone=auto
+  response:
+    body:
+      string: "[{\"latitude\":53.391914,\"longitude\":-6.171417,\"generationtime_ms\":0.1417398452758789,\"utc_offset_seconds\":3600,\"timezone\":\"Europe/Dublin\",\"timezone_abbreviation\":\"GMT+1\",\"elevation\":11.0,\"daily_units\":{\"time\":\"iso8601\",\"temperature_2m_mean\":\"\xB0C\",\"temperature_2m_min\":\"\xB0C\",\"temperature_2m_max\":\"\xB0C\",\"wind_speed_10m_max\":\"km/h\"},\"daily\":{\"time\":[\"2024-01-01\",\"2024-01-02\",\"2024-01-03\",\"2024-01-04\",\"2024-01-05\"],\"temperature_2m_mean\":[7.1,9.0,7.6,6.2,4.8],\"temperature_2m_min\":[4.1,7.3,6.6,4.6,3.6],\"temperature_2m_max\":[10.2,10.0,8.7,7.7,7.7],\"wind_speed_10m_max\":[37.0,37.7,24.5,27.2,22.0]}},{\"latitude\":40.738136,\"longitude\":-74.04254,\"generationtime_ms\":0.09131431579589844,\"utc_offset_seconds\":-14400,\"timezone\":\"America/New_York\",\"timezone_abbreviation\":\"GMT-4\",\"elevation\":27.0,\"location_id\":1,\"daily_units\":{\"time\":\"iso8601\",\"temperature_2m_mean\":\"\xB0C\",\"temperature_2m_min\":\"\xB0C\",\"temperature_2m_max\":\"\xB0C\",\"wind_speed_10m_max\":\"km/h\"},\"daily\":{\"time\":[\"2024-01-01\",\"2024-01-02\",\"2024-01-03\",\"2024-01-04\",\"2024-01-05\"],\"temperature_2m_mean\":[3.5,0.0,1.5,2.0,-1.8],\"temperature_2m_min\":[0.2,-4.6,-2.3,-2.1,-5.4],\"temperature_2m_max\":[7.7,5.7,7.7,6.8,3.1],\"wind_speed_10m_max\":[14.3,13.7,14.4,26.9,20.5]}}]"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - deflate
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 31 Aug 2026 19:17:52 GMT
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

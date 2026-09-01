@@ -380,6 +380,68 @@ Spec 06 is now feature-complete: page 06 (production-vs-quota, revision waterfal
 oil-on-water, US rig count), MOMR/JODI/Baker Hughes pipelines all green, ≥2 MOMR vintages
 stored, tests passing.
 
+#### Spec 07 (refinery cracks, IB Gateway) — deferred
+Needs a locally-running IB Gateway/TWS with the API enabled per the spec's own manual-prep
+step — confirmed live that none of the standard ports (7497/7496/4002/4001) are listening
+on this machine. Skipped for now in favour of Spec 08, which has no such local-service
+prerequisite; revisit once IB Gateway is set up.
+
+#### In progress — Spec 08: Weather overlay (Open-Meteo + ECMWF)
+Session A: `pipelines/weather/` pulls Open-Meteo HDD/CDD (no key) for 14 cities (9 EU,
+5 US), population-weighted EU/US aggregates, and a climatology-vs-forecast page. Confirmed
+live: both the forecast and archive endpoints accept **batched, comma-separated multi-city
+requests**, returning a JSON array in input order — one request per EU/US group instead of
+one per city. Also found the spec's own wind param name is stale (`windspeed_10m_max`
+doesn't work; the real one is `wind_speed_10m_max`). Hit — and worked around — two distinct
+real rate limits (per-minute and per-hour); redesigned the climatology builder to compute
+directly from the lake's own already-backfilled history (`core.seasonal.seasonal_stats`,
+2020 excluded automatically) rather than making a second expensive archive call, avoiding
+the rate limit entirely for that step. Population weights sourced from a single consistent
+source (macrotrends.net 2024 metro-area populations) for all 14 cities. Per user request,
+extended beyond the spec's own visualisation spec: a US mirror of the EU HDD-vs-gas-storage
+dual-axis chart (net-withdrawal derived as `-level.diff()` from Spec 05's EIA storage level,
+since EIA has no injection/withdrawal split unlike GIE's AGSI), plus NYC/LA CDD-anomaly-vs-
+ISO-load dual-axis charts joining Spec 05's gridstatus data. A real scale-mismatch bug was
+caught and fixed live in-browser: joining a 90-day weather-anomaly window against a
+multi-year gas-storage series on the same dual-axis chart stretched the shared x-axis to
+the wider series' full range, squashing the weather trace to an invisible sliver — fixed by
+trimming the other series to the same recent window before charting. Acceptance criterion
+met: Dublin's real recorded temperatures give manual HDD values matching the lake's stored
+figures exactly (within rounding).
+
+Session B: ECMWF Open Data (`ecmwf-opendata`, no key, CC BY 4.0) IFS 2m-temperature
+forecast at D+3/D+7, rendered as anomaly maps (`pipelines/weather/anomaly_maps.py`, via
+`cartopy` — confirmed live to install and render cleanly on Windows via plain `pip
+install`, no system GEOS/PROJ needed) against a coarse EU/CONUS climatology grid. The
+spec's own "ERA5 2010-2024 climatology grid" was simplified to a 3-year (2022/2023/2024)
+same-calendar-day normal computed from Open-Meteo's archive endpoint (confirmed live: no
+multi-year-single-day batch mode exists, so this keeps the number of archive calls small
+rather than pulling a full CDS-sourced ERA5 grid, which would need a separate Copernicus
+account not otherwise used by this project). The spec's "DuckDB table `map_assets`" was
+implemented as a Parquet manifest file instead — no precedent for a persisted (non-view)
+DuckDB file exists elsewhere in this codebase. `Client.latest()` (metadata-only, no
+download) confirmed live as a cheap way to cache-check against the real forecast run
+datetime. Page 08 got a new region/D+3/D+7 map section, reading only the manifest — never
+calling ECMWF/Open-Meteo directly from the page — verified live in-browser (switching
+region and step correctly swaps the displayed map).
+
+Session C: a 10m-wind-speed forecast index for DE/DK/IE (`pipelines/weather/wind.py`,
+one representative point per country in a new small `wind_locations.csv`, reusing
+`client.py`'s existing wind field) and `pull_daily.py` — the real scheduled entrypoint
+(Spec 13), distinct from `pull_weather.py`'s one-off history backfill: refreshes the
+16-day forecast (HDD/CDD + wind) and re-renders the 4 ECMWF anomaly maps daily. Also
+added a stale-map badge (>24h since render) to page 08's anomaly-map section. A real,
+confirmed-live gotcha found and documented rather than glossed over: the wind
+cross-check chart's two series don't actually overlap in time —
+`pipelines/entsoe/pull_daily.py` only ever ingests the *prior day's* ENTSO-E wind
+forecast (a trailing window by that pipeline's own design), while Open-Meteo's wind
+index looks 16 days forward — so the chart honestly shows a recent-observed-into-
+forecast transition, not a same-day correlation check; flagged as a follow-up to widen
+ENTSO-E's own forecast pull to a forward window instead. Spec 08 is now
+feature-complete: HDD/CDD history+forecast+climatology, ≥2 anomaly maps auto-rendering
+daily (4, confirmed via a real `pull_daily.py` run), the dual-axis weather-vs-gas
+charts, and the wind cross-check are all live; tests green.
+
 #### v0.8 — Dashboard redesign: institutional light theme, cards, real map tiles
 Cross-cutting change, not tied to a spec — a visual redesign against reference screenshots
 of professional energy/intelligence dashboards. Locks an explicit light theme
