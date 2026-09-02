@@ -40,6 +40,7 @@ dropped into the repo (under `specs/`) and worked through one session at a time,
                                              beyond §0.4 (EIA storage capacity, CFTC COT);
                                              run its lettered sessions (14-A..14-H) only once
                                              each session's "Depends on" specs are done
+15 OFAC SDN sanctions                    ── independent; overlays onto 11 once AIS lands
 ```
 
 ## Calendar mapping (from the master plan)
@@ -59,6 +60,7 @@ dropped into the repo (under `specs/`) and worked through one session at a time,
 | 16–18 | 11 |
 | 19–20 | 13 + polish |
 | 21+ | 14 (analytics layer, one lettered session at a time) |
+| 22 | 15 |
 
 ## Non-negotiable house rules (repeated in every spec)
 
