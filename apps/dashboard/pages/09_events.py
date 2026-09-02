@@ -1,16 +1,28 @@
-"""News & Events (Spec 09, Session B): filterable event table (commodity/tag/
-severity/date) + an events-per-week volume bar chart. Overlaying event markers onto
-other pages' charts (01/02/07) is Session C's job, not built here."""
+"""News & Events (Spec 09, Session B; redesigned per a later feature request): a
+clickable world map (components/news_map.py) sits above the existing filterable
+feed -- clicking a country marker scopes the feed to that country; the existing
+commodity/tag/severity/date filters stay and apply on top of the map selection.
+
+Each feed row can be translated (pipelines/news/translate.py, MyMemory-based, cached)
+and, once a real ANTHROPIC_API_KEY exists, given a one-sentence "Kardamow take" on
+what it could mean for the energy complex (pipelines/news/kardamow_caption.py,
+Phase 2 -- gracefully shows an explanatory message instead of crashing until a key
+is added, matching this project's own Guardian-key precedent)."""
 
 from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
 from components.card import card
+from components.kardamow_take import kardamow_take
+from components.news_map import render_news_map
 from core.storage import read_events
 from core.theme import count_bar_chart
+from pipelines.news.kardamow_caption import generate_kardamow_caption
+from pipelines.news.translate import translate_headline
 
 RANGE_DAYS = {"30D": 30, "90D": 90, "180D": 182, "1Y": 365, "All": None}
+FEED_ROW_LIMIT = 30
 
 
 def _load_events() -> pd.DataFrame:
@@ -63,6 +75,45 @@ if selected_tags:
     ]
 filtered = filtered[filtered["severity"] >= min_severity]
 
+with card("News map"):
+    map_key_version = st.session_state.get("news_map_key_version", 0)
+    map_event = st.plotly_chart(
+        render_news_map(filtered),
+        use_container_width=True,
+        on_select="rerun",
+        selection_mode="points",
+        key=f"news_map_select_{map_key_version}",
+    )
+    clicked_points = map_event.selection.points if map_event is not None else []
+    if clicked_points:
+        # customdata is a per-point [geo] list (see news_map.py) -- Plotly's own
+        # click-event JSON indexes a bare string like a list of characters, so a
+        # flat customdata array silently truncates to one letter (confirmed live:
+        # "United States" came back as "U") unless each point's customdata is
+        # itself wrapped in a list.
+        st.session_state["events_selected_geo"] = clicked_points[0]["customdata"][0]
+
+    selected_geo = st.session_state.get("events_selected_geo")
+    if selected_geo:
+        clear_col, label_col = st.columns([1, 5])
+        with clear_col:
+            if st.button("Clear selection"):
+                st.session_state["events_selected_geo"] = None
+                # The plotly widget itself remembers its own last selection across
+                # reruns (confirmed live: clearing only the session-state variable
+                # left the widget re-reporting the same clicked point on the very
+                # next rerun, immediately overwriting the clear) -- changing its
+                # key forces Streamlit to treat it as a fresh widget with no
+                # selection, which is the only way to actually reset it.
+                st.session_state["news_map_key_version"] = map_key_version + 1
+                st.rerun()
+        with label_col:
+            st.caption(f"Filtered to **{selected_geo}** — click the button to clear.")
+
+selected_geo = st.session_state.get("events_selected_geo")
+if selected_geo:
+    filtered = filtered[filtered["geo"] == selected_geo]
+
 with card("Events per week"):
     if filtered.empty:
         st.info("No events match the current filters.")
@@ -70,6 +121,36 @@ with card("Events per week"):
         weekly_counts = filtered.set_index("ts")["event_id"].resample("W").count()
         fig = count_bar_chart(weekly_counts, title="Events per week", unit="count")
         st.plotly_chart(fig, use_container_width=True)
+
+with card(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} shown)"):
+    if filtered.empty:
+        st.info("No events match the current filters.")
+    else:
+        feed_rows = filtered.sort_values("ts", ascending=False).head(FEED_ROW_LIMIT)
+        for _, row in feed_rows.iterrows():
+            header = f"[{row['commodity']} · severity {row['severity']}] {row['headline']}"
+            with st.expander(header):
+                st.caption(
+                    f"{row['ts']:%Y-%m-%d} · {row['source']} · {row['geo'] or 'unspecified'} "
+                    f"· {row['language'] or 'unknown language'} · {row['url']}"
+                )
+                if st.button("Translate & Kardamow take", key=f"translate_{row['event_id']}"):
+                    translated = translate_headline(
+                        row["event_id"], row["headline"], row["language"] or ""
+                    )
+                    st.write(f"**English:** {translated}")
+                    try:
+                        caption = generate_kardamow_caption(
+                            row["event_id"],
+                            translated,
+                            row["commodity"],
+                            row["tags"],
+                            row["severity"],
+                            row["geo"],
+                        )
+                        kardamow_take(caption)
+                    except RuntimeError as exc:
+                        st.info(str(exc))
 
 with card(f"Event table ({len(filtered)} of {len(events)} shown)"):
     st.dataframe(

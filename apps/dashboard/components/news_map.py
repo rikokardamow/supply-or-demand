@@ -1,7 +1,20 @@
 """Clickable world map for the news page redesign (Spec 09 amendment) -- one marker
 per resolved country, sized by event count and coloured by that country's own max
-severity. Uses go.Scattermapbox with the free "open-street-map" style (no Mapbox
-token), matching this project's other maps (padd_map.py, entsog_map.py, power_maps.py).
+severity.
+
+Uses `go.Scattermap` (the newer MapLibre-based trace), NOT `go.Scattermapbox` like
+this project's other maps (padd_map.py, entsog_map.py, power_maps.py) -- a deliberate,
+confirmed-live deviation from that precedent. `go.Scattermapbox` markers never
+produced a Streamlit `on_select` selection event no matter where a real click landed
+(confirmed live: repeated clicks squarely on a rendered marker, verified against
+screenshots, produced zero selection points) -- this matches a known, real gap
+(third-party components like `streamlit-plotly-mapbox-events` exist specifically
+because native `st.plotly_chart` selection support for Scattermapbox is unreliable).
+Switching this one component to `go.Scattermap` (`layout.map` instead of
+`layout.mapbox`; same free "open-street-map" style, no Mapbox token) fixed it --
+confirmed live, click selection works correctly. Plotly itself already recommends
+this migration (a console warning on every Scattermapbox render: "mapbox subplots and
+traces are deprecated ... switching to `map` subplots and traces").
 
 Returns a bare go.Figure -- the caller (09_events.py) renders it via
 `st.plotly_chart(fig, on_select="rerun", selection_mode="points", key=...)` and reads
@@ -36,7 +49,7 @@ def render_news_map(events_df: pd.DataFrame) -> go.Figure:
     not silently dropped from the underlying data, only from this map's markers."""
     fig = go.Figure()
     fig.update_layout(
-        mapbox={"style": "open-street-map", "center": {"lat": 20, "lon": 10}, "zoom": 0.8},
+        map={"style": "open-street-map", "center": {"lat": 20, "lon": 10}, "zoom": 0.8},
         margin={"l": 0, "r": 0, "t": 30, "b": 0},
     )
 
@@ -56,7 +69,7 @@ def render_news_map(events_df: pd.DataFrame) -> go.Figure:
     max_count = int(grouped["count"].max())
 
     fig.add_trace(
-        go.Scattermapbox(
+        go.Scattermap(
             lat=[c[0] for c in grouped["centroid"]],
             lon=[c[1] for c in grouped["centroid"]],
             mode="markers",
@@ -64,7 +77,13 @@ def render_news_map(events_df: pd.DataFrame) -> go.Figure:
                 "size": [_marker_size(int(c), max_count) for c in grouped["count"]],
                 "color": [SEVERITY_COLOURS.get(int(s), NAVY) for s in grouped["max_severity"]],
             },
-            customdata=grouped["geo"],
+            # Each point's own customdata must itself be a list -- a bare flat array
+            # of strings gets indexed like a list of characters by the click-event
+            # JSON round-trip (confirmed live: "United States" came back as "U"),
+            # matching Plotly Express's own convention of one customdata list per
+            # point (see streamlit's plotly_chart docstring example: "customdata":
+            # [2.5], not a bare 2.5).
+            customdata=[[geo] for geo in grouped["geo"]],
             hovertext=[
                 f"{geo}: {count} event(s), max severity {severity}"
                 for geo, count, severity in zip(
