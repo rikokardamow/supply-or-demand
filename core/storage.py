@@ -53,11 +53,32 @@ def _duckdb_type(pa_type: pa.DataType) -> str:
     raise ValueError(f"no DuckDB type mapping for pyarrow type {pa_type!r}")
 
 
-def _typed_select(schema: pa.Schema) -> str:
+def _available_columns(con: duckdb.DuckDBPyConnection, glob: str) -> set[str]:
+    """Columns `union_by_name=true` can actually see across the glob's files. A schema
+    column absent from EVERY on-disk file (e.g. a field added to a schema after those
+    files were written -- confirmed live with `events.language`, added mid-project)
+    isn't among these, and referencing it directly in the outer SELECT raises a DuckDB
+    Binder Error ("Referenced column ... not found") -- `union_by_name` only NULL-fills
+    a column present in at least *one* scanned file, not one present in *none*."""
+    query = f"SELECT * FROM read_parquet('{glob}', union_by_name=true) LIMIT 0"
+    return set(con.execute(query).df().columns)
+
+
+def _typed_select(schema: pa.Schema, available: set[str]) -> str:
     """Every column explicitly cast to its canonical schema type -- never a bare
     `SELECT *` over a parquet glob, which lets DuckDB's own cross-file schema
-    resolution silently pick the wrong type (see this module's own docstring)."""
-    return ", ".join(f'CAST("{f.name}" AS {_duckdb_type(f.type)}) AS "{f.name}"' for f in schema)
+    resolution silently pick the wrong type (see this module's own docstring). A
+    schema column not in `available` (no on-disk file has it yet) is selected as a
+    typed NULL literal instead of referencing it, so reading still works before the
+    first write under the new schema lands."""
+    parts = []
+    for f in schema:
+        db_type = _duckdb_type(f.type)
+        if f.name in available:
+            parts.append(f'CAST("{f.name}" AS {db_type}) AS "{f.name}"')
+        else:
+            parts.append(f'CAST(NULL AS {db_type}) AS "{f.name}"')
+    return ", ".join(parts)
 
 
 def _partition_dir(dataset: str, source: str, year: int) -> Path:
@@ -204,8 +225,9 @@ def _read(
 
     con = duckdb.connect()
     glob = _dataset_glob(dataset)
+    available = _available_columns(con, glob)
     query = (
-        f"SELECT {_typed_select(schema)} "
+        f"SELECT {_typed_select(schema, available)} "
         f"FROM read_parquet('{glob}', hive_partitioning=false, union_by_name=true)"
     )
     if extra_clauses:
@@ -280,9 +302,10 @@ def read_events(
 def _register_view(con: duckdb.DuckDBPyConnection, dataset: str, schema: pa.Schema) -> None:
     if _has_any_files(dataset):
         glob = _dataset_glob(dataset)
+        available = _available_columns(con, glob)
         con.execute(
             f"CREATE OR REPLACE VIEW {dataset} AS "
-            f"SELECT {_typed_select(schema)} "
+            f"SELECT {_typed_select(schema, available)} "
             f"FROM read_parquet('{glob}', hive_partitioning=false, union_by_name=true)"
         )
     else:

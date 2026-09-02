@@ -70,6 +70,7 @@ def articles_to_events(
             "geo": geo,
             "commodity": commodity,
             "severity": severity,
+            "language": articles["language"],
         }
     )
 
