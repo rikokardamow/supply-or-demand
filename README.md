@@ -491,3 +491,21 @@ set during this build. `pull_news.py` gracefully skips Guardian entirely when no
 is configured, so the pipeline is fully GDELT-only for now; add a real key and this
 becomes a live second source with no further code changes needed. NewsAPI/WorldNews
 were never used at all, matching the spec's own "not for scheduled pulls" guardrail.
+
+#### v0.11 — Critical fix: DuckDB was silently truncating every series to whole numbers
+Cross-cutting fix, not tied to a spec — found while verifying Spec 10's FX data.
+`core/storage.py`'s read path globbed every source's parquet files together with a
+bare `SELECT *`; Baker Hughes' rig-count files (Spec 06, genuinely whole numbers) were
+physically `int64`-typed, while every other source used `double`. DuckDB's default
+cross-file schema resolution silently coerced the **entire** `value` column to
+`int64` for **every reader**, not just Baker Hughes' own rows — invisible for months
+across large-magnitude series (losing a crude-stock figure's fraction doesn't show on
+a chart), but catastrophic for Spec 10's FX rates: `fx.usd_eur` (always near 1.0) read
+back as exactly `1.0` for every single date. Confirmed live that an outer `CAST`
+doesn't fix it — the truncation happens at DuckDB's scan stage, before any SQL
+expression sees the real value; the actual fix is `read_parquet(...,
+union_by_name=true)`. Kept an explicit per-column `CAST` to each schema's canonical
+type as defense in depth, plus a write-side `.astype({"value": "float64"})` so a
+future int-only source can't reintroduce this. Existing Baker Hughes files repaired
+in place. A new regression test reproduces the exact conditions (a hand-written
+int64-typed parquet file for one source alongside a normal float source).
