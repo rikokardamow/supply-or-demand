@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import pytest
 from core.storage import (
+    LAKE_ROOT,
     read_events,
     read_flows,
     read_ts_long,
@@ -32,6 +33,43 @@ def _make_df(revision_date: datetime, value: float) -> pd.DataFrame:
 @pytest.fixture(autouse=True)
 def _isolated_lake(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
+
+
+def test_read_ts_long_is_not_corrupted_by_an_int64_typed_value_column_in_another_source() -> (
+    None
+):
+    """Regression test for a real, confirmed-live incident: `pipelines/opec_momr`'s
+    Baker Hughes rig counts are genuinely whole numbers, and a DataFrame column of
+    only whole-number floats can end up written with a physically int64-typed
+    parquet column if a caller ever bypasses write_ts_long's own float64 coercion
+    (as this test deliberately does, to reproduce the original bug's exact
+    conditions). Reading the *other*, correctly double-typed source alongside it
+    must still return real decimal values, not have them silently truncated to
+    whichever type DuckDB's cross-file schema resolution happens to pick."""
+    intlike_dir = LAKE_ROOT / "ts_long" / "source=intsource" / "year=2024"
+    intlike_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {
+            "series_id": ["INTSERIES"],
+            "source": ["intsource"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "value": pd.array([500], dtype="int64"),  # bypasses write_ts_long on purpose
+            "unit": ["count"],
+            "geo": ["US"],
+            "freq": ["weekly"],
+            "revision_date": pd.to_datetime(["2024-01-02"]),
+        }
+    ).to_parquet(intlike_dir / "part-0.parquet", index=False)
+
+    write_ts_long(_make_df(datetime(2024, 1, 2), 0.86371), source="floatsource")
+
+    float_result = read_ts_long(series_ids=["TEST1"])
+    assert float_result.iloc[0]["value"] == pytest.approx(0.86371)
+
+    int_result = read_ts_long(series_ids=["INTSERIES"])
+    assert int_result.iloc[0]["value"] == 500.0
+    assert float_result["value"].dtype == "float64"
+    assert int_result["value"].dtype == "float64"
 
 
 def test_round_trip() -> None:
