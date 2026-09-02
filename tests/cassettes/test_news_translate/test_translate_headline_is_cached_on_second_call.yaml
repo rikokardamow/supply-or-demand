@@ -1,0 +1,54 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.mymemory.translated.net/get?langpair=es%7Cen&q=Buenos+dias
+  response:
+    body:
+      string: '{"responseData":{"translatedText":"Good morning","match":1},"quotaFinished":false,"mtLangSupported":null,"responseDetails":"","responseStatus":200,"responderId":null,"exception_code":null,"matches":[{"id":"733752076","segment":"Buenos
+        dias","translation":"Good morning","source":"es-ES","target":"en-GB","quality":"74","reference":null,"usage-count":3,"subject":"All","created-by":"MateCat","last-updated-by":"MateCat","create-date":"2022-06-18
+        14:24:24","last-update-date":"2022-06-18 14:24:24","match":1,"penalty":0},{"id":"437829924639550730","segment":"Buenos
+        dias,","translation":"Good morning,","source":"es-ES","target":"en-GB","quality":74,"reference":null,"usage-count":2,"subject":"","created-by":"MateCat","last-updated-by":"MateCat","create-date":"2024-10-22
+        16:11:27","last-update-date":"2024-10-22 16:11:27","match":0.99,"penalty":0},{"id":"743707375","segment":"Buenos
+        dias","translation":"hello Miss, how are you?","source":"es-ES","target":"en-US","quality":"100","reference":null,"usage-count":4,"subject":"","created-by":"MateCat","last-updated-by":"","create-date":"2022-08-27
+        03:32:15","last-update-date":"2022-08-27 03:32:15","match":0.99,"penalty":0}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1175'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 02 Sep 2026 19:02:30 GMT
+      Expires:
+      - Fri, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - Apache/2.4.58 (Ubuntu)
+      X-Backend-Content-Length:
+      - '10'
+      X-Embedded-Status:
+      - '200'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

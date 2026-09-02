@@ -1,0 +1,54 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.mymemory.translated.net/get?langpair=es%7Cen&q=Hola+mundo
+  response:
+    body:
+      string: '{"responseData":{"translatedText":"\"Hello, World!\" program","match":1},"quotaFinished":false,"mtLangSupported":null,"responseDetails":"","responseStatus":200,"responderId":null,"exception_code":null,"matches":[{"id":"467219230","segment":"Hola
+        mundo","translation":"\"Hello, World!\" program","source":"es-ES","target":"en-GB","quality":"80","reference":null,"usage-count":4,"subject":"All","created-by":"Wikipedia","last-updated-by":"Wikipedia","create-date":"2015-06-02
+        11:52:14","last-update-date":"2015-06-02 11:52:14","match":1,"penalty":0},{"id":"437829924552447338","segment":"Hola
+        mundo","translation":"Hello world","source":"es-ES","target":"en-GB","quality":74,"reference":null,"usage-count":2,"subject":"","created-by":"MateCat","last-updated-by":"MateCat","create-date":"2023-12-05
+        22:50:41","last-update-date":"2023-12-05 22:50:41","match":0.99,"penalty":0},{"id":"523617024","segment":"Hola
+        mundo","translation":"Hello World","source":"es-ES","target":"en-GB","quality":"74","reference":null,"usage-count":2,"subject":"All","created-by":"Public_Corpora","last-updated-by":"Public_Corpora","create-date":"2011-10-23
+        03:07:32","last-update-date":"2011-10-23 03:07:32","match":0.99,"penalty":0}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1209'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 02 Sep 2026 19:02:12 GMT
+      Expires:
+      - Fri, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - Apache/2.4.58 (Ubuntu)
+      X-Backend-Content-Length:
+      - '10'
+      X-Embedded-Status:
+      - '200'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
