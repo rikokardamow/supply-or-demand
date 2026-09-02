@@ -41,6 +41,8 @@ dropped into the repo (under `specs/`) and referenced directly in a Claude Code 
                                              run its lettered sessions (14-A..14-H) only once
                                              each session's "Depends on" specs are done
 15 OFAC SDN sanctions                    ── independent; overlays onto 11 once AIS lands
+16 NewsAPI supplement + Adanos sentiment ── NewsAPI extends 09 (manual-only, ToS-limited);
+                                             Adanos is independent, feeds page 10
 ```
 
 ## Calendar mapping (from the master plan)
@@ -61,6 +63,7 @@ dropped into the repo (under `specs/`) and referenced directly in a Claude Code 
 | 19–20 | 13 + polish |
 | 21+ | 14 (analytics layer, one lettered session at a time) |
 | 22 | 15 |
+| 23 | 16 |
 
 ## Non-negotiable house rules (repeated in every spec)
 
