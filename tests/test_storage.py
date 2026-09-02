@@ -4,7 +4,14 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from core.storage import read_flows, read_ts_long, write_flows, write_ts_long
+from core.storage import (
+    read_events,
+    read_flows,
+    read_ts_long,
+    write_events,
+    write_flows,
+    write_ts_long,
+)
 
 
 def _make_df(revision_date: datetime, value: float) -> pd.DataFrame:
@@ -178,3 +185,52 @@ def test_write_flows_replace_window_keeps_pairs_missing_from_the_fresh_pull() ->
     no_de_row = result[(result["from_node"] == "NO") & (result["to_node"] == "DE")]
     assert len(no_de_row) == 1
     assert no_de_row.iloc[0]["value"] == 100.0
+
+
+def _make_events_df(event_id: str, tags: list[str]) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "event_id": [event_id],
+            "ts": pd.to_datetime(["2026-09-01"]),
+            "headline": ["Refinery fire in Rotterdam"],
+            "source": ["gdelt"],
+            "url": [f"https://example.com/{event_id}"],
+            "tags": [tags],
+            "geo": ["NL"],
+            "commodity": ["crude"],
+            "severity": [1],
+        }
+    )
+
+
+def test_events_round_trip_preserves_list_typed_tags() -> None:
+    write_events(_make_events_df("e1", ["outage"]), source="gdelt")
+
+    result = read_events()
+
+    assert len(result) == 1
+    # DuckDB hands back a list-typed column as a numpy array, not a plain Python list
+    # (confirmed live) -- list(...) normalises before comparing.
+    assert list(result.iloc[0]["tags"]) == ["outage"]
+
+
+def test_events_dedup_keeps_last_row_per_event_id() -> None:
+    write_events(_make_events_df("e1", ["outage"]), source="gdelt")
+    write_events(_make_events_df("e1", ["outage", "sanctions"]), source="gdelt")
+
+    result = read_events()
+
+    assert len(result) == 1
+    assert list(result.iloc[0]["tags"]) == ["outage", "sanctions"]
+
+
+def test_read_events_filters_by_commodity() -> None:
+    crude = _make_events_df("e1", ["outage"])
+    gas = _make_events_df("e2", ["supply"])
+    gas["commodity"] = "gas"
+    write_events(pd.concat([crude, gas], ignore_index=True), source="gdelt")
+
+    result = read_events(commodity="gas")
+
+    assert len(result) == 1
+    assert result.iloc[0]["event_id"] == "e2"
