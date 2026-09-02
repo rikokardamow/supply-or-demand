@@ -25,6 +25,7 @@ dependencies = [
     "xarray>=2024",
     "matplotlib>=3.9",
     "cartopy>=0.24",
+    "rapidfuzz>=3.9",
 ]
 
 [project.optional-dependencies]

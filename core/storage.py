@@ -9,7 +9,14 @@ import duckdb
 import pandas as pd
 import pyarrow as pa
 
-from core.schemas import FLOWS_SCHEMA, TS_LONG_SCHEMA, validate_flows, validate_ts_long
+from core.schemas import (
+    EVENTS_SCHEMA,
+    FLOWS_SCHEMA,
+    TS_LONG_SCHEMA,
+    validate_events,
+    validate_flows,
+    validate_ts_long,
+)
 
 LAKE_ROOT = Path("data/lake")
 
@@ -125,6 +132,19 @@ def write_flows(
     )
 
 
+def write_events(df: pd.DataFrame, source: str) -> None:
+    """`event_id` (a hash of the article URL) is the natural dedup key -- news articles
+    have no revision_date concept like ts_long's re-published series values do."""
+    validate_events(df)
+    _write_partitioned(
+        df,
+        dataset="events",
+        source=source,
+        dedup_subset=["event_id"],
+        sort_col="ts",
+    )
+
+
 def _read(
     dataset: str,
     schema: pa.Schema,
@@ -186,6 +206,27 @@ def read_flows(
     return _read("flows", FLOWS_SCHEMA, clauses, params)
 
 
+def read_events(
+    start: datetime | None = None,
+    end: datetime | None = None,
+    commodity: str | None = None,
+) -> pd.DataFrame:
+    clauses: list[str] = []
+    params: list[object] = []
+
+    if start is not None:
+        clauses.append("ts >= ?")
+        params.append(start)
+    if end is not None:
+        clauses.append("ts <= ?")
+        params.append(end)
+    if commodity is not None:
+        clauses.append("commodity = ?")
+        params.append(commodity)
+
+    return _read("events", EVENTS_SCHEMA, clauses, params)
+
+
 def _register_view(con: duckdb.DuckDBPyConnection, dataset: str, schema: pa.Schema) -> None:
     if _has_any_files(dataset):
         glob = _dataset_glob(dataset)
@@ -203,4 +244,5 @@ def warehouse() -> duckdb.DuckDBPyConnection:
     con = duckdb.connect()
     _register_view(con, "ts_long", TS_LONG_SCHEMA)
     _register_view(con, "flows", FLOWS_SCHEMA)
+    _register_view(con, "events", EVENTS_SCHEMA)
     return con

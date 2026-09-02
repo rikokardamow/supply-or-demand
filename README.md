@@ -461,3 +461,33 @@ control time-range pill row on each page's longest raw time series, and a collap
 filter panel (checkboxes + live latest-value counts) on each page's biggest fixed list
 (stock series, corridors, zones, regions, quota countries). Verified live in-browser on
 every page, including forcing the browser to dark mode to confirm the theme lock holds.
+
+#### v0.10 — Spec 09: News ingestion & event tagging (GDELT + event overlays)
+New `events` lake schema/dataset (`core/schemas.py`, `core/storage.py`) — this
+project's first list-typed column (`tags`). Session A: `pipelines/news/` — a GDELT
+DOC 2.0 client (free, no key) against a curated (commodity × event_type) query
+dictionary. Confirmed live: `api.gdeltproject.org` is severely flaky (connect
+timeouts, resets, and even an HTTP-200-with-plain-text rate-limit body, not just
+429s) — the client retries broadly and `pull_news.py` treats each curated query
+independently, since two real full pulls saw only 2/6 and 5/6 queries succeed
+respectively. Session B: a real headline-derived tagging engine
+(`pipelines/news/tagging.py` — multi-tag extraction, severity 1-3 by keyword tier, geo
+via a place-name dictionary that deliberately overrides the publisher-country field)
+replacing Session A's placeholder tagging; fuzzy cross-source dedup (rapidfuzz,
+≥90 similarity within 48h) catching near-duplicate articles from different outlets
+that exact-URL dedup can't; a new page `09_events.py` (filterable event table +
+events-per-week bar chart). Session C: a reusable
+`apps/dashboard/components/event_overlay.py::add_event_markers`, drawing
+severity-coloured vertical lines with hover headlines onto an existing chart —
+wired onto pages 01 (crude), 02 (gas), and 06 (crude/supply, substituting for the
+spec's named page 07, still deferred pending IB Gateway). A real bug caught live
+before shipping broken: calling `fig.add_vline()` once per event hung the page
+indefinitely with 960 real events in the lake — fixed by building shape dicts and
+setting them via one `fig.update_layout(shapes=...)` call instead.
+
+**Descoped**: a Guardian Open Platform client (`guardian_client.py`) was built behind
+the same interface as GDELT's, but was never live-verified — `GUARDIAN_KEY` was never
+set during this build. `pull_news.py` gracefully skips Guardian entirely when no key
+is configured, so the pipeline is fully GDELT-only for now; add a real key and this
+becomes a live second source with no further code changes needed. NewsAPI/WorldNews
+were never used at all, matching the spec's own "not for scheduled pulls" guardrail.
