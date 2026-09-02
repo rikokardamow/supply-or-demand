@@ -22,12 +22,30 @@ def _slug(psr_type: str) -> str:
 
 
 def pull_actuals(
-    client: ENTSOEClient, zones: list[str], start: date, end: date
+    client: ENTSOEClient,
+    zones: list[str],
+    start: date,
+    end: date,
+    forecast_start: date | None = None,
+    forecast_end: date | None = None,
 ) -> dict[str, pd.DataFrame]:
     """Shared by main()'s full backfill and pull_daily.py's prior-day re-pull — same
     per-zone, per-indicator resilience (one flaky zone/indicator must never abort the
     rest). Returns {"load": ..., "generation": ..., "wind_solar": ...}, each an
-    empty-but-columned ts_long frame if nothing was pulled."""
+    empty-but-columned ts_long frame if nothing was pulled.
+
+    `forecast_start`/`forecast_end` (default: `start`/`end`, unchanged for main()'s
+    one-off backfill) let the wind/solar forecast use a *different* window from load/
+    generation — unlike those two (backward-looking actuals), ENTSO-E's wind/solar
+    forecast is its own forward-looking day-ahead forecast. pull_daily.py is the one
+    caller that actually passes a distinct forward window; see its own docstring for
+    why its previous shared-window call left the two series with no overlapping dates
+    at all on the weather page's wind cross-check chart."""
+    if forecast_start is None:
+        forecast_start = start
+    if forecast_end is None:
+        forecast_end = end
+
     pulled_at = datetime.now(UTC)
 
     load_frames = []
@@ -85,7 +103,7 @@ def pull_actuals(
                 )
 
         try:
-            wind_solar = client.get_wind_and_solar_forecast(zone, start, end)
+            wind_solar = client.get_wind_and_solar_forecast(zone, forecast_start, forecast_end)
         except RuntimeError as exc:
             print(f"{zone} wind/solar forecast: FAILED ({exc}) — skipping", flush=True)
         else:

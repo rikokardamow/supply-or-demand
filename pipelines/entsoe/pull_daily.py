@@ -1,9 +1,17 @@
 """Daily incremental entrypoint for orchestration (Spec 13): day-ahead prices for the
 newly published next day (ENTSO-E publishes ~12:45 CET per root NOTES.md's release
-calendar) plus actuals — load, generation, wind/solar forecast, cross-border flows —
-for the prior day. `pull_prices.py`/`pull_actuals.py`/`pull_flows.py`'s 90/14/90-day
-pulls are one-off backfills; this is the actual scheduled entrypoint, reusing their
-`pull_*()` helpers with narrower windows.
+calendar) plus load/generation actuals for the prior day, cross-border flows for the
+prior day, and wind/solar forecast for a *forward* window (today through
+FORECAST_LOOKAHEAD_DAYS ahead) — unlike load/generation, wind/solar forecast is itself
+a forward-looking day-ahead forecast, not a backward-looking actual, so it gets its own
+window via `pull_actuals`'s `forecast_start`/`forecast_end` params rather than sharing
+`actuals_start`/`actuals_end`. (Previously it shared that backward-looking window,
+which left it with no overlapping dates at all against `pipelines/weather`'s own
+forward-looking wind index on the weather page's cross-check chart — confirmed live
+in-browser; see `pipelines/weather/NOTES.md` and `pipelines/entsoe/NOTES.md`.)
+`pull_prices.py`/`pull_actuals.py`/`pull_flows.py`'s 90/14/90-day pulls are one-off
+backfills; this is the actual scheduled entrypoint, reusing their `pull_*()` helpers
+with narrower windows.
 
 Day-ahead prices are auction-cleared and never revised (see pipelines/entsoe/NOTES.md's
 revision_date note) and `write_ts_long` already keeps the latest-revision_date row per
@@ -39,6 +47,15 @@ PRICE_END_OFFSET_DAYS = 2
 # Actuals for the prior day only — per the spec's own Session D scope.
 ACTUALS_LOOKBACK_DAYS = 1
 
+# Wind/solar forecast is ENTSO-E's own forward-looking day-ahead forecast, not a
+# backward-looking actual like load/generation -- unlike those two, pulling it for
+# "yesterday through today" left it with no overlapping dates at all against
+# pipelines/weather's own forward-looking wind index on the weather page's cross-check
+# chart (confirmed live in-browser, see pipelines/weather/NOTES.md). Mirrors
+# PRICE_END_OFFSET_DAYS' reasoning for day-ahead prices, another forward-looking,
+# once-daily-published ENTSO-E series in this same file.
+FORECAST_LOOKAHEAD_DAYS = 2
+
 
 def main() -> None:
     client = ENTSOEClient()
@@ -55,7 +72,11 @@ def main() -> None:
 
     actuals_start = today - timedelta(days=ACTUALS_LOOKBACK_DAYS)
     actuals_end = today
-    actuals = pull_actuals(client, ZONES, actuals_start, actuals_end)
+    forecast_start = today
+    forecast_end = today + timedelta(days=FORECAST_LOOKAHEAD_DAYS)
+    actuals = pull_actuals(
+        client, ZONES, actuals_start, actuals_end, forecast_start, forecast_end
+    )
     for label, df in actuals.items():
         if df.empty:
             print(f"no {label} rows pulled", flush=True)

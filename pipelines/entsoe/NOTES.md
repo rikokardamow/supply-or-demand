@@ -198,3 +198,42 @@ before the fix still had it — `read_flows` confirmed no border was lost across
 repair run. Idempotency now holds in the sense that actually matters for a
 confirmed-flaky API: a failed item on any given run leaves prior data untouched
 rather than either duplicating it or deleting it.
+
+## Wind/solar forecast needed its own forward window, not the actuals' backward one
+
+**Found via `pipelines/weather`'s Spec 08 Session C** (its own wind-forecast
+cross-check chart on page 08): `pull_daily.py` previously pulled wind/solar forecast
+with the *same* `actuals_start`/`actuals_end` window as load/generation
+(`today - ACTUALS_LOOKBACK_DAYS` through `today`) — but unlike load/generation (genuine
+backward-looking actuals), ENTSO-E's wind/solar forecast (`query_wind_and_solar_
+forecast`) is itself a forward-looking day-ahead forecast. Confirmed live in-browser on
+2026-09-01: the weather page's wind cross-check chart had **zero overlapping dates**
+between ENTSO-E's series (topping out a few days in the past, whenever `pull_daily.py`
+last ran) and Open-Meteo's own forward-looking wind index — not stale data, but two
+series pulled for fundamentally different time windows.
+
+**Fix**: `pull_actuals()` (`pull_actuals.py`) now takes optional `forecast_start`/
+`forecast_end` params (default `start`/`end`, so `main()`'s one-off backfill and every
+existing caller that doesn't pass them is unaffected) used only for the wind/solar
+`client.get_wind_and_solar_forecast(...)` call, decoupled from `start`/`end`'s effect on
+load/generation. `pull_daily.py` now passes `forecast_start=today`,
+`forecast_end=today + FORECAST_LOOKAHEAD_DAYS` (2 days — same reasoning as
+`PRICE_END_OFFSET_DAYS` for day-ahead prices, another forward-looking, once-daily
+ENTSO-E series in this same file) instead of reusing `actuals_start`/`actuals_end`.
+
+**Live verification of this fix is pending, not yet confirmed** — the Transparency
+Platform was experiencing what looked like a genuine platform-wide outage while this
+fix was written (2026-09-02): six consecutive real requests across multiple zones,
+windows, and even both endpoints (day-ahead prices and wind/solar forecast) all failed
+with 503/`ReadTimeout`, including a trivial 2-day past-window day-ahead-price query for
+a single zone that should be the most reliable possible case — this wasn't specific to
+querying a future date, the whole platform appeared unavailable. The fix itself follows
+directly from ENTSO-E's own documented "day-ahead" semantics (the whole point of a
+day-ahead forecast is that it's published for the *next* day), but **run
+`pull_daily.py` for real once the platform recovers and confirm real rows land with
+`ts` values in the future** before treating this as settled. Once confirmed, revisit
+`apps/dashboard/pages/08_weather.py`'s wind cross-check section — its "not a same-day
+overlap" caption caveat and the two-source explanation describe a gap that should no
+longer exist, but the chart won't actually show overlapping dates until a real
+`pull_daily.py` run has written forward-dated rows to the lake (this fix alone doesn't
+retroactively backfill anything).
