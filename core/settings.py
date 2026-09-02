@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     tomorrow_io_key: str | None = None
     guardian_key: str | None = None
     adanos_api_key: str | None = None
+    anthropic_api_key: str | None = None
 
 
 settings = Settings()
