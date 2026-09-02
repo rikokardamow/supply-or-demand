@@ -1,4 +1,22 @@
-"""Parquet + DuckDB lake: write/read ts_long and flows datasets."""
+"""Parquet + DuckDB lake: write/read ts_long and flows datasets.
+
+**Critical historical bug, fixed here (see root NOTES.md / this module's own git
+history for the full incident)**: `read_parquet(glob, ...)` over a *heterogeneous* set
+of files (one source's own files typed `value` as int64 -- `pipelines/opec_momr`'s
+Baker Hughes rig counts, genuinely whole numbers -- while every other source's files
+correctly used double) silently truncated the ENTIRE `value` column to int64 at the
+*scan* level, before any SQL-level CAST could ever see the real value -- confirmed
+live: FX rates all near 1.0 collapsed to exactly `1` project-wide, and this wasn't a
+one-series bug, it corrupted `read_ts_long`/`warehouse()` reads of *every* series
+whenever DuckDB's default (positional, first-file-wins) schema resolution picked the
+narrower type. Fixed two ways, both needed: `read_parquet(..., union_by_name=true)`
+makes DuckDB resolve columns *by name* across files and widen to a safe common type
+(double) instead of truncating -- confirmed live this is the actual mechanism, an
+outer `CAST` alone does nothing once the scan has already destroyed the value. The
+explicit `CAST` in `_typed_select` is kept anyway as defense in depth (self-documents
+the expected type, guards against a different kind of mismatch `union_by_name` might
+not save on its own) alongside a write-side `.astype({"value": "float64"})` in
+`write_ts_long`/`write_flows` so a future int-only source can't reintroduce this."""
 
 from __future__ import annotations
 
@@ -19,6 +37,27 @@ from core.schemas import (
 )
 
 LAKE_ROOT = Path("data/lake")
+
+
+def _duckdb_type(pa_type: pa.DataType) -> str:
+    if pa.types.is_string(pa_type):
+        return "VARCHAR"
+    if pa.types.is_timestamp(pa_type):
+        return "TIMESTAMP"
+    if pa.types.is_floating(pa_type):
+        return "DOUBLE"
+    if pa.types.is_integer(pa_type):
+        return "BIGINT"
+    if pa.types.is_list(pa_type):
+        return f"{_duckdb_type(pa_type.value_type)}[]"
+    raise ValueError(f"no DuckDB type mapping for pyarrow type {pa_type!r}")
+
+
+def _typed_select(schema: pa.Schema) -> str:
+    """Every column explicitly cast to its canonical schema type -- never a bare
+    `SELECT *` over a parquet glob, which lets DuckDB's own cross-file schema
+    resolution silently pick the wrong type (see this module's own docstring)."""
+    return ", ".join(f'CAST("{f.name}" AS {_duckdb_type(f.type)}) AS "{f.name}"' for f in schema)
 
 
 def _partition_dir(dataset: str, source: str, year: int) -> Path:
@@ -96,6 +135,13 @@ def _write_partitioned(
 
 def write_ts_long(df: pd.DataFrame, source: str) -> None:
     validate_ts_long(df)
+    # Belt and braces alongside the read-side CAST fix above: a caller whose own
+    # DataFrame happens to hold only whole-number values (confirmed live: exactly
+    # what pipelines/opec_momr's Baker Hughes rig counts do) would otherwise write a
+    # genuinely int64-typed parquet column, even though `value` is always meant to be
+    # float64 per TS_LONG_SCHEMA -- validate_ts_long's own numeric-dtype check accepts
+    # int64 as "numeric", so it doesn't catch this on its own.
+    df = df.astype({"value": "float64"})
     _write_partitioned(
         df,
         dataset="ts_long",
@@ -122,6 +168,7 @@ def write_flows(
     confirmed live comparing two consecutive pull_daily.py runs where one border
     failed on the second run only."""
     validate_flows(df)
+    df = df.astype({"value": "float64"})  # see write_ts_long's identical note above
     _write_partitioned(
         df,
         dataset="flows",
@@ -157,7 +204,10 @@ def _read(
 
     con = duckdb.connect()
     glob = _dataset_glob(dataset)
-    query = f"SELECT * FROM read_parquet('{glob}', hive_partitioning=false)"
+    query = (
+        f"SELECT {_typed_select(schema)} "
+        f"FROM read_parquet('{glob}', hive_partitioning=false, union_by_name=true)"
+    )
     if extra_clauses:
         query += " WHERE " + " AND ".join(extra_clauses)
     return con.execute(query, params).df()
@@ -232,7 +282,8 @@ def _register_view(con: duckdb.DuckDBPyConnection, dataset: str, schema: pa.Sche
         glob = _dataset_glob(dataset)
         con.execute(
             f"CREATE OR REPLACE VIEW {dataset} AS "
-            f"SELECT * FROM read_parquet('{glob}', hive_partitioning=false)"
+            f"SELECT {_typed_select(schema)} "
+            f"FROM read_parquet('{glob}', hive_partitioning=false, union_by_name=true)"
         )
     else:
         empty = schema.empty_table().to_pandas()
