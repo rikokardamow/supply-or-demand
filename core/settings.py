@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     mapbox_token: str | None = None
     tomorrow_io_key: str | None = None
     guardian_key: str | None = None
+    adanos_api_key: str | None = None
 
 
 settings = Settings()
