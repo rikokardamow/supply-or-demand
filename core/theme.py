@@ -466,6 +466,30 @@ def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
     return fig
 
 
+def category_time_heatmap(
+    wide_df: pd.DataFrame, title: str, unit: str, center: float = 100.0
+) -> go.Figure:
+    """Diverging heatmap: one row per category (e.g. country), one column per time
+    period -- `wide_df` indexed by category with time-period columns (e.g. an ESI
+    pivot: rows=country, columns=month). Same navy-to-red diverging colourscale as
+    hour_day_heatmap, generalised for a category axis instead of hour-of-day, and
+    explicitly centred on `center` (e.g. 100 for an index like ESI where 100 is the
+    long-run average) via `zmid` rather than relying on the data's own range to
+    happen to centre itself."""
+    fig = go.Figure(
+        go.Heatmap(
+            z=wide_df.to_numpy(),
+            x=wide_df.columns,
+            y=wide_df.index,
+            zmid=center,
+            colorscale=[[0, NAVY], [0.5, "#f5f5f5"], [1, RED]],
+            colorbar={"title": unit},
+        )
+    )
+    fig.update_layout(title=title)
+    return fig
+
+
 def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
     """Grouped bars, navy actual vs grey quota, one group per row -- `df` needs
     columns "country", "actual_kbd", "quota_kbd", "compliance_pct" (exact shape
