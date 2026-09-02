@@ -509,3 +509,32 @@ type as defense in depth, plus a write-side `.astype({"value": "float64"})` so a
 future int-only source can't reintroduce this. Existing Baker Hughes files repaired
 in place. A new regression test reproduces the exact conditions (a hand-written
 int64-typed parquet file for one source alongside a normal float source).
+
+#### v0.12 — Spec 10: Macro/FX normalisation (FRED, Frankfurter, Eurostat)
+Session A: `FREDClient` + `FrankfurterClient`. Per explicit, repeated user request
+("add many more data points from FRED... broader picture... around Energy", then
+"include much more around energy and inflation with micro and macro level"), goes
+well beyond the spec's own 5-series list to **35 FRED series** — 18 macro (CPI, core
+CPI, PCE, PPI, dual dollar indices, nominal + real 10Y yields, breakeven + survey
+inflation expectations, GDP, unemployment, Fed funds, M2) + 17 energy-specific (WTI,
+**Brent** — a genuine gap-fill, no Brent series existed anywhere else in this
+project — Henry Hub, national + all 5 PADD-level gasoline prices, Gulf Coast diesel/
+jet fuel, PPI crude/fuels, CPI energy, petroleum import price index, oil & gas
+extraction employment, and the Dallas Fed Energy Survey as a unique energy-sector
+sentiment gauge). Every series individually confirmed live before being added —
+caught two real wrong guesses (a stale/wrong-type EA HICP series the spec itself
+named, and a "petroleum" import-price ID that was actually Zinc). Session B:
+`EurostatESIClient` (EU/DE/FR/IT/ES/IE economic sentiment — confirmed live that bare
+`EU`/`EA`/`EA19` geo codes silently return nothing, no error; real codes are
+`EU27_2020`/`EA20`) and `core/macro.py` (`deflate`, `to_currency`, `align_freq`,
+`year_over_year`, `zscore`), hand-checked against toy series with manually-computed
+expected values. Session C: page `10_macro.py` (dual-axis dollar-vs-WTI, real-vs-
+nominal WTI indexed 2018=100, USD-vs-EUR energy small multiples, an ESI heat-strip)
+plus a `deflate()` integration on `015_us_oil_overview.py`. Definition of Done fully
+met — no descoping this time.
+
+A naive test assertion broke against WTI's real 2020-04-20 negative print (-$36.98,
+the COVID storage crisis) and again against Italy's real 1982 ESI low of 38.4 —
+both fixed by checking only the latest value, not the full history, matching the
+now-familiar lesson from earlier specs: full-history real data isn't guaranteed to
+sit inside a "plausible-looking" range assumed without checking.
