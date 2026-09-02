@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.frankfurter.dev/v1/2026-08-28..2026-09-02?base=USD&symbols=EUR%2CGBP%2CTRY
+  response:
+    body:
+      string: '{"amount":1.0,"base":"USD","start_date":"2026-08-28","end_date":"2026-09-02","rates":{"2026-08-28":{"EUR":0.85889,"GBP":0.73624,"TRY":48.245},"2026-08-31":{"EUR":0.86237,"GBP":0.7386,"TRY":48.262},"2026-09-01":{"EUR":0.86281,"GBP":0.73904,"TRY":48.274},"2026-09-02":{"EUR":0.86371,"GBP":0.74167,"TRY":48.293}}}'
+    headers:
+      CF-RAY:
+      - a34e12c7ea63b616-DUB
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 02 Sep 2026 17:00:52 GMT
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=xiDLO8fZWC6QlV71YEmP1yZOzf08Y7AZAseCDHb%2BTNMFm9%2FdPSSO1oavDqJShAmzNxUZhtGcKL0nlTAEz5efzAJsGdxOS4EuwQ78wY1sm1fjvJ825fqKjBTgr5nnMhG0XRAE4Ik%3D"}]}'
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      cache-control:
+      - public, max-age=86400
+      cf-cache-status:
+      - MISS
+      etag:
+      - W/"fc80b6d5af5f41d5fe35d95b7078b1fb"
+      vary:
+      - Origin
+    status:
+      code: 200
+      message: OK
+version: 1
