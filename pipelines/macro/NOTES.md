@@ -190,3 +190,41 @@ above). Spot-checked across both FRED groups and FX via `read_ts_long`:
 `fred.cpiaucsl` (955 rows, latest 333.x), `fred.dcoilbrenteu` (10,245 rows, latest
 ~$88/bbl), `fred.dalengindexqq04` (42 rows, latest ~46), `fx.usd_eur`/`fx.usd_try`
 (2,220 rows each, latest ~0.86 / ~48) — all real, plausible values.
+
+## Page `10_macro.py` (Session C)
+The four visuals from the spec's own visualisation spec: dual-axis broad-dollar-vs-WTI
+(`dual_axis_chart`); real-vs-nominal WTI indexed 2018=100 (`core.macro.deflate` +
+the new `index_to` helper, plotted as two lines on one shared axis via a plain inline
+`go.Figure` — a real *dual-axis* chart would misleadingly imply the two series are on
+different scales, when the entire point of indexing both to the same base is to make
+them directly comparable on one); energy-in-USD-vs-EUR small multiples (WTI/Brent/
+Henry Hub, via `to_currency`); and an ESI heat-strip (`core.theme.category_time_heatmap`,
+new — generalises the existing `hour_day_heatmap`'s navy-white-red diverging
+colourscale from an hour/day grid to a category/time grid, `zmid` explicit so the
+colour centres on 100 regardless of the visible window's own data range).
+
+**Visual 1 uses real FRED data, not a placeholder** — the spec's own text says
+"WTI from Spec 07; placeholder until then," anticipating Spec 07 (refinery cracks,
+still deferred pending IB Gateway) as the WTI source. Since Spec 10 Session A already
+pulls WTI directly from FRED (`fred.dcoilwtico`), there's no placeholder needed at
+all — this is real data via a different, already-built source.
+
+**Definition of Done's "at least one other page (01 or 07) using `to_currency` or
+`deflate`"**: added to `apps/dashboard/pages/015_us_oil_overview.py` (a sibling of
+page 01, since 01 itself carries no price series — only stocks/refining volumes —
+and 07 doesn't exist yet) as a single real-WTI-price line, deliberately simpler than
+page 10's own dual-line indexed comparison (context for that page's existing
+crack-spread caption, not a duplicate of page 10's chart).
+
+## `pull_weekly.py` (Session C)
+Same reasoning as `pipelines/news/pull_daily.py`: `pull_macro.py`'s own full-history
+pulls are already cheap and idempotent (confirmed live, Session A — well under a
+minute per source), so no separate narrower-window entrypoint was needed — this file
+exists only so Spec 13 can find a consistently-named weekly entrypoint here.
+
+## Verified (Session C)
+All four visuals confirmed live in-browser with real data: dual-axis dollar/WTI,
+the real-vs-nominal indexed comparison (the two lines visibly diverge, wider during
+high-inflation stretches, as expected), all three USD/EUR small multiples, and the
+ESI heat-strip's diverging colours. Page 015's new WTI-real-price section also
+confirmed live. No new console errors beyond pre-existing/unrelated dev-server noise.

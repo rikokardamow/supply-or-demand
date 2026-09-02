@@ -6,14 +6,22 @@ from __future__ import annotations
 
 import core.theme  # noqa: F401
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
+from core.macro import deflate
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
-from core.theme import multi_year_overlay_chart, seasonal_range_chart, simple_time_series_chart
+from core.theme import (
+    LIGHT_BLUE,
+    multi_year_overlay_chart,
+    seasonal_range_chart,
+    simple_time_series_chart,
+)
 
 PRODUCTION_RANGE_DAYS = {"6M": 182, "1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
+WTI_REAL_BASE_PERIOD = "2018-01-01"
 
 PRODUCTION_INFO = [
     (
@@ -151,6 +159,38 @@ def _four_week_avg_overlay(
             kardamow_take(take)
 
 
+def _wti_real_price_section() -> None:
+    """The refining-demand caption above already references the crack spread this
+    price backdrop drives — this section is that backdrop itself, in real (CPI-
+    adjusted) terms via core.macro.deflate (Spec 10), not the nominal quote. The
+    dual-line "real vs. nominal, indexed" comparison lives on page 10 (Macro & FX);
+    this page's own version is deliberately simpler (one line, real dollars, not an
+    index) since here it's context for the production/refining story, not the point
+    of the chart."""
+    wti = read_ts_long(series_ids=["fred.dcoilwtico"]).sort_values("ts")
+    cpi = read_ts_long(series_ids=["fred.cpiaucsl"]).sort_values("ts")
+    if wti.empty or cpi.empty:
+        st.info("No data yet — run `pipelines/macro/pull_macro.py`.")
+        return
+
+    wti_series = wti.set_index("ts")["value"]
+    cpi_series = cpi.set_index("ts")["value"]
+    real_wti = deflate(wti_series, cpi_series, base_period=WTI_REAL_BASE_PERIOD).tail(730)
+
+    title = "WTI Crude, Real Terms (2018 USD)"
+    fig = go.Figure(
+        go.Scatter(x=real_wti.index, y=real_wti.values, line={"color": LIGHT_BLUE, "width": 2})
+    )
+    fig.update_layout(title=title, yaxis_title="$/bbl (2018 USD)")
+    with card(title):
+        st.plotly_chart(fig, use_container_width=True)
+        kardamow_take(
+            "This is the price refiners are actually responding to once inflation's "
+            "stripped out — the nominal quote alone overstates how attractive the "
+            "crack spread really is versus five years ago."
+        )
+
+
 st.title("US Oil Market Overview")
 
 st.subheader("Refining & stocks")
@@ -174,6 +214,7 @@ _seasonal_section(
         "on this dashboard aren't noise, they're additive."
     ),
 )
+_wti_real_price_section()
 
 st.subheader("Production, exports & reserves")
 selected_metrics = _production_filter_panel()

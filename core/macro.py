@@ -84,3 +84,13 @@ def zscore(series: pd.Series) -> pd.Series:
     its reference distribution."""
     result: pd.Series = (series - series.mean()) / series.std()
     return result
+
+
+def index_to(series: pd.Series, base_period: str, base_value: float = 100.0) -> pd.Series:
+    """Rescales `series` so its value at `base_period` equals `base_value` (e.g.
+    base_period="2018-01-01" -> "2018=100"). Used for the spec's own "real vs nominal
+    crude, indexed 2018=100" visual -- apply to both a nominal series and its
+    `deflate()`-d real counterpart to make them visually comparable on one axis."""
+    base = cast(float, series.asof(pd.Timestamp(base_period)))
+    result: pd.Series = series / base * base_value
+    return result
