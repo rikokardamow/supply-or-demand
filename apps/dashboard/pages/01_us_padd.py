@@ -9,6 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
+from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
 from components.padd_map import render_padd_flow_map
 from core.calendars import next_release
@@ -106,6 +107,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     current_year_series = current.set_index(reference_doy)["value"]
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
+    add_event_markers(fig, commodity="crude", x_axis="doy")
     st.plotly_chart(fig, use_container_width=True)
     if take is not None:
         kardamow_take(take)

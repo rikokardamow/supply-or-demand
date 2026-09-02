@@ -9,6 +9,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
 from components.card import card
+from components.event_overlay import add_event_markers
 from core.storage import read_ts_long
 from core.theme import (
     production_vs_quota_chart,
@@ -112,6 +113,7 @@ def _oil_on_water_section() -> None:
     series = long_df.sort_values("ts").set_index("ts")["value"]
     title = "Oil-on-Water (OECD)"
     fig = time_series_area_chart(series, title=title, unit="mb")
+    add_event_markers(fig, commodity="crude")
     with card(title):
         st.plotly_chart(fig, use_container_width=True)
         st.caption(
