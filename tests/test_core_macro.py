@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
-from core.macro import align_freq, deflate, to_currency, year_over_year, zscore
+from core.macro import align_freq, deflate, index_to, to_currency, year_over_year, zscore
 
 
 def test_deflate_toy_series_hand_checked() -> None:
@@ -89,3 +89,16 @@ def test_zscore_hand_checked() -> None:
     # mean=3, sample std (ddof=1) = sqrt(2.5) = 1.5811388...
     assert z.iloc[0] == pytest.approx((1.0 - 3.0) / (2.5**0.5))
     assert z.iloc[2] == pytest.approx(0.0)
+
+
+def test_index_to_hand_checked() -> None:
+    series = pd.Series(
+        [80.0, 100.0, 120.0],
+        index=pd.to_datetime(["2018-01-01", "2019-01-01", "2020-01-01"]),
+    )
+
+    indexed = index_to(series, base_period="2019-01-01")
+
+    assert indexed.iloc[0] == pytest.approx(80.0)  # 80/100*100
+    assert indexed.iloc[1] == pytest.approx(100.0)  # base period itself is exactly 100
+    assert indexed.iloc[2] == pytest.approx(120.0)  # 120/100*100
