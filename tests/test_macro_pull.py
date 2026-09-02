@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 from core.schemas import validate_ts_long
 from pipelines.macro.fred_series import SeriesMeta
-from pipelines.macro.pull_macro import pull_fred, pull_fx
+from pipelines.macro.pull_macro import pull_esi, pull_fred, pull_fx
 
 
 class _FakeFREDClient:
@@ -86,3 +86,28 @@ def test_pull_fx_maps_rates_to_ts_long_with_usd_base_naming() -> None:
     assert set(df["series_id"]) == {"fx.usd_eur", "fx.usd_gbp"}
     assert set(df["geo"]) == {"EUR", "GBP"}
     assert set(df["unit"]) == {"EUR per USD", "GBP per USD"}
+
+
+class _FakeEurostatESIClient:
+    def __init__(self, esi: pd.DataFrame) -> None:
+        self._esi = esi
+
+    def get_esi(self, geos: list[str] | None = None) -> pd.DataFrame:
+        return self._esi
+
+
+def test_pull_esi_maps_to_ts_long_with_estat_prefix() -> None:
+    esi = pd.DataFrame(
+        {
+            "ts": pd.to_datetime(["2026-08-01", "2026-08-01"]),
+            "geo": ["EU", "DE"],
+            "value": [98.2, 94.1],
+        }
+    )
+    client = _FakeEurostatESIClient(esi)
+
+    df = pull_esi(client, pd.Timestamp("2026-09-01"))
+
+    validate_ts_long(df)
+    assert set(df["series_id"]) == {"estat.esi.EU", "estat.esi.DE"}
+    assert (df["freq"] == "M").all()
