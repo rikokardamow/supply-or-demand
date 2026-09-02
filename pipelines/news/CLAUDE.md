@@ -229,6 +229,62 @@ table itself renders real, genuinely multi-language headlines (Chinese, Arabic,
 Vietnamese, Korean confirmed visible) with populated tags/severity/geo columns; no
 console errors.
 
+## Event overlay (Session C) — `apps/dashboard/components/event_overlay.py`
+
+**Page target substitution, documented per the descope convention**: the spec names
+pages 01 (crude), 02 (gas), 07 (cracks) — Spec 07 (refinery cracks) is still deferred
+(needs a local IB Gateway, per `specs/07_refinery-cracks.md`'s own prerequisite, not
+set up on this machine — see the Spec 07 entry in `README.md`'s build log). Page 06
+(OPEC/global supply, commodity `crude`) substitutes for it — the closest thematic match
+among already-built pages (sanctions/OPEC/geopolitics events are exactly what page 06's
+own charts are about), not an arbitrary pick. Revisit once Spec 07 actually gets built.
+
+**`add_event_markers` calling `fig.add_vline()` once per event hangs the page —
+confirmed live, not a theoretical concern**: with 960 real `commodity="crude"` events
+in the lake, page 01's Stocks tab never finished rendering (no error, just an
+indefinitely spinning "Stop" button) until killed. `fig.add_vline()` does non-trivial
+internal validation work *per call*, so a Python-level loop over hundreds of events is
+also O(n) expensive on the Plotly side, not just O(n) in Python. Fixed by building a
+plain list of shape dicts and setting them via a single `fig.update_layout(shapes=...)`
+call instead — confirmed live this renders instantly regardless of event count.
+
+**`min_severity` defaults to 2, not 1 — a deliberate signal-vs-noise choice, not just a
+performance one**: tier-1 "general" events are the large majority of what's ingested
+(1423 of 1462 total, confirmed live) and would visually bury a chart in low-signal
+dotted lines even if rendering were instant. `MAX_MARKERS` (50, keeping the most
+*recent* qualifying events) is a second, independent hard cap, since even a
+severity-2+-only set could keep growing over time as more sessions' worth of news
+accumulates.
+
+**Two x-axis conventions needed supporting, confirmed by checking real chart code
+first rather than assuming one convention**: most of this dashboard's charts
+(`seasonal_range_chart`, used on pages 01/02/05) plot against **day-of-year**, not a
+real calendar date, to overlay multiple years on one x-axis — `fig.add_vline(x=<a real
+timestamp>)` would silently misplace or fail to plot at all on those charts. `x_axis=
+"doy"` converts each event's `ts` the same way `apps/dashboard/pages/08_weather.py`
+already does inline (`ts.replace(year=core.seasonal.REFERENCE_YEAR).dayofyear`) — a Feb
+29 event has no equivalent day in the non-leap `REFERENCE_YEAR`, silently dropped
+(`_doy` returns `None`) rather than crashing the whole page.
+
+**Hover-marker tooltip clips at the very top of a card, confirmed live, not fixed**:
+placing the invisible hover-scatter trace at `y=1` on the dedicated 0-1 marker axis
+means its tooltip can render partially above the chart's own card boundary (visually
+confirmed on page 01 — the tooltip's first line was cut off by the card edge). Left
+as a known minor cosmetic issue, not a functional one (the tooltip text itself, once
+visible, is correct) — revisit if this bothers a real reader in practice.
+
+## Verified (Session C)
+Confirmed live on all three target pages after the `add_vline`-loop fix: page 01's
+Stocks tab (day-of-year x-axis) renders instantly with a visible orange (severity-2)
+dotted line and a working hover tooltip (a real headline, confirmed visible, if
+partially clipped by the card boundary — see above); page 02's gas storage page
+renders correctly showing *no* markers, since zero `commodity="gas"` events currently
+have `severity>=2` (a real data characteristic, not a bug — confirmed by checking the
+lake directly); page 06's Oil-on-Water chart (real-date x-axis) shows the same
+orange dotted line as page 01. No new browser console errors on any of the three pages
+beyond the pre-existing, unrelated Plotly/dev-server noise already documented elsewhere
+in this project's session history.
+
 ## Verified (Session A)
 Two real, independent `pull_news.py` runs (a few minutes apart): run 1 wrote 409 event
 rows (2 of 6 queries succeeded; 3 articles were cross-matched by both the `outage` and

@@ -9,6 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
+from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
 from core.seasonal import seasonal_stats
 from core.storage import read_ts_long
@@ -270,6 +271,7 @@ def _net_injection_vs_sendout_section() -> None:
         left_label="Net injection (GWh/d)",
         right_label="LNG send-out (GWh/d)",
     )
+    add_event_markers(fig, commodity="gas")
     with card("EU Net Injection vs. ALSI Send-Out"):
         st.plotly_chart(fig, use_container_width=True)
         kardamow_take(
