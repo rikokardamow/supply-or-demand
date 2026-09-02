@@ -1,11 +1,11 @@
-"""Session A entrypoint: pulls all 35 FRED series (fred_series.py::FRED_SERIES) plus
-Frankfurter FX rates (EUR/GBP/TRY vs USD) into the lake.
+"""Entrypoint: pulls all 35 FRED series (fred_series.py::FRED_SERIES), Frankfurter FX
+rates (EUR/GBP/TRY vs USD), and Eurostat's ESI (EU/DE/FR/IT/ES/IE) into the lake.
 
-Per-series/per-currency resilience, not just per-request retry -- matches
-pipelines/entsoe/pull_actuals.py's precedent: one flaky FRED series must never abort
-the rest of the pull. Full-history pulls are cheap here (the largest series, DGS10, is
-~16,870 daily points), so there's no backfill-vs-daily split needed -- this script
-doubles as its own daily-safe entrypoint, same reasoning as pipelines/news/pull_news.py."""
+Per-series/per-currency/per-geo resilience, not just per-request retry -- matches
+pipelines/entsoe/pull_actuals.py's precedent: one flaky item must never abort the rest
+of the pull. Full-history pulls are cheap here (the largest series, DGS10, is ~16,870
+daily points), so there's no backfill-vs-daily split needed -- this script doubles as
+its own daily-safe entrypoint, same reasoning as pipelines/news/pull_news.py."""
 
 from __future__ import annotations
 
@@ -15,12 +15,14 @@ import pandas as pd
 import requests
 from core.storage import write_ts_long
 
+from pipelines.macro.eurostat_client import EurostatESIClient
 from pipelines.macro.frankfurter_client import FrankfurterClient
 from pipelines.macro.fred_client import FREDClient
 from pipelines.macro.fred_series import FRED_SERIES
 
 FX_SYMBOLS = ["EUR", "GBP", "TRY"]
 FX_HISTORY_START = date(2018, 1, 1)
+ESI_UNIT = "Index"
 
 
 def pull_fred(client: FREDClient, ingested_at: pd.Timestamp) -> pd.DataFrame:
@@ -84,6 +86,31 @@ def pull_fx(client: FrankfurterClient, ingested_at: pd.Timestamp) -> pd.DataFram
     )
 
 
+def pull_esi(client: EurostatESIClient, ingested_at: pd.Timestamp) -> pd.DataFrame:
+    try:
+        esi = client.get_esi()
+    except requests.exceptions.RequestException as exc:
+        print(f"eurostat esi: FAILED ({type(exc).__name__}) — skipping", flush=True)
+        return pd.DataFrame()
+
+    print(f"eurostat esi: {len(esi)} rows", flush=True)
+    if esi.empty:
+        return esi
+
+    return pd.DataFrame(
+        {
+            "series_id": "estat.esi." + esi["geo"],
+            "source": "eurostat",
+            "ts": esi["ts"],
+            "value": esi["value"],
+            "unit": ESI_UNIT,
+            "geo": esi["geo"],
+            "freq": "M",
+            "revision_date": ingested_at,
+        }
+    )
+
+
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
 
@@ -100,6 +127,13 @@ def main() -> None:
         print(f"wrote {len(fx_rows)} FX rows", flush=True)
     else:
         print("no FX rows pulled", flush=True)
+
+    esi_rows = pull_esi(EurostatESIClient(), ingested_at)
+    if not esi_rows.empty:
+        write_ts_long(esi_rows, source="eurostat")
+        print(f"wrote {len(esi_rows)} ESI rows", flush=True)
+    else:
+        print("no ESI rows pulled", flush=True)
 
 
 if __name__ == "__main__":

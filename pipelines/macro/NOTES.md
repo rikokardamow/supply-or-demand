@@ -112,6 +112,71 @@ plausible positive price, not the entire history. Worth remembering for any othe
 energy-price series this pipeline might carry in the future — full-history WTI/Brent
 data is not guaranteed to be uniformly positive.
 
+## Eurostat ESI (Session B) — dataset code confirmed, but geo codes were a real trap
+Dataset `ei_bssi_m_r2`, `indic=BS-ESI-I` ("Economic sentiment indicator"), `s_adj=SA`
+(seasonally adjusted) — all confirmed live. **Bare `EU`/`EA`/`EA19` are not valid geo
+codes for this dataset — confirmed live, not assumed**: querying with `geo=EA`
+returns a genuinely empty `geo` dimension (`"index":{}`, zero categories) and an empty
+`value` object, with **no error at all** — the request succeeds (200) but silently
+returns nothing, which would be easy to mistake for "no data available" rather than
+"wrong geo code." The real, current codes (Eurostat's own area definitions have been
+updated over time) are **`EU27_2020`** (not `EU`) and **`EA20`** (not `EA`/`EA19`);
+`DE`/`FR`/`IT`/`ES`/`IE` work directly as ISO2 with no translation.
+`eurostat_client.py::GEO_CODES` maps this project's own short codes (`EU`, `DE`, ...)
+to Eurostat's real wire codes, so the lake's own `estat.esi.{geo}` series_ids stay
+short and don't need the caller to know `EU27_2020` exists at all.
+
+**JSON-stat 2.0's flat-value indexing, confirmed live, not derived from the spec**:
+`value` is a dict keyed by a row-major-flattened index string across every
+dimension in `payload["id"]` order. This dataset's own query always fixes
+`freq`/`indic`/`s_adj` to one category each (size 1), so only `geo` and `time` vary —
+confirmed live: `flat_index = geo_position * len(time_dim) + time_position`. A missing
+key in `value` is a genuine data gap for that geo/month (not every geo has published
+data back to the same start date — confirmed live: EU/DE/IT go back to 1980, IE/FR/ES
+have shorter published histories), not a bug to work around.
+
+## `core/macro.py` helpers (Session B)
+Four pure transforms, all pd.Series-in/pd.Series-out (no lake I/O) — `deflate`,
+`to_currency`, `align_freq`, `year_over_year`, `zscore`. Hand-checked against toy
+series with manually-computed expected values (`tests/test_core_macro.py`), per the
+spec's own acceptance wording.
+
+**`pd.infer_freq` raises, it doesn't return `None`, for fewer than 3 points —
+confirmed live by a failing test on a genuinely realistic 2-point toy series** (a
+monthly series with only 2 published months, a real early-history edge case for e.g.
+`DALENGINDEXQQ04` or any newly-added series). `align_freq`'s fallback path (deriving a
+fixed day-count frequency string from the median index step) needs to be reachable
+from a caught `ValueError`, not just a `None` return — the initial implementation only
+handled the latter and broke on the former until the test caught it.
+
+**`to_currency`'s `target` parameter is real API-signature parity, not a decoration
+that does nothing by mistake** — it isn't used in the actual multiply-by-FX-rate
+calculation (the caller already picked the correct single-currency `fx_series` before
+calling), kept only because the spec's own text names this exact signature
+`to_currency(series, fx_series, target)`. Documented in the function's own docstring
+so a future reader doesn't "fix" it into doing redundant validation work.
+
+## Verified (Session B)
+A real `EurostatESIClient().get_esi()` call returned 3,152 rows across the 6 tracked
+geos (EU/DE/FR/IT/ES/IE), each with plausible current values (EU 98.2, DE 94.1, IT
+100.5, etc., as of 2026-08) — confirmed live, not assumed, that different geos have
+genuinely different history lengths (EU/DE/IT: 560 months each back to 1980; IE/FR:
+500; ES: 473) rather than a uniform start date. A naive test asserting "every ESI
+value is in [50, 150]" failed against the *full* history — Italy's real ESI hit 38.4
+in 1982 — fixed the same way the FRED WTI test was fixed (Session A): check only the
+latest value per geo, not the entire history.
+
+**`core/macro.py`'s helpers were first sanity-checked against real lake data while a
+separate, severe bug was silently corrupting that same data** — see `core/NOTES.md`
+for the full incident. `to_currency(wti, fx_usd_eur, ...)` initially returned the
+*exact same number* as the nominal USD input (a real, confirmed-live red flag caught
+by actually reading the output rather than assuming a passing test elsewhere meant
+the pipeline worked end to end) — traced to `fx.usd_eur` reading back as exactly
+`1.0` for every date, a DuckDB-level truncation bug in `core/storage.py` unrelated to
+anything in this pipeline. Re-verified after that fix landed:
+`to_currency(wti, fx_usd_eur, "EUR")`'s latest value ($71.94) is now genuinely
+different from the nominal USD figure ($83.90), as it always should have been.
+
 ## Verified (Session A)
 A real `pull_macro.py` run wrote all 35 FRED series successfully — 114,534 rows total
 (`DGS10` alone: 16,870 daily points back to the 1960s). **Frankfurter genuinely timed
