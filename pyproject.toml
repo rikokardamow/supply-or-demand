@@ -26,6 +26,7 @@ dependencies = [
     "matplotlib>=3.9",
     "cartopy>=0.24",
     "rapidfuzz>=3.9",
+    "fredapi>=0.5",
 ]
 
 [project.optional-dependencies]
@@ -92,6 +93,7 @@ module = [
     "ecmwf.opendata.*",
     "cfgrib.*",
     "cartopy.*",
+    "fredapi.*",
 ]
 ignore_missing_imports = true
 
