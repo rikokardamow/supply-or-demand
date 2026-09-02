@@ -22,15 +22,26 @@ def _articles_df() -> pd.DataFrame:
     )
 
 
-def test_articles_to_events_is_schema_conformant_and_tags_from_event_type() -> None:
+def test_articles_to_events_is_schema_conformant_and_tags_merge_query_and_headline() -> None:
+    """Row 0's headline ("...fire in Rotterdam") drives real severity/geo/tags via
+    tagging.py; row 1's headline has no tier-2/3 keyword and no geo keyword, so it
+    falls back to severity 1 and sourcecountry -- both rows still get event_type
+    ("outage", passed for both here) unioned into their tags."""
     df = articles_to_events(_articles_df(), commodity="crude", event_type="outage")
 
     validate_events(df)
     assert (df["commodity"] == "crude").all()
-    assert (df["severity"] == 1).all()
-    assert all(tags == ["outage"] for tags in df["tags"])
     assert df["event_id"].iloc[0] == _event_id("https://example.com/a")
-    assert df["geo"].iloc[0] == "Netherlands"
+
+    fire_row = df.iloc[0]
+    assert fire_row["severity"] == 3  # "fire" is a tier-3 keyword
+    assert fire_row["geo"] == "NL"  # headline-derived, overrides sourcecountry
+    assert set(fire_row["tags"]) == {"outage"}  # event_type + headline-derived, deduped
+
+    opec_row = df.iloc[1]
+    assert opec_row["severity"] == 1  # no tier-2/3 keyword in "OPEC weighs quota cut"
+    assert opec_row["geo"] == "Saudi Arabia"  # no geo keyword -> falls back to sourcecountry
+    assert set(opec_row["tags"]) == {"outage", "opec"}  # event_type + headline's own "opec"
 
 
 def test_articles_to_events_empty_input_returns_empty_conformant_frame() -> None:

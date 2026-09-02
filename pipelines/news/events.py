@@ -1,8 +1,8 @@
-"""Maps raw GDELT articles into events-schema rows. Session A's own tagging is
-deliberately basic -- tags = [event_type] straight from the query dictionary
-(pipelines/news/queries.py) that matched -- the fuller regex/severity/geo-dictionary
-engine is Session B's job per the spec's own session split. severity defaults to 1
-(lowest tier) as a Session A placeholder, refined 1-3 by that later engine."""
+"""Maps raw articles (GDELT or Guardian -- both share the same column shape, see
+client.py/guardian_client.py) into events-schema rows. Session B's tagging engine
+(pipelines/news/tagging.py) derives real tags/geo/severity from each article's own
+headline text -- replacing Session A's placeholder (`tags=[event_type]`,
+`severity=1` fixed)."""
 
 from __future__ import annotations
 
@@ -11,20 +11,37 @@ import hashlib
 import pandas as pd
 from core.schemas import EVENTS_SCHEMA
 
-SESSION_A_SEVERITY_DEFAULT = 1
+from pipelines.news.tagging import extract_geo, extract_severity, extract_tags
 
 
 def _event_id(url: str) -> str:
     return hashlib.sha256(url.encode("utf-8")).hexdigest()
 
 
+def _merge_tags(event_type: str, headline_tags: list[str]) -> list[str]:
+    """`event_type` (the query dictionary's own commodity x event_type match -- real
+    evidence this article is relevant, even if the tagging engine's own keyword scan
+    finds nothing in the headline itself) is always included, unioned with whatever
+    `tagging.py::extract_tags` finds -- richer than either alone, and guarantees every
+    row gets at least one tag even for an oblique headline."""
+    merged = [event_type]
+    for tag in headline_tags:
+        if tag not in merged:
+            merged.append(tag)
+    return merged
+
+
 def articles_to_events(
-    articles: pd.DataFrame, commodity: str, event_type: str
+    articles: pd.DataFrame, commodity: str, event_type: str, source: str = "gdelt"
 ) -> pd.DataFrame:
-    """`articles` is GDELTClient.search's own output shape (url, title, seendate,
-    domain, language, sourcecountry). `event_id` is a stable sha256 of the URL, so
-    re-pulling the same article on a later run maps to the same event_id -- write_events'
-    dedup relies on this."""
+    """`articles` is GDELTClient.search's/GuardianClient.search's own shared output
+    shape (url, title, seendate, domain, language, sourcecountry). `event_id` is a
+    stable sha256 of the URL, so re-pulling the same article on a later run maps to
+    the same event_id -- write_events' dedup relies on this.
+
+    `geo` prefers a place-name keyword found in the headline itself over GDELT's own
+    `sourcecountry` -- `sourcecountry` is the *publisher's* country, not necessarily the
+    event's location (see pipelines/news/tagging.py's own docstring)."""
     if articles.empty:
         # A bare pd.DataFrame(columns=[...]) would leave every column dtype "object"
         # (confirmed live: fails validate_events' own dtype check on "ts") -- building
@@ -33,17 +50,26 @@ def articles_to_events(
         empty: pd.DataFrame = EVENTS_SCHEMA.empty_table().to_pandas()
         return empty
 
+    tags = [
+        _merge_tags(event_type, extract_tags(title)) for title in articles["title"]
+    ]
+    geo = [
+        extract_geo(title, fallback=fallback)
+        for title, fallback in zip(articles["title"], articles["sourcecountry"], strict=True)
+    ]
+    severity = [extract_severity(title) for title in articles["title"]]
+
     return pd.DataFrame(
         {
             "event_id": articles["url"].map(_event_id),
             "ts": articles["seendate"],
             "headline": articles["title"],
-            "source": "gdelt",
+            "source": source,
             "url": articles["url"],
-            "tags": [[event_type]] * len(articles),
-            "geo": articles["sourcecountry"],
+            "tags": tags,
+            "geo": geo,
             "commodity": commodity,
-            "severity": SESSION_A_SEVERITY_DEFAULT,
+            "severity": severity,
         }
     )
 

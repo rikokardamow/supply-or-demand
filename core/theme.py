@@ -176,6 +176,14 @@ def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Fig
     return fig
 
 
+def count_bar_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+    """A plain navy bar per period -- e.g. page 09's events-per-week volume chart,
+    where the shape of interest is a simple count/volume over time, not a trend line."""
+    fig = go.Figure(go.Bar(x=series.index, y=series.values, marker={"color": NAVY}))
+    fig.update_layout(title=title, yaxis_title=unit)
+    return fig
+
+
 def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> go.Figure:
     """One line per year (most recent 4 only), reusing the per-year columns
     core.seasonal.seasonal_stats() already computes — seasonal_range_chart only uses

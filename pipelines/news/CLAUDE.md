@@ -69,16 +69,90 @@ transient failure. The second attempt in the same recording succeeded with real 
 case — it would silently stop retrying and instead crash on `payload.get("articles",
 [])` being called against a string, or worse, misparse.
 
-## Tagging is deliberately split across sessions — don't conflate the two
-Session A (this session) does the simplest possible "tagging": each row's `tags` is
-`[event_type]` straight from the curated query dictionary (`queries.py`) that matched it,
-and `severity` is a fixed placeholder (`events.py::SESSION_A_SEVERITY_DEFAULT = 1`). This
-satisfies the spec's own Session A acceptance criterion ("a real crude-outage query
-returns tagged rows in the lake") without yet building the fuller regex/keyword-tier/
-geo-dictionary tagging engine, which is explicitly `specs/09_news-events.md`'s Session B
-scope (multi-tag extraction from headline text, severity 1-3 by keyword tier, geo via a
-country-name dictionary). Don't re-derive tags/severity from headline text in Session A
-work — that engine belongs in a later, separate module.
+## Tagging (Session B) — headline-derived, replacing Session A's placeholder
+`tagging.py` derives `tags`/`geo`/`severity` from an article's own headline text via
+regex/keyword dictionaries (`events.py` no longer uses Session A's `tags=[event_type]`/
+`severity=1` placeholder). `commodity` still comes from the query dictionary
+(`queries.py`) unchanged — only `tags`/`geo`/`severity` are re-derived per article.
+
+**`event_type` is unioned into the headline-derived tags, not replaced by them**
+(`events.py::_merge_tags`) — the query match itself is real evidence the article is
+relevant even when the headline text doesn't literally contain one of `tagging.py`'s
+own keywords (an oblique headline, or a query that matched on article body text
+GDELT/Guardian don't expose). Every row always gets at least the query's own
+`event_type` tag, enriched with whatever else the headline scan finds.
+
+**Severity tiers had to diverge from the spec's literal wording to pass its own
+acceptance test**: the spec names tier 3 as "force majeure/explosion/embargo", tier 2
+as "outage/strike" — but its own crafted acceptance headline ("refinery fire ...")
+needs severity >=2, and "fire" isn't literally one of those named words.
+`SEVERITY_3_KEYWORDS` includes `fire`/`blast` alongside `explosion` (the same kind of
+physical-incident severity), which is what actually makes
+`tests/test_news_tagging.py::test_refinery_fire_rotterdam_acceptance_case` pass.
+
+**Headline-derived geo deliberately overrides GDELT's/Guardian's own publisher-country
+field** (`sourcecountry` for GDELT, a fixed "United Kingdom" for Guardian — see below):
+both are the *publisher's* country, not necessarily the event's own location (a US wire
+story about a Rotterdam refinery fire would otherwise wrongly geo-tag as the US, not
+NL). `GEO_KEYWORDS` is a small, deliberately non-exhaustive city/country dictionary
+covering common oil/gas hubs seen in this pipeline's own curated queries — not a
+general-purpose gazetteer. When no keyword matches, `geo` falls back to the raw
+publisher-country string as-is, which means the column can hold **either** a 2-letter
+code (headline-derived) **or** a full country name (fallback) — a known, accepted
+format inconsistency, not a bug; revisit with a proper name-to-code table if this ever
+matters for a filter panel or map.
+
+**Regex word-boundary matching needed the *end* boundary dropped, confirmed by a
+failing test**: `\bkeyword\b` rejects simple plural/inflected forms (`\bsanction\b`
+doesn't match "sanctions" — no word boundary between "sanction" and its trailing "s").
+`tagging.py::_contains_any` anchors only the *start* (`\bkeyword`, no trailing `\b`),
+which still correctly rejects a keyword appearing mid-word (`\bhalt` doesn't match
+inside "asphalt" either, since there's no boundary immediately before "halt" there).
+
+## Fuzzy cross-source dedup (Session B) — catches what exact-URL dedup can't
+`dedup.py::drop_fuzzy_duplicates` catches two *different* outlets' distinct URLs
+covering the same real-world event with a similar headline — something neither
+`write_events`' `event_id` dedup nor `events.py::merge_cross_query_duplicates` can catch,
+since both key off the URL, and GDELT/Guardian articles about the same story always
+have different URLs. Per the spec: `rapidfuzz.fuzz.token_sort_ratio` >= 90 within a 48h
+window counts as the same event; only the earliest report is kept. Compares each row
+only against still-kept rows within its own rolling 48h window (not globally N-by-N).
+
+**`token_sort_ratio` is case-sensitive by default — confirmed live, not assumed**: two
+otherwise-identical headlines differing only in capitalization scored 68.6, not 100.
+Different outlets rarely share the same capitalization convention (title case vs.
+sentence case), so comparing raw headlines would systematically under-match real
+duplicates — both headlines are lowercased before comparing.
+
+## Guardian Open Platform (Session B) — same client interface, live verification pending
+`guardian_client.py::GuardianClient.search(query, page_size)` returns the same column
+shape as `client.py::GDELTClient.search` (url, title, seendate, domain, language,
+sourcecountry) so `pull_news.py` can loop both sources uniformly. Built against
+Guardian's own public, versioned API reference
+(https://open-platform.theguardian.com/documentation/), **not a live-confirmed
+response** — `GUARDIAN_KEY` was empty in `.env` throughout this session. Unlike GDELT,
+Guardian is documented as production-safe (no observed/expected flakiness), so its
+retry is lighter (3 attempts, capped 30s backoff) than GDELT's.
+
+**Still needs live confirmation once a real key exists**: the exact `results[]` field
+names assumed here (`webUrl`/`webTitle`/`webPublicationDate`); whether Guardian's `q`
+param actually supports the same boolean-query syntax as GDELT (`queries.py`'s curated
+queries use parentheses/OR/quoted-phrase syntax written for GDELT — Guardian's own
+query syntax may be simpler and not support all of it, in which case some queries might
+return fewer/different results than intended, not necessarily zero); whether
+`content-type=article` or similar filtering is worth adding to exclude non-article
+result types. `tests/test_news_guardian_client.py` covers the parsing logic against a
+crafted response, not a real cassette — no cassette exists for this client yet.
+`pull_news.py::main` gracefully skips Guardian entirely (prints a message, doesn't
+crash) when `GUARDIAN_KEY` is unset, so the pipeline stays fully runnable GDELT-only
+until a key is added.
+
+## Page `09_events.py` (Session B)
+Filterable event table (commodity multiselect, tag multiselect, minimum-severity
+selectbox, time-range pill) + an events-per-week bar chart
+(`core.theme.count_bar_chart`, new — a plain navy bar-per-period primitive, since no
+existing chart function fit a simple count-over-time shape). Overlaying event markers
+onto other pages' charts (01/02/07) is explicitly Session C's job, not built here.
 
 ## Cross-query duplicate merge — a real gotcha, not hypothetical
 The same article can genuinely match more than one curated query in a single run (e.g. a
@@ -126,6 +200,34 @@ GDELT's DOC 2.0 API assigns no article ID of its own — `events.py::_event_id` 
 full article URL (`hashlib.sha256(url.encode()).hexdigest()`), matching root `CLAUDE.md`'s
 own `events(event_id=hash(url), ...)` schema description. Stable across re-pulls of the
 same article (needed for `write_events`' dedup to actually work on repeat runs).
+
+## Verified (Session B)
+A real `pull_news.py` run (5 of 6 GDELT queries succeeded; Guardian gracefully skipped,
+no key configured) wrote/refreshed 895 rows this run, bringing the lake to 1462 total
+events (unique `event_id` count == row count — dedup still holds). Real severity
+distribution across the whole lake: 1423 tier-1, 30 tier-2, 9 tier-3 — a small,
+plausible-looking minority of genuinely severe headlines, not an even/arbitrary split.
+`geo` shows a healthy mix of full country names (the `sourcecountry` fallback) and,
+confirmed live, correctly-overridden 2-letter codes for headline-mentioned hubs.
+
+**A real, accepted data-quality gap found while investigating**: 24 rows have
+`geo=""` (empty). Traced to specific non-English headlines (Portuguese/Ukrainian/
+Russian) where GDELT's own `sourcecountry` field was itself empty for those articles
+and no `GEO_KEYWORDS` entry matched either — not a bug in `extract_geo` (verified live
+that the same function correctly resolves e.g. a Hormuz-mentioning headline to "IR" in
+isolation). Some of these rows are simply old — written by an earlier run before this
+session's tagging engine existed, and never re-fetched since (GDELT's `timespan=7d`
+window ages articles out of future runs) — an inherent property of an incrementally
+accumulating, dedup-on-write lake (same as `ts_long` series elsewhere in this project),
+not something a full historical reprocess would be worth doing for Session B's scope.
+
+Page `09_events.py` verified live in-browser: time-range pill, commodity/tag
+multiselects, and the min-severity selectbox all correctly narrow both the bar chart
+and the table's row count together (e.g. filtering to `crude` + severity>=2 correctly
+dropped the table from 1462 to 28 rows and the chart bars from ~600/300 to ~13/15); the
+table itself renders real, genuinely multi-language headlines (Chinese, Arabic,
+Vietnamese, Korean confirmed visible) with populated tags/severity/geo columns; no
+console errors.
 
 ## Verified (Session A)
 Two real, independent `pull_news.py` runs (a few minutes apart): run 1 wrote 409 event
