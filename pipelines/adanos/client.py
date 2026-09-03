@@ -39,10 +39,14 @@ REQUEST_TIMEOUT_SECONDS = 30
 
 class AdanosClient:
     def __init__(self, api_key: str | None = None) -> None:
-        resolved_key = api_key or settings.adanos_api_key
-        if resolved_key is None:
-            raise ValueError("ADANOS_API_KEY is not set -- required to use AdanosClient.")
-        self._api_key: str = resolved_key
+        # Deliberately does not raise when unset (matching every other optional-key
+        # client in this project, e.g. guardian_client.py/newsapi_client.py) -- CI's
+        # cassette-replay tests run with no real ADANOS_API_KEY in the environment
+        # at all (confirmed live: a construction-time raise here broke every
+        # cassette test in CI, since tests/conftest.py's filter_headers strips the
+        # header from both sides before matching regardless of its actual value).
+        # An unset key surfaces as a real 401 from the API at request time instead.
+        self._api_key: str = api_key or settings.adanos_api_key or ""
         # Updated after every request -- pull_adanos.py logs this so real monthly
         # usage against the 250/month free-tier budget is always visible.
         self.last_rate_limit_remaining: str | None = None
