@@ -5,7 +5,11 @@ energy-in-EUR-vs-USD small multiples, and an ESI heat-strip by country.
 Visual 1 uses WTI directly from pipelines/macro (FRED) rather than a Spec-07-sourced
 crude price -- Spec 07 (refinery cracks, needs a local IB Gateway) is still deferred,
 and FRED's own WTI series (pulled since Session A) makes the spec's own "placeholder
-until then" note moot: this is real data, not a placeholder."""
+until then" note moot: this is real data, not a placeholder.
+
+Also carries Spec 17's Adanos sentiment overlay (see `_adanos_sentiment_section`) --
+a separate, independent data source sharing this page rather than getting its own,
+per that spec's own visualisation-spec text."""
 
 from __future__ import annotations
 
@@ -16,7 +20,16 @@ from components.card import card
 from components.kardamow_take import kardamow_take
 from core.macro import deflate, index_to, to_currency
 from core.storage import read_ts_long
-from core.theme import LIGHT_BLUE, NAVY, category_time_heatmap, dual_axis_chart
+from core.theme import (
+    GREY,
+    LIGHT_BLUE,
+    NAVY,
+    RED,
+    category_time_heatmap,
+    dual_axis_chart,
+    simple_time_series_chart,
+)
+from pipelines.adanos.tickers import PLATFORMS, TICKERS
 
 INDEX_BASE_PERIOD = "2018-01-01"
 RANGE_DAYS = {"1Y": 365, "3Y": 1095, "5Y": 1825, "10Y": 3650, "All": None}
@@ -170,6 +183,113 @@ def _esi_heat_strip_section() -> None:
         )
 
 
+_PLATFORM_COLOURS = {"reddit": NAVY, "x": LIGHT_BLUE, "news": RED, "polymarket": GREY}
+_TOP_N_TICKERS_FOR_SENTIMENT_BAR = 12
+
+
+def _adanos_long_frame(metric: str) -> pd.DataFrame:
+    """`metric` is "buzz_score" or "sentiment_score". Returns long-form (ts,
+    platform, ticker, value) across every curated ticker/platform combination --
+    series_ids are built deterministically from tickers.py rather than discovered,
+    since read_ts_long has no wildcard/prefix filter."""
+    ids = [f"adanos.{p}.{t.lower()}.{metric}" for p in PLATFORMS for t in TICKERS]
+    df = read_ts_long(series_ids=ids)
+    if df.empty:
+        return df
+    df = df.copy()
+    parts = df["series_id"].str.split(".")
+    df["platform"] = parts.str[1]
+    df["ticker"] = parts.str[2].str.upper()
+    return df
+
+
+def _adanos_buzz_by_platform_section() -> None:
+    df = _adanos_long_frame("buzz_score")
+    if df.empty:
+        st.info("No Adanos data yet — run `pipelines/adanos/pull_adanos.py`.")
+        return
+
+    fig = go.Figure()
+    for platform in PLATFORMS:
+        platform_df = df[df["platform"] == platform]
+        if platform_df.empty:
+            continue
+        daily_mean = platform_df.groupby("ts")["value"].mean()
+        fig.add_trace(
+            go.Scatter(
+                x=daily_mean.index,
+                y=daily_mean.values,
+                name=platform.capitalize(),
+                mode="lines",
+                line={"color": _PLATFORM_COLOURS.get(platform, GREY), "width": 2},
+            )
+        )
+    fig.update_layout(title="Ticker-basket mean buzz score by platform", yaxis_title="Buzz (0-100)")
+    with card("Buzz by platform"):
+        st.plotly_chart(fig, use_container_width=True)
+
+
+def _adanos_sentiment_by_ticker_section() -> None:
+    df = _adanos_long_frame("sentiment_score")
+    if df.empty:
+        st.info("No Adanos sentiment data yet.")
+        return
+
+    latest = df.sort_values("ts").groupby(["ticker", "platform"], as_index=False).last()
+    top_tickers = (
+        latest.groupby("ticker")["value"].apply(lambda v: v.abs().sum())
+        .sort_values(ascending=False)
+        .head(_TOP_N_TICKERS_FOR_SENTIMENT_BAR)
+        .index
+    )
+    latest = latest[latest["ticker"].isin(top_tickers)]
+
+    fig = go.Figure()
+    for platform in PLATFORMS:
+        platform_df = latest[latest["platform"] == platform].set_index("ticker")
+        if platform_df.empty:
+            continue
+        fig.add_trace(
+            go.Bar(
+                x=platform_df.index,
+                y=platform_df["value"],
+                name=platform.capitalize(),
+                marker={"color": _PLATFORM_COLOURS.get(platform, GREY)},
+            )
+        )
+    fig.update_layout(
+        title=f"Latest sentiment, top {_TOP_N_TICKERS_FOR_SENTIMENT_BAR} tickers by attention",
+        yaxis_title="Sentiment (-1 to +1)",
+        barmode="group",
+    )
+    with card("Latest sentiment by ticker"):
+        st.plotly_chart(fig, use_container_width=True)
+
+
+def _adanos_sector_trend_section() -> None:
+    series = _series_by_ts("adanos.reddit.sector_energy.buzz_score")
+    if series.empty:
+        st.info("No Adanos sector-trend data yet.")
+        return
+
+    fig = simple_time_series_chart(
+        series, title="Reddit Energy-sector buzz trend", unit="Buzz (0-100)"
+    )
+    with card("Sector buzz trend"):
+        st.plotly_chart(fig, use_container_width=True)
+
+
+def _adanos_sentiment_section() -> None:
+    _adanos_buzz_by_platform_section()
+    _adanos_sentiment_by_ticker_section()
+    _adanos_sector_trend_section()
+    kardamow_take(
+        "This measures how much people are talking and how they feel, not whether "
+        "they're right — attention and flow data for a curated energy-complex "
+        "ticker basket, never a trading signal."
+    )
+
+
 st.title("Macro & FX")
 
 range_label = st.segmented_control(
@@ -188,3 +308,6 @@ _energy_small_multiples_section(days)
 
 st.subheader("Economic sentiment by country")
 _esi_heat_strip_section()
+
+st.subheader("Energy-sector sentiment (Adanos)")
+_adanos_sentiment_section()

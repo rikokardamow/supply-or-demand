@@ -1,0 +1,54 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.adanos.org/reddit/stocks/v1/compare?tickers=NOTAREALTICKER123
+  response:
+    body:
+      string: '{"period_days":7,"stocks":[{"ticker":"NOTAREALTICKER123","company_name":null,"buzz_score":0.0,"trend":null,"mentions":0,"unique_posts":0,"subreddit_count":0,"sentiment_score":null,"bullish_pct":null,"bearish_pct":null,"total_upvotes":0,"trend_history":[]}]}'
+    headers:
+      cache-control:
+      - private, max-age=30
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json
+      date:
+      - Thu, 03 Sep 2026 06:34:31 GMT
+      server:
+      - uvicorn
+      transfer-encoding:
+      - chunked
+      vary:
+      - X-API-Key, Authorization, Accept-Encoding
+      x-account-type:
+      - free
+      x-ratelimit-limit-burst:
+      - '100'
+      x-ratelimit-limit-monthly:
+      - '250'
+      x-ratelimit-remaining-burst:
+      - '98'
+      x-ratelimit-remaining-monthly:
+      - '233'
+      x-ratelimit-reset-burst:
+      - '2026-09-03T06:35:00Z'
+      x-ratelimit-reset-monthly:
+      - '2026-10-02T05:49:22Z'
+      x-ratelimit-used-monthly:
+      - '17'
+      x-request-id:
+      - 4fe0401a84aa43d38f91313a9100f55c
+    status:
+      code: 200
+      message: OK
+version: 1
