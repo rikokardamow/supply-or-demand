@@ -39,6 +39,9 @@ def vcr_config() -> dict[str, object]:
         "filter_query_parameters": [
             "api_key",
             "api-key",  # Guardian Open Platform's own param name (pipelines/news)
+            "apiKey",  # NewsAPI.org's own param name (pipelines/news) -- confirmed
+            # live it's never echoed in the response body, so the query-param
+            # filter alone is sufficient, no before_record_response scrub needed.
             "securityToken",
             "_",  # CAISO's cache-busting timestamp param (confirmed live) -- changes
             # every request, which breaks vcrpy's default query-string cassette

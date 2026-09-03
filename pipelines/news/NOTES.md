@@ -350,4 +350,42 @@ the widget re-reporting the same clicked point on the very next rerun, immediate
 undoing the clear. `apps/dashboard/pages/09_events.py` works around this by
 versioning the widget's own `key` (incrementing it on "Clear selection"), which forces
 Streamlit to treat it as a fresh, selection-less widget instance.
-tagging engine is Session B's job, not re-derived here).
+
+## NewsAPI.org supplement (Spec 16) -- manual/on-demand only, confirmed live
+
+`newsapi_client.py::NewsAPIClient.search` hits the real
+`GET https://newsapi.org/v2/everything` endpoint -- confirmed live against a real key
+(not just the vendor's own published reference) to return exactly the commonly-
+documented shape: `{"status": "ok", "totalResults": N, "articles": [{"source":
+{"id", "name"}, "author", "title", "description", "url", "urlToImage",
+"publishedAt", "content"}]}`. `publishedAt` is real ISO 8601, parseable by a bare
+`pd.to_datetime` with no explicit `format=` needed (unlike GDELT's compact
+`seendate`). Confirmed live the API key is never echoed back in the response body
+(unlike EIA's), so `tests/conftest.py`'s query-param filter (`apiKey` added to
+`filter_query_parameters`) is sufficient on its own -- no `before_record_response`
+scrub needed.
+
+**No `language` or `sourcecountry` field exists in the response at all** -- confirmed
+live, not assumed. `language` is hard-set to `"unknown"` (so `translate.py` correctly
+no-ops for NewsAPI rows, same as the ~1000 pre-`language`-schema GDELT/Guardian rows
+already in the lake) and `sourcecountry` is left blank (so `geo` resolves purely via
+`tagging.py`'s headline-keyword dictionary, same fallback path every other source
+already relies on when its own publisher-country signal is weak or absent).
+
+**Deliberately never wired into `pull_news.py::main()`** -- Spec 09 already found and
+documented that NewsAPI's free Developer tier's ToS bans production/scheduled use
+(100 req/day, 24h delay, dev/testing only). `pull_news.py::manual_newsapi_search`
+exists purely for page 09's manual-search expander to call; a dedicated test
+(`test_pull_news_main_never_references_newsapi`) asserts `inspect.getsource(main)`
+never mentions NewsAPI, as a real regression guard rather than just a docstring
+promise -- checking the *whole module's* source would trivially fail once the
+import + `manual_newsapi_search` function exist, so the test scopes to `main`'s own
+source specifically.
+
+**Verified live end-to-end**: a real manual search from the running page ("Strait of
+Hormuz tanker", commodity=crude) wrote exactly 100 real NewsAPI-sourced event rows
+(matching the `pageSize=100` request) into the lake, correctly tagged via the
+existing pipeline -- real `tags=["manual_search", "strike"]` (event_type unioned
+with headline-derived tags, same as every GDELT/Guardian row), real `geo` values
+resolved from headline keywords (`IR` for the majority), severity distributed
+1-3 by keyword tier, `language="unknown"` on every row as designed.
