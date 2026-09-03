@@ -47,6 +47,9 @@ def vcr_config() -> dict[str, object]:
             # every request, which breaks vcrpy's default query-string cassette
             # matching on replay unless stripped from both sides the same way.
         ],
-        "filter_headers": ["x-key"],  # GIE's auth header (EIA uses a query param instead)
+        "filter_headers": [
+            "x-key",  # GIE's auth header (EIA uses a query param instead)
+            "X-API-Key",  # Adanos's own auth header (pipelines/adanos)
+        ],
         "before_record_response": _scrub_echoed_api_key,
     }

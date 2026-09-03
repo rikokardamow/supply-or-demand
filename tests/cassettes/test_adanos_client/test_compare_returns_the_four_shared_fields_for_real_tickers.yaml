@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.adanos.org/reddit/stocks/v1/compare?tickers=XOM%2CCVX
+  response:
+    body:
+      string: '{"period_days":7,"stocks":[{"ticker":"CVX","company_name":"Chevron
+        Corp","buzz_score":66.8,"trend":"stable","mentions":221,"unique_posts":62,"subreddit_count":18,"sentiment_score":-0.046,"bullish_pct":14,"bearish_pct":30,"total_upvotes":1744,"trend_history":[68.5,69.2,59.9,54.9,56.7,66.0,26.2]},{"ticker":"XOM","company_name":"Exxon
+        Mobil Corp","buzz_score":64.4,"trend":"falling","mentions":86,"unique_posts":43,"subreddit_count":17,"sentiment_score":-0.052,"bullish_pct":17,"bearish_pct":33,"total_upvotes":1691,"trend_history":[52.0,65.7,56.2,61.3,53.9,42.1,35.9]}]}'
+    headers:
+      cache-control:
+      - private, max-age=30
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json
+      date:
+      - Thu, 03 Sep 2026 06:34:31 GMT
+      server:
+      - uvicorn
+      transfer-encoding:
+      - chunked
+      vary:
+      - X-API-Key, Authorization, Accept-Encoding
+      x-account-type:
+      - free
+      x-ratelimit-limit-burst:
+      - '100'
+      x-ratelimit-limit-monthly:
+      - '250'
+      x-ratelimit-remaining-burst:
+      - '99'
+      x-ratelimit-remaining-monthly:
+      - '234'
+      x-ratelimit-reset-burst:
+      - '2026-09-03T06:35:00Z'
+      x-ratelimit-reset-monthly:
+      - '2026-10-02T05:49:22Z'
+      x-ratelimit-used-monthly:
+      - '16'
+      x-request-id:
+      - e3267703785a4df985df2c8b93a67ce1
+    status:
+      code: 200
+      message: OK
+version: 1
