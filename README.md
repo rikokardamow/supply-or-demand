@@ -539,3 +539,52 @@ the COVID storage crisis) and again against Italy's real 1982 ESI low of 38.4 �
 both fixed by checking only the latest value, not the full history, matching the
 now-familiar lesson from earlier specs: full-history real data isn't guaranteed to
 sit inside a "plausible-looking" range assumed without checking.
+
+#### v0.13 — News page redesign: clickable world map, translation, Kardamow-take captions
+Cross-cutting feature on an already-shipped, tagged spec (v0.10) — per explicit
+request ("put world map that anyone can click and see the news with translate
+option... as a small caption use kardamow... what exactly could this mean for energy
+complex"), not tied to a new spec number. `events` schema gains a `language` column
+(GDELT/Guardian already fetched it, just never persisted). `apps/dashboard/
+components/geo_centroids.py` — a static country-centroid table (no live geocoding
+API; `restcountries.com`'s free v3 confirmed dead, returning HTTP 200 with a
+deprecation notice instead of an error) covering all 98 real distinct `geo` values in
+the lake. `apps/dashboard/components/news_map.py` — a clickable map, one marker per
+country, sized by event count, coloured by max severity. Page 09 redesigned: clicking
+a marker scopes the existing commodity/tag/severity/date-filtered feed and table to
+that country; each feed row gets a translate button (`pipelines/news/translate.py`,
+MyMemory-based — confirmed live and free after `libretranslate.com`'s public instance
+turned out to now require a paid key and Google's unofficial endpoint 429'd — cached
+on disk keyed by event_id). Phase 2, `pipelines/news/kardamow_caption.py`: a
+one-sentence "Kardamow take" on what a translated headline could mean for the energy
+complex, via the Anthropic Messages API (`anthropic` SDK added as a dependency, an
+explicit choice over raw `requests` since the added error-handling/retry niceties
+were worth the new dependency here) — gracefully shows an explanatory message instead
+of crashing until a real `ANTHROPIC_API_KEY` exists, matching the Guardian-key
+precedent from Spec 09.
+
+Four real bugs found and fixed via live verification, not just unit tests:
+1. **`core/storage.py`**: `union_by_name=true` only NULL-fills a column present in at
+   least one scanned parquet file — a column absent from *every* file (the whole
+   `events` lake immediately after the `language` schema change) raised a DuckDB
+   Binder Error instead of reading cleanly. A schema column not seen in the glob now
+   gets selected as a typed NULL literal instead of referenced directly.
+2. **`news_map.py` customdata**: a flat per-marker string array gets indexed like a
+   list of characters by Plotly's click-event JSON round-trip — "United States" came
+   back as just `"U"`. Fixed by wrapping each point's customdata in its own list.
+3. **`go.Scattermapbox` never fired a Streamlit `on_select` event at all**, confirmed
+   via direct Plotly JS listeners in-browser (zero `plotly_click`/`plotly_selected`
+   from real clicks squarely on a marker). Switched to `go.Scattermap` (the newer
+   MapLibre trace Plotly's own console already recommends migrating to) — fixed it.
+   This project's other maps (`padd_map.py`/`entsog_map.py`/`power_maps.py`) still
+   correctly use `go.Scattermapbox`, since none of them need click selection.
+4. **"Clear selection" didn't stick** — the plotly widget remembers its own last
+   selection across reruns independently of `st.session_state`, immediately
+   re-overwriting a cleared value on the very next rerun. Fixed by versioning the
+   widget's own `key` so clearing forces a genuinely fresh, selection-less instance.
+
+Verified live end-to-end, including a real translation (not just the no-op path): a
+fresh `pull_news.py` run populated real `language` values (Chinese, Spanish, Arabic,
+and 9 others), and translating a real Chinese headline via the page's own button
+produced a coherent English sentence. Phase 2 (the LLM caption) is code-complete but
+still unverified live — no `ANTHROPIC_API_KEY` has been provided yet.
