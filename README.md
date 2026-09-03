@@ -588,3 +588,21 @@ fresh `pull_news.py` run populated real `language` values (Chinese, Spanish, Ara
 and 9 others), and translating a real Chinese headline via the page's own button
 produced a coherent English sentence. Phase 2 (the LLM caption) is code-complete but
 still unverified live — no `ANTHROPIC_API_KEY` has been provided yet.
+
+#### v0.14 — Spec 16: NewsAPI.org manual-search supplement
+A manual, on-demand NewsAPI.org search added to `pipelines/news/` and page
+`09_events.py` — deliberately kept out of any scheduled pull, since Spec 09 already
+found and documented that NewsAPI's free Developer tier's ToS bans production/
+scheduled use (100 req/day, 24h delay, dev/testing only). `newsapi_client.py`'s
+response shape was confirmed live against a real key to match NewsAPI's own published
+reference exactly — no surprises this time, unlike several other sources in this
+project. The response carries no `language` or `sourcecountry` field at all, so
+`language` is hard-set to `"unknown"` (the translate button correctly no-ops, same as
+the pre-`language`-schema rows already in the lake) and `sourcecountry` is left blank
+(geo resolves via headline keywords, the same fallback every other source already
+relies on). A real regression test asserts `pull_news.py::main`'s own source code
+never references NewsAPI — scoped to `main` specifically, since the whole module
+legitimately imports the client for the new manual-search path. Verified live
+end-to-end: a real manual search ("Strait of Hormuz tanker", crude) from the running
+page wrote exactly 100 real event rows (matching the request's `pageSize=100`),
+correctly tagged via the existing pipeline.
