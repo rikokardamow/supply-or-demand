@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://newsapi.org/v2/everything?pageSize=5&q=crude+oil+OPEC&sortBy=publishedAt
+  response:
+    body:
+      string: "{\"status\":\"ok\",\"totalResults\":404,\"articles\":[{\"source\":{\"id\":null,\"name\":\"Crypto
+        Briefing\"},\"author\":\"Estefano Gomez\",\"title\":\"European gas prices
+        surge on Middle East supply disruption fears\",\"description\":\"Rising European
+        gas prices highlight the region's vulnerability to geopolitical tensions,
+        underscoring the need for diversified energy sources.\\nThe post European
+        gas prices surge on Middle East supply disruption fears appeared first on
+        Crypto Briefing.\",\"url\":\"https://cryptobriefing.com/european-gas-prices-surge-on-middle-east-supply-disruption-fears/\",\"urlToImage\":\"https://static.cryptobriefing.com/wp-content/uploads/2026/06/08093645/pexels-photo-16862261-699x457.jpeg\",\"publishedAt\":\"2026-09-02T06:15:53Z\",\"content\":\"European
+        gas prices have surged due to heightened concerns about supply disruptions
+        from the Middle East. Bloomberg Markets reported that these fears are primarily
+        tied to potential conflicts impacti\u2026 [+1392 chars]\"},{\"source\":{\"id\":null,\"name\":\"CounterPunch\"},\"author\":\"Joseph
+        Grosso\",\"title\":\"Oil\u2019s Long Goodbye: From Shocks to Transition\",\"description\":\"Back
+        in March, when the Trump administration and the Israeli government initiated
+        their attack on Iran, it didn\u2019t take a prophet to foresee the potential
+        for an energy disruption due to the Strait of Hormuz getting blocked off to
+        at least some extent. With ov\u2026\",\"url\":\"https://www.counterpunch.org/2026/09/02/oils-long-goodbye-from-shocks-to-transition/\",\"urlToImage\":\"https://www.counterpunch.org/wp-content/uploads/2026/09/Screenshot-2026-09-01-at-1.37.18-PM.png\",\"publishedAt\":\"2026-09-02T05:58:29Z\",\"content\":\"Back
+        in March, when the Trump administration and the Israeli government initiated
+        their attack on Iran, it didnt take a prophet to foresee the potential for
+        an energy disruption due to the Strait of \u2026 [+7441 chars]\"},{\"source\":{\"id\":null,\"name\":\"Aawsat.com\"},\"author\":null,\"title\":\"Oil
+        Prices Extend Gains as US and Iran Trade Fresh Strikes\",\"description\":\"Oil
+        prices rose in early trade on Wednesday, extending the previous session's
+        surge, as concerns over supply disruption intensified after the US and Iran
+        exchanged strikes overnight, dimming hopes for a quick easing of tensions
+        in the Middle East. Brent crude\u2026\",\"url\":\"https://english.aawsat.com/business/5313703-oil-prices-extend-gains-us-and-iran-trade-fresh-strikes\",\"urlToImage\":\"https://static.srpcdigital.com/styles/1200x600/public/2026-09/1752313.jpeg.webp?VersionId=MrCAdTKmaUIgOUl.KMrUMe12Wb1tsB9X\",\"publishedAt\":\"2026-09-02T05:50:42Z\",\"content\":\"Winter
+        Tests European Energy Security... Algeria Advances to the ForefrontEurope
+        is approaching winter facing a more complex gas equation than in previous
+        years: lower-than-usual inventories, prices \u2026 [+11127 chars]\"},{\"source\":{\"id\":null,\"name\":\"Business
+        Standard\"},\"author\":\"Reuters\",\"title\":\"Venezuela oil output to more
+        than double in next few years: US energy chief\",\"description\":\"Venezuelan
+        oil production peaked \u200Babove 3 million barrels per day in the late \u200B1990s
+        but plummeted after that on a lack of investment, mismanagement and US sanctions\",\"url\":\"https://www.business-standard.com/world-news/venezuela-oil-output-to-more-than-double-in-next-few-years-us-energy-chief-126090200235_1.html\",\"urlToImage\":\"https://bsmedia.business-standard.com/_media/bs/img/article/2025-09/25/thumb/featurecrop/1200X628/1758771618-3621.jpg\",\"publishedAt\":\"2026-09-02T04:59:29Z\",\"content\":\"Venezuelan
+        oil production peaked above 3 million barrels per day in the late 1990s but
+        plummeted after that on a lack of investment, mismanagement and US sanctions\\r\\nWright
+        said US gasoline prices sho\u2026 [+3796 chars]\"},{\"source\":{\"id\":\"the-times-of-india\",\"name\":\"The
+        Times of India\"},\"author\":\"Reuters\",\"title\":\"US energy chief says
+        Venezuela oil output to more than double in next few years\",\"description\":\"US
+        Energy Secretary Chris Wright said oil deals expected to be signed in Caracas
+        could more than double Venezuela\u2019s crude production within the next few
+        years. Visiting Venezuela for the second time since Nicolas Maduro\u2019s
+        capture in January, Wright also said \u2026\",\"url\":\"https://economictimes.indiatimes.com/industry/energy/oil-gas/us-energy-chief-says-venezuela-oil-output-to-more-than-double-in-next-few-years/articleshow/133696438.cms\",\"urlToImage\":\"https://img.etimg.com/thumb/msid-133696451,width-1200,height-630,imgsize-44322,overlay-economictimes/articleshow.jpg\",\"publishedAt\":\"2026-09-02T03:23:52Z\",\"content\":\"U.S.
+        Energy Secretary Chris Wright said on Tuesday after landing in Venezuela that
+        deals that oil companies from the U.S. and other countries sign tomorrow in
+        Caracas will lead to a more than doublin\u2026 [+847 chars]\"}]}"
+    headers:
+      CF-RAY:
+      - a352a7dd5d359591-DUB
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 03 Sep 2026 06:21:41 GMT
+      Expires:
+      - '-1'
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Pragma:
+      - no-cache
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=qabB7rov%2BLnmQosYXPtuzeFryDq4LYcfPvNb%2F7znRpLz3G46QTY5lMqIHLEmurAnqzH9laa3nU9uhGV66aTB14SMyv8VyR3jg2LNYZ%2FgQWF9lSzpF%2BywHq7OC9iT"}]}'
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Cache-Expires:
+      - Thu, 03 Sep 2026 06:24:38 GMT
+      X-Cache-Remaining:
+      - '99'
+      X-Cached-Result:
+      - 'true'
+      cf-cache-status:
+      - DYNAMIC
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -16,9 +16,11 @@ import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
 from components.news_map import render_news_map
-from core.storage import read_events
+from core.storage import read_events, write_events
 from core.theme import count_bar_chart
 from pipelines.news.kardamow_caption import generate_kardamow_caption
+from pipelines.news.newsapi_client import NewsAPIClient
+from pipelines.news.pull_news import manual_newsapi_search
 from pipelines.news.translate import translate_headline
 
 RANGE_DAYS = {"30D": 30, "90D": 90, "180D": 182, "1Y": 365, "All": None}
@@ -74,6 +76,27 @@ if selected_tags:
         filtered["tags"].map(lambda tags: any(t in tags for t in selected_tags))
     ]
 filtered = filtered[filtered["severity"] >= min_severity]
+
+with st.expander("Search NewsAPI (manual — not a scheduled source)"):
+    st.caption(
+        "One-off manual pull — NewsAPI is not part of the scheduled news ingestion "
+        "(see pipelines/news/NOTES.md)."
+    )
+    search_cols = st.columns([3, 1])
+    with search_cols[0]:
+        manual_query = st.text_input("Query", key="newsapi_manual_query")
+    with search_cols[1]:
+        manual_commodity = st.selectbox(
+            "Commodity", options=["crude", "gas", "power"], key="newsapi_manual_commodity"
+        )
+    if st.button("Search", key="newsapi_manual_search_button") and manual_query:
+        result = manual_newsapi_search(NewsAPIClient(), manual_query, manual_commodity)
+        if result.empty:
+            st.info("No articles found for that query.")
+        else:
+            write_events(result, source="newsapi")
+            st.success(f"Wrote {len(result)} event rows from NewsAPI.")
+            st.rerun()
 
 with card("News map"):
     map_key_version = st.session_state.get("news_map_key_version", 0)
