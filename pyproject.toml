@@ -27,6 +27,7 @@ dependencies = [
     "cartopy>=0.24",
     "rapidfuzz>=3.9",
     "fredapi>=0.5",
+    "anthropic>=0.40",
 ]
 
 [project.optional-dependencies]

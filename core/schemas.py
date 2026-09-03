@@ -40,6 +40,7 @@ class EventsRecord(BaseModel):
     geo: str
     commodity: str
     severity: int
+    language: str
 
 
 TS_LONG_SCHEMA = pa.schema(
@@ -78,6 +79,7 @@ EVENTS_SCHEMA = pa.schema(
         pa.field("geo", pa.string()),
         pa.field("commodity", pa.string()),
         pa.field("severity", pa.int64()),
+        pa.field("language", pa.string()),
     ]
 )
 
