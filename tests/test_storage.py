@@ -237,8 +237,39 @@ def _make_events_df(event_id: str, tags: list[str]) -> pd.DataFrame:
             "geo": ["NL"],
             "commodity": ["crude"],
             "severity": [1],
+            "language": ["English"],
         }
     )
+
+
+def test_read_events_fills_null_for_a_column_missing_from_every_on_disk_file() -> None:
+    """Regression test for a real, confirmed-live gotcha found while adding
+    `language` to EVENTS_SCHEMA: `union_by_name=true` only NULL-fills a column that
+    exists in at least *one* scanned file -- if a column is absent from EVERY file
+    (as `language` genuinely was, project-wide, until the first post-schema-change
+    write), referencing it in the outer SELECT used to raise a DuckDB Binder Error
+    rather than reading cleanly. Reproduces that exact condition by writing a raw
+    parquet file with no `language` column at all, bypassing write_events."""
+    old_dir = LAKE_ROOT / "events" / "source=gdelt" / "year=2026"
+    old_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {
+            "event_id": ["e_old"],
+            "ts": pd.to_datetime(["2026-01-01"]),
+            "headline": ["Old row from before language existed"],
+            "source": ["gdelt"],
+            "url": ["https://example.com/e_old"],
+            "tags": [["outage"]],
+            "geo": ["NL"],
+            "commodity": ["crude"],
+            "severity": [1],
+        }
+    ).to_parquet(old_dir / "part-0.parquet", index=False)
+
+    result = read_events()
+
+    assert len(result) == 1
+    assert result.iloc[0]["language"] is None
 
 
 def test_events_round_trip_preserves_list_typed_tags() -> None:

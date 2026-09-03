@@ -300,3 +300,54 @@ time. Acceptance criterion met: a real crude-outage query (`crude/outage`, run 1
 "tagged rows in the lake" per the spec's own Session A wording, via the query
 dictionary's own commodity/event_type (the fuller keyword/severity/geo-dictionary
 tagging engine is Session B's job, not re-derived here).
+
+## News-map redesign (cross-cutting feature, not a lettered session)
+
+`events` gained a `language` column (GDELT's real language *names*, e.g. "Spanish";
+Guardian's own constant "English" -- both clients already fetched this, it just wasn't
+persisted before). **Real gap found and fixed in `core/storage.py`, not specific to
+this column**: `union_by_name=true` only NULL-fills a column present in at least *one*
+scanned parquet file -- a column absent from *every* file (the state of the whole
+`events` lake immediately after this schema change) raised a DuckDB Binder Error
+instead of reading cleanly. See `core/NOTES.md` for the fix
+(`_available_columns`/`_typed_select` now select a typed NULL literal for a schema
+column not seen in the glob).
+
+`translate.py` (MyMemory, free/no-key) and `kardamow_caption.py` (Anthropic Messages
+API, Phase 2, needs a real `ANTHROPIC_API_KEY`) are documented in their own module
+docstrings. `apps/dashboard/components/news_map.py` and `geo_centroids.py` back the
+clickable map on page 09.
+
+**Two real, confirmed-live bugs found building the map's click-to-filter interaction**
+(both now fixed, see `news_map.py`'s own docstring for the full detail):
+1. A flat per-marker `customdata` array of strings gets indexed like a list of
+   characters by Plotly's click-event JSON round-trip -- "United States" came back as
+   just `"U"`. Fixed by wrapping each point's own customdata in a single-element list
+   (`[[geo] for geo in ...]`), matching Plotly Express's own convention.
+2. `go.Scattermapbox` markers never produced a Streamlit `on_select` selection event
+   at all, no matter where a real click landed (confirmed via direct Plotly JS event
+   listeners in the browser: zero `plotly_click`/`plotly_selected` events fired from
+   real automated clicks squarely on a rendered marker). Switching the trace to
+   `go.Scattermap` (the newer MapLibre-based trace -- Plotly's own console already
+   recommends this migration) fixed it. This is a deliberate, confirmed-live deviation
+   from this project's other maps (`padd_map.py`/`entsog_map.py`/`power_maps.py`),
+   which still correctly use `go.Scattermapbox` since none of them need click
+   selection.
+
+**A third, subtler gotcha specific to browser-automation testing (not a real
+end-user-facing bug)**: even after switching to `go.Scattermap`, a scripted click
+still produced zero selection events unless a `mousemove` to the target coordinate
+preceded it -- Plotly's map-trace hit-testing appears to only update its "nearest
+point" cache on hover, and a click without a prior hover at that position doesn't
+resolve to a point. A real human user always moves the mouse to a target before
+clicking, so this never surfaces outside of a scripted/automated click; noted here
+only so a future session verifying this interaction doesn't waste time re-diagnosing
+it via bare `left_click` calls.
+
+Streamlit's own selection widget also remembers its last selection across reruns
+independently of `st.session_state` -- clearing only the session-state variable left
+the widget re-reporting the same clicked point on the very next rerun, immediately
+undoing the clear. `apps/dashboard/pages/09_events.py` works around this by
+versioning the widget's own `key` (incrementing it on "Clear selection"), which forces
+Streamlit to treat it as a fresh, selection-less widget instance.
+tagging engine is Session B's job, not re-derived here).
