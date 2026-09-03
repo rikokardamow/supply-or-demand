@@ -11,7 +11,12 @@ can still exhaust its retry budget (confirmed live for GDELT). One flaky query/s
 must never abort an otherwise-successful multi-query pull; re-running this script picks
 up whatever failed last time (write_events' dedup on event_id makes this idempotent for
 exact repeats; fuzzy dedup only ever removes rows within one run's own combined batch,
-so it doesn't affect idempotency across separate runs)."""
+so it doesn't affect idempotency across separate runs).
+
+`manual_newsapi_search` (bottom of this file) is deliberately NEVER called from
+`main()` -- see specs/16_newsapi-supplement.md and pipelines/news/CLAUDE.md for why
+NewsAPI stays manual/on-demand only (its free tier's own ToS bans production/
+scheduled use). It exists purely for page 09's manual-search control to import."""
 
 from __future__ import annotations
 
@@ -24,6 +29,7 @@ from pipelines.news.client import GDELTClient
 from pipelines.news.dedup import drop_fuzzy_duplicates
 from pipelines.news.events import articles_to_events, merge_cross_query_duplicates
 from pipelines.news.guardian_client import GuardianClient
+from pipelines.news.newsapi_client import NewsAPIClient
 from pipelines.news.queries import QUERIES
 
 
@@ -82,6 +88,19 @@ def main() -> None:
     for source, group in events.groupby("source"):
         write_events(group, source=str(source))
         print(f"wrote {len(group)} {source} event rows", flush=True)
+
+
+def manual_newsapi_search(
+    client: NewsAPIClient, query: str, commodity: str
+) -> pd.DataFrame:
+    """One-off, page-triggered NewsAPI search -- NOT part of `main()` and never
+    called from it (see this module's own docstring). The caller (page
+    09_events.py's manual-search control) is responsible for writing the result via
+    `core.storage.write_events`."""
+    articles = client.search(query)
+    if articles.empty:
+        return articles
+    return articles_to_events(articles, commodity, event_type="manual_search", source="newsapi")
 
 
 if __name__ == "__main__":
