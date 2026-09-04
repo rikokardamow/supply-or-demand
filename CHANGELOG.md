@@ -36,6 +36,25 @@ along the way.
   every session's own verification is against synthetic data only; the live cross-check and
   real idempotency check are explicitly deferred (see `specs/18_curve-market-structure.md`).
   Spec 18 itself remains in progress (Sessions C–D still to come).
+- Spec 18 Session C: `core/calendars.py` gains its first real business-day arithmetic
+  (`roll_calendar`/`roll_window_flag`, GSCI business-days-5–9 / BCOM 6–10 index-roll
+  windows); `core/curve.py` gains `roll_pressure_seasonal`, `cushing_utilisation`,
+  `utilisation_decile`, `physical_bands`, `tas_window_flag`. New pipeline
+  `pipelines/eia_storage_capacity/` ingests EIA's own now-**discontinued** "Working and Net
+  Available Shell Storage Capacity" report (last data 2024-03-01) — a real, live-investigated
+  finding: no such series exists anywhere in EIA's actual API, contrary to what this spec's
+  own Data table assumed. `pipelines/derived/cushing.py` writes `derived.cushing.util`/
+  `util_decile` back to the lake. `pipelines/manual_physical/` stub reader for Spec 18's own
+  4 physical-differential series (Spec 19 owns the full scope).
+  **More real verification than Sessions A/B, unusually**: `pull_history.py` run for real,
+  wrote 23 genuine semi-annual Cushing capacity rows; `pipelines/derived/cushing.py` run for
+  real against that plus the existing real weekly Cushing-stocks series already in the lake,
+  wrote 803 real weekly utilisation rows; `cushing_utilisation()` cross-checked against EIA's
+  own published Alternate Utilization Rate for 2024-03-01 (`0.4104759069028832`) to within
+  `1e-4` — an independent real-data check, not a synthetic one. Real limitation, stated
+  plainly: every utilisation value after 2024-03-01 divides by that same frozen capacity
+  figure, forward-filled, since the source will never update again. See
+  `pipelines/eia_storage_capacity/CLAUDE.md` and `specs/18_curve-market-structure.md`.
 
 ## [1.1] - 2026-09-04
 ### Added

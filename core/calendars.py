@@ -1,6 +1,12 @@
 """Release-calendar constants and next-release lookups. Times are approximate ("~")
 for OPEC MOMR and JODI, which publish on a date range/estimate rather than a fixed
-schedule — see CLAUDE.md's data release calendar for the source list."""
+schedule — see CLAUDE.md's data release calendar for the source list.
+
+`roll_calendar`/`roll_window_flag` are this module's first real business-day arithmetic
+(Spec 18 Session C) — plain Mon-Fri via numpy.busday_offset, the same convention
+core/curve.py already established (confirmed with the user: no real CME/ICE holiday
+calendar yet, since there's no real settlement data to need holiday-exact dates against).
+Genuinely additive -- nothing here touches the RELEASES/next_release machinery above."""
 
 from __future__ import annotations
 
@@ -8,6 +14,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
+
+import pandas as pd
 
 _ET = ZoneInfo("America/New_York")
 _CT = ZoneInfo("America/Chicago")
@@ -83,3 +91,40 @@ def next_release(name: str, now: datetime) -> datetime:
     if schedule.kind == "daily":
         return _next_daily(now_local, schedule)
     return _next_monthly(now_local, schedule)
+
+
+# Index roll windows: (1-indexed first business day of the window, count of business days).
+# GSCI rolls business days 5-9 of the month; BCOM rolls business days 6-10 -- both real,
+# public index-methodology conventions, 0.2/day (5 equal daily tranches).
+_ROLL_WINDOWS: dict[str, tuple[int, int]] = {"gsci": (5, 5), "bcom": (6, 5)}
+_ROLL_FRACTION_PER_DAY = 0.2
+
+
+def _month_business_days(year: int, month: int) -> pd.DatetimeIndex:
+    start = pd.Timestamp(year=year, month=month, day=1)
+    end = start + pd.offsets.MonthEnd(0)
+    return pd.bdate_range(start, end)
+
+
+def roll_calendar(year: int, index: str) -> pd.DataFrame:
+    """One row per business day in that index's own roll window, every month of `year`.
+    Columns: date, fraction (0.2, five equal tranches per month by construction --
+    fractions per month always sum to 1.0). `index`: "gsci" | "bcom"."""
+    if index not in _ROLL_WINDOWS:
+        raise ValueError(f"index={index!r} not recognised -- expected 'gsci' or 'bcom'")
+    first_bday, count = _ROLL_WINDOWS[index]
+
+    rows = []
+    for month in range(1, 13):
+        bdays = _month_business_days(year, month)
+        window = bdays[first_bday - 1 : first_bday - 1 + count]
+        for d in window:
+            rows.append({"date": d, "fraction": _ROLL_FRACTION_PER_DAY})
+    return pd.DataFrame(rows, columns=["date", "fraction"])
+
+
+def roll_window_flag(dates: pd.DatetimeIndex, year: int, index: str) -> pd.Series:
+    """True for any `dates` entry that falls inside `index`'s own roll window, any month
+    of `year`; False elsewhere (including dates outside `year` entirely)."""
+    window_dates = set(roll_calendar(year, index)["date"])
+    return pd.Series([pd.Timestamp(d) in window_dates for d in dates], index=dates)
