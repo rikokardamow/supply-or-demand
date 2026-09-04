@@ -15,6 +15,23 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- `tests/test_pages_browser.py` — a real-headless-Chromium render check for every
+  dashboard page, closing a gap `tests/test_pages_smoke.py` (Spec 13) can't: that test
+  only proves the Python script didn't raise, not that the browser actually painted
+  anything. Opt-in via a new `browser` pytest marker (`pytest -m browser`, excluded from
+  the default run by `pyproject.toml`'s `addopts` — needs a one-off `playwright install
+  chromium`). Two real bugs caught and fixed while getting it green: (1) the test's own
+  page order, built from a naive `sorted(glob(...))`, disagreed with Streamlit's actual
+  sidebar-nav order at 11 of 13 positions — confirmed live against Streamlit's own source
+  (`source_util.py`'s `page_sort_key`, which sorts by `(float(leading_number), label)`,
+  not lexically — `015_us_oil_overview.py` parses to `15.0` and ties with
+  `15_sanctions.py`, landing nowhere near the front); fixed by selecting each sidebar
+  link by its filename-derived `href` slug instead of by position, which also makes the
+  test immune to future page renumbering. (2) the very first browser request after
+  `/_stcore/health` reports ok can outrun a 45s render timeout, since that endpoint only
+  proves the HTTP server is bound, not that the main script's own heavy import chain
+  (cartopy, xarray, matplotlib, ecmwf-opendata, ib_async, gridstatus, …) has finished —
+  fixed with one warm-up `requests.get` before the timed Playwright assertions start.
 - Spec 18 Session A (trading analytics layer): `pipelines/futures/` — a futures/options
   settlements pipeline with two clients (`IBKRClient` via the actively-maintained
   `ib_async` fork, `ManualCSVClient`) behind one `FuturesClient` interface, selected by
