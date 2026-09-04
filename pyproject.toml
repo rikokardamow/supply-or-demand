@@ -28,6 +28,7 @@ dependencies = [
     "rapidfuzz>=3.9",
     "fredapi>=0.5",
     "anthropic>=0.40",
+    "ib-async>=2.1",
 ]
 
 [project.optional-dependencies]
@@ -95,6 +96,7 @@ module = [
     "cfgrib.*",
     "cartopy.*",
     "fredapi.*",
+    "ib_async.*",
 ]
 ignore_missing_imports = true
 

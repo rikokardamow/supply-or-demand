@@ -24,7 +24,31 @@ The curve engine every later trading spec depends on: a futures-settlements pipe
 - `series_meta` rows carry `expiry`, `tick_size`, `contract_unit`, `roll_rule`.
 - Float64 regression test: a settle of `61.35` and a hand-written `0.35` read back exactly (v0.11 guard).
 - Cross-check: one settle per root against the exchange's published daily bulletin.
-- DoD: [ ] both clients behind one interface, [ ] daily pull idempotent (two runs, same row count), [ ] float64 regression test, [ ] live cross-check recorded here.
+- DoD: [x] both clients behind one interface, [ ] daily pull idempotent (two runs, same row count), [x] float64 regression test, [ ] live cross-check recorded here.
+
+**Session A done, real verification deferred — recorded live, not assumed:**
+- **`ib_async`, not `ib_insync`**: confirmed with the user before adding the dependency —
+  `ib_insync`'s original maintainer archived it in favour of this actively-maintained,
+  API-compatible fork. Real `IB`/`Future` signatures inspected live via
+  `inspect.signature`, not guessed from this spec's own text (see
+  `pipelines/futures/NOTES.md`).
+- **No IBKR Gateway/TWS is running on this machine** — confirmed live via a direct port
+  check (7497/7496/4002/4001, all closed/unreachable), matching the earlier Spec 07
+  deferral. `FUTURES_SOURCE=manual` is therefore the default and the only client exercised
+  beyond a mocked-interface test this session.
+- **No real settlement data exists anywhere yet** (no manual CSV, no live IBKR) — confirmed
+  with the user, who plans to open a real IBKR Gateway themselves and asked that this
+  session build ahead rather than block on it. Both clients, `pull_history.py`/
+  `pull_daily.py`, `series_meta.py`, and all 5 test categories are built and pass against a
+  small, clearly-labelled-synthetic fixture (`tests/fixtures/futures/settles_synthetic.csv`)
+  — `pull_history.py` run for real against it wrote 18 rows (2 contracts × 3 dates × 3
+  metrics); `pull_daily.py` run twice against the same fixture correctly returned 0 rows
+  both times (the synthetic dates fall outside any real trailing-5-day window from today,
+  which is expected, not a bug).
+- **Still open, genuinely not verifiable without real data**: the live cross-check against
+  CME/ICE's own published daily settlement bulletin, and a real two-runs-same-row-count
+  idempotency check against actual recent settlement data. Revisit once the user has either
+  a working IBKR Gateway or a real manual CSV.
 
 ### Session B — `core/curve.py` nearby, spreads, convexity, regime
 ```python
