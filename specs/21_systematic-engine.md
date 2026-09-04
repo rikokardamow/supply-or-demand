@@ -1,5 +1,7 @@
 # Spec 21 — Systematic Strategies Engine
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Bouchouev *Virtual Barrels* Ch. 5–6. Published anchors to display beside repo estimates: carry C(1,13) ≈ 20.3% annualised log-return, Sharpe 0.53, 1992–2022, unleveraged; carry–momentum blend ≈ 24.7%, Sharpe 0.64; static short front spread ≈ IR 0.50. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

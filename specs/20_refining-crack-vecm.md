@@ -1,5 +1,7 @@
 # Spec 20 — Refining Economics & Crack Spread Forecasting
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Murat & Tokat (2009) *Energy Economics* 31:85–90 — VECM of WTI spot on 3:2:1 crack spread futures; structural break **April 2003** (not September — a correction on record); unidirectional Granger causality crack → spot; both futures VECMs beat the random walk; crack model "almost as good as" crude futures. Newman (crack mechanics). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

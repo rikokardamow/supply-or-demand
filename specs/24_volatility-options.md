@@ -1,5 +1,7 @@
 # Spec 24 — Volatility & Options Surface
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Bouchouev *Virtual Barrels* Ch. 12–13 (dealer negative gamma → downside momentum; CSOs priced under Bachelier/normal; virtual storage = long-dated CSO + delta hedge, exit before theta escalation; no-arbitrage bound on spread-vol decline; caution on correlation models); Newman (producer hedge flows); Mack (Greeks, collars/fences/three-ways/swaptions). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

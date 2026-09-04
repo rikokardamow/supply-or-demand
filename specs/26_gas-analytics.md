@@ -1,5 +1,7 @@
 # Spec 26 — Gas Analytics
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** *Understanding Natural Gas Markets* primer (hubs, basis, bid week, storage, degree days); *Trading and Price Discovery for Natural Gas* (oil indexation → gas-on-gas; hub churn; LNG arbitrage; renegotiation waves); Wengler (HH proxy-hedge basis risk); Mack. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

@@ -1,5 +1,7 @@
 # Spec 23 — Macro & Cross-Asset Signals
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Yamarone *Trader's Guide to Key Economic Indicators* (ISM derived signals, payroll recession rule, ISM Prices–WTI link); Ma, Li & Zhou (2024) *IREF* 96 — GFU predictive regression; published in-sample R² 13.63%, OOS 11.32% (SSRN version 5.13%/3.27% — show both); beats ≈23 competitors; Clark–West; mean-variance economic value. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

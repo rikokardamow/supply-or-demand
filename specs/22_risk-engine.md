@@ -1,5 +1,7 @@
 # Spec 22 — Risk Engine
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Lyu, Qin, Ke, Yang & Chang (2024) *Energy Economics* 133 — GARCH-MIDAS (macro long-run component; world industrial production best; GPR degrades) + EVT/GPD tail; ≈2000-day rolling window; Kupiec UC and Christoffersen CC; historical simulation fails every test. Mack (Greeks, portfolio), Wengler (hedge effectiveness, basis, liquidity/strike availability). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

@@ -1,5 +1,7 @@
 # Spec 19 — Fundamentals & Physical Market
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Imsirovic (benchmarks, spare capacity, market power, OSPs); Carollo *Understanding Oil Prices* (classical vs modern S&D, refining quality mismatch, stock-change scatter failure, analysts' vicious circle); Spurga; *New Era of Oil Trading*. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose
