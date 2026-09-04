@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
-from core.calendars import next_release, roll_calendar, roll_window_flag
+from core.calendars import next_release, next_roll_window, roll_calendar, roll_window_flag
 
 _UTC = ZoneInfo("UTC")
 
@@ -113,3 +113,21 @@ def test_roll_window_flag_false_for_a_date_outside_the_given_year() -> None:
     dates = pd.DatetimeIndex(["2027-01-07"])
     flag = roll_window_flag(dates, 2026, "gsci")
     assert flag.tolist() == [False]
+
+
+def test_next_roll_window_before_januarys_own_gsci_window() -> None:
+    # Jan 2026's GSCI window is 7/8/9/12/13 -- a date just before it should return day 7.
+    result = next_roll_window("gsci", date(2026, 1, 3))
+    assert result == date(2026, 1, 7)
+
+
+def test_next_roll_window_inside_the_window_returns_today() -> None:
+    result = next_roll_window("bcom", date(2026, 1, 9))
+    assert result == date(2026, 1, 9)
+
+
+def test_next_roll_window_after_years_last_window_rolls_into_next_year() -> None:
+    # Past BCOM's own December 2026 window -> the answer must be in January 2027.
+    result = next_roll_window("bcom", date(2026, 12, 31))
+    assert result.year == 2027
+    assert result.month == 1

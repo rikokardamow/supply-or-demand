@@ -26,7 +26,10 @@ from pipelines.futures.series_meta import read_series_meta
 _SPREAD_COLUMNS = ("s12", "s13", "s16", "s1_12", "s23")
 
 
-def _contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+def contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+    """Public (not module-private) so apps/dashboard/pages/18_curve.py can reuse this same
+    settle-pivot logic directly, matching pipelines/eia/transforms.py's own
+    "page imports a pipeline's transform helper" precedent."""
     root_meta = meta[meta["root"] == root]
     if root_meta.empty:
         return pd.DataFrame(), pd.Series(dtype="datetime64[ns]")
@@ -70,7 +73,7 @@ def _write_derived(
 
 
 def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
-    contract_panel, expiries = _contract_panel_for(root, meta)
+    contract_panel, expiries = contract_panel_for(root, meta)
     if contract_panel.empty or len(expiries) < 2:
         print(f"{root}: not enough contracts for a curve yet", flush=True)
         return 0

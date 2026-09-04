@@ -65,3 +65,11 @@ Also registered `pipelines.futures.pull_daily` and `pipelines.derived.curve` in
 `infra/run_scheduled.py`'s `daily` cadence group (in that order — `derived.curve` reads
 what `futures.pull_daily` just wrote) — a real gap from Session A, which built the
 entrypoint but never actually wired it into the orchestrator.
+
+## `contract_panel_for` promoted to public (Session D)
+
+`_contract_panel_for` (the settle-pivot logic building a `contract_panel`/`expiries` pair
+from the lake + `series_meta`) was renamed to `contract_panel_for` — no behaviour change —
+so `apps/dashboard/pages/18_curve.py` could import and call it directly, matching
+`pipelines/eia/transforms.py`'s own "page imports a pipeline's transform helper"
+precedent instead of re-implementing the same pivot logic a second time.

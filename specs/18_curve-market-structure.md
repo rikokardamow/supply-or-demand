@@ -169,12 +169,52 @@ flagged plainly, not something to expect every session):**
 `core/theme.py` additions: `curve_strip_chart` (multi-date curve + spread bars subplot), `regime_ribbon_chart`, `scatter_piecewise_fit_chart`, `bday_heatmap`. Existing `seasonal_range_chart`/`time_series_area_chart` reused where they fit.
 Page tabs: Curve | Spreads | Convexity & Regime | Storage | Roll Calendar | Physical. Sidebar: root, as-of, storage-cost input. Top metric: days to next index roll. Every card caption names the source and any proxy.
 Visualisation spec: (1) curve strip today vs −5bd/−20bd/−252bd with s12/s13/s16/s1_12 bars; (2) spread history with contango/backwardation shading, ±1σ/±2σ 252d; (3) cv with zero line and 5/95 pct; (4) regime ribbon under f01 + transition matrix table; (5) Cushing utilisation vs s12 scatter coloured by year with piecewise fit (<0.35, 0.35–0.75, >0.75) and Apr-2020 annotation, plus dual-axis time series; (6) year × business-day heatmap of Δs12 around roll windows; (7) DFL / Midland diff with bands and Newman's ±$5 physical-cap reference lines.
-- DoD: [ ] page live in browser for every root, [ ] captions with sources/proxies, [ ] ruff/mypy/pytest green.
+- DoD: [x] page live in browser for every root, [x] captions with sources/proxies, [x] ruff/mypy/pytest green.
+
+**Session D done, with the same real-data gap Sessions A-C already documented:**
+- **Real, confirmed-live constraint that shaped this session's own scope**: checked via
+  `core.storage.read_ts_long()` against the actual lake before planning — zero rows exist
+  anywhere under `fut.*`/`derived.spread.*`/`derived.curve.*` (no real futures settlement
+  data has ever been dropped). Every root-dependent card renders a real `st.info(...)`
+  no-data message instead of a chart, per the runbook's own "render NO-DATA, never
+  fabricate" rule — verified live in-browser for every one of the 7 roots (`cl`/`rb`/`ho`/
+  `ng`/`lco`/`g`/`tfm`, switching the selectbox live), no exception in any case.
+- **Real cards, verified live with real data**: "Days to next index roll" (computed from
+  `core.calendars.next_roll_window`, needs no lake data at all — showed `3` days on
+  2026-09-04, hand-verified against Session C's own Jan-2026 dates' arithmetic pattern);
+  the GSCI/BCOM roll-calendar table (real `core.calendars.roll_calendar` output); the
+  Cushing Utilisation vs Decile Rank dual-axis chart (real `derived.cushing.util`/
+  `util_decile`, Session C's own 803 real rows) — all three rendered correctly in-browser.
+  The Cushing-vs-`cl`-s12 scatter still gates on real `cl` settlement data (none exists),
+  so it renders its own no-data message independent of the page's selected root.
+- **Four new `core/theme.py` primitives** (`curve_strip_chart`, `regime_ribbon_chart`,
+  `scatter_piecewise_fit_chart`, `bday_heatmap`) built per the spec's own visualisation
+  spec, kept spec-agnostic (no import of `core/curve.py`) matching every existing
+  primitive's own convention. A fifth, unplanned helper, `core.curve.roll_window_offset_grid`,
+  was added to prepare the `bday_heatmap`'s year x business-day-offset data (the spec names
+  the chart but not the data-prep function) — tested against synthetic data
+  (`tests/test_core_curve_session_d.py`), including a real-date check against Session C's
+  own hand-verified Jan-2026 GSCI window (2026-01-07).
+- **`pipelines/derived/curve.py::_contract_panel_for` promoted to public
+  `contract_panel_for`** (no behaviour change) so the page could reuse the same
+  settle-pivot logic directly, matching `pipelines/eia/transforms.py`'s own
+  "page imports a pipeline's transform helper" precedent instead of duplicating it.
+- **`core/calendars.py::next_roll_window`** (new, small, additive) — checks the current
+  year's own `roll_calendar` first, then the next year if every window this year has
+  already passed; tested for a date before/inside/after a window, including the
+  year-rollover case.
+- No new test file needed for the page itself — the existing
+  `tests/test_pages_smoke.py` (globs every file under `apps/dashboard/pages/*.py`) picked
+  up `18_curve.py` automatically; it passes.
+- `uv run pytest` (311 passed), `ruff check .`, `mypy core pipelines infra` all green.
+- **Spec 18's own overall Definition of Done stays open** (its "one settle... cross-checked
+  against independent sources" item needs real settlement data that doesn't exist) — PR
+  #42 stays open, not merged, the same deferral every prior session in this spec used.
 
 ## Definition of Done (spec)
 - [ ] Futures pipeline live from at least one client; `FUTURES_SOURCE` documented in `.env.example`.
 - [x] `core/curve.py` complete with tests above; derived spread/convexity/regime/Cushing series in the lake and refreshed by the daily pull. (Spread/convexity/regime refresh on `infra/run_scheduled.py`'s `daily` cadence; Cushing utilisation refreshes on the `wpsr` cadence instead — it depends on the Wed WPSR stocks pull, not the daily futures pull — both real, scheduled refreshes, just different groups.)
-- [ ] Page 18 live; one settle and the Cushing utilisation cross-checked against independent sources and recorded here.
+- [ ] Page 18 live; one settle and the Cushing utilisation cross-checked against independent sources and recorded here. (Page is live and verified in-browser for every root as of Session D; Cushing utilisation was cross-checked against EIA's own published rate in Session C. The one remaining half — a real settle cross-checked against CME/ICE's own published bulletin — needs real settlement data that doesn't exist yet, same deferral as every prior session.)
 - [ ] `specs/00_INDEX.md` status updated; CHANGELOG entry.
 
 ## Session A opener (paste into Claude Code, plan mode)

@@ -11,7 +11,7 @@ Genuinely additive -- nothing here touches the RELEASES/next_release machinery a
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
 
@@ -128,3 +128,17 @@ def roll_window_flag(dates: pd.DatetimeIndex, year: int, index: str) -> pd.Serie
     of `year`; False elsewhere (including dates outside `year` entirely)."""
     window_dates = set(roll_calendar(year, index)["date"])
     return pd.Series([pd.Timestamp(d) in window_dates for d in dates], index=dates)
+
+
+def next_roll_window(index: str, now: date) -> date:
+    """First date in `index`'s own roll_calendar that is >= `now` -- checks `now.year`
+    first, then `now.year + 1` if every window in `now.year` has already passed (e.g. a
+    December date past BCOM's own window). Real, live calendar arithmetic -- needs no lake
+    data at all."""
+    now_ts = pd.Timestamp(now)
+    for year in (now.year, now.year + 1):
+        cal = roll_calendar(year, index)
+        upcoming = cal[cal["date"] >= now_ts]
+        if not upcoming.empty:
+            return pd.Timestamp(upcoming["date"].min()).date()
+    raise AssertionError(f"no {index!r} roll window found within a year of {now}")

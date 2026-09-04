@@ -55,6 +55,18 @@ along the way.
   plainly: every utilisation value after 2024-03-01 divides by that same frozen capacity
   figure, forward-filled, since the source will never update again. See
   `pipelines/eia_storage_capacity/CLAUDE.md` and `specs/18_curve-market-structure.md`.
+- Spec 18 Session D (final session): page `apps/dashboard/pages/18_curve.py` and four new
+  `core/theme.py` primitives (`curve_strip_chart`, `regime_ribbon_chart`,
+  `scatter_piecewise_fit_chart`, `bday_heatmap`). Real, confirmed-live constraint checked
+  before planning: zero rows exist anywhere under `fut.*`/`derived.spread.*`/
+  `derived.curve.*` (no real futures settlement data has ever been dropped) — every
+  root-dependent card renders a real no-data message instead of a chart, verified live for
+  all 7 roots with no exceptions. The cards that **do** have real data — "days to next
+  index roll" (`core.calendars.next_roll_window`, new), the GSCI/BCOM roll-calendar table,
+  and the Cushing Utilisation vs Decile Rank chart (Session C's own 803 real rows) — all
+  rendered correctly in-browser. Spec 18's Sessions A–D are now all complete; its own
+  overall Definition of Done stays open (needs a real settle cross-check against CME/ICE's
+  bulletin) — PR #42 stays open, not merged, pending real futures data.
 
 ## [1.1] - 2026-09-04
 ### Added
