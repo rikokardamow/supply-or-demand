@@ -606,3 +606,39 @@ legitimately imports the client for the new manual-search path. Verified live
 end-to-end: a real manual search ("Strait of Hormuz tanker", crude) from the running
 page wrote exactly 100 real event rows (matching the request's `pageSize=100`),
 correctly tagged via the existing pipeline.
+
+#### v0.15 — Spec 17: Adanos market-sentiment overlay
+Reddit/X/News/Polymarket buzz and sentiment scores for a curated 57-ticker
+energy-complex basket, added as a new section on page 10 (Macro & FX) — a separate,
+independent data source sharing that page per the spec's own text. The ticker basket
+spans every energy-complex segment (majors, E&P, refiners, midstream, oilfield
+services, gas/LNG, coal, uranium, renewables) and broad geography (US, Canada, UK,
+Netherlands, France, Norway, Italy, Brazil, Australia), plus 5 OPEC/OPEC+
+geographic-exposure tickers added per explicit request — Libya, Nigeria, Iraq, and
+Venezuela's own national oil companies are all wholly state-owned with no
+publicly-traded shares at all, so real Iraq-Kurdistan pure-plays (`GENL`, `GKP`) and
+Nigerian producers (`SEPLAT`, `OANDO`, `ARADEL`) stand in for genuine indirect
+exposure instead; Libya and Venezuela have no standalone listed pure-play at all, so
+their exposure stays indirect through majors already in the basket (`E`/`TTE` for
+Libya JVs, `CVX` for its licensed Venezuela JV).
+
+Every one of the 57 tickers was individually confirmed live against the real API
+before being trusted — all 57 resolved, including all 5 OPEC/OPEC+ candidates. One
+real wrong guess caught this way: Seplat Energy's actual Adanos ticker is `SEPLAT`,
+not its LSE ticker `SEPL` (found via a live `/search` call). A more consequential
+finding: **`/compare` never errors on an unrecognised ticker** — a deliberately fake
+symbol still returns HTTP 200 with a zeroed row (`company_name: null`), identical in
+shape to a genuinely-supported ticker with no qualifying data this period. That null
+is the only real existence signal `pull_adanos.py` filters on — "the call succeeded"
+proves nothing. `sentiment_score` is nullable too; a null value is skipped entirely
+rather than written as a misleading `0.0` (`ts_long` needs a real float, and "no
+data" isn't "neutral").
+
+A real weekly pull used exactly the documented 25-call budget (6 ticker-batches × 4
+platforms + 1 sector-trend call, ≈108 calls/month, 43% of the 250/month free-tier
+cap) and wrote 372 real rows. One CI-only bug found after merge: `AdanosClient`
+initially raised when `ADANOS_API_KEY` was unset, which broke every cassette-replay
+test in CI (the real key only exists in the gitignored `.env`, never in CI's
+environment) — fixed to default to an empty string instead, matching every other
+optional-key client in this project, confirmed by faithfully reproducing CI's exact
+environment locally before pushing the fix.
