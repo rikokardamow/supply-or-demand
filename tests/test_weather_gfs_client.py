@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pandas as pd
 import pytest
+import xarray as xr
 from pipelines.weather import gfs_client
 
 # Fixed "now" matching exactly what was used to record the real cassette this test
@@ -46,16 +48,32 @@ def test_fetch_2t_forecast_downloads_a_real_eu_subset_and_caches() -> None:
     assert path1.read_bytes().startswith(b"GRIB")
 
 
-@pytest.mark.vcr
-def test_load_2t_dataset_normalises_longitude_and_parses_real_t2m() -> None:
-    path, _run = gfs_client.fetch_2t_forecast("conus", now=_RECORDED_NOW)
+def test_load_2t_dataset_normalises_longitude_from_raw_0_360_convention(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Confirmed live: a CONUS bbox's raw NOMADS response comes back in 0..360
+    convention (235..295 for a -125..-65 request) -- load_2t_dataset must always
+    normalise to -180..180 regardless of the raw convention it receives.
 
-    ds = gfs_client.load_2t_dataset(path)
+    Monkeypatches xr.open_dataset rather than parsing a real GRIB2 file: CI's own
+    Linux runner has no working eccodes install for cfgrib (a real gap this test
+    caught -- confirmed live via a failed CI run -- not previously exercised
+    anywhere else in this project, since every other weather test already avoids
+    calling the real cfgrib backend the same way; see
+    test_weather_anomaly_maps.py/test_weather_ecmwf_client.py)."""
+    raw_ds = xr.Dataset(
+        {"t2m": (("latitude", "longitude"), [[293.15, 294.15]])},
+        coords={
+            "latitude": [40.0],
+            "longitude": [235.0, 295.0],
+            "valid_time": pd.Timestamp("2026-09-07T00:00:00"),
+        },
+    )
+    monkeypatch.setattr(gfs_client.xr, "open_dataset", lambda path, engine: raw_ds)
 
-    # Confirmed live: CONUS's raw response comes back in 0..360 convention (235..295);
-    # normalisation must always land in -180..180 regardless of the raw convention.
-    assert float(ds["longitude"].min()) >= -180.0
-    assert float(ds["longitude"].max()) <= -60.0
+    ds = gfs_client.load_2t_dataset(Path("fake.grib2"))
+
+    assert list(ds["longitude"].to_numpy()) == [-125.0, -65.0]
     assert "t2m" in ds
     valid_time = gfs_client.valid_time_for(ds)
-    assert valid_time.year == 2026
+    assert valid_time == pd.Timestamp("2026-09-07T00:00:00")
