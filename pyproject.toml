@@ -39,6 +39,10 @@ dev = [
     "vcrpy>=6.0",
     "pytest-recording>=0.13",
     "pandas-stubs>=2.2",
+    # Drives the running Streamlit app in a real browser to verify a page renders --
+    # `tests/test_pages_smoke.py` catches exceptions, this catches a page that loads
+    # but shows nothing. Needs `playwright install chromium` once after installing.
+    "playwright>=1.62",
 ]
 
 [build-system]
@@ -102,7 +106,8 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers"
+addopts = "-ra --strict-markers -m 'not browser'"
 markers = [
     "vcr: mark test to use a vcrpy cassette (pytest-recording)",
+    "browser: real-Chromium Streamlit render check (needs `playwright install chromium`; excluded from the default run by addopts -- run explicitly with `pytest -m browser`)",
 ]
