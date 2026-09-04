@@ -8,43 +8,31 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 
 import pandas as pd
-from core.storage import write_ts_long
 
 from pipelines.futures.client import ROOTS, get_client
-from pipelines.futures.pull_history import _series_meta_rows
-from pipelines.futures.series_meta import write_series_meta
-from pipelines.futures.to_ts_long import settles_to_ts_long
+from pipelines.futures.pull import pull_root
 
 TRAILING_DAYS = 5
 
 
-def main() -> None:
-    from core.settings import settings
+def trailing_window(today: date, trailing_days: int = TRAILING_DAYS) -> date:
+    """`trailing_days` calendar days INCLUDING `today` -- today's own date is the
+    (N-1)th day back, not the Nth, or the window covers N+1 days (a real off-by-one
+    confirmed live rather than assumed correct: TRAILING_DAYS=5 must mean 5 calendar
+    days total, e.g. today through today-4, not today through today-5 (6 days))."""
+    return today - timedelta(days=trailing_days - 1)
 
+
+def main() -> None:
     client = get_client()
     ingested_at = pd.Timestamp(datetime.now())
     today = date.today()
-    start = today - timedelta(days=TRAILING_DAYS)
+    start = trailing_window(today)
 
     total_rows = 0
     for root in ROOTS:
         try:
-            contracts = client.list_contracts(root)
-            if not contracts:
-                print(f"{root}: no contracts found", flush=True)
-                continue
-
-            write_series_meta(_series_meta_rows(contracts, settings.futures_source))
-
-            settles = client.get_settles(root, [c.contract for c in contracts], start, today)
-            if settles.empty:
-                print(f"{root}: no settles rows pulled", flush=True)
-                continue
-
-            long_rows = settles_to_ts_long(settles, ingested_at)
-            write_ts_long(long_rows, source="futures")
-            total_rows += len(long_rows)
-            print(f"{root}: wrote {len(long_rows)} rows", flush=True)
+            total_rows += pull_root(client, root, start, today, ingested_at)
         except Exception as exc:
             print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
 

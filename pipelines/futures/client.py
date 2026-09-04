@@ -162,6 +162,11 @@ class ManualCSVClient:
 
         frames = [pd.read_csv(f) for f in files]
         combined = pd.concat(frames, ignore_index=True)
+        # Parse date BEFORE validating -- a duplicate-row check on raw date strings
+        # would miss two rows for the same real calendar day written differently
+        # across separate drops (e.g. a corrected re-drop as "2026-9-1" vs the
+        # original "2026-09-01"); normalising first makes the check exact.
+        combined["date"] = pd.to_datetime(combined["date"])
         self._validate(combined)
         return combined
 
@@ -174,10 +179,15 @@ class ManualCSVClient:
             if not pd.api.types.is_numeric_dtype(df[col]):
                 raise ValueError(f"column {col!r} must be numeric, got dtype {df[col].dtype}")
 
-        duplicated = df.duplicated(subset=["date", "contract"], keep=False)
+        # Keyed on (date, root, contract), not just (date, contract) -- contract
+        # codes are month+year only (e.g. "z26"), shared across every root trading
+        # that expiry cycle, so cl/z26 and ng/z26 on the same real date are both
+        # genuinely valid rows, not a duplicate (confirmed by this pipeline's own
+        # test_settles_to_ts_long_shape, which constructs exactly that as valid).
+        duplicated = df.duplicated(subset=["date", "root", "contract"], keep=False)
         if duplicated.any():
-            dupes = df.loc[duplicated, ["date", "contract"]].drop_duplicates()
-            raise ValueError(f"duplicate (date, contract) rows: {dupes.to_dict('records')}")
+            dupes = df.loc[duplicated, ["date", "root", "contract"]].drop_duplicates()
+            raise ValueError(f"duplicate (date, root, contract) rows: {dupes.to_dict('records')}")
 
     def list_contracts(self, root: str) -> list[ContractMeta]:
         df = self._read_all_csvs()
@@ -190,7 +200,12 @@ class ManualCSVClient:
         return [
             ContractMeta(
                 root=root,
-                contract=str(contract),
+                # Lowercased explicitly -- an operator's hand-typed CSV isn't
+                # guaranteed to use lowercase contract codes the way
+                # IBKRClient.list_contracts already normalises them, and a
+                # mixed-case code here would break the lake's lowercase-dotted
+                # series_id convention once it reaches to_ts_long.py.
+                contract=str(contract).lower(),
                 expiry=pd.Timestamp(expiry).date(),
                 tick_size=float(specs["tick_size"]),
                 contract_unit=str(specs["contract_unit"]),
@@ -203,16 +218,15 @@ class ManualCSVClient:
         self, root: str, contracts: list[str], start: date, end: date
     ) -> pd.DataFrame:
         df = self._read_all_csvs()
-        df["date"] = pd.to_datetime(df["date"])
         mask = (
             (df["root"] == root)
-            & df["contract"].isin(contracts)
+            & df["contract"].str.lower().isin(contracts)
             & (df["date"] >= pd.Timestamp(start))
             & (df["date"] <= pd.Timestamp(end))
         )
-        return df.loc[mask, ["date", "root", "contract", "settle", "oi", "volume"]].reset_index(
-            drop=True
-        )
+        result = df.loc[mask, ["date", "root", "contract", "settle", "oi", "volume"]].copy()
+        result["contract"] = result["contract"].str.lower()
+        return result.reset_index(drop=True)
 
 
 def get_client() -> FuturesClient:
