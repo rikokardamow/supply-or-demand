@@ -124,10 +124,45 @@ resolution note (merge the two `SERIES_META` dicts, don't pick one file over the
 ### Session C — page `19_fundamentals.py`
 Theme additions: `grouped_agency_bars` (three-agency S&D), `dual_axis_inverted_chart` (spare cap inverted vs price with regime shading), `sign_agreement_scatter`.
 Visualisation spec: (1) S&D balance bars (IEA/EIA/OPEC side by side) + call-on-OPEC line, caption stating agency disagreement in mb/d; (2) spare capacity (inverted) vs Brent, 30d realised vol area, tight/balanced/ample shading; (3) inventory bands (reuse `seasonal_range_chart`, ex-2020) + days-of-cover; (4) Carollo scatter annotated with R² and "% of quarters violating the classical model"; (5) light-heavy panel + refining-constraint index + utilisation; (6) rolling shale beta + basin production (Spec 06 DPR if present, else caption); (7) COT net length % OI with 3y percentile bands, producer/merchant short overlay; (8) benchmark-health z-scores with thin flags; (9) OSP vs Dubai M1–M3.
-- DoD: [ ] page live, [ ] every card caption contains "Source:", [ ] NO-DATA state verified by temporarily removing a manual file.
+- DoD: [x] page live, [x] every card caption contains "Source:", [x] NO-DATA state verified by temporarily removing a manual file.
+
+**Session C done. Real data-availability check performed before planning (not
+assumed)**: of the spec's own 9 visualisation items, checked against the actual lake --
+real and rendering today: (3) inventory bands + days-of-cover (`WCESTUS1`/`WGIRIUS2`),
+(4) Carollo scatter (`WCESTUS1` x `fred.dcoilbrenteu`), utilisation within (5)
+(`WPULEUS3`), (7) COT net length (`derived.cot.<root>.mm_pct_3y`, this spec's own
+Session A). Partially real: (1) S&D balance -- OPEC's own real MOMR `demand_balance`
+series exist, but IEA/EIA's own S&D balance data doesn't, so this card stays a clean
+no-data state rather than a misleading lone-agency bar (documented plainly, not
+silently degraded). NO-DATA today: (2) spare capacity vs Brent, (6) shale beta + basin
+production (no real `wti_f12`, no Spec 06 DPR pipeline), (8) benchmark health, (9) OSP
+vs Dubai M1-M3 -- all manual-drop-only.
+
+**Real verification live in-browser**: every one of the 5 tabs opens with no exception;
+the Inventory tab shows a real seasonal-range chart (`Latest: 428,815.0 mb`, `+0.99`
+deviation z-score, `24.5` days of cover); the Quality & Refining tab's Carollo card
+shows the exact same real figures verified in Session B
+(`R²=0.0023, 45.2% of quarters violate the classical model, n=157`), recomputed live on
+page load, not hardcoded; the Shale & COT tab's CFTC card renders a real chart for `cl`
+(root selector covers all 4 real roots). **The DoD's own literal "NO-DATA state
+verified by temporarily removing a manual file"**: a small synthetic
+`osp_arab_light_asia`/`dubai_m1`/`dubai_m3` CSV was dropped into
+`data/manual/physical/`, the OSP card was confirmed to render real data (a correctly
+computed `divergence` count of `1`, hand-verified), the file was then deleted and
+`read_physical_csvs()` confirmed empty again -- a genuine on/off check, not just
+"nothing exists so it's trivially NO-DATA."
+
+**A real bug caught and fixed by this session's own live verification**:
+`core.theme.sign_agreement_scatter` crashed
+(`ValueError: Can only compare identically-labeled Series objects`) the moment two
+independently-resampled series (this page's own quarterly `WCESTUS1`/`fred.
+dcoilbrenteu` changes) were compared without first being paired on a shared index --
+fixed by joining them into one DataFrame (NaN-dropped) before the sign comparison,
+caught by `tests/test_pages_smoke.py`'s own generic page-loads-without-raising check.
+- `uv run pytest` (281 passed), `ruff check .`, `mypy core pipelines infra` all green.
 
 ## Definition of Done (spec)
-- [ ] All Session A/B functions and derived guardrail series in lake. [ ] Page 19 live. [ ] One COT and one inventory figure cross-checked against the publisher. [ ] Index + CHANGELOG.
+- [x] All Session A/B functions and derived guardrail series in lake (`derived.inv.dev_z.uscrude`, `derived.cot.<root>.mm_pct_3y` -- `derived.spare_cap.regime` is the one deliberate exception, correctly skipped since no real EIA STEO/IEA OMR spare-capacity data exists anywhere yet). [x] Page 19 live. [x] One COT and one inventory figure cross-checked against the publisher (COT: Session A, an independent live CFTC query matched the lake exactly, 84,020 contracts long for `cl` on 2026-08-25; inventory: `WCESTUS1`'s own stored 2026-08-14 value, 428,815 mb, cross-checked here against a fresh, independent live EIA API call for the same series -- an exact match; the same live call also shows the real lake is a couple of weeks stale against EIA's own latest report, 2026-08-28 -- an orchestration/scheduling observation, not a Spec 19 defect). [x] Index + CHANGELOG.
 
 ## Session A opener
 > Read CLAUDE.md, specs/00_TRADING_CONVENTIONS.md, specs/19_fundamentals-physical.md. Plan Session A: `core/fundamentals.py` (inventory_deviation over core.seasonal, days_of_cover, spare_capacity, spare_cap_regime, cot_percentiles), derived series written by a `pipelines/derived/fundamentals.py` step, tests. Confirm which Spec 14 CFTC series IDs exist in the lake before coding; do not guess.

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 from core.seasonal import REFERENCE_YEAR
 
@@ -546,4 +548,153 @@ def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figur
         )
     )
     fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    return fig
+
+
+# Session C (Spec 19) additions: grouped_agency_bars, dual_axis_inverted_chart,
+# sign_agreement_scatter. Kept spec-agnostic (no import of core/fundamentals.py), same
+# convention as every primitive above.
+
+
+def grouped_agency_bars(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """One grouped bar trace per column of `df` (index=period, columns=agency names,
+    e.g. iea/eia/opec) -- generalises production_vs_quota_chart's own 2-way grouped-bar
+    pattern to N agencies. A column literally named "call_on_opec", if present, is
+    drawn as a navy line overlay instead of a bar (same unit, no second axis needed)."""
+    fig = go.Figure()
+    bar_colours = [NAVY, LIGHT_BLUE, ORANGE, RED]
+    bar_cols = [c for c in df.columns if c != "call_on_opec"]
+    for col, colour in zip(bar_cols, bar_colours[: len(bar_cols)], strict=False):
+        fig.add_trace(go.Bar(x=df.index, y=df[col], name=col, marker_color=colour))
+
+    if "call_on_opec" in df.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=df.index,
+                y=df["call_on_opec"],
+                name="call_on_opec",
+                mode="lines+markers",
+                line={"color": NAVY, "width": 2},
+            )
+        )
+
+    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    return fig
+
+
+_REGIME_BAND_COLOURS = {
+    "tight": "#fadbd8",  # same 3 colours as gauge_chart's own low/mid/high steps --
+    "balanced": "#fdebd0",  # not a 4th ad-hoc palette. Low spare capacity ("tight") is
+    "ample": "#d5f5e3",  # the dangerous/bullish state, so it takes the red band here.
+}
+
+
+def _add_regime_bands(fig: go.Figure, regime: pd.Series, row: int, col: int) -> None:
+    """One shaded vrect per contiguous run of the same regime label (not one per row --
+    a dense daily series would otherwise draw thousands of overlapping rects)."""
+    if regime.empty:
+        return
+    change = regime.ne(regime.shift()).cumsum()
+    for _, run in regime.groupby(change):
+        label = run.iloc[0]
+        colour = _REGIME_BAND_COLOURS.get(label)
+        if colour is None:
+            continue
+        fig.add_vrect(
+            x0=run.index[0],
+            x1=run.index[-1],
+            fillcolor=colour,
+            opacity=0.5,
+            line_width=0,
+            row=row,
+            col=col,
+        )
+
+
+def dual_axis_inverted_chart(
+    spare: pd.Series,
+    price: pd.Series,
+    vol: pd.Series,
+    regime: pd.Series,
+    title: str,
+    spare_label: str,
+    price_label: str,
+) -> go.Figure:
+    """Row 1: `spare` on the left axis with `autorange="reversed"` ("inverted" per the
+    spec's own text -- falling spare capacity visually reads as rising tightness) plus
+    `price` on the right axis, with a shaded vrect per contiguous
+    core.fundamentals.spare_cap_regime run (tight/balanced/ample). Row 2: `vol` as a
+    light-blue filled area (same fill convention as time_series_area_chart)."""
+    fig = make_subplots(rows=2, row_heights=[0.7, 0.3], vertical_spacing=0.1, shared_xaxes=True)
+
+    fig.add_trace(
+        go.Scatter(x=spare.index, y=spare.values, name=spare_label, line={"color": NAVY}),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=price.index,
+            y=price.values,
+            name=price_label,
+            line={"color": LIGHT_BLUE},
+            yaxis="y2",
+        ),
+        row=1,
+        col=1,
+    )
+    _add_regime_bands(fig, regime, row=1, col=1)
+
+    fig.add_trace(
+        go.Scatter(
+            x=vol.index,
+            y=vol.values,
+            name="Realised vol",
+            line={"color": LIGHT_BLUE, "width": 1.5},
+            fill="tozeroy",
+            fillcolor="rgba(91,155,213,0.2)",
+        ),
+        row=2,
+        col=1,
+    )
+
+    fig.update_layout(
+        title=title,
+        yaxis={"title": spare_label, "autorange": "reversed"},
+        yaxis2={"title": price_label, "overlaying": "y", "side": "right"},
+    )
+    return fig
+
+
+def sign_agreement_scatter(
+    x: pd.Series, y: pd.Series, title: str, x_label: str, y_label: str
+) -> go.Figure:
+    """Scatter coloured by sign(x) == sign(y) -- RED ("violates the classical model",
+    core.fundamentals.carollo_scatter's own "wrong sign" concept) vs NAVY ("agrees",
+    opposite signs) -- a fixed two-colour categorical split, not a continuous scale.
+    `x`/`y` are paired on their own index (via an inner join, NaN-dropped) first --
+    two independently-resampled series aren't guaranteed identically-labelled, and
+    pandas refuses a positional `!=` comparison across mismatched labels."""
+    paired = pd.DataFrame({"x": x, "y": y}).dropna()
+    agrees = np.sign(paired["x"]) != np.sign(paired["y"])
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=paired.loc[agrees, "x"],
+            y=paired.loc[agrees, "y"],
+            mode="markers",
+            name="Agrees with classical model",
+            marker={"color": NAVY},
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=paired.loc[~agrees, "x"],
+            y=paired.loc[~agrees, "y"],
+            mode="markers",
+            name="Violates classical model",
+            marker={"color": RED},
+        )
+    )
+    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label)
     return fig

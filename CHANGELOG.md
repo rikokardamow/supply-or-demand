@@ -44,6 +44,21 @@ along the way.
   stock-change/price relationship is weak in practice. Documents a real merge
   consideration with Spec 18's own, independently-built, smaller `manual_physical`
   stub on the still-unmerged `feat/futures-settlements` branch.
+- Spec 19 Session C (final session): page `apps/dashboard/pages/19_fundamentals.py` and
+  three new `core/theme.py` primitives (`grouped_agency_bars`,
+  `dual_axis_inverted_chart`, `sign_agreement_scatter`). Real cards verified live: the
+  inventory seasonal-range + days-of-cover, the Carollo diagnostic (`R²=0.0023`,
+  `45.2%` of quarters violate the classical model), refinery utilisation, and CFTC
+  managed-money positioning. Every other card (S&D balance, spare capacity, refining
+  constraint index, shale response, benchmark health, OSP) renders a real no-data
+  message, verified by an actual on/off test (a synthetic manual CSV dropped in, the
+  OSP card confirmed to render real data, then removed and confirmed reverted).
+  Cross-checked one inventory figure against a fresh, independent live EIA API call
+  (`WCESTUS1` matched exactly) alongside Session A's own COT cross-check, completing
+  the spec's overall Definition of Done. Also fixes a real bug caught by this
+  session's own verification: `sign_agreement_scatter` crashed comparing two
+  independently-resampled series without first pairing them on a shared index. Spec
+  19's Sessions A-C are now all complete.
 
 ## [1.1] - 2026-09-04
 ### Added
