@@ -95,6 +95,27 @@ def _has_any_files(dataset: str) -> bool:
     return any((LAKE_ROOT / dataset).glob("**/*.parquet"))
 
 
+def _normalise_datetime_tz(df: pd.DataFrame) -> pd.DataFrame:
+    """Some writers build timestamps via `datetime.now(UTC)` (tz-aware), others via
+    `datetime.now()` (tz-naive) -- confirmed live this collides the moment both land in
+    the same partition: pandas refuses to sort/compare a tz-aware Timestamp against a
+    tz-naive one, so `_write_partitioned`'s own `combined.sort_values(sort_col)` raises
+    `TypeError: Cannot compare tz-naive and tz-aware timestamps` the first time a
+    tz-aware write lands in a partition that already has tz-naive rows (or vice versa).
+    Every schema column here is stored as a plain (tz-naive) TIMESTAMP on disk (see
+    `_duckdb_type` -- no TIMESTAMPTZ mapping exists), so this converts any tz-aware
+    datetime column to UTC first (preserving the real instant) then drops the tzinfo,
+    rather than guessing which writer's own convention is "right". Applied to each
+    frame separately, before concatenation -- a mixed-tz column would already be
+    object-dtype by the time the two frames are combined, which this dtype check can no
+    longer see."""
+    df = df.copy()
+    for col in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[col]) and df[col].dt.tz is not None:
+            df[col] = df[col].dt.tz_convert("UTC").dt.tz_localize(None)
+    return df
+
+
 def _write_partitioned(
     df: pd.DataFrame,
     dataset: str,
@@ -103,7 +124,7 @@ def _write_partitioned(
     sort_col: str | None,
     replace_window: tuple[datetime, datetime] | None = None,
 ) -> None:
-    df = df.copy()
+    df = _normalise_datetime_tz(df)
     df["_year"] = df["ts"].dt.year
 
     for year, year_df in df.groupby("_year"):
@@ -113,7 +134,9 @@ def _write_partitioned(
 
         existing_parts = sorted(partition_dir.glob("part-*.parquet"))
         existing_df = (
-            pd.concat([pd.read_parquet(p) for p in existing_parts], ignore_index=True)
+            _normalise_datetime_tz(
+                pd.concat([pd.read_parquet(p) for p in existing_parts], ignore_index=True)
+            )
             if existing_parts
             else pd.DataFrame(columns=year_df.columns)
         )

@@ -14,6 +14,24 @@ on the GitHub repo for every one of these plus every stretch-goal item skipped
 along the way.
 
 ## [Unreleased]
+### Added
+- Spec 19 Session A (trading analytics layer): `core/fundamentals.py` —
+  `inventory_deviation` (a thin wrapper over `core.seasonal.seasonal_stats`),
+  `days_of_cover`, `spare_capacity`/`spare_cap_regime`, `cot_percentiles`. New
+  pipeline `pipelines/cftc/` ingests real CFTC Commitments-of-Traders data (no such
+  pipeline existed anywhere — this spec's own text assumed it did via "Spec 14",
+  which was never built) via CFTC's own Public Reporting Environment API, a real,
+  free, no-key Socrata dataset — run for real this session: 19,650 rows across all 4
+  roots (`cl`/`rb`/`ho` back to 2006, `lco` back to 2011). One managed-money net
+  position cross-checked directly against a fresh, independent query of the same
+  CFTC source (`84,020` contracts long for `cl` on 2026-08-25) — an exact match.
+  `pipelines/derived/fundamentals.py` writes `derived.inv.dev_z.uscrude`/
+  `derived.cot.<root>.mm_pct_3y` back to the lake for real; `derived.spare_cap.regime`
+  is correctly skipped (no real EIA STEO/IEA OMR spare-capacity data exists yet —
+  Session B's own manual-drop extension). Also fixes a real, confirmed-live bug in
+  `core/storage.py::_write_partitioned` (mixed tz-aware/tz-naive `revision_date`
+  values crashed the write path the moment both landed in the same partition) — see
+  `core/NOTES.md`'s new incident write-up.
 
 ## [1.1] - 2026-09-04
 ### Added
