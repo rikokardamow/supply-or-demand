@@ -43,6 +43,23 @@ class EventsRecord(BaseModel):
     language: str
 
 
+class SanctionsRecord(BaseModel):
+    sanction_id: str
+    name: str
+    entity_type: str
+    programs: list[str]
+    vess_type: str | None
+    vess_flag: str | None
+    vess_owner: str | None
+    call_sign: str | None
+    remarks: str | None
+    imo: str | None
+    first_seen: datetime
+    last_seen: datetime
+    status: str
+    energy_related: bool
+
+
 TS_LONG_SCHEMA = pa.schema(
     [
         pa.field("series_id", pa.string()),
@@ -83,6 +100,25 @@ EVENTS_SCHEMA = pa.schema(
     ]
 )
 
+SANCTIONS_SCHEMA = pa.schema(
+    [
+        pa.field("sanction_id", pa.string()),
+        pa.field("name", pa.string()),
+        pa.field("entity_type", pa.string()),
+        pa.field("programs", pa.list_(pa.string())),
+        pa.field("vess_type", pa.string()),
+        pa.field("vess_flag", pa.string()),
+        pa.field("vess_owner", pa.string()),
+        pa.field("call_sign", pa.string()),
+        pa.field("remarks", pa.string()),
+        pa.field("imo", pa.string()),
+        pa.field("first_seen", pa.timestamp("us")),
+        pa.field("last_seen", pa.timestamp("us")),
+        pa.field("status", pa.string()),
+        pa.field("energy_related", pa.bool_()),
+    ]
+)
+
 
 def _validate_columns(df: pd.DataFrame, schema: pa.Schema) -> None:
     required = set(schema.names)
@@ -114,3 +150,7 @@ def validate_flows(df: pd.DataFrame) -> None:
 
 def validate_events(df: pd.DataFrame) -> None:
     _validate_columns(df, EVENTS_SCHEMA)
+
+
+def validate_sanctions(df: pd.DataFrame) -> None:
+    _validate_columns(df, SANCTIONS_SCHEMA)
