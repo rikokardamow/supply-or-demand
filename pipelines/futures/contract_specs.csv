@@ -1,0 +1,8 @@
+root,exchange,tick_size,contract_unit,currency
+cl,NYMEX,0.01,1000 bbl,USD
+rb,NYMEX,0.0001,42000 gal,USD
+ho,NYMEX,0.0001,42000 gal,USD
+ng,NYMEX,0.001,10000 MMBtu,USD
+lco,ICE,0.01,1000 bbl,USD
+g,ICE,0.25,100 tonnes,USD
+tfm,ICE,0.001,1000 MWh,EUR

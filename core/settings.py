@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,6 +26,15 @@ class Settings(BaseSettings):
     guardian_key: str | None = None
     adanos_api_key: str | None = None
     anthropic_api_key: str | None = None
+
+    # pipelines/futures -- IBKR Gateway/TWS connection params, not a secret (auth is
+    # handled by the locally-running Gateway app itself, no API key involved). Plain
+    # defaults are safe since a wrong value just fails to connect, matching every
+    # other optional-dependency client in this project.
+    futures_source: Literal["ibkr", "manual"] = "manual"
+    ibkr_host: str = "127.0.0.1"
+    ibkr_port: int = 7497
+    ibkr_client_id: int = 1
 
 
 settings = Settings()

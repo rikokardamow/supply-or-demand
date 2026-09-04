@@ -698,3 +698,165 @@ def sign_agreement_scatter(
     )
     fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label)
     return fig
+
+
+# Session D (Spec 18) additions: curve_strip_chart, regime_ribbon_chart,
+# scatter_piecewise_fit_chart, bday_heatmap. Kept spec-agnostic (no import of
+# core/curve.py) so this module stays reusable house style, not a Spec-18-specific one --
+# callers pass plain Series/DataFrames, the same convention every primitive above uses.
+
+_CURVE_STRIP_COLOURS = [NAVY, LIGHT_BLUE, ORANGE, RED]
+
+
+def curve_strip_chart(
+    curves: dict[str, pd.Series], spread_bars: dict[str, float], title: str, unit: str
+) -> go.Figure:
+    """Row 1: one line per as-of label in `curves` (e.g. "Today"/"-5bd"/"-20bd"/"-252bd"),
+    each a Series indexed by rank column (f01, f02, ...). Row 2: a navy bar per named
+    spread in `spread_bars` (e.g. s12/s13/s16/s1_12), today's values."""
+    fig = make_subplots(rows=2, row_heights=[0.7, 0.3], vertical_spacing=0.15)
+
+    for (label, curve), colour in zip(
+        curves.items(), _CURVE_STRIP_COLOURS[: len(curves)], strict=False
+    ):
+        fig.add_trace(
+            go.Scatter(
+                x=curve.index, y=curve.values, name=label, line={"color": colour, "width": 2}
+            ),
+            row=1,
+            col=1,
+        )
+
+    fig.add_trace(
+        go.Bar(
+            x=list(spread_bars.keys()),
+            y=list(spread_bars.values()),
+            marker={"color": NAVY},
+            showlegend=False,
+        ),
+        row=2,
+        col=1,
+    )
+    fig.update_layout(title=title, yaxis_title=unit)
+    return fig
+
+
+def regime_ribbon_chart(
+    price: pd.Series,
+    state_codes: pd.Series,
+    state_labels: dict[int, str],
+    title: str,
+    unit: str,
+) -> go.Figure:
+    """Row 1: navy price line. Row 2: a single-row heatmap, one column per date, coloured
+    by `state_codes` (already-encoded small ints, e.g. core.curve.REGIME_CODES) -- a fixed
+    categorical scale sized to `state_labels`, so every state gets its own flat colour band
+    rather than a continuous gradient implying an ordering between regimes that isn't
+    real."""
+    n_states = len(state_labels)
+    palette = [NAVY, LIGHT_BLUE, RED, ORANGE, GREY, "#8e44ad", "#2c3e50"][:n_states]
+    colourscale = []
+    for i, colour in enumerate(palette):
+        colourscale.append([i / n_states, colour])
+        colourscale.append([(i + 1) / n_states, colour])
+
+    fig = make_subplots(rows=2, row_heights=[0.75, 0.25], vertical_spacing=0.08, shared_xaxes=True)
+    fig.add_trace(
+        go.Scatter(x=price.index, y=price.values, line={"color": NAVY, "width": 2}, name=unit),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Heatmap(
+            z=[state_codes.to_numpy()],
+            x=state_codes.index,
+            y=[""],
+            zmin=0,
+            zmax=n_states,
+            colorscale=colourscale,
+            showscale=False,
+        ),
+        row=2,
+        col=1,
+    )
+    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    return fig
+
+
+def scatter_piecewise_fit_chart(
+    x: pd.Series,
+    y: pd.Series,
+    year: pd.Series,
+    bins: list[tuple[float, float]],
+    title: str,
+    x_label: str,
+    y_label: str,
+    annotations: list[tuple[float, float, str]] | None = None,
+) -> go.Figure:
+    """Scatter coloured by `year` (a sequential GREY->NAVY scale, oldest to newest -- the
+    one deliberate exception to the 4-colour palette, same documented precedent as
+    PSR_COLOURS above, since house style has no built-in year gradient). One straight-line
+    fit per (lo, hi) in `bins`, via numpy.polyfit(deg=1) -- no scipy dependency needed for
+    a linear fit. `annotations`: labelled markers at explicit (x, y) points (e.g. Apr-2020)."""
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            marker={
+                "color": year,
+                "colorscale": [[0, GREY], [1, NAVY]],
+                "colorbar": {"title": "Year"},
+                "size": 6,
+            },
+            name="Observations",
+        )
+    )
+
+    for lo, hi in bins:
+        mask = (x >= lo) & (x < hi)
+        if mask.sum() < 2:
+            continue
+        coeffs = np.polyfit(x[mask], y[mask], deg=1)
+        fit_x = np.linspace(lo, hi, 20)
+        fit_y = np.polyval(coeffs, fit_x)
+        fig.add_trace(
+            go.Scatter(
+                x=fit_x,
+                y=fit_y,
+                mode="lines",
+                line={"color": RED, "width": 2},
+                showlegend=False,
+            )
+        )
+
+    for ax, ay, label in annotations or []:
+        fig.add_annotation(
+            x=ax, y=ay, text=label, showarrow=True, arrowhead=2, bgcolor="white", bordercolor=RED
+        )
+
+    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label, showlegend=False)
+    return fig
+
+
+def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+    """Year (rows) x business-day offset from a roll window's own start (columns) --
+    `df` indexed by year (int), one column per offset, values = mean Δs12 that offset,
+    that year. Same navy-to-red diverging colourscale as hour_day_heatmap/
+    category_time_heatmap, centred on 0 via zmid (a Δ-price series has no natural
+    non-zero centre)."""
+    fig = go.Figure(
+        go.Heatmap(
+            z=df.to_numpy(),
+            x=df.columns,
+            y=df.index,
+            zmid=0,
+            colorscale=[[0, NAVY], [0.5, "#f5f5f5"], [1, RED]],
+            colorbar={"title": unit},
+        )
+    )
+    fig.update_layout(
+        title=title, xaxis_title="Business days from roll-window start", yaxis_title="Year"
+    )
+    return fig
