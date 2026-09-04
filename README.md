@@ -642,3 +642,36 @@ test in CI (the real key only exists in the gitignored `.env`, never in CI's
 environment) — fixed to default to an empty string instead, matching every other
 optional-key client in this project, confirmed by faithfully reproducing CI's exact
 environment locally before pushing the fix.
+
+#### v0.16 — Spec 15: OFAC SDN sanctions tracking + events-lake bridge
+Diffable tracking of the US Treasury's Specially Designated Nationals (SDN) list
+(`pipelines/ofac/`), tagged for energy relevance, plus a deliberate bridge into the
+*existing* news/events infrastructure (Spec 09) rather than a standalone silo — a
+newly-listed energy-related sanction now automatically surfaces on page 09's map/
+feed/table and as a severity-coloured line on pages 01/02/06's event overlay, via
+the pre-existing `event_overlay.py` with zero changes needed there. New
+`core/schemas.py::SANCTIONS_SCHEMA` and dedicated `core/storage.py` read/write — a
+genuinely different current-state-table shape (first_seen/last_seen/status already
+encode the diff history) than every other pipeline here, so it deliberately doesn't
+reuse `_write_partitioned`.
+
+A real correction of my own mistake, caught mid-session: an initial live check for
+comma/semicolon delimiters in the `program` field found none and wrongly concluded
+it was single-valued. Only while designing `program`→`geo` resolution for the events
+bridge did a deeper check reveal the real delimiter, `"] ["` — 2,905 of 19,326 rows
+(15%) are genuinely multi-program (243 distinct codes in total). `programs` is
+`list[str]` after all, matching `events.tags`'s existing precedent — the spec's
+original instinct was right; my own first-pass verification was wrong, corrected
+before any code was written against it. Also confirmed live: pandas silently turns
+a mapped `None` into a float `NaN` (and `NaN` is truthy in Python, so a bare
+`if not value` guard silently fails to catch it) — every nullable check now uses
+`pd.isna()` explicitly. IMO extraction covers 99% of real vessel rows (1,525 of
+1,540), far better than the spec's own cautious framing suggested. A real
+per-entity OFAC deep link (`sanctionssearch.ofac.treas.gov/Details.aspx?id=...`)
+was confirmed live and used as the event `url`.
+
+Verified live end-to-end: a real pull wrote 19,326 sanctions rows (entity_type
+distribution matches live research exactly: 9,926 entities / 7,518 individuals /
+1,540 vessels / 342 aircraft), 2,506 energy-related rows bridged into the events
+lake (1,711 → 4,217 total). Page 15's four panels, page 09's map/feed, and a real
+event-overlay marker on page 06's Oil-on-Water chart all confirmed live in-browser.
