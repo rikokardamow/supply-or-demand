@@ -19,11 +19,23 @@ along the way.
   settlements pipeline with two clients (`IBKRClient` via the actively-maintained
   `ib_async` fork, `ManualCSVClient`) behind one `FuturesClient` interface, selected by
   `FUTURES_SOURCE`; `pull_history.py`/`pull_daily.py`; a `series_meta` Parquet manifest for
-  contract metadata (expiry/tick_size/contract_unit/currency/roll_rule).
+  contract metadata (expiry/tick_size/contract_unit/currency/roll_rule). An 8-angle review
+  pass afterwards caught and fixed 8 real bugs before merge (a duplicate-row check missing
+  `root`, `source` hardcoded regardless of provider, a missing-lowercasing gap, a
+  trailing-window off-by-one, duplicated pull loops, and more — see
+  `pipelines/futures/CLAUDE.md`).
+- Spec 18 Session B: `core/curve.py` — roll-adjusted nearby contract ranks (ratio
+  back-adjustment), time spreads, convexity, and a six-state curve-regime classifier (plus
+  a seventh, `"flat"`, for the `s12==0` case the spec's own six states don't cover);
+  `pipelines/derived/curve.py` writes `derived.spread.*`/`derived.curve.*` back to the lake,
+  registered in `infra/run_scheduled.py`'s daily cadence (which also picked up Session A's
+  own `pipelines.futures.pull_daily` — never actually wired into the orchestrator until now).
+  All 12 tests pass on hand-verified synthetic data, matching every worked example in the
+  spec's own text exactly.
   **Not yet merged/tagged** — no live IBKR Gateway and no real settlement data exist yet, so
-  this session's own verification is against synthetic data only; the live cross-check and
+  every session's own verification is against synthetic data only; the live cross-check and
   real idempotency check are explicitly deferred (see `specs/18_curve-market-structure.md`).
-  Spec 18 itself remains in progress (Sessions B–D still to come).
+  Spec 18 itself remains in progress (Sessions C–D still to come).
 
 ## [1.1] - 2026-09-04
 ### Added
