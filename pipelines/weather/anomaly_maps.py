@@ -1,6 +1,12 @@
-"""Renders 2m-temperature anomaly maps (IFS forecast minus the ERA5-normal grid from
+"""Renders 2m-temperature anomaly maps (model forecast minus the recent-normal grid from
 climatology_grid.py) for EU and CONUS at D+3/D+7, "tropicaltidbits-style": cartopy
 coastlines/borders, diverging blue-white-red colour scale centred on zero anomaly.
+Model-agnostic (ECMWF IFS and, since the weather-module-spec.md Phase 1 session, GFS) --
+`render_anomaly_map` takes an already-single-step 2D DataArray plus that step's own
+valid_time, so each model's own client/pull script handles its own step-extraction
+quirks (ECMWF's fetch is one multi-step file; GFS's is one file per step -- see
+gfs_client.py's own docstring) rather than this shared rendering function needing to
+know about either.
 
 Cartopy confirmed live to install and render cleanly via pip on Windows (no system
 GEOS/PROJ needed -- modern wheels bundle them) -- no matplotlib-only fallback needed.
@@ -44,19 +50,24 @@ def _region_extent(region: str) -> tuple[float, float, float, float]:
     return (lon_min, lon_max, lat_min, lat_max)
 
 
-def render_anomaly_map(t2m: xr.DataArray, step_index: int, region: str) -> Path:
-    """`t2m` is the ecmwf_client.load_2t_dataset(...)['t2m'] DataArray (dims step,
-    latitude, longitude, Kelvin). `step_index` selects which forecast step (0 -> D+3,
-    1 -> D+7 given this pipeline's own fixed FORECAST_STEPS order)."""
-    step_slice = t2m.isel(step=step_index)
-    valid_time = pd.Timestamp(step_slice.valid_time.values)
-    step_hours = int(step_slice.step.values / pd.Timedelta(hours=1))
-
+def render_anomaly_map(
+    t2m_2d: xr.DataArray,
+    step_hours: int,
+    valid_time: pd.Timestamp,
+    region: str,
+    model: str = "ecmwf",
+) -> Path:
+    """`t2m_2d` is a single forecast step's (latitude, longitude) DataArray in Kelvin,
+    longitude already normalised to -180..180 -- both ecmwf_client.load_2t_dataset and
+    gfs_client.load_2t_dataset already guarantee this. `step_hours`/`valid_time` are
+    passed explicitly rather than read off `t2m_2d` itself, since ECMWF's own step
+    coordinate survives an `.isel(step=...)` slice but GFS's per-step files don't carry
+    one in the same shape -- see each model's own pull script for how it extracts these."""
     clim = climatology_grid(region, valid_time.date())
     lats = xr.DataArray(clim["lat"].to_numpy(), dims="points")
     lons = xr.DataArray(clim["lon"].to_numpy(), dims="points")
     forecast_c = (
-        step_slice.sel(latitude=lats, longitude=lons, method="nearest").to_numpy() - 273.15
+        t2m_2d.sel(latitude=lats, longitude=lons, method="nearest").to_numpy() - 273.15
     )
     anomaly = forecast_c - clim["climatology_c"].to_numpy()
 
@@ -79,18 +90,18 @@ def render_anomaly_map(t2m: xr.DataArray, step_index: int, region: str) -> Path:
     )
     fig.colorbar(scatter, ax=ax, label="2m-temp anomaly (°C)", shrink=0.8)
     ax.set_title(
-        f"{region.upper()} 2m-Temp Anomaly — D+{step_hours // 24} "
+        f"{region.upper()} 2m-Temp Anomaly ({model.upper()}) — D+{step_hours // 24} "
         f"({valid_time:%Y-%m-%d}) vs {climatology_years_label()}",
         fontsize=9,
     )
 
     MAPS_DIR.mkdir(parents=True, exist_ok=True)
-    filename = f"anomaly-{region}-d{step_hours // 24}-{valid_time:%Y%m%d}.png"
+    filename = f"anomaly-{model}-{region}-d{step_hours // 24}-{valid_time:%Y%m%d}.png"
     path = MAPS_DIR / filename
     fig.savefig(path, dpi=100, bbox_inches="tight")
     plt.close(fig)
 
-    _append_manifest_row(region, step_hours, valid_time, path)
+    _append_manifest_row(model, region, step_hours, valid_time, path)
     return path
 
 
@@ -101,11 +112,12 @@ def climatology_years_label() -> str:
 
 
 def _append_manifest_row(
-    region: str, step_hours: int, valid_time: pd.Timestamp, path: Path
+    model: str, region: str, step_hours: int, valid_time: pd.Timestamp, path: Path
 ) -> None:
     row = pd.DataFrame(
         [
             {
+                "model": model,
                 "region": region,
                 "step_hours": step_hours,
                 "valid_time": valid_time,
@@ -116,10 +128,10 @@ def _append_manifest_row(
     )
     MAPS_DIR.mkdir(parents=True, exist_ok=True)
     if MANIFEST_PATH.exists():
-        existing = pd.read_parquet(MANIFEST_PATH)
+        existing = read_manifest()
         combined = pd.concat([existing, row], ignore_index=True)
         combined = combined.drop_duplicates(
-            subset=["region", "step_hours", "valid_time"], keep="last"
+            subset=["model", "region", "step_hours", "valid_time"], keep="last"
         )
     else:
         combined = row
@@ -127,6 +139,14 @@ def _append_manifest_row(
 
 
 def read_manifest() -> pd.DataFrame:
+    """A manifest row written before this session has no `model` column at all (every
+    map rendered so far was ECMWF's) -- filled in as "ecmwf" here rather than requiring
+    a one-off migration script, so the existing on-disk file needs no manual backfill."""
     if not MANIFEST_PATH.exists():
-        return pd.DataFrame(columns=["region", "step_hours", "valid_time", "rendered_at", "path"])
-    return pd.read_parquet(MANIFEST_PATH)
+        return pd.DataFrame(
+            columns=["model", "region", "step_hours", "valid_time", "rendered_at", "path"]
+        )
+    manifest = pd.read_parquet(MANIFEST_PATH)
+    if "model" not in manifest.columns:
+        manifest["model"] = "ecmwf"
+    return manifest
