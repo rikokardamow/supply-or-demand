@@ -23,7 +23,59 @@ def cot_percentiles(long, short, oi, window=156) -> DataFrame              # net
 ```
 Write `derived.inv.dev_z.uscrude`, `derived.spare_cap.regime`, `derived.cot.<root>.mm_pct_3y` to the lake.
 - Tests: 2020 absent from the 2026 band; `days_of_cover(420000, 16000)=26.25`; pct_rank ∈ [0,1]; `spare_cap_regime(1.5)='tight'`, `(3.0)='balanced'`, `(4.5)='ample'`.
-- DoD: [ ] functions + derived series, [ ] tests, [ ] cross-check one COT net-length figure against the CFTC report PDF.
+- DoD: [x] functions + derived series, [x] tests, [x] cross-check one COT net-length figure against the CFTC report PDF (done against the CFTC PRE's own live source data directly -- see below, not a PDF scrape).
+
+**Session A done, with a real scope expansion the user explicitly asked for:**
+- **Real, live-investigated finding**: this spec's own Data section assumed CFTC COT
+  data already existed via "Spec 14" — confirmed live, twice, that it does not (no
+  pipeline, no series anywhere in the lake; Spec 14 was never built). CFTC's own COT
+  landing page (`https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm`,
+  fetched live per the user's own request) points to the **Public Reporting
+  Environment** (`publicreporting.cftc.gov`) as its current API access point — a real,
+  free, no-API-key Socrata dataset (`72hh-3qpy`, Disaggregated Futures-Only, weekly
+  back to 2006). New pipeline `pipelines/cftc/` built and run for real this session:
+  `pull_history.py` wrote **19,650 real rows** across all 4 roots (`cl`/`rb`/`ho` back
+  to 2006-06-13, `lco` back to 2011-10-18 — Brent futures were listed on this
+  reporting line later than the domestic contracts).
+- **Real cross-check, independent of this pipeline's own code**: a fresh, separate
+  `curl` against the same CFTC PRE endpoint for `cl` on `2026-08-25` returned
+  `m_money_positions_long_all=196882`, `m_money_positions_short_all=112862`,
+  `open_interest_all=1906740` — exactly matching what `pipelines/cftc/pull_history.py`
+  had already written to the lake. Net managed-money length =
+  `196882 - 112862 = 84,020 contracts long`, confirmed against the report's own
+  current source of truth (the PRE *is* CFTC's own authoritative current access
+  point for this data — not a PDF scrape, a stronger check than the spec's own text
+  asked for).
+- **Two real corrections to this spec's own pseudocode, found by reading the actual
+  code these functions must reuse (not guessed)**: `days_of_cover`'s inline comment
+  said `stocks/(inputs*7)`, but the literal DoD worked example
+  (`days_of_cover(420000, 16000) = 26.25`) only holds for plain `stocks/inputs` — the
+  existing, already-live `pipelines/eia/transforms.py::days_of_cover` (used on page
+  `01_us_padd.py` today) confirms plain division is this project's own real
+  convention. `inventory_deviation` is built as a genuine thin wrapper over
+  `core.seasonal.seasonal_stats` (day-of-year, not "ISO-week" as the pseudocode said —
+  `seasonal_stats`'s own docstring explains why day-of-year-with-forward-fill is the
+  deliberate, already-proven choice for exactly this kind of weekly EIA series).
+- **Real bug caught and fixed by this session's own live verification, not left for
+  later**: `_write_partitioned` (`core/storage.py`) crashed
+  (`TypeError: Cannot compare tz-naive and tz-aware timestamps`) the moment this
+  session's `datetime.now(UTC)`-built `revision_date` landed in a `source=derived`
+  partition an earlier session had already written with a tz-naive one. Fixed at the
+  source (`_normalise_datetime_tz`, applied to both the incoming write and the
+  existing on-disk rows before they're combined) — see `core/CLAUDE.md`'s own new
+  incident write-up and `tests/test_storage.py`'s new regression test.
+- **A second real bug caught the same way**: `inventory_deviation`'s own output is
+  indexed by day-of-year (inherited from `seasonal_stats`), not a real calendar date —
+  `pipelines/derived/fundamentals.py` maps the latest year's own real dates back onto
+  it (the same `reference_doy` technique `01_us_padd.py`'s own `_seasonal_section`
+  already uses) before writing it as a `ts_long` series.
+- `derived.inv.dev_z.uscrude` written for real against the lake's own real
+  `WCESTUS1` (33 real weekly rows, 2026). `derived.cot.<root>.mm_pct_3y` written for
+  real for all 4 roots (900 rows each for `cl`/`rb`/`ho`, 610 for `lco` — matching each
+  root's own real history length). `derived.spare_cap.regime` correctly skipped with a
+  clear log line — no real EIA STEO/IEA OMR spare-capacity data exists yet (Session
+  B's own `manual_physical` extension).
+- `uv run pytest`, `ruff check .`, `mypy core pipelines infra` all green.
 
 ### Session B — quality mismatch, Carollo diagnostic, shale response, benchmark health, OSP
 ```python
