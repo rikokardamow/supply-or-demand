@@ -30,9 +30,11 @@ import pyarrow as pa
 from core.schemas import (
     EVENTS_SCHEMA,
     FLOWS_SCHEMA,
+    SANCTIONS_SCHEMA,
     TS_LONG_SCHEMA,
     validate_events,
     validate_flows,
+    validate_sanctions,
     validate_ts_long,
 )
 
@@ -211,6 +213,37 @@ def write_events(df: pd.DataFrame, source: str) -> None:
         dedup_subset=["event_id"],
         sort_col="ts",
     )
+
+
+SANCTIONS_CURRENT_PATH = LAKE_ROOT / "sanctions" / "current.parquet"
+
+
+def write_sanctions_current(df: pd.DataFrame) -> None:
+    """OFAC's SDN list is a current-state table (first_seen/last_seen/status already
+    encode the diff history -- see pipelines/ofac/pull_ofac.py::compute_diff), not an
+    accumulating time series like ts_long/flows/events -- doesn't fit
+    _write_partitioned's source=X/year=Y shape, so this overwrites a single file
+    instead. Always exactly one file, so no multi-file glob/union_by_name concern
+    applies here -- a plain pd.read_parquet is enough on the read side."""
+    validate_sanctions(df)
+    SANCTIONS_CURRENT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(SANCTIONS_CURRENT_PATH, index=False)
+
+
+def read_sanctions_current() -> pd.DataFrame:
+    if not SANCTIONS_CURRENT_PATH.exists():
+        empty: pd.DataFrame = SANCTIONS_SCHEMA.empty_table().to_pandas()
+        return empty
+    return pd.read_parquet(SANCTIONS_CURRENT_PATH)
+
+
+def write_sanctions_snapshot(df: pd.DataFrame, pull_date: datetime) -> None:
+    """Write-only daily audit archive (per specs/15_ofac-sanctions.md) -- OFAC gives
+    no revision history of its own, so this preserves what was actually published on
+    each pull date. Not read back anywhere in this spec's scope."""
+    snapshot_dir = LAKE_ROOT / "sanctions_raw" / f"dt={pull_date.date().isoformat()}"
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(snapshot_dir / "part-0.parquet", index=False)
 
 
 def _read(
