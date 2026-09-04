@@ -63,7 +63,28 @@ def transition_matrix(states) -> DataFrame
 Regime states, evaluated in order: `super_contango` (s12 < −1.5×storage_cost and s1_12<0) → `super_backwardation` (s12 > p95(lookback) and s12 > 2.0) → `convex_contango` (s12<0, cv>0) → `concave_contango` (s12<0, cv<0) → `convex_backwardation` (s12>0, cv>0) → `concave_backwardation` (humped; s12>0, cv<0).
 Write derived series to the lake (`derived.spread.*`, `derived.curve.*`) via a `pipelines/derived/curve.py` step run after the daily futures pull.
 - Tests (synthetic data): rolls exactly 5 bdays before expiry; adjusted f01 has zero return on roll day; `convexity([80,79,78.5])=0.5`, `([80,79,77])=−1.0`; regime of `[80,79,78.5]`=`convex_backwardation`, `[80,81,81.5]`=`concave_contango`, `[80,81,82.5]`=`convex_contango`; transition-matrix rows sum to 1; no look-ahead (regime at *t* identical on data to *t* vs *t*+30).
-- DoD: [ ] functions above, [ ] derived series in lake, [ ] all tests, [ ] no-look-ahead test.
+- DoD: [x] functions above, [x] derived series in lake, [x] all tests, [x] no-look-ahead test.
+
+**Session B done, verified on synthetic data (per the spec's own text — no real
+multi-contract settlement data exists yet, same deferral as Session A):**
+- All 12 `tests/test_core_curve.py` cases pass, including every worked example above
+  exactly as specified, plus a `"flat"` seventh state for the `s12==0` knife-edge the
+  spec's own six named states don't cover.
+- **Two corrections made to this spec's own text during implementation, documented in
+  `pipelines/derived/NOTES.md`**: `dec_dec` is not deferred to Session C — CME/ICE
+  contract codes already encode the delivery month via a fixed exchange convention
+  (`"z26"` *is* Dec 2026 by construction), so it needs no roll-calendar lookup at all, and
+  is implemented as its own function reading `contract_panel` directly (rank-labelled
+  `unadj` alone can't identify which rank is "the December contract"). Regime codes live
+  in `core/curve.py::REGIME_CODES`, not `series_meta` — that table's schema is per-
+  contract metadata, and a regime-code map is a fixed static enum, not row-level data.
+- `pipelines/derived/curve.py` run for real against Session A's own synthetic fixture
+  (`cl`, 2 contracts): wrote 6 real rows, `s12` matching the hand-computed value exactly.
+  A genuine `n=2` wiring smoke test, not a claim the full 3+-contract algorithm ran
+  against real data — that's what the synthetic unit tests cover independently.
+- Registered `pipelines.futures.pull_daily` and `pipelines.derived.curve` in
+  `infra/run_scheduled.py`'s `daily` cadence group (in that order) — a real gap from
+  Session A, which built the entrypoint but never wired it into the orchestrator.
 
 ### Session C — index-roll calendar, Cushing coupling, physical bands
 ```python
