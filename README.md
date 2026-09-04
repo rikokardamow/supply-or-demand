@@ -732,3 +732,59 @@ distribution matches live research exactly: 9,926 entities / 7,518 individuals /
 1,540 vessels / 342 aircraft), 2,506 energy-related rows bridged into the events
 lake (1,711 → 4,217 total). Page 15's four panels, page 09's map/feed, and a real
 event-overlay marker on page 06's Oil-on-Water chart all confirmed live in-browser.
+
+#### v1.0 — Spec 13: orchestration, testing hardening & CI/CD
+Local Windows Task Scheduler orchestration, not GitHub Actions — this project runs
+on the operator's own laptop, not a server, so `infra/run_scheduled.py` groups every
+pipeline's real entrypoint by cadence (daily/WPSR/gas-storage/weekly-Friday/monthly)
+with per-pipeline failure isolation, and `infra/register_tasks.ps1` registers the
+real Task Scheduler entries; `ci.yml` stays exactly as it was, cassette-only.
+`core/freshness.py::staleness_report()` classifies every source across all four
+lake datasets (`ts_long`/`flows`/`events`/`sanctions`) as green/amber/red against its
+own expected pull cadence, surfaced on the home page's extended "Lake status" table.
+Two real bugs caught via a live run against the actual lake before landing: `ts_long`
+freshness must use `revision_date` (ingestion time), not `ts`, since forward-dated
+series (weather forecasts, MOMR vintages) produced impossible negative staleness
+under `ts`; and a stale, wrongly-scheduled bare `"open_meteo"` source was excluded.
+`tests/test_cassette_secrets.py` reuses README's own documented secret-scan regex as
+a real CI gate; `tests/test_pages_smoke.py` drives every dashboard page headlessly
+via `streamlit.testing.v1.AppTest` (the documented `from_file(app.py).switch_page(
+...)` pattern — loading a page file directly raises `ModuleNotFoundError`, confirmed
+live). README gained an "Orchestration & scheduling" section, a data-source
+licences/attribution table, and a credential-handling/key-rotation policy written
+into the repo itself. `CHANGELOG.md`'s stale content (it still described the
+long-deleted pre-`specs/` Postgres/SQLAlchemy scaffold) was replaced with a real,
+cross-checked Keep-a-Changelog summary of every tagged version. 17 tracking issues
+opened on GitHub for every stretch-goal item skipped across Specs 00–17 plus the
+fully unbuilt/deferred specs (07, 11, 12, 14). **"v1.0" means orchestration/CI/
+freshness complete for every spec built so far, not full dashboard completion** —
+Specs 11/12/14 remain unbuilt, Spec 07 stays deferred.
+
+#### v1.1 — Weather module Phase 1: GFS as a second, independent NWP model
+Cross-cutting addition on top of an already-shipped, tagged spec (v0.9), not a new
+spec number — adapts a user-supplied `weather-module-spec.md` (written against
+Railway/Postgres/Grafana) to this project's actual DuckDB+Parquet/Streamlit/Task
+Scheduler stack. Confirmed scope with the user before writing code: reuse the
+existing 3-year climatology grid (no `cdsapi`/Copernicus CDS account) and the
+existing EU/US city-sample aggregates (no new region polygons) — zero new
+dependencies, zero new accounts, zero new schemas. `pipelines/weather/gfs_client.py`
+pulls a 2m-temperature GRIB2 subset per (region, forecast step) from NOMADS'
+GRIB-filter service. Two real gotchas confirmed live before writing code against an
+assumed shape: longitude convention is inconsistent across regions (a CONUS bbox
+comes back 0..360, a EU bbox comes back already -180..180 — normalised
+unconditionally on load) and a not-yet-published GFS cycle returns HTTP 403 with an
+HTML body, not a 404 (handled with a one-cycle-back retry). `pipelines/weather/
+gfs_degree_days.py` reuses `degree_days.py`/`aggregate.py` unchanged, tagged
+`source="gfs"` — a real bug was caught before it ever ran: both of those functions
+hardcode `source="open_meteo"` in the DataFrame they return, which would have
+misclassified every GFS row as Open-Meteo's own on read-back; fixed by mirroring
+`pull_daily.py`'s existing `_mark_as_forecast()` pattern. `anomaly_maps.py`'s
+manifest and render function now carry an explicit `model` dimension end to end;
+page 08 gained a model selector. A second, CI-only bug was caught the same way this
+project has hit before: the new GFS test was the first in the whole codebase to
+actually invoke the real `cfgrib` GRIB-decode backend, and CI's Linux runner has no
+working `eccodes` install — fixed by monkeypatching `xr.open_dataset` (matching
+every other weather test's own established convention) instead of adding a new CI
+system dependency. Verified live: a real `pull_daily.py` run rendered 4 ECMWF + 2 GFS
+anomaly maps and wrote 32 GFS HDD/CDD rows; the model selector confirmed live
+in-browser swapping between ECMWF and GFS maps/captions correctly.

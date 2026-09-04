@@ -15,6 +15,27 @@ along the way.
 
 ## [Unreleased]
 
+## [1.1] - 2026-09-04
+### Added
+- Weather module Phase 1: GFS as a second, independent NWP model alongside the
+  existing ECMWF Open Data pipeline (Spec 08). Adapts a user-supplied
+  `weather-module-spec.md` (written against Railway/Postgres/Grafana) to this
+  project's actual stack, with zero new dependencies/accounts/schemas —
+  `pipelines/weather/gfs_client.py` (NOMADS GRIB-filter download),
+  `gfs_degree_days.py` (reuses the existing degree-day/aggregate functions,
+  tagged `source="gfs"`), a `model` dimension threaded through
+  `anomaly_maps.py`'s manifest, and a model selector on page 08.
+### Fixed
+- A real bug caught before it ever ran: `degree_days.to_ts_long()`/
+  `aggregate.population_weighted()` both hardcode `source="open_meteo"` in
+  their own returned DataFrame — reusing them for GFS without overriding that
+  column would have misclassified every GFS row as Open-Meteo's own on
+  read-back.
+- CI-only: the new GFS test was the first in the project to actually invoke
+  the real `cfgrib` GRIB-decode backend, and CI's Linux runner has no working
+  `eccodes` install — fixed by monkeypatching `xr.open_dataset` instead of
+  adding a new CI system dependency.
+
 ## [1.0] - 2026-09-04
 ### Added
 - Spec 13: orchestration, testing hardening & CI/CD. `infra/run_scheduled.py`
