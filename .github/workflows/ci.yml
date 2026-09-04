@@ -34,7 +34,7 @@ jobs:
         run: uv run ruff check .
 
       - name: Mypy
-        run: uv run mypy core pipelines
+        run: uv run mypy core pipelines infra
 
       - name: Pytest (cassette playback only, no live calls)
         run: uv run pytest --record-mode=none
