@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.adanos.org/reddit/stocks/v1/trending/sectors?limit=20
+  response:
+    body:
+      string: '[{"buzz_score":87.31,"trend":"rising","mentions":697,"unique_tickers":79,"subreddit_count":37,"sentiment_score":0.028,"bullish_pct":27,"bearish_pct":20,"total_upvotes":1634,"trend_history":[92.4,91.2,91.0,92.0,92.6,92.1,88.0],"top_tickers":["AVGO","GPRO","NVDA","DELL","UBER"],"sector":"Information
+        Technology"},{"buzz_score":85.06,"trend":"stable","mentions":291,"unique_tickers":49,"subreddit_count":28,"sentiment_score":0.031,"bullish_pct":24,"bearish_pct":19,"total_upvotes":1494,"trend_history":[91.0,89.7,91.5,92.0,90.8,89.9,86.0],"top_tickers":["GME","TSLA","NKE","AMZN","LULU"],"sector":"Consumer
+        Discretionary"},{"buzz_score":81.82,"trend":"rising","mentions":144,"unique_tickers":28,"subreddit_count":26,"sentiment_score":0.058,"bullish_pct":31,"bearish_pct":15,"total_upvotes":309,"trend_history":[89.9,88.1,88.1,89.4,89.9,90.0,82.9],"top_tickers":["META","NFLX","GOOGL","ASTS","ZM"],"sector":"Communication
+        Services"},{"buzz_score":81.48,"trend":"rising","mentions":99,"unique_tickers":43,"subreddit_count":30,"sentiment_score":0.072,"bullish_pct":34,"bearish_pct":16,"total_upvotes":345,"trend_history":[90.0,89.1,88.4,89.4,89.7,88.5,82.4],"top_tickers":["BRK","MORN","HOOD","PYPL","STT"],"sector":"Financials"},{"buzz_score":80.61,"trend":"rising","mentions":118,"unique_tickers":44,"subreddit_count":29,"sentiment_score":-0.014,"bullish_pct":19,"bearish_pct":29,"total_upvotes":274,"trend_history":[89.5,87.4,88.3,88.2,88.1,89.0,81.9],"top_tickers":["RKLB","HTZ","SPCX","SSD","BA"],"sector":"Industrials"},{"buzz_score":76.59,"trend":"rising","mentions":61,"unique_tickers":31,"subreddit_count":18,"sentiment_score":0.08,"bullish_pct":31,"bearish_pct":11,"total_upvotes":82,"trend_history":[87.8,84.4,85.1,87.4,87.5,86.2,77.9],"top_tickers":["AGL","NVO","SLS","CRLBF","LABS"],"sector":"Health
+        Care"},{"buzz_score":71.49,"trend":"stable","mentions":28,"unique_tickers":17,"subreddit_count":14,"sentiment_score":0.121,"bullish_pct":39,"bearish_pct":11,"total_upvotes":36,"trend_history":[85.2,84.9,84.5,84.1,85.3,84.0,73.5],"top_tickers":["CVX","ENB","FRO","XOM","AMEN"],"sector":"Energy"},{"buzz_score":70.86,"trend":"falling","mentions":37,"unique_tickers":17,"subreddit_count":14,"sentiment_score":-0.019,"bullish_pct":16,"bearish_pct":22,"total_upvotes":45,"trend_history":[84.8,81.4,83.2,89.8,84.8,84.8,72.1],"top_tickers":["WMT","BYND","COST","MLK","PEP"],"sector":"Consumer
+        Staples"},{"buzz_score":70.51,"trend":"rising","mentions":36,"unique_tickers":23,"subreddit_count":14,"sentiment_score":0.043,"bullish_pct":17,"bearish_pct":6,"total_upvotes":39,"trend_history":[85.8,80.6,85.2,84.7,83.0,86.4,72.6],"top_tickers":["IAG","M24","SMS","0A61","2073"],"sector":"Materials"},{"buzz_score":65.86,"trend":"rising","mentions":18,"unique_tickers":11,"subreddit_count":8,"sentiment_score":0.152,"bullish_pct":39,"bearish_pct":17,"total_upvotes":22,"trend_history":[79.9,77.2,78.3,80.1,83.5,81.8,69.5],"top_tickers":["OPEN","VCX","VICI","CSGP","DBRG"],"sector":"Real
+        Estate"},{"buzz_score":58.31,"trend":"rising","mentions":7,"unique_tickers":4,"subreddit_count":4,"sentiment_score":0.231,"bullish_pct":43,"bearish_pct":0,"total_upvotes":17,"trend_history":[59.1,69.3,57.1,57.2,67.0,62.7,58.8],"top_tickers":["FZILX","FNILX","VTIAX","VUSXX"],"sector":"Financial
+        Services"},{"buzz_score":53.7,"trend":"falling","mentions":10,"unique_tickers":5,"subreddit_count":5,"sentiment_score":0.088,"bullish_pct":30,"bearish_pct":20,"total_upvotes":9,"trend_history":[78.2,67.3,77.5,80.5,77.7,75.3,57.1],"top_tickers":["PCG","CU","D","ESUN","IMSR"],"sector":"Utilities"}]'
+    headers:
+      cache-control:
+      - private, max-age=300
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json
+      date:
+      - Thu, 03 Sep 2026 06:34:32 GMT
+      server:
+      - uvicorn
+      transfer-encoding:
+      - chunked
+      vary:
+      - X-API-Key, Authorization, Accept-Encoding
+      x-account-type:
+      - free
+      x-ratelimit-limit-burst:
+      - '100'
+      x-ratelimit-limit-monthly:
+      - '250'
+      x-ratelimit-remaining-burst:
+      - '97'
+      x-ratelimit-remaining-monthly:
+      - '232'
+      x-ratelimit-reset-burst:
+      - '2026-09-03T06:35:00Z'
+      x-ratelimit-reset-monthly:
+      - '2026-10-02T05:49:22Z'
+      x-ratelimit-used-monthly:
+      - '18'
+      x-request-id:
+      - 87a24b52a855473283efddbc83effb22
+    status:
+      code: 200
+      message: OK
+version: 1
