@@ -131,25 +131,105 @@ conventions section describes above does not exist as a callable yet; a Spec 18/
 that needs it will have to build it (e.g. from `RELEASES`'s own schedule plus each series'
 `revision_date`), not import it from here.
 
-### Spec 14 series IDs — verified against the real lake, not assumed
+### `core/schemas.py` — full column lists (the only four schemas that exist)
 
-Checked live via `core.storage.read_ts_long()` against the real lake (1,489 distinct
-`series_id` values, 1,137,110 rows, as of 2026-09-04) — Spec 14 was never built (see the
-open GitHub tracking issue), so neither series this file's own dependency table names as
-"exists" for Spec 14 is actually real yet:
+```python
+class TsLongRecord:    series_id: str; source: str; ts: datetime; value: float; unit: str; geo: str; freq: str; revision_date: datetime
+class FlowsRecord:     source: str; from_node: str; to_node: str; value: float; unit: str; ts: datetime; mode: str
+class EventsRecord:    event_id: str; ts: datetime; headline: str; source: str; url: str; tags: list[str]; geo: str; commodity: str; severity: int; language: str
+class SanctionsRecord: sanction_id: str; name: str; entity_type: str; programs: list[str]; vess_type: str | None; vess_flag: str | None; vess_owner: str | None; call_sign: str | None; remarks: str | None; imo: str | None; first_seen: datetime; last_seen: datetime; status: str; energy_related: bool
+```
 
-- **CFTC COT**: **does not exist in the lake at all** — zero `series_id` values contain
-  `"cftc"` or `"cot"`, and no `pipelines/cftc/` (or similarly named) pipeline exists anywhere
-  in this codebase. `core/calendars.py`'s `RELEASES["cftc_cot"]` is only a release-time
-  schedule entry, not an ingested series. Spec 01's own Stretch section already names a CFTC
-  COT overlay as a **skipped stretch item** (see the open GitHub issue for it) — Spec 18/19's
-  own COT-percentile work depends on this pipeline being built first; it is not "extend",
-  it is "build from scratch".
-- **Cushing**: `W_EPC0_SAX_YCUOK_MBBL` (source `"eia"`) genuinely exists — but it is Cushing,
-  OK **crude oil stocks** (a Spec 01 series, weekly), not "Cushing working capacity". No
-  series with `"cushing"` in its `series_id` beyond this one exists, and no semi-annual
-  working-storage-capacity series exists under any name. Spec 18's own text calling
-  `eia.cushing_working_capacity` "exists / extend" is not accurate as of this check — it
-  needs building, not extending, and should be sourced and verified live (an EIA route, most
-  likely `petroleum/stoc/wstk` or a capacity-specific route — check live, do not guess)
-  before Spec 18 Session A assumes it.
+`flows` has no `revision_date`; `SanctionsRecord` has no `source` column at all (it's a
+single-source, OFAC-only current-state table — see `core/freshness.py`'s own synthetic
+freshness key for how Spec 13 special-cased this). No fifth schema exists — a Spec 18
+`series_meta` table is not one of these four and has no home yet (see above).
+
+### `core/settings.py` — no futures/IBKR fields exist yet
+
+Required: `eia_api_key, ember_api_key, gie_api_key, entsoe_api_key, fred_api_key`. Optional
+(all `str | None = None`): `newsapi_key, worldnews_key, aisstream_key, opensky_client_id,
+opensky_client_secret, mapbox_token, tomorrow_io_key, guardian_key, adanos_api_key,
+anthropic_api_key`. **No `futures_source`, `ibkr_host`/`ibkr_port`, or any futures-related
+field exists today** — Spec 18 Session A needs to add these to `Settings` (and
+`.env.example`) itself; this is new work, not a lookup.
+
+### Pipeline source-naming conventions — checked live, genuinely inconsistent across sources
+
+`pipelines/fred/` **does not exist** — the FRED client lives at `pipelines/macro/`
+(`fred_series.py`), alongside Frankfurter FX and Eurostat ESI. `pipelines/gie/` and
+`pipelines/eia/` exist as named. Reading each pipeline's own `NOTES.md` and the real lake
+together: the "series IDs lowercase dotted" convention this file states above is **aspirational
+for newer sources but not universal**:
+- FRED (`source="fred"`): genuinely lowercase-dotted, `fred.<lowercase_fred_id>` (e.g.
+  `fred.dcoilwtico`).
+- GIE (`source="gie"`): lowercase-dotted with an uppercase 2-letter country segment,
+  `agsi.{COUNTRY}.{field}` / `alsi.{COUNTRY}.{field}` (e.g. `agsi.DE.full_pct`).
+- Weather (`source="open_meteo"`/`"gfs"`/etc.): lowercase-dotted, `hdd.{city}.{base}` /
+  `hdd.{region}.popw`.
+- **EIA (`source="eia"`) breaks the convention entirely**: `series_id` is the raw, uppercase
+  EIA API code verbatim (`W_EPC0_SAX_YCUOK_MBBL`, `NW2_EPG0_SWO_R48_BCF`) — no `eia.` prefix,
+  no lowercasing. This file's own §Lake conventions example (`eia.…`) and Spec 18's Data
+  table (`eia.w_epc0_sax_ycuok_mbbl`, lowercase) are both **wrong as literal series_id
+  strings** — the real value to filter on is `W_EPC0_SAX_YCUOK_MBBL` with `source == "eia"`,
+  not a `eia.`-prefixed lowercase string. Any Spec 19+ code that joins against an EIA series
+  by guessing a lowercase-dotted name will silently match nothing — always confirm via
+  `read_ts_long()["series_id"].unique()` first, per this project's own long-standing
+  "don't guess IDs" rule.
+
+### Verified series IDs — checked live against the real lake, not assumed
+
+Checked live via `core.storage.read_ts_long()` (1,489 distinct `series_id` values,
+1,137,110 rows, as of 2026-09-04):
+
+| Series | Real `series_id` | `source` | Exists? |
+|---|---|---|---|
+| WTI spot (Spec 10) | `fred.dcoilwtico` | `fred` | yes |
+| Brent spot (Spec 10) | `fred.dcoilbrenteu` | `fred` | yes — the only Brent series anywhere in this project |
+| Henry Hub spot (Spec 10) | `fred.dhhngsp` | `fred` | yes |
+| Cushing stocks (Spec 01) | `W_EPC0_SAX_YCUOK_MBBL` | `eia` | yes (crude oil **stocks**, weekly) |
+| Cushing working capacity (Spec 14) | — | — | **no** — Spec 14 never built; no semi-annual capacity series exists under any name |
+| CFTC COT, all series (Spec 14) | — | — | **no** — no `cftc`/`cot` series_id anywhere, no pipeline exists |
+| EIA gas storage L48 + 7 regions (Spec 05) | `NW2_EPG0_SWO_R48_BCF` + `NW2_EPG0_{SWO,SSO,SNO}_R{31-35}_BCF` (8 total) | `eia` | yes |
+| AGSI fill (Spec 02) | `agsi.{COUNTRY}.full_pct` (+ `gas_in_storage`, `injection`, `withdrawal`, `working_gas_volume`) | `gie` | yes, 20 EU countries |
+| HDD/CDD (Spec 08) | `hdd.{city}.{base}` / `cdd.{city}.{base}` (14 cities) + `hdd.{eu,us}.popw` pop-weighted aggregates, `.forecast`-suffixed forecast rows | `open_meteo`/`open_meteo_forecast`/`gfs` (multi-source per series_id since the v1.1 GFS addition) | yes |
+
+### Mismatches — spec text vs. real code, checked live
+
+Every item below is a genuine discrepancy between what a trading-layer spec's text
+currently says and what actually exists, found by reading the real source rather than
+trusting the spec. This pass covered Spec 18 in full (today's spec) and the cross-cutting
+infrastructure every later spec assumes; Specs 19–27 were checked only via the runbook's
+own one-paragraph summaries, not their full spec text — each spec's own opening session
+should re-verify its own specific function/series references against this section before
+importing them, the same way this pass did for Spec 18.
+
+- **`eia.w_epc0_sax_ycuok_mbbl` / `eia.cushing_working_capacity`** (Spec 18 Data table) —
+  real series_id is `W_EPC0_SAX_YCUOK_MBBL` (uppercase, no `eia.` prefix, `source="eia"`
+  is a separate column); the working-capacity series does not exist at all. See above.
+- **CFTC COT** (Spec 18/19 dependency) — does not exist; no pipeline. See above.
+- **`pipelines/fred/`** (implied by "read eia/gie/fred pipeline NOTES.md") — the real
+  path is `pipelines/macro/`.
+- **`revision_waterfall`** (this file's own §Repo placement table, and the runbook's §2
+  table) — the real `core/theme.py` function is `revision_waterfall_chart`.
+- **`series_meta`** (Spec 18 Sessions A/B/C, this file's own §Lake conventions) — no such
+  table, or any persisted-DuckDB-table mechanism at all, exists in `core/storage.py`. The
+  established precedent for small non-`ts_long` reference data is a plain Parquet
+  manifest file (`pipelines/weather/anomaly_maps.py`'s `manifest.parquet`), not a DuckDB
+  table — Session A will need to either introduce a first-of-its-kind persisted DuckDB
+  table (a real architectural step, flag it explicitly rather than doing it silently) or
+  follow the manifest-file precedent instead.
+- **Business-day arithmetic** (Spec 18 Session B's `roll_days_before_expiry=5`, Session C's
+  `roll_calendar` "business days 5–9") — `core/calendars.py` has no business-day helper at
+  all, only a release-schedule lookup (`RELEASES`/`next_release`). Plain
+  `pandas.tseries.offsets.BDay` covers generic weekends but not real exchange holidays
+  (CME/ICE) — decide explicitly whether that approximation is good enough for a 5-day roll
+  window before Session B assumes a real trading-calendar library is unnecessary.
+- **`release_date <= t` signal-timing check** (this file's own §Lake conventions) — no
+  such function exists; only `core/calendars.py`'s schedule-lookup and each series' own
+  `revision_date` exist to build one from.
+- **`core.settings.Settings`** has no futures/IBKR-related fields — `FUTURES_SOURCE` and
+  any IBKR host/port settings are new additions for Session A, not existing lookups.
+- **`ib_insync`** is not a project dependency yet (confirmed via `pyproject.toml`) — adding
+  `IBKRClient` needs it added, per root `NOTES.md` rule 7 ("ask before adding a
+  dependency").

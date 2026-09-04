@@ -1,5 +1,7 @@
 # Spec 25 — Freight & Arbitrage
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Adland & Alizadeh (2018) *Transportation Research E* 118:20–33 — TC and FFA cointegrated; TC priced above FFA (convenience yield of secured tonnage + counterparty premium); ARMA-X model of the differential with term-structure level/slope, stress, vessel specs, contract terms; DWT ≈ 0.46/0.63/1.40% per 1,000 DWT (Capesize/Panamax/Supramax); Pacific-delivery discount ≈ 13.02/11.40/15.36%; duration negative in backwardated freight; extension option positive; differential trading is statistical arbitrage only. Imsirovic (crude arbs, EFS). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

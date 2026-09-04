@@ -1,5 +1,7 @@
 # Spec 27 — Trade Journal, Playbook Library & Kardamow Validation Ledger
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Johnson *40 Classic Crude Oil Trades* (Routledge 2022; chapter list below); Newman (2015 Cushing super-contango, Apr-2020, 2022 financing constraints, OPEC+ psychology); Imsirovic (benchmark squeezes); Bouchouev (Apr-2020 storage boundary; synthetic storage — trade 39). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose

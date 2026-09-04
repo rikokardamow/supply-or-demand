@@ -1,5 +1,7 @@
 # Spec 18 — Curve & Market Structure
 
+> See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
+
 **Sources:** Bouchouev *Virtual Barrels* (storage boundaries, convexity, index-roll pressure); Newman *World of Oil Derivatives* (curve = prompt + chain of spreads; physical caps paper). Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose
