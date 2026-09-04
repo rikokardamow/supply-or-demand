@@ -28,7 +28,7 @@ Tests: pytest + vcrpy cassettes in `tests/cassettes/`.
 
 ## Commands
 - Run app: `streamlit run apps/dashboard/app.py`
-- Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines`
+- Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines infra`
 - New pipeline: scaffold under `pipelines/<source>/` with its own `CLAUDE.md`, client, and cassette test.
 
 ## Data release calendar (schedule pulls around these)
