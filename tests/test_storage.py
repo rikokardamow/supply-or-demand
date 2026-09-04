@@ -72,6 +72,38 @@ def test_read_ts_long_is_not_corrupted_by_an_int64_typed_value_column_in_another
     assert int_result["value"].dtype == "float64"
 
 
+def test_write_ts_long_tolerates_a_tz_aware_revision_date_against_a_tz_naive_partition() -> None:
+    """Regression test for a real, confirmed-live incident (Spec 19 Session A):
+    pipelines/cftc's own pull scripts build revision_date via datetime.now(UTC)
+    (tz-aware) while an earlier session's pipelines/derived writes had already landed
+    tz-naive rows (datetime.now(), no UTC) in the same partition. Combining the two
+    without normalising first crashed _write_partitioned's own sort_values call with
+    "TypeError: Cannot compare tz-naive and tz-aware timestamps" -- confirmed live
+    against the real lake before this fix."""
+    naive_dir = LAKE_ROOT / "ts_long" / "source=testsrc" / "year=2024"
+    naive_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {
+            "series_id": ["TEST1"],
+            "source": ["testsrc"],
+            "ts": pd.to_datetime(["2024-01-01"]),
+            "value": [50.0],
+            "unit": ["mb"],
+            "geo": ["US"],
+            "freq": ["weekly"],
+            "revision_date": pd.to_datetime(["2024-01-01"]),  # tz-naive, written directly
+        }
+    ).to_parquet(naive_dir / "part-0.parquet", index=False)
+
+    tz_aware_df = _make_df(datetime(2024, 1, 2), 100.0)
+    tz_aware_df["revision_date"] = tz_aware_df["revision_date"].dt.tz_localize("UTC")
+    write_ts_long(tz_aware_df, source="testsrc")  # must not raise
+
+    result = read_ts_long(series_ids=["TEST1"])
+    assert len(result) == 1
+    assert result.iloc[0]["value"] == 100.0
+
+
 def test_round_trip() -> None:
     df = _make_df(datetime(2024, 1, 2), 100.0)
 

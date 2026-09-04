@@ -55,3 +55,39 @@ alongside a normal float source, and asserts both read back correctly.
 **If you ever add a new dataset/schema to this lake**: don't add a fourth `SELECT *`
 read path that skips `union_by_name=true` and `_typed_select()` — this incident is
 exactly what happens without both.
+
+## Incident: mixed tz-aware/tz-naive `revision_date` crashed writes (fixed 2026-09-04)
+
+**What happened**: some pipelines build `revision_date` via `datetime.now(UTC)`
+(tz-aware) while others use `datetime.now()` (tz-naive) — both patterns already exist
+across this project's own real pipelines. `_write_partitioned`'s own
+`combined.sort_values(sort_col)` step concatenates freshly-written rows with whatever
+already sits on disk in that partition before sorting by `revision_date` — the moment a
+tz-aware write landed in a partition that already held tz-naive rows (or vice versa),
+pandas raised `TypeError: Cannot compare tz-naive and tz-aware timestamps`. Confirmed
+live, not assumed: hit for real running `pipelines/derived/fundamentals.py` (Spec 19
+Session A) against a `source=derived` partition an earlier session had already written
+with a tz-naive `revision_date`.
+
+**The fix**: `_normalise_datetime_tz()` converts any tz-aware datetime column to UTC
+then drops the tzinfo, applied to both the incoming `df` and to `existing_df` (the rows
+just read back off disk) *before* they're concatenated — every schema column here is
+stored as a plain (tz-naive) `TIMESTAMP` on disk anyway (see `_duckdb_type` — no
+`TIMESTAMPTZ` mapping exists), so this doesn't change the canonical on-disk
+representation, it just stops two differently-tz'd writers from colliding. Applying it
+to each frame *separately*, before concatenation, matters: a mixed-tz column is already
+object-dtype by the time the two frames are combined, and `is_datetime64_any_dtype`
+can no longer see it at that point.
+
+**Regression test**: `tests/test_storage.py::
+test_write_ts_long_tolerates_a_tz_aware_revision_date_against_a_tz_naive_partition`
+writes a tz-naive row directly to disk (bypassing `write_ts_long`, to reproduce the
+exact pre-existing-partition condition), then writes a second, tz-aware row for the
+same `(series_id, ts)` via `write_ts_long` itself — asserts it doesn't raise, and that
+the dedup-keeps-latest-revision behaviour still picks the newer row correctly.
+
+**If you're writing a new pipeline's `revision_date`**: either convention
+(`datetime.now()` or `datetime.now(UTC)`) is safe to use now that this fix is in place
+— but prefer `datetime.now(UTC)` for new code (an unambiguous instant is always
+preferable to a naive one), and don't rely on `revision_date` still carrying real tz
+info once it's back out of the lake — `read_ts_long` always returns it tz-naive.

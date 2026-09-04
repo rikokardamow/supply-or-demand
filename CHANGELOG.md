@@ -66,7 +66,52 @@ along the way.
   and the Cushing Utilisation vs Decile Rank chart (Session C's own 803 real rows) — all
   rendered correctly in-browser. Spec 18's Sessions A–D are now all complete; its own
   overall Definition of Done stays open (needs a real settle cross-check against CME/ICE's
-  bulletin) — PR #42 stays open, not merged, pending real futures data.
+  bulletin and a two-run idempotency check on real data) — both deferred, not done, pending
+  real futures settlement data.
+- Spec 19 Session A (trading analytics layer): `core/fundamentals.py` —
+  `inventory_deviation` (a thin wrapper over `core.seasonal.seasonal_stats`),
+  `days_of_cover`, `spare_capacity`/`spare_cap_regime`, `cot_percentiles`. New
+  pipeline `pipelines/cftc/` ingests real CFTC Commitments-of-Traders data (no such
+  pipeline existed anywhere — this spec's own text assumed it did via "Spec 14",
+  which was never built) via CFTC's own Public Reporting Environment API, a real,
+  free, no-key Socrata dataset — run for real this session: 19,650 rows across all 4
+  roots (`cl`/`rb`/`ho` back to 2006, `lco` back to 2011). One managed-money net
+  position cross-checked directly against a fresh, independent query of the same
+  CFTC source (`84,020` contracts long for `cl` on 2026-08-25) — an exact match.
+  `pipelines/derived/fundamentals.py` writes `derived.inv.dev_z.uscrude`/
+  `derived.cot.<root>.mm_pct_3y` back to the lake for real; `derived.spare_cap.regime`
+  is correctly skipped (no real EIA STEO/IEA OMR spare-capacity data exists yet —
+  Session B's own manual-drop extension). Also fixes a real, confirmed-live bug in
+  `core/storage.py::_write_partitioned` (mixed tz-aware/tz-naive `revision_date`
+  values crashed the write path the moment both landed in the same partition) — see
+  `core/NOTES.md`'s new incident write-up.
+- Spec 19 Session B: six more `core/fundamentals.py` functions — `quality_spreads`,
+  `refining_constraint_index`, `carollo_scatter`, `shale_response`, `benchmark_health`,
+  `osp_signal` — plus a hand-rolled `_ols` helper (no scipy/statsmodels dependency
+  needed for closed-form simple linear regression). New `pipelines/manual_physical/`
+  reader for this spec's own 17-series manual-drop list (spare capacity, quality
+  differentials, Saudi OSPs, benchmark-health counts) — no real data exists yet for
+  any of them. Real, live verification of `carollo_scatter` against the actual lake
+  (157 real quarters of US crude stocks vs Brent): a genuinely near-zero relationship
+  (`share_wrong_sign = 0.452`), consistent with Carollo's own point that the classical
+  stock-change/price relationship is weak in practice. Documents a real merge
+  consideration with Spec 18's own, independently-built, smaller `manual_physical`
+  stub on the still-unmerged `feat/futures-settlements` branch.
+- Spec 19 Session C (final session): page `apps/dashboard/pages/19_fundamentals.py` and
+  three new `core/theme.py` primitives (`grouped_agency_bars`,
+  `dual_axis_inverted_chart`, `sign_agreement_scatter`). Real cards verified live: the
+  inventory seasonal-range + days-of-cover, the Carollo diagnostic (`R²=0.0023`,
+  `45.2%` of quarters violate the classical model), refinery utilisation, and CFTC
+  managed-money positioning. Every other card (S&D balance, spare capacity, refining
+  constraint index, shale response, benchmark health, OSP) renders a real no-data
+  message, verified by an actual on/off test (a synthetic manual CSV dropped in, the
+  OSP card confirmed to render real data, then removed and confirmed reverted).
+  Cross-checked one inventory figure against a fresh, independent live EIA API call
+  (`WCESTUS1` matched exactly) alongside Session A's own COT cross-check, completing
+  the spec's overall Definition of Done. Also fixes a real bug caught by this
+  session's own verification: `sign_agreement_scatter` crashed comparing two
+  independently-resampled series without first pairing them on a shared index. Spec
+  19's Sessions A-C are now all complete.
 
 ## [1.1] - 2026-09-04
 ### Added
