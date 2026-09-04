@@ -4,9 +4,15 @@ import numpy as np
 import pandas as pd
 import pytest
 from core.fundamentals import (
+    benchmark_health,
+    carollo_scatter,
     cot_percentiles,
     days_of_cover,
     inventory_deviation,
+    osp_signal,
+    quality_spreads,
+    refining_constraint_index,
+    shale_response,
     spare_cap_regime,
     spare_capacity,
 )
@@ -96,3 +102,96 @@ def test_cot_percentiles_net_matches_long_minus_short() -> None:
 
     result = cot_percentiles(long, short, oi, window=3)
     assert list(result["net"]) == pytest.approx([60.0, 65.0, 70.0, 75.0, 80.0])
+
+
+# --- Session B tests ---
+
+
+def test_quality_spreads_computes_all_four_legs() -> None:
+    prices = pd.DataFrame(
+        {
+            "brent": [80.0, 82.0],
+            "dubai": [78.0, 79.0],
+            "wti": [76.0, 77.0],
+            "wcs": [60.0, 61.0],
+            "lls": [81.0, 83.0],
+            "maya": [70.0, 71.0],
+            "urals": [65.0, 66.0],
+        }
+    )
+    result = quality_spreads(prices)
+    assert list(result["brent_dubai_efs"]) == pytest.approx([2.0, 3.0])
+    assert list(result["wti_wcs"]) == pytest.approx([16.0, 16.0])
+    assert list(result["lls_maya"]) == pytest.approx([11.0, 12.0])
+    assert list(result["brent_urals"]) == pytest.approx([15.0, 16.0])
+    assert result["sweet_sour_index"].notna().all()
+
+
+def test_quality_spreads_missing_column_is_nan_not_keyerror() -> None:
+    prices = pd.DataFrame({"brent": [80.0, 82.0], "dubai": [78.0, 79.0]})
+    result = quality_spreads(prices)
+    assert result["brent_dubai_efs"].notna().all()
+    assert result["wti_wcs"].isna().all()
+
+
+def test_refining_constraint_index_high_when_all_three_signal_binding() -> None:
+    idx = pd.date_range("2026-01-01", periods=6, freq="MS")
+    # Utilisation rising, margin spread narrowing (constraint), light-heavy widening --
+    # all three should push the composite index up over the period.
+    utilisation = pd.Series([85.0, 87.0, 89.0, 91.0, 93.0, 95.0], index=idx)
+    margin_spread = pd.Series([6.0, 5.5, 5.0, 4.5, 4.0, 3.5], index=idx)
+    light_heavy = pd.Series([8.0, 8.5, 9.0, 9.5, 10.0, 10.5], index=idx)
+
+    result = refining_constraint_index(utilisation, margin_spread, light_heavy)
+    assert result.iloc[-1] > result.iloc[0]
+
+
+def test_carollo_scatter_zero_relationship_share_wrong_sign_near_half() -> None:
+    rng = np.random.default_rng(7)
+    n = 400
+    delta_stocks_q = pd.Series(rng.normal(0, 1, size=n))
+    delta_brent_q = pd.Series(rng.normal(0, 1, size=n))
+
+    result = carollo_scatter(delta_stocks_q, delta_brent_q)
+    assert 0.4 <= result["share_wrong_sign"] <= 0.6
+
+
+def test_shale_response_recovers_an_injected_beta() -> None:
+    rng = np.random.default_rng(11)
+    n = 300
+    dates = pd.date_range("2015-01-01", periods=n, freq="W")
+    delta_wti12 = pd.Series(rng.normal(0, 1, size=n), index=dates)
+    injected_beta = 0.8
+    noise = rng.normal(0, 0.05, size=n)
+    delta_rigs_raw = injected_beta * delta_wti12.shift(13).to_numpy() + noise
+
+    rigs = pd.Series(np.nancumsum(np.nan_to_num(delta_rigs_raw)), index=dates)
+    wti_f12 = delta_wti12.cumsum()
+
+    result = shale_response(rigs, wti_f12, lags=(13, 26))
+    beta_13 = result.loc[result["lag"] == 13, "beta"].iloc[0]
+    assert beta_13 == pytest.approx(injected_beta, rel=0.2)
+
+
+def test_benchmark_health_thin_flag_matches_rolling_p10_exactly() -> None:
+    rng = np.random.default_rng(5)
+    n = 100
+    window_trades = pd.Series(rng.uniform(20, 100, size=n))
+    partials = pd.Series(rng.uniform(5, 30, size=n))
+    midland_share = pd.Series(rng.uniform(0.1, 0.4, size=n))
+
+    result = benchmark_health(window_trades, partials, midland_share, window=30)
+    expected_p10 = window_trades.rolling(30, min_periods=20).quantile(0.10)
+    expected_thin = window_trades < expected_p10
+
+    valid = expected_p10.notna()
+    assert (result.loc[valid, "thin"] == expected_thin[valid]).all()
+
+
+def test_osp_signal_flags_divergence_only_when_osp_rises_and_dubai_weakens() -> None:
+    dates = pd.date_range("2026-01-01", periods=4, freq="MS")
+    osp_asia = pd.Series([1.0, 1.5, 1.5, 2.0], index=dates)  # rises at t=1, flat, rises at t=3
+    dubai_m1_m3 = pd.Series([0.5, 0.3, 0.4, 0.2], index=dates)  # falls at t=1, rises, falls at t=3
+
+    result = osp_signal(osp_asia, dubai_m1_m3)
+    assert result["divergence"].tolist() == [False, True, False, True]

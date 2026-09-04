@@ -81,7 +81,7 @@ Conventions: `specs/00_TRADING_CONVENTIONS.md`. Dependency order: 18 → 19 → 
 | Spec | Title | Status | New source? | Depends on |
 |---|---|---|---|---|
 | 18 | Curve & market structure (futures pipeline, spreads, convexity, regime, index rolls, Cushing coupling) | not started | **yes — futures settlements (IBKR or manual CSV)** | 01, 14 |
-| 19 | Fundamentals & physical (spare capacity, inventory bands, quality mismatch, COT percentiles, benchmark health, OSP) | in progress — Session A done (real CFTC COT pipeline + core/fundamentals.py) | **yes — CFTC COT (real, live Public Reporting Environment API)** + manual: Platts/Argus diffs, OSPs | 01, 06, 10, 14, 18 |
+| 19 | Fundamentals & physical (spare capacity, inventory bands, quality mismatch, COT percentiles, benchmark health, OSP) | in progress — Sessions A-B done (Session C, the page, still to come) | **yes — CFTC COT (real, live Public Reporting Environment API)** + manual: Platts/Argus diffs, OSPs (`pipelines/manual_physical/` built, no real drops yet) | 01, 06, 10, 14, 18 |
 | 20 | Refining economics & crack VECM (Murat & Tokat 2009) | not started | no | 18, 10 |
 | 21 | Systematic strategies engine (Bouchouev: carry, momentum, value, convexity, reaction function, fractionation) | not started | no | 18, 19 |
 | 22 | Risk engine (GARCH-MIDAS-EVT VaR, backtests, stress, margin) | not started | manual: book, margins | 18, 10, 21 |
