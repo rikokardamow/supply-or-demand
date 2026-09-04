@@ -32,6 +32,18 @@ along the way.
   `core/storage.py::_write_partitioned` (mixed tz-aware/tz-naive `revision_date`
   values crashed the write path the moment both landed in the same partition) — see
   `core/CLAUDE.md`'s new incident write-up.
+- Spec 19 Session B: six more `core/fundamentals.py` functions — `quality_spreads`,
+  `refining_constraint_index`, `carollo_scatter`, `shale_response`, `benchmark_health`,
+  `osp_signal` — plus a hand-rolled `_ols` helper (no scipy/statsmodels dependency
+  needed for closed-form simple linear regression). New `pipelines/manual_physical/`
+  reader for this spec's own 17-series manual-drop list (spare capacity, quality
+  differentials, Saudi OSPs, benchmark-health counts) — no real data exists yet for
+  any of them. Real, live verification of `carollo_scatter` against the actual lake
+  (157 real quarters of US crude stocks vs Brent): a genuinely near-zero relationship
+  (`share_wrong_sign = 0.452`), consistent with Carollo's own point that the classical
+  stock-change/price relationship is weak in practice. Documents a real merge
+  consideration with Spec 18's own, independently-built, smaller `manual_physical`
+  stub on the still-unmerged `feat/futures-settlements` branch.
 
 ## [1.1] - 2026-09-04
 ### Added

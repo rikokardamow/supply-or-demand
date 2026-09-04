@@ -87,7 +87,39 @@ def benchmark_health(window_trades, partials, midland_share) -> DataFrame   # z-
 def osp_signal(osp_asia, dubai_m1_m3) -> DataFrame   # divergence flag: OSP up while Dubai structure weakens
 ```
 - Tests: `carollo_scatter` on zero-relationship synthetic data → share_wrong_sign ∈ [0.4, 0.6]; `shale_response` recovers an injected beta within ±20%; benchmark 'thin' flag only below p10.
-- DoD: [ ] functions, [ ] manual_physical pipeline + reader test, [ ] tests.
+- DoD: [x] functions, [x] manual_physical pipeline + reader test, [x] tests.
+
+**Session B done. Real data-availability check performed before planning (not
+assumed)**: of these six functions, only `carollo_scatter` has real inputs today —
+`WCESTUS1` (US crude stocks, Spec 01) and `fred.dcoilbrenteu` (Brent, Spec 10), both
+resampled to quarterly changes. Every other function's real inputs are manual-drop-only
+(`quality_spreads`, `refining_constraint_index`, `benchmark_health`, `osp_signal`) or need
+a real futures curve that doesn't exist yet (`shale_response`'s own `wti_f12` — Spec 18's
+futures pipeline has no real settlement data). All six functions are built and tested
+against synthetic data matching this spec's own literal worked examples.
+
+**Real, live verification of `carollo_scatter`** — run for real against the actual lake
+(157 real quarters, full history): `slope = -3.03e-05`, `r2 = 0.0023`,
+`share_wrong_sign = 0.452`. A genuinely near-zero relationship between quarterly US
+crude-stock changes and quarterly Brent changes, `share_wrong_sign` close to the 50%
+"no relationship" baseline — consistent with Carollo's own point that the classical
+stock-change/price relationship is weak in practice. Console-only, not written to the
+lake (this session's own DoD doesn't ask for a persisted `derived.*` series the way
+Session A's did).
+
+**No OLS library added** — `_ols` (closed-form simple linear regression: slope,
+intercept, r2, t_stat) is hand-rolled in `core/fundamentals.py`, matching Spec 18 Session
+C's own "no new dependency for basic stats" precedent (no scipy/statsmodels/scikit-learn
+exists in this project).
+
+**`pipelines/manual_physical/` built fresh on this branch** — Spec 18's own Session D
+already built a *different*, smaller `pipelines/manual_physical/` stub (4 series) on the
+still-open, unmerged `feat/futures-settlements` branch; that work is invisible here.
+This session's own version covers this spec's full 17-series Data-section list. **A
+real, documented merge consideration**: whichever PR merges to `main` second will hit a
+real conflict on this exact package — see `pipelines/manual_physical/CLAUDE.md` for the
+resolution note (merge the two `SERIES_META` dicts, don't pick one file over the other).
+- `uv run pytest` (280 passed), `ruff check .`, `mypy core pipelines infra` all green.
 
 ### Session C — page `19_fundamentals.py`
 Theme additions: `grouped_agency_bars` (three-agency S&D), `dual_axis_inverted_chart` (spare cap inverted vs price with regime shading), `sign_agreement_scatter`.
