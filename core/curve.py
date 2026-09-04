@@ -272,3 +272,102 @@ def transition_matrix(states: pd.Series) -> pd.DataFrame:
     )
     row_sums = counts.sum(axis=1)
     return counts.div(row_sums, axis=0)
+
+
+# --- Session C additions: roll-pressure seasonality, Cushing coupling, physical bands ---
+# Business-day helpers above (_business_days_before) and core/calendars.py's own
+# roll_calendar()/roll_window_flag() (index-roll-window arithmetic) are reused here, not
+# reimplemented.
+
+
+def _ttest_1samp_vs_zero(x: pd.Series) -> tuple[float, float]:
+    """One-sample t-test of x against 0 -- mean, t-stat. Hand-rolled (mean / (sample std /
+    sqrt(n))) rather than scipy.stats.ttest_1samp: this project's own root NOTES.md rule
+    ("ask before adding a dependency") applies, and a one-sample-vs-zero t-stat needs no
+    library at all -- the smallest change that satisfies the spec's own acceptance
+    criteria. NaN t-stat if fewer than 2 non-NaN observations, or zero variance."""
+    x = x.dropna()
+    n = len(x)
+    if n == 0:
+        return (np.nan, np.nan)
+    mean = float(x.mean())
+    if n < 2:
+        return (mean, np.nan)
+    se = x.std(ddof=1) / np.sqrt(n)
+    if se == 0:
+        return (mean, np.nan)
+    return (mean, float(mean / se))
+
+
+def roll_pressure_seasonal(s12: pd.Series, flag: pd.Series) -> pd.DataFrame:
+    """Mean & t-stat of day-over-day s12 moves, inside vs outside an index's own roll
+    window (`flag`, e.g. core.calendars.roll_window_flag's output), grouped by year.
+    Columns: year, mean_in, t_in, mean_out, t_out."""
+    delta = s12.diff()
+    flag = flag.reindex(delta.index, fill_value=False)
+    years = pd.DatetimeIndex(delta.index).year
+
+    rows = []
+    for year in sorted(set(years)):
+        year_mask = years == year
+        mean_in, t_in = _ttest_1samp_vs_zero(delta[year_mask & flag])
+        mean_out, t_out = _ttest_1samp_vs_zero(delta[year_mask & ~flag])
+        rows.append(
+            {"year": year, "mean_in": mean_in, "t_in": t_in, "mean_out": mean_out, "t_out": t_out}
+        )
+    return pd.DataFrame(rows)
+
+
+def cushing_utilisation(stocks_kbbl: pd.Series, working_cap_kbbl: pd.Series) -> pd.Series:
+    """stocks_kbbl / working_cap_kbbl, elementwise -- `working_cap_kbbl` (sparse,
+    semi-annual per this project's real eia.cushing_working_capacity series) is
+    forward-filled onto `stocks_kbbl`'s own (weekly) index first, per the spec's own
+    "forward-fill the semi-annual capacity" instruction. Never the other way round."""
+    combined_index = stocks_kbbl.index.union(working_cap_kbbl.index)
+    filled_cap = working_cap_kbbl.reindex(combined_index).sort_index().ffill()
+    return stocks_kbbl / filled_cap.reindex(stocks_kbbl.index)
+
+
+def utilisation_decile(util: pd.Series, years: int = 5) -> pd.Series:
+    """Rolling decile rank (1..10) of `util` within its own trailing `years`*365-day
+    window, inclusive of today -- requires a sorted DatetimeIndex (pandas' own time-based
+    rolling window)."""
+
+    def _decile(window: pd.Series) -> float:
+        rank = (window <= window.iloc[-1]).mean()
+        return float(min(10, int(np.ceil(rank * 10))))
+
+    return util.rolling(f"{years * 365}D").apply(_decile, raw=False)
+
+
+def physical_bands(diff: pd.Series, window: int = 1260) -> pd.DataFrame:
+    """Rolling p05/p50/p95 of a physical differential series over a trailing `window`
+    trading days (default 1260 ~= 5 years). Columns: value, p05, p50, p95."""
+    rolling = diff.rolling(window, min_periods=1)
+    return pd.DataFrame(
+        {
+            "value": diff,
+            "p05": rolling.quantile(0.05),
+            "p50": rolling.quantile(0.50),
+            "p95": rolling.quantile(0.95),
+        },
+        index=diff.index,
+    )
+
+
+def tas_window_flag(dates: pd.DatetimeIndex, cl_expiry: pd.Series) -> pd.Series:
+    """True on the last two business days before any CL contract's own expiry (reuses
+    `_business_days_before`, n=1 and n=2) -- `cl_expiry` is a Series of expiry dates (one
+    per CL contract, e.g. pipelines/futures/series_meta.py's own `expiry` column). CL
+    contracts expire roughly a month apart, so each contract's own 2-day window never
+    overlaps another's -- looping over the (small, contract-count-bounded) set of expiries
+    is the same "loop over roll transitions, not dates" convention nearby_panel already
+    uses, not a per-date lookup of the nearest expiry."""
+    dates = pd.DatetimeIndex(dates)
+    flags = pd.Series(False, index=dates)
+    for e in pd.Series(cl_expiry).dropna().unique():
+        expiry = pd.Timestamp(e)
+        day1 = _business_days_before(expiry, 1)
+        day2 = _business_days_before(expiry, 2)
+        flags |= dates.isin([day1, day2])
+    return flags

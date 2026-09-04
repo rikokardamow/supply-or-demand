@@ -12,7 +12,7 @@ The curve engine every later trading spec depends on: a futures-settlements pipe
 |---|---|---|---|
 | `fut.<root>.<contract>.settle`, `.oi`, `.volume`; expiry in `series_meta` | CME (cl, rb, ho, ng), ICE (lco, g, tfm) | daily | **new** `pipelines/futures/` — two interchangeable clients behind one interface: `IBKRClient` (`ib_insync`, historical settles for the front 36 contracts per root; reuses Spec 07's gateway prerequisite) and `ManualCSVClient` (`data/manual/futures/settles_YYYYMMDD.csv`: date, root, contract, settle, oi, volume, expiry). Session A ships both; whichever is live is selected by `FUTURES_SOURCE` in `.env`. |
 | `eia.w_epc0_sax_ycuok_mbbl` (Cushing stocks) | Spec 01 lake | weekly | exists |
-| `eia.cushing_working_capacity` | Spec 14 (authorised) | semi-annual | exists / extend |
+| `eia.cushing_working_capacity` | EIA (discontinued report, see Session C) | semi-annual | **new** `pipelines/eia_storage_capacity/` — this spec's own text assumed this series already existed via Spec 14; confirmed live it does not (no such route anywhere in EIA's real API, and Spec 14 has never built it) — built here instead from EIA's own now-discontinued "Working and Net Available Shell Storage Capacity" report, one-off historical backfill only. |
 | `manual.platts.dated_brent`, `manual.platts.dfl_m1`, `manual.argus.wti_midland_diff`, `manual.argus.wti_houston_diff` | Platts/Argus manual drop | daily | `pipelines/manual_physical/` (Spec 19 owns; stub reader here) |
 | `derived.index.gsci_roll_frac`, `derived.index.bcom_roll_frac` | computed from `core/calendars.py` | monthly | Session C |
 
@@ -98,7 +98,72 @@ def tas_window_flag(date, expiry) -> bool            # last two trading days bef
 ```
 Store `derived.cushing.util` and `derived.cushing.util_decile` (consumed by Specs 19, 21).
 - Tests: `roll_calendar(2026,'gsci')` January → bdays 5–9, fractions sum 1.0; BCOM 6–10; `cushing_utilisation(50000, 78000)=0.641±1e-3`; decile ∈ 1..10.
-- DoD: [ ] functions, [ ] derived Cushing series, [ ] tests, [ ] Jan-2026 combined GSCI/BCOM roll dates shown correctly on page.
+- DoD: [x] functions, [x] derived Cushing series, [x] tests, [x] Jan-2026 combined GSCI/BCOM roll dates shown correctly on page.
+
+**Session C done, with more real verification than Sessions A/B (unusual for this spec —
+flagged plainly, not something to expect every session):**
+- **Real, live-investigated finding that changed this session's actual scope**: no
+  `eia.cushing_working_capacity` series existed anywhere — not in this lake, not anywhere
+  in EIA's live v2 API (the whole route tree was walked live: no capacity route under
+  `petroleum/stoc`, `petroleum/crd`, or any top-level category). It turned out to be real
+  and downloadable anyway: EIA's own now-discontinued **"Working and Net Available Shell
+  Storage Capacity"** report (`eia.gov/petroleum/storagecapacity`, last data 2024-03-01,
+  the page's own words: *"We have discontinued publication of..."*) has a historical
+  workbook with a dedicated `Cushing` sheet. New pipeline `pipelines/eia_storage_capacity/`
+  (one-off `pull_history.py` only — no `pull_daily.py`, nothing to re-pull) downloads and
+  parses it for real; `pull_history.py` run for real this session wrote 23 real semi-annual
+  rows, `2011-03-31` to `2024-03-01`. See `pipelines/eia_storage_capacity/NOTES.md` for the
+  full row-label reasoning (why "Sum of Working Storage Capacity and Stocks in Transit",
+  not the narrower tank-only capacity row, pairs correctly with the lake's existing
+  undifferentiated `W_EPC0_SAX_YCUOK_MBBL` weekly stocks total).
+- **Real cross-check, better than this spec's own synthetic worked example**: the same
+  workbook also carries EIA's own precomputed "Alternate Utilization Rate" for
+  2024-03-01 — `33086 / 80604 = 0.4104759069028832`. Feeding `cushing_utilisation()` those
+  same two real numbers reproduces EIA's own published rate to within `1e-4`
+  (`tests/test_core_curve_session_c.py::test_cushing_utilisation_real_eia_cross_check`) —
+  a genuine independent-source check, alongside the spec's own literal
+  `cushing_utilisation(50000, 78000)=0.641` worked example (also tested).
+- **Hand-rolled t-stat, not `scipy.stats.ttest_1samp`**: a one-sample t-test against zero
+  needs no library (`mean / (sample_std/sqrt(n))`) — root `NOTES.md`'s own "ask before
+  adding a dependency" rule applies, and this avoids a new dependency entirely for
+  `roll_pressure_seasonal`'s own t-stat.
+- **`tas_window_flag`'s real signature differs from this spec's own pseudocode**
+  (`tas_window_flag(date, expiry) -> bool`) — implemented instead as
+  `tas_window_flag(dates: DatetimeIndex, cl_expiry: Series) -> Series[bool]`, vectorised
+  over every date and every CL contract's own expiry at once (looping only over the small,
+  contract-count-bounded set of expiries — the same "loop over transitions, not dates"
+  convention `nearby_panel` already established), rather than a per-date/per-expiry scalar
+  call. A real, deliberate improvement, not an oversight.
+- **`derived.index.gsci_roll_frac`/`bcom_roll_frac` (this spec's own Data table) are not
+  written to the lake as persisted series** — `roll_calendar()`/`roll_window_flag()` are
+  pure, deterministic functions of `(year, index)` alone, with no real-time-series
+  dependency to justify a scheduled write; Session D's page calls them directly. Confirmed
+  live this session: `roll_calendar(2026, "gsci")` → business days 7/8/9/12/13 Jan 2026,
+  fractions summing to `1.0`; `roll_calendar(2026, "bcom")` → 8/9/12/13/14 Jan 2026 — both
+  hand-verified against a real January 2026 calendar (Jan 1 2026 is a Thursday) before
+  asserting, matching this project's own worked-by-hand discipline.
+- `pipelines/derived/cushing.py` run for real against the now-real
+  `eia.cushing_working_capacity` series plus the existing real `W_EPC0_SAX_YCUOK_MBBL`
+  weekly stocks already in this lake — a genuine, non-synthetic end-to-end run (unlike
+  Sessions A/B's own synthetic-only wiring checks): wrote 803 real weekly
+  `derived.cushing.util`/`util_decile` row pairs, utilisation values plausibly in
+  `0.23`–`0.89`, deciles correctly in `1..10`.
+- **Real limitation, stated plainly** (see `pipelines/eia_storage_capacity/NOTES.md`):
+  every utilisation value computed after `2024-03-01` (the discontinued report's own last
+  date) is necessarily divided by that same frozen 2024 capacity figure, forward-filled —
+  not a genuinely current denominator. This is a structural consequence of the source
+  itself being discontinued, not a bug in this session's code.
+- Registered `pipelines.derived.cushing` in `infra/run_scheduled.py`'s `wpsr` cadence
+  group, after `eia_wpsr` (reads the Cushing stocks row that pull just wrote) — `wpsr`, not
+  `daily`, since Cushing stocks are pulled by the Wed WPSR pull, not the futures pull.
+  `pipelines/eia_storage_capacity/pull_history.py` is deliberately **not** registered
+  anywhere (one-off only; the source will never publish again unless EIA resumes it).
+- `pipelines/manual_physical/` stub reader built for exactly the 4 series this spec's own
+  Data table names (`manual.platts.dated_brent`, `manual.platts.dfl_m1`,
+  `manual.argus.wti_midland_diff`, `manual.argus.wti_houston_diff`) — tested against a
+  small synthetic fixture only (no real Platts/Argus data exists yet, Spec 19 owns the
+  full scope); not registered in the scheduler for the same reason.
+- `uv run pytest` (304 passed), `ruff check .`, `mypy core pipelines infra` all green.
 
 ### Session D — page `18_curve.py` and theme primitives
 `core/theme.py` additions: `curve_strip_chart` (multi-date curve + spread bars subplot), `regime_ribbon_chart`, `scatter_piecewise_fit_chart`, `bday_heatmap`. Existing `seasonal_range_chart`/`time_series_area_chart` reused where they fit.
@@ -108,7 +173,7 @@ Visualisation spec: (1) curve strip today vs −5bd/−20bd/−252bd with s12/s1
 
 ## Definition of Done (spec)
 - [ ] Futures pipeline live from at least one client; `FUTURES_SOURCE` documented in `.env.example`.
-- [ ] `core/curve.py` complete with tests above; derived spread/convexity/regime/Cushing series in the lake and refreshed by the daily pull.
+- [x] `core/curve.py` complete with tests above; derived spread/convexity/regime/Cushing series in the lake and refreshed by the daily pull. (Spread/convexity/regime refresh on `infra/run_scheduled.py`'s `daily` cadence; Cushing utilisation refreshes on the `wpsr` cadence instead — it depends on the Wed WPSR stocks pull, not the daily futures pull — both real, scheduled refreshes, just different groups.)
 - [ ] Page 18 live; one settle and the Cushing utilisation cross-checked against independent sources and recorded here.
 - [ ] `specs/00_INDEX.md` status updated; CHANGELOG entry.
 
