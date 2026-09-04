@@ -23,6 +23,11 @@ from pipelines.weather.gas_proxy import net_withdrawal
 
 ANOMALY_MAP_REGIONS = {"eu": "Europe", "conus": "CONUS"}
 ANOMALY_MAP_STEPS = {"D+3": 72, "D+7": 168}
+ANOMALY_MAP_MODELS = {"ecmwf": "ECMWF IFS", "gfs": "NOAA GFS"}
+ANOMALY_MAP_ATTRIBUTION = {
+    "ecmwf": "IFS HRES 2t (ECMWF Open Data, CC BY 4.0)",
+    "gfs": "GFS 2t (NOAA/NCEP, public domain)",
+}
 STALE_MAP_THRESHOLD_HOURS = 24
 
 US_STORAGE_SERIES_ID = "NW2_EPG0_SWO_R48_BCF"
@@ -251,14 +256,20 @@ def _anomaly_maps_section() -> None:
         st.info("No maps yet — run `pipelines/weather/pull_daily.py`.")
         return
 
-    region_cols = st.columns(2)
-    with region_cols[0]:
+    model_cols = st.columns(3)
+    with model_cols[0]:
+        model = st.selectbox(
+            "Model",
+            options=list(ANOMALY_MAP_MODELS),
+            format_func=lambda m: ANOMALY_MAP_MODELS[m],
+        )
+    with model_cols[1]:
         region = st.selectbox(
             "Region",
             options=list(ANOMALY_MAP_REGIONS),
             format_func=lambda r: ANOMALY_MAP_REGIONS[r],
         )
-    with region_cols[1]:
+    with model_cols[2]:
         step_label = st.segmented_control(
             "Forecast step",
             options=list(ANOMALY_MAP_STEPS),
@@ -268,16 +279,27 @@ def _anomaly_maps_section() -> None:
         )
     step_hours = ANOMALY_MAP_STEPS[step_label]
 
-    rows = manifest[(manifest["region"] == region) & (manifest["step_hours"] == step_hours)]
+    rows = manifest[
+        (manifest["model"] == model)
+        & (manifest["region"] == region)
+        & (manifest["step_hours"] == step_hours)
+    ]
     if rows.empty:
-        st.info(f"No {ANOMALY_MAP_REGIONS[region]} {step_label} map yet.")
+        st.info(
+            f"No {ANOMALY_MAP_MODELS[model]} {ANOMALY_MAP_REGIONS[region]} "
+            f"{step_label} map yet."
+        )
         return
 
     latest = rows.sort_values("rendered_at").iloc[-1]
     rendered_at = pd.Timestamp(latest["rendered_at"])
     age_hours = _map_age_hours(rendered_at)
 
-    with card(f"{ANOMALY_MAP_REGIONS[region]} 2m-Temp Anomaly — {step_label}"):
+    card_title = (
+        f"{ANOMALY_MAP_REGIONS[region]} 2m-Temp Anomaly — "
+        f"{ANOMALY_MAP_MODELS[model]} — {step_label}"
+    )
+    with card(card_title):
         st.image(latest["path"])
         if age_hours > STALE_MAP_THRESHOLD_HOURS:
             st.warning(
@@ -287,7 +309,7 @@ def _anomaly_maps_section() -> None:
         st.caption(
             f"Valid {pd.Timestamp(latest['valid_time']):%Y-%m-%d} · rendered "
             f"{rendered_at:%Y-%m-%d %H:%M UTC} · "
-            "IFS HRES 2t (ECMWF Open Data, CC BY 4.0) vs a 3-year recent-normal grid "
+            f"{ANOMALY_MAP_ATTRIBUTION[model]} vs a 3-year recent-normal grid "
             "— see pipelines/weather/NOTES.md for why 3 years, not a full ERA5 normal."
         )
 
