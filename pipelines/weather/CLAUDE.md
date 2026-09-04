@@ -214,3 +214,54 @@ new "Wind forecast cross-check" section confirmed live in-browser for all three
 countries (DE/DK/IE), each showing real data on both axes; the anomaly-map section's
 fresh timestamps confirmed the stale-map badge correctly stays hidden right after a
 run (age well under 24h).
+
+## Weather module Phase 1 — GFS as a second, independent model
+
+Added per `weather-module-spec.md` (a user-supplied spec built against Railway/
+Postgres/Grafana, adapted to this project's actual DuckDB+Parquet/Streamlit/Task
+Scheduler stack — see the plan for the full translation). Scope confirmed with the
+user via `AskUserQuestion`: reuse the existing 3-year climatology grid (no `cdsapi`/
+CDS account) and the existing EU/US city-sample aggregates (no new region polygons) —
+zero new dependencies, zero new accounts, zero new schemas. `pipelines/weather/
+gfs_client.py` (NOMADS GRIB-filter download), `gfs_degree_days.py` (city-sample
+extraction reusing `degree_days.py`/`aggregate.py` unchanged), `anomaly_maps.py` (now
+takes an explicit `model` param, threaded into the manifest's own uniqueness key).
+
+**GFS's own request/response shape is genuinely different from ECMWF's, confirmed
+live before writing any code against an assumed shape**:
+- NOMADS' filter endpoint downloads **one already-single-variable, single-level GRIB2
+  per (region, forecast step)** — unlike `ecmwf_client.py`'s one multi-step global
+  file. No `filter_by_keys` disambiguation was needed (unlike a plan-time worry) since
+  the server-side `var_TMP`/`lev_2_m_above_ground` filter already narrows the file to
+  exactly one field before download.
+- **Longitude convention is inconsistent, not just "always 0..360"**: a CONUS bbox
+  (leftlon=-125, rightlon=-65 — entirely west of Greenwich) comes back in 0..360
+  (235..295). A EU bbox (leftlon=-10, rightlon=30 — straddles the Greenwich meridian)
+  comes back already in -180..180 (-10..30), matching the request directly. Confirmed
+  live for both regions, not assumed from one test. `gfs_client.load_2t_dataset`
+  normalises unconditionally to -180..180 so no downstream code (the same
+  `REGION_BOUNDS`/`climatology_grid.py` already used for ECMWF) ever needs to
+  special-case which model it's reading.
+- **A not-yet-published GFS cycle returns HTTP 403 with an HTML "Request for future
+  data" body, not a 404.** Confirmed live by requesting an 18z cycle at 09:xx UTC.
+  `fetch_2t_forecast` tries the computed latest-expected cycle and falls back exactly
+  one cycle (6h) earlier on a 403, capped at one retry.
+
+**A real bug caught before it ever ran, not after**: `degree_days.to_ts_long()`/
+`aggregate.population_weighted()` both hardcode `source="open_meteo"` in the
+DataFrame column they return (a real parquet column value, not just
+`write_ts_long()`'s own partition-path parameter) — reusing them for GFS without
+overriding that column afterward would have misclassified every GFS row as
+Open-Meteo's own once read back (`read_ts_long()`/every page filters on this column,
+not on the physical `source=<x>/` partition directory). Fixed by mirroring
+`_mark_as_forecast()`'s own existing pattern in `pull_daily.py` — a
+`_mark_as_gfs()` that overrides `df["source"] = "gfs"` after calling the shared
+functions. No `series_id` suffix needed (unlike the Open-Meteo forecast rows) since
+GFS has no same-series_id historical counterpart of its own to collide with, and
+`write_ts_long`'s own per-source partitioning already keeps every source's rows
+physically separate regardless.
+
+**Verified**: a real `pull_daily.py` run rendered 4 ECMWF + 2 GFS anomaly maps (GFS
+kept to D+3 only for Phase 1 — D+7 is a natural follow-on) and wrote 32 GFS HDD/CDD
+rows. Page 08's new model selector confirmed live in-browser: switching ECMWF↔GFS
+correctly swaps the displayed map, title, and per-model attribution caption.
