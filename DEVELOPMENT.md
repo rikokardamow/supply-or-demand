@@ -55,3 +55,11 @@ the existing pages. Maps use `go.Scattermapbox` with the free `"open-street-map"
 ## When unsure
 Prefer the smallest change that satisfies the spec's acceptance criteria. If an API responds
 unexpectedly, record the real response as a cassette and adapt — do not guess schemas.
+
+## Trading analytics layer (Specs 18–27)
+Conventions in `specs/00_TRADING_CONVENTIONS.md` (read before any session on these specs).
+Analytics live in flat `core/<topic>.py` modules; ingestion in `pipelines/`; pages via
+`/new-page`. Do not create a separate package tree. Series IDs follow the lake's lowercase
+dotted style. Spreads never from back-adjusted series. Every model card shows window / refit
+/ OOS status / exceptions / break date. Published literature benchmarks are shown beside repo
+estimates with the deviation.

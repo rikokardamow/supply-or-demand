@@ -73,3 +73,20 @@ dropped into the repo (under `specs/`) and worked through one session at a time,
 - Seasonal statistics always exclude 2020.
 - Every chart uses `core.theme` (Kardamow house style). British English labels.
 - Every pipeline gets a vcrpy cassette test. CI never hits live APIs.
+
+## Trading analytics layer (Specs 18–27)
+
+Conventions: `specs/00_TRADING_CONVENTIONS.md`. Dependency order: 18 → 19 → 21 → 22, then 20 / 24 / 25 / 26 in any order, 23 and 27 any time after 18. **Spec 18 Session A (futures settlements pipeline) blocks 18, 20, 21, 24.**
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 18 | Curve & market structure (futures pipeline, spreads, convexity, regime, index rolls, Cushing coupling) | not started | **yes — futures settlements (IBKR or manual CSV)** | 01, 14 |
+| 19 | Fundamentals & physical (spare capacity, inventory bands, quality mismatch, COT percentiles, benchmark health, OSP) | not started | manual: Platts/Argus diffs, OSPs | 01, 06, 10, 14, 18 |
+| 20 | Refining economics & crack VECM (Murat & Tokat 2009) | not started | no | 18, 10 |
+| 21 | Systematic strategies engine (Bouchouev: carry, momentum, value, convexity, reaction function, fractionation) | not started | no | 18, 19 |
+| 22 | Risk engine (GARCH-MIDAS-EVT VaR, backtests, stress, margin) | not started | manual: book, margins | 18, 10, 21 |
+| 23 | Macro & cross-asset signals (Yamarone signals, GFU regression) | not started | manual: GFU index, consensus calendar | 10, 18 |
+| 24 | Volatility & options (surface, CSO/Bachelier, virtual storage, dealer gamma) | not started | options settlements (same pipeline as 18) | 18, 14, 21 |
+| 25 | Freight & arbitrage (Adland & Alizadeh TC–FFA, landed-cost arbs) | not started | manual: Baltic/FFA/fixtures | 18, 19 |
+| 26 | Gas analytics (netbacks, basis map, storage economics, indexation) | not started | manual: basis hubs, contract mix | 02, 05, 08, 10, 18 |
+| 27 | Trade journal, playbook, Kardamow validation ledger | not started | no | 18, 21 |
