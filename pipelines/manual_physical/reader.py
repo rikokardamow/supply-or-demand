@@ -1,10 +1,12 @@
-"""Manual physical-market reader for Spec 19's own Data section: agency spare-capacity
-estimates, quality/grade differentials, Saudi OSPs, and benchmark-health counts. Same
-convention as every other manual source in this project (`data/manual/<source>/*.csv`,
-git-ignored, `source="manual"`, file's own as-of date as `revision_date`) -- see
-NOTES.md for a real, known merge consideration with Spec 18's own smaller
-`pipelines/manual_physical/` stub, built independently on a different, still-open
-branch."""
+"""Manual physical-market reader covering Spec 19's own Data section (agency
+spare-capacity estimates, quality/grade differentials, Saudi OSPs, benchmark-health
+counts) plus Spec 18's own 4 named physical-differential series. Same convention as
+every other manual source in this project (`data/manual/<source>/*.csv`, git-ignored,
+`source="manual"`, file's own as-of date as `revision_date`).
+
+Specs 18 and 19 each built this package independently on separate branches; the two
+`SERIES_META` dicts were merged (not one file picked over the other) when the second
+of the two PRs landed -- see NOTES.md for the resolution record."""
 
 from __future__ import annotations
 
@@ -15,7 +17,8 @@ from core.storage import write_ts_long
 
 MANUAL_PHYSICAL_DIR = Path("data/manual/physical")
 
-# series_id -> (unit, geo, freq). Spec 19's own Data section, verbatim.
+# series_id -> (unit, geo, freq). Spec 19's own Data section, verbatim, followed by
+# Spec 18's own 4 series (merged in when PR #42 landed first -- see NOTES.md).
 SERIES_META: dict[str, tuple[str, str, str]] = {
     "manual.eia_steo.spare_capacity": ("mb/d", "GLOBAL", "M"),
     "manual.iea_omr.spare_capacity": ("mb/d", "GLOBAL", "M"),
@@ -34,6 +37,12 @@ SERIES_META: dict[str, tuple[str, str, str]] = {
     "manual.platts.dated_brent_window_trades": ("count", "GLOBAL", "D"),
     "manual.platts.dubai_partials": ("count", "ASIA", "D"),
     "manual.argus.wti_midland_share_bfoet": ("pct", "US", "D"),
+    # Spec 18's own Data table. Dated Brent / DFL are the global Brent complex; the two
+    # Argus WTI diffs are US Permian-linked physical differentials -- all USD/bbl daily.
+    "manual.platts.dated_brent": ("USD/bbl", "GLOBAL", "D"),
+    "manual.platts.dfl_m1": ("USD/bbl", "GLOBAL", "D"),
+    "manual.argus.wti_midland_diff": ("USD/bbl", "US", "D"),
+    "manual.argus.wti_houston_diff": ("USD/bbl", "US", "D"),
 }
 SERIES_IDS = tuple(SERIES_META)
 
@@ -69,9 +78,9 @@ def read_physical_csvs(data_dir: Path = MANUAL_PHYSICAL_DIR) -> pd.DataFrame:
 
 def physical_to_ts_long(df: pd.DataFrame, revision_date: pd.Timestamp) -> pd.DataFrame:
     """Wide (date, series_id, value) -> long ts_long rows, unit/geo/freq per
-    SERIES_META (unlike Spec 18's own smaller manual_physical stub, this pipeline's own
-    series genuinely differ in unit -- mb/d, USD/bbl, count, pct -- and freq -- daily
-    vs monthly OSPs/agency spare-capacity estimates)."""
+    SERIES_META. These series genuinely differ in unit -- mb/d, USD/bbl, count, pct --
+    and in freq -- daily differentials vs monthly OSPs and agency spare-capacity
+    estimates -- so all three are looked up per series rather than hardcoded."""
     if df.empty:
         return pd.DataFrame(
             columns=["series_id", "source", "ts", "value", "unit", "geo", "freq", "revision_date"]

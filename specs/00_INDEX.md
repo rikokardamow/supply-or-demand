@@ -80,7 +80,7 @@ Conventions: `specs/00_TRADING_CONVENTIONS.md`. Dependency order: 18 → 19 → 
 
 | Spec | Title | Status | New source? | Depends on |
 |---|---|---|---|---|
-| 18 | Curve & market structure (futures pipeline, spreads, convexity, regime, index rolls, Cushing coupling) | not started | **yes — futures settlements (IBKR or manual CSV)** | 01, 14 |
+| 18 | Curve & market structure (futures pipeline, spreads, convexity, regime, index rolls, Cushing coupling) | Sessions A–D all done; page live in browser. Session A's live exchange-bulletin cross-check and real two-run idempotency check deferred — no real futures settlement data yet (no IBKR Gateway, no manual CSV) | **yes — futures settlements (IBKR or manual CSV) + eia_storage_capacity (Cushing capacity, one-off)** | 01, 14 |
 | 19 | Fundamentals & physical (spare capacity, inventory bands, quality mismatch, COT percentiles, benchmark health, OSP) | Sessions A-C all done; page live in browser | **yes — CFTC COT (real, live Public Reporting Environment API)** + manual: Platts/Argus diffs, OSPs (`pipelines/manual_physical/` built, no real drops yet) | 01, 06, 10, 14, 18 |
 | 20 | Refining economics & crack VECM (Murat & Tokat 2009) | not started | no | 18, 10 |
 | 21 | Systematic strategies engine (Bouchouev: carry, momentum, value, convexity, reaction function, fractionation) | not started | no | 18, 19 |
