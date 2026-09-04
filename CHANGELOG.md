@@ -14,6 +14,16 @@ on the GitHub repo for every one of these plus every stretch-goal item skipped
 along the way.
 
 ## [Unreleased]
+### Added
+- Spec 18 Session A (trading analytics layer): `pipelines/futures/` — a futures/options
+  settlements pipeline with two clients (`IBKRClient` via the actively-maintained
+  `ib_async` fork, `ManualCSVClient`) behind one `FuturesClient` interface, selected by
+  `FUTURES_SOURCE`; `pull_history.py`/`pull_daily.py`; a `series_meta` Parquet manifest for
+  contract metadata (expiry/tick_size/contract_unit/currency/roll_rule).
+  **Not yet merged/tagged** — no live IBKR Gateway and no real settlement data exist yet, so
+  this session's own verification is against synthetic data only; the live cross-check and
+  real idempotency check are explicitly deferred (see `specs/18_curve-market-structure.md`).
+  Spec 18 itself remains in progress (Sessions B–D still to come).
 
 ## [1.1] - 2026-09-04
 ### Added
