@@ -38,9 +38,16 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("weather", "pipelines.weather.pull_daily"),
         ("news", "pipelines.news.pull_daily"),
         ("ofac", "pipelines.ofac.pull_daily"),
+        ("futures", "pipelines.futures.pull_daily"),
+        # Must run after "futures" above -- reads settle data that entry just wrote. A
+        # dict preserves insertion order in Python 3.7+, and run_cadence iterates this
+        # list in order, so this ordering is load-bearing, not incidental.
+        ("derived_curve", "pipelines.derived.curve"),
     ],
     "wpsr": [
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),
+        # Must run after "eia_wpsr" above -- reads the Cushing stocks row it just wrote.
+        ("derived_cushing", "pipelines.derived.cushing"),
     ],
     "ng_storage": [
         ("eia_gas_storage", "pipelines.eia.pull_gas_storage"),
