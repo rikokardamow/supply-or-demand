@@ -4,6 +4,8 @@ HDD/CDD pull; this script stays runnable standalone in the meantime."""
 
 from __future__ import annotations
 
+import pandas as pd
+
 from pipelines.weather.anomaly_maps import render_anomaly_map
 from pipelines.weather.climatology_grid import REGION_BOUNDS
 from pipelines.weather.ecmwf_client import fetch_2t_forecast, load_2t_dataset
@@ -17,7 +19,18 @@ def main() -> None:
     rendered = []
     for region in REGION_BOUNDS:
         for step_index in range(t2m.sizes["step"]):
-            rendered.append(render_anomaly_map(t2m, step_index=step_index, region=region))
+            step_slice = t2m.isel(step=step_index)
+            step_hours = int(step_slice.step.values / pd.Timedelta(hours=1))
+            valid_time = pd.Timestamp(step_slice.valid_time.values)
+            rendered.append(
+                render_anomaly_map(
+                    step_slice,
+                    step_hours=step_hours,
+                    valid_time=valid_time,
+                    region=region,
+                    model="ecmwf",
+                )
+            )
 
     print(f"rendered {len(rendered)} anomaly maps: {[str(p) for p in rendered]}")
 
