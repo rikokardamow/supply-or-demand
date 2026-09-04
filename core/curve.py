@@ -15,6 +15,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from core.calendars import roll_calendar
+
 # CME/ICE's own fixed, standardised delivery-month letter codes -- a contract code like
 # "z26" IS the December 2026 contract by construction, not something to look up or guess.
 CME_MONTH_CODES: dict[str, int] = {
@@ -353,6 +355,41 @@ def physical_bands(diff: pd.Series, window: int = 1260) -> pd.DataFrame:
         },
         index=diff.index,
     )
+
+
+def roll_window_offset_grid(delta: pd.Series, index: str, window: int = 5) -> pd.DataFrame:
+    """Mean `delta` value (e.g. day-over-day Δs12) by (year, business-day offset from
+    `index`'s own roll-window start), offsets `-window..window` -- feeds
+    core.theme.bday_heatmap. Window-start dates come from core.calendars.roll_calendar
+    (the first date of each month's own window, every year present in `delta`'s index);
+    each date in `delta` is assigned the offset to its nearest window start."""
+    dates = pd.DatetimeIndex(delta.index)
+    years_present = sorted(dates.year.unique())
+
+    window_starts: list[np.datetime64] = []
+    for year in years_present:
+        cal = roll_calendar(year, index)
+        starts = cal.groupby(cal["date"].dt.month)["date"].min()
+        window_starts.extend(pd.Timestamp(s).to_datetime64() for s in starts)
+    window_starts_arr = np.array(sorted(window_starts), dtype="datetime64[D]")
+
+    offsets = np.empty(len(dates), dtype=int)
+    dates64 = dates.values.astype("datetime64[D]")
+    for i, d in enumerate(dates64):
+        idx = np.searchsorted(window_starts_arr, d)
+        candidates = window_starts_arr[max(idx - 1, 0) : idx + 1]
+        best = min(
+            candidates,
+            key=lambda c: abs(np.busday_count(min(c, d), max(c, d))),
+            default=d,
+        )
+        sign = 1 if d >= best else -1
+        offsets[i] = sign * np.busday_count(min(best, d), max(best, d))
+
+    grid_df = pd.DataFrame({"year": dates.year, "offset": offsets, "value": delta.to_numpy()})
+    grid_df = grid_df[grid_df["offset"].abs() <= window]
+    grid = grid_df.pivot_table(index="year", columns="offset", values="value", aggfunc="mean")
+    return grid.reindex(columns=range(-window, window + 1))
 
 
 def tas_window_flag(dates: pd.DatetimeIndex, cl_expiry: pd.Series) -> pd.Series:
