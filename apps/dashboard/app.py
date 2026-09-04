@@ -17,7 +17,7 @@ report = staleness_report()
 report = report.sort_values(
     by="status", key=lambda col: col.map(_STATUS_ORDER)
 ).reset_index(drop=True)
-report["status"] = report["status"].map(_STATUS_ICON) + " " + report["status"]
+report["status"] = [f"{_STATUS_ICON[s]} {s}" for s in report["status"]]
 
 with card("Lake status"):
     st.caption(

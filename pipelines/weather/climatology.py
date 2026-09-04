@@ -59,6 +59,13 @@ def build_climatology(
                 }
             )
         )
+    if not frames:
+        # No open_meteo history at all yet (e.g. a freshly-cloned repo or CI's own
+        # empty lake) -- callers (apps/dashboard/pages/08_weather.py's own
+        # _anomaly_series) already handle an empty-but-correctly-typed frame here,
+        # so return one instead of letting pd.concat([]) raise on an empty list.
+        result = pd.DataFrame(columns=["series_id", "doy", "climatology"])
+        return result
     result = pd.concat(frames, ignore_index=True)
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
