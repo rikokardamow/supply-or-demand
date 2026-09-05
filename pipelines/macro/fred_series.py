@@ -54,6 +54,12 @@ ENERGY_SERIES: dict[str, SeriesMeta] = {
     "GASREGWCW": SeriesMeta("Dollars per Gallon", "W", "PADD5"),
     "DDFUELUSGULF": SeriesMeta("Dollars per Gallon", "D", "PADD3"),
     "DJFUELUSGULF": SeriesMeta("Dollars per Gallon", "D", "PADD3"),
+    # Spot product legs for the Spec 20 crack boards. Daily back to 1986-06-02, so the
+    # crack history spans Murat & Tokat's own 1993-2008 sample. These are *spot* legs, not
+    # the crack futures the paper uses -- see specs/20_refining-crack-vecm.md.
+    "DGASNYH": SeriesMeta("Dollars per Gallon", "D", "PADD1"),
+    "DGASUSGULF": SeriesMeta("Dollars per Gallon", "D", "PADD3"),
+    "DHOILNYH": SeriesMeta("Dollars per Gallon", "D", "PADD1"),
     "WPU0561": SeriesMeta("Index 1982=100", "M", "US"),
     "PPIENG": SeriesMeta("Index 1982=100", "M", "US"),
     "CPIENGSL": SeriesMeta("Index 1982-1984=100", "M", "US"),

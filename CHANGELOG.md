@@ -15,6 +15,27 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 20 Session A — refining economics / crack boards.** `core/cracks.py` (3:2:1,
+  2:1:1, single-product gasoline and distillate, NWE gasoil, Singapore gasoil, the
+  $/gal→$/bbl and $/tonne→$/bbl conversions, the crack board and the seasonal heatmap)
+  plus `pipelines/derived/cracks.py`, which wrote **45,476 real rows** across five
+  `derived.crack.<name>.spot` series. 29 new tests.
+  - **Built on spot legs, not futures — a forced deviation.** Checked live before writing
+    any code: the lake holds **zero `fut.*` rows**, because Spec 18's pipeline has never
+    ingested a real settlement. Three FRED spot product legs were missing and were added
+    to Spec 10's `fred_series.py` (`DGASNYH`, `DGASUSGULF`, `DHOILNYH` — each probed live
+    against the FRED API, never guessed), giving real crack history back to **1986**. The
+    board's `m1`/`m2`/`m6` tenor columns read `NaN`, never `0.0`, until futures land.
+  - **Cross-checked exactly.** `derived.crack.us321.spot` vs a 3:2:1 computed
+    independently from the EIA API (`petroleum/pri/spt`) — 60 overlapping days, **max
+    absolute difference 0.0**. Annual means also reproduce known refining history without
+    being fitted to it: 2015-19 ≈ $17–19, 2020 $10.60 (COVID), 2022 $41.11 (post-Ukraine
+    margin blowout), 2025 $21.75.
+  - **A wrong constant in the spec, corrected.** Spec 20's worked example
+    `crack_321(70, 2.20, 2.40) = 28.53` is arithmetically impossible — the correct value
+    is **25.20** (no gallons-per-barrel factor gives 28.53; it would need 43.47). Recorded
+    in the spec file, the pipeline guide, and the test's own docstring, alongside the
+    spec's existing "April 2003, not September" correction.
 - `tests/test_pages_browser.py` — a real-headless-Chromium render check for every
   dashboard page, closing a gap `tests/test_pages_smoke.py` (Spec 13) can't: that test
   only proves the Python script didn't raise, not that the browser actually painted
