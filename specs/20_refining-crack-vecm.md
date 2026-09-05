@@ -94,6 +94,28 @@ The out-of-sample result follows directly: **Theil U = 1.0725** (the VECM is 7% 
 
 **Consequence for Session C:** the ECT signal is specified on a cointegrating relationship that does not hold on spot legs. Session C should either wait for real futures settlements (Spec 18) or ship with this failure displayed on the model-monitor card, not hidden. Do not tune the specification until it passes — the negative result is the finding.
 
+#### Session B re-run on real crack FUTURES (2026-09-05)
+Spec 18's EIA backfill landed real `fut.*` data the same day, so the model was re-estimated on the variable the paper actually uses: the **m1 3:2:1 crack future**, built from `fut.cl.f01` + `fut.ho.f01` + gasoline (`fut.hu.f01` pre-2006, `fut.rb.f01` after), spliced at `RBOB_SPLICE_DATE`. The splice is continuous on real data — 2005-12-30 11.03 → 2006-01-03 12.01, no step. Series: `derived.crack.us321.m1` (4,649 rows), `derived.crack.hu321.m1` (5,512), plus m2 for both.
+
+**Scorecard against the paper's five claims:**
+
+| Murat & Tokat claim | Spot crack | Crack futures | Verdict |
+|---|---|---|---|
+| WTI spot and the crack are cointegrated | rank 1 (paper window) | **rank 1**, trace 52.84 vs cv 15.49 | **replicates** |
+| β on the crack ≈ 0.16 | 0.0219 | **0.1911** (paper window) | **close** |
+| Crack is I(1) | no | **no** — ADF p=0.508 but PP p=0.000 | **fails** |
+| Unidirectional causality crack → spot | p=0.442 | crack→spot p=0.284; spot→crack p=0.0007 | **fails — runs the other way** |
+| VECM beats the random walk | U=1.0725, DM p=0.070 (sig. worse) | U=0.9941 full / 1.0616 paper, DM p=0.73/0.16 | **fails, but no longer significantly worse** |
+| Structural break April 2003 | 2005-03 | **2005-03** | **not recovered** |
+
+Forecast evaluation by sample, crack futures: full 1986–2024 Theil U **0.9941** (DM −0.34, p=0.732); paper 1993–2008 **1.0616** (DM +1.41, p=0.158); post-break 2011–2024 **1.0470** (DM +1.44, p=0.150).
+
+**What this settles.** The *cointegration structure* replicates well on futures — rank 1 with a strongly significant trace statistic and a β of 0.19 against the paper's 0.16. The *forecasting* claim does not: on futures the VECM moves from significantly worse than a random walk (spot, p=0.070) to statistically indistinguishable from one (p=0.73 on the full sample). That is a real improvement in interpretation, not a win. Two failures survive the better data and are therefore not artefacts of the spot proxy: the crack is not I(1) under ADF+PP, and causality runs spot → crack, not crack → spot.
+
+`pipelines/derived/vecm_refit.py` now prefers crack futures automatically and records which leg it used in the card's `crack_source`. `oos_status` gained a third state — a Theil U of 1.02 is still worse than the random walk, merely inside the refit trigger, so `beats_rw` / `within_tolerance` / `fail` replaced a binary pass/fail that would have read as a win.
+
+**Remaining caveat:** EIA's futures route is discontinued after 2024-04-05, so this model cannot be refit on futures past that date without an IBKR feed.
+
 ### Session C — error-correction signal + page
 ```python
 def ect_signal(vecm, df, z_entry=1.5, z_exit=0.5) -> DataFrame   # ect = beta'y; z on 60m rolling; position = -sign(z) beyond entry, flat inside exit; scaled by |alpha_crude| normalised and by 1/σ (Spec 22 realised vol); only in the direction of 3m crack momentum
