@@ -90,3 +90,7 @@ Conventions: `specs/00_TRADING_CONVENTIONS.md`. Dependency order: 18 → 19 → 
 | 25 | Freight & arbitrage (Adland & Alizadeh TC–FFA, landed-cost arbs) | not started | manual: Baltic/FFA/fixtures | 18, 19 |
 | 26 | Gas analytics (netbacks, basis map, storage economics, indexation) | not started | manual: basis hubs, contract mix | 02, 05, 08, 10, 18 |
 | 27 | Trade journal, playbook, Kardamow validation ledger | not started | no | 18, 21 |
+
+## Spec 28 — Geopolitical Risk Premium (GRP)
+
+Specs 28.00–28.11 comprise the GRP module. This module is built against `specs/28_ADAPTATION.md`, not the Postgres / FastAPI / Grafana stack its own text assumes. Specs 11 (AIS vessels) and 12 (flights) remain unbuilt and block GRP's airspace and maritime components.
