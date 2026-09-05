@@ -10,6 +10,21 @@ Crack boards (superseding the deferred IBKR-based Spec 07 for crude/product crac
 ## Data
 Spec 18 unadjusted nearby for cl, rb, ho, g, lco. Spec 10: `fred.dcoilwtico` (WTI spot), `fred.dcoilbrenteu`. Manual: Singapore GO/jet/380 (`pipelines/manual_physical/`). Monthly aggregation = last business day (paper is monthly).
 
+### Session A reality check — the futures legs do not exist (2026-09-05)
+Confirmed live against the lake, not assumed: **there are zero `fut.*` rows and zero `fut.*` series IDs**. Spec 18's pipeline is built but has never ingested a real settlement (no IBKR Gateway, no manual CSV — see `pipelines/futures/CLAUDE.md`). So Session A's boards are built on **spot** legs from Spec 10's FRED pipeline instead, and the board's `m1`/`m2`/`m6` tenor columns read `NaN` ("no data isn't zero") until Spec 18 gets real data.
+
+Three spot product legs were missing from `pipelines/macro/fred_series.py` and were added this session (IDs probed live against the FRED API before use, per the project's "never guess a series_id" rule):
+
+| Added | Title | History |
+|---|---|---|
+| `fred.dgasnyh` | Conventional gasoline, NY Harbor, regular | 1986-06-02 → current |
+| `fred.dgasusgulf` | Conventional gasoline, US Gulf Coast, regular | 1986-06-02 → current |
+| `fred.dhoilnyh` | No. 2 heating oil, NY Harbor | 1986-06-02 → current |
+
+That gives a real spot crack history from **1986**, which *spans* Murat & Tokat's own 1993–2008 sample — so Session B's April-2003 break recovery can be tested on real data, not only synthetic. **But note the deviation:** the paper regresses WTI spot on crack *futures*; a spot-crack VECM is a weaker, different claim and must be labelled as a deviation on the page, never presented as a replication. Revisit once real futures settlements land.
+
+ICE gasoil (`g`) and Singapore GO have no legs in the lake at all, so `crack_gasoil_nwe`/`crack_sg_go` are implemented and unit-tested but not wired into the derived pipeline.
+
 ## Sessions
 
 ### Session A — `core/cracks.py` boards
@@ -22,8 +37,20 @@ def crack_board(as_of) -> DataFrame   # crack, spot, m1, m2, m6, seasonal_5y_mea
 def crack_seasonal_heatmap(crack) -> DataFrame   # year × month
 ```
 Derived series `derived.crack.<name>.<tenor>` written daily.
-- Tests: `crack_321(70, 2.20, 2.40)=28.53±0.01`; unit conversions; RBOB pre-2006 splice flagged (unleaded → RBOB contract change).
-- DoD: [ ] boards + derived series, [ ] tests, [ ] one crack cross-checked against EIA's published 3-2-1.
+- Tests: ~~`crack_321(70, 2.20, 2.40)=28.53±0.01`~~ → **`=25.20±0.01`** (correction on record, like the April-2003 one above); unit conversions; RBOB pre-2006 splice flagged (unleaded → RBOB contract change).
+- DoD: [x] boards + derived series, [x] tests, [x] one crack cross-checked against EIA's published 3-2-1.
+
+#### `28.53` was wrong — corrected to `25.20`
+`2.20 × 42 = 92.40`, `2.40 × 42 = 100.80`, `(2 × 92.40 + 100.80 − 3 × 70)/3 = 75.60/3 = **25.20**`. Both readings of the 3:2:1 formula — `(2·rb42 + ho42 − 3·cl)/3` and `(2·rb42 + ho42)/3 − cl` — are algebraically identical, and no gallons-per-barrel factor yields 28.53 (it would need 43.47). `tests/test_core_cracks.py` asserts 25.20 and carries this reasoning in its own docstring.
+
+#### Session A verification (2026-09-05)
+- **`core/cracks.py`** — `crack_321`, `crack_211`, `crack_rbob`, `crack_ho`, `crack_gasoil_nwe`, `crack_sg_go`, `gal_to_bbl`, `tonne_to_bbl_gasoil`, `rbob_splice_flag`, `crack_board`, `crack_seasonal_heatmap`. Pure; ragged crude/product ends aligned by index intersection (FRED publishes WTI a few days behind the product spots — a real, observed gap, not a hypothetical).
+- **Signature deviation, deliberate:** the spec writes `crack_board(as_of)`, which would have to read the lake itself, contradicting `00_TRADING_CONVENTIONS.md`'s "pure analytics modules never touch DuckDB". The board takes its already-loaded panel as an argument instead, matching `core/fundamentals.py::inventory_deviation`.
+- **`pipelines/derived/cracks.py`** — wrote **45,476 real rows** across 5 cracks (`us321` 10,103, `us211` 10,103, `gulf321` 5,062, `nyh_gasoline` 10,105, `nyh_distillate` 10,103), series `derived.crack.<name>.spot`. Registered in `infra/run_scheduled.py`'s `weekly_fri` group after `macro` (not `daily` — the legs only refresh on the weekly FRED cadence).
+- **Cross-check, DoD box 3:** `derived.crack.us321.spot` compared against a 3:2:1 computed independently from the **EIA API** (`petroleum/pri/spt`: `RWTC`, `EER_EPMRU_PF4_Y35NY_DPG`, `EER_EPD2F_PF4_Y35NY_DPG`) — **60 overlapping days, max absolute difference 0.0**. The EIA pull also confirmed the leg mapping exactly (`EER_EPMRU_PF4_RGC_DPG` = 3.569 on 2026-08-21 = `fred.dgasusgulf`; `EER_EPD2F_PF4_Y35NY_DPG` = 4.376 = `fred.dhoilnyh`).
+- **Independent plausibility check:** annual means reproduce well-known refining history without being fitted to it — 2015-19 ≈ \$17–19 (the standard NYH 3:2:1 range), 2020 \$10.60 (COVID demand collapse), 2022 \$41.11 (the post-Ukraine margin blowout), 2024 \$20.79, 2025 \$21.75.
+- **RBOB splice:** `rbob_splice_flag` exists and is tested, but today's legs are *conventional gasoline spot*, which is continuous across 2006 — the unleaded→RBOB splice is a futures-contract problem, so the flag matters only once Spec 18's futures legs land. Not applied in the derived pipeline.
+- Green: `pytest` full suite passes, `ruff check .` clean, `mypy core pipelines` clean (132 files).
 
 ### Session B — `core/vecm.py` Murat & Tokat pipeline
 ```python

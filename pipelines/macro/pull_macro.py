@@ -1,4 +1,4 @@
-"""Entrypoint: pulls all 35 FRED series (fred_series.py::FRED_SERIES), Frankfurter FX
+"""Entrypoint: pulls all 38 FRED series (fred_series.py::FRED_SERIES), Frankfurter FX
 rates (EUR/GBP/TRY vs USD), and Eurostat's ESI (EU/DE/FR/IT/ES/IE) into the lake.
 
 Per-series/per-currency/per-geo resilience, not just per-request retry -- matches
@@ -34,7 +34,7 @@ def pull_fred(client: FREDClient, ingested_at: pd.Timestamp) -> pd.DataFrame:
             # ValueError: fredapi's own response to a bad/retired series id
             # ("Bad Request. The series does not exist."), confirmed live earlier
             # this session -- RequestException covers genuine connectivity failures.
-            # One flaky series must never abort the rest of the 35.
+            # One flaky series must never abort the rest of the 38.
             print(f"fred {series_id}: FAILED ({type(exc).__name__}) — skipping", flush=True)
             continue
 
