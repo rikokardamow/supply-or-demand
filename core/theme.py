@@ -988,3 +988,202 @@ def model_monitor_chart(
         )
     fig.update_layout(title=title, yaxis_title="model RMSE / benchmark RMSE")
     return fig
+
+
+# --- Spec 21 systematic-engine primitives ------------------------------------------
+
+
+def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
+    """One row per strategy: z, position and guardrail state, coloured by position sign.
+
+    A board you cannot read at a glance is not doing its job, so the position cell is
+    filled navy for a long and red for a short rather than relying on the reader parsing
+    a minus sign.
+    """
+    if board.empty:
+        return go.Figure(layout={"title": title})
+
+    positions = board["position"].fillna(0.0)
+    position_fill = [NAVY if v > 0 else RED if v < 0 else GREY for v in positions]
+    neutral = ["white"] * len(board)
+
+    fig = go.Figure(
+        go.Table(
+            header={
+                "values": [f"<b>{c}</b>" for c in board.columns],
+                "fill_color": NAVY,
+                "font": {"color": "white"},
+                "align": "left",
+            },
+            cells={
+                "values": [board[c] for c in board.columns],
+                "fill": {
+                    "color": [
+                        neutral if c != "position" else position_fill for c in board.columns
+                    ]
+                },
+                "font": {
+                    "color": [
+                        ["black"] * len(board) if c != "position" else ["white"] * len(board)
+                        for c in board.columns
+                    ]
+                },
+                "align": "left",
+                "format": [None, ".2f", ".2f", None][: len(board.columns)],
+            },
+        )
+    )
+    fig.update_layout(title=title)
+    return fig
+
+
+def equity_drawdown_chart(
+    equity: pd.Series,
+    drawdown: pd.Series,
+    title: str,
+    unit: str,
+    benchmark: pd.Series | None = None,
+) -> go.Figure:
+    """Cumulative log equity above, drawdown below, sharing an x-axis.
+
+    Drawdown gets its own panel rather than a second y-axis: the two are in the same
+    units, and stacking them keeps the depth of a drawdown visually proportional to the
+    equity it ate.
+    """
+    fig = make_subplots(
+        rows=2, row_heights=[0.68, 0.32], vertical_spacing=0.10, shared_xaxes=True
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=equity.index, y=equity.to_numpy(), name="Strategy",
+            line={"color": NAVY, "width": 2},
+        ),
+        row=1,
+        col=1,
+    )
+    if benchmark is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=benchmark.index,
+                y=benchmark.to_numpy(),
+                name="Benchmark",
+                line={"color": GREY, "width": 1.5, "dash": "dash"},
+            ),
+            row=1,
+            col=1,
+        )
+    fig.add_trace(
+        go.Scatter(
+            x=drawdown.index,
+            y=drawdown.to_numpy(),
+            name="Drawdown",
+            fill="tozeroy",
+            line={"color": RED, "width": 1},
+        ),
+        row=2,
+        col=1,
+    )
+    fig.update_yaxes(title_text=unit, row=1, col=1)
+    fig.update_yaxes(title_text="drawdown", row=2, col=1)
+    fig.update_layout(title=title)
+    return fig
+
+
+def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
+    """Bouchouev's reaction function with today's z marked on it.
+
+    Drawn from the same formula the sizing uses, so the chart cannot drift away from the
+    behaviour it claims to describe. The peak at z=1 is the whole point: past it, more
+    extreme means smaller.
+    """
+    z = np.linspace(-3.0, 3.0, 241)
+    r = z * np.exp(0.5 * (1.0 - z**2))
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=z, y=r, name="R(z)", line={"color": NAVY, "width": 2}))
+    fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
+
+    if current_z is not None and np.isfinite(current_z):
+        clipped = float(np.clip(current_z, -3.0, 3.0))
+        fig.add_trace(
+            go.Scatter(
+                x=[current_z],
+                y=[clipped * np.exp(0.5 * (1.0 - clipped**2))],
+                mode="markers+text",
+                name="today",
+                text=[f"z={current_z:.2f}"],
+                textposition="top center",
+                marker={"color": RED, "size": 11},
+            )
+        )
+    fig.update_layout(title=title, xaxis_title="z-score", yaxis_title="position")
+    return fig
+
+
+def fractionation_heatmap(
+    table: pd.DataFrame, title: str, value: str = "sharpe"
+) -> go.Figure:
+    """Where the P&L came from: conditions down, bins across.
+
+    `table` is `core.backtest.fractionate`'s own output. Diverging around zero because
+    the question is which buckets made money and which lost it, not which were largest.
+    """
+    if table.empty:
+        return go.Figure(layout={"title": title})
+
+    wide = table.pivot_table(index="condition", columns="bin", values=value)
+    limit = float(np.nanmax(np.abs(wide.to_numpy()))) or 1.0
+    fig = go.Figure(
+        go.Heatmap(
+            z=wide.to_numpy(),
+            x=[str(c) for c in wide.columns],
+            y=[str(i) for i in wide.index],
+            colorscale=[[0.0, RED], [0.5, "white"], [1.0, NAVY]],
+            zmid=0.0,
+            zmin=-limit,
+            zmax=limit,
+            colorbar={"title": value},
+        )
+    )
+    fig.update_layout(title=title, xaxis_title="bin", yaxis_title="condition")
+    return fig
+
+
+def crowding_quadrant_scatter(
+    cot_pct: pd.Series, signal_z: pd.Series, title: str
+) -> go.Figure:
+    """Positioning against signal, with the two inflection corners shaded.
+
+    The corners are the point: a long signal while managed money is already crowded long
+    (top right) is a very different trade from the same signal with the crowd short.
+    """
+    frame = pd.DataFrame({"cot": cot_pct, "z": signal_z}).dropna()
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scattergl(
+            x=frame["cot"],
+            y=frame["z"],
+            mode="markers",
+            name="days",
+            marker={"color": NAVY, "size": 4, "opacity": 0.35},
+        )
+    )
+    # Crowded long with a long signal, and crowded short with a short signal.
+    for x0, x1, y0, y1 in ((0.95, 1.0, 0.0, 3.0), (0.0, 0.05, -3.0, 0.0)):
+        fig.add_shape(
+            type="rect",
+            x0=x0,
+            x1=x1,
+            y0=y0,
+            y1=y1,
+            fillcolor=RED,
+            opacity=0.12,
+            line={"width": 0},
+        )
+    fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
+    fig.update_layout(
+        title=title,
+        xaxis_title="managed-money percentile",
+        yaxis_title="signal z",
+    )
+    return fig
