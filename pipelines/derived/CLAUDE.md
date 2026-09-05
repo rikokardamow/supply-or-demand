@@ -89,3 +89,82 @@ from the lake + `series_meta`) was renamed to `contract_panel_for` — no behavi
 so `apps/dashboard/pages/18_curve.py` could import and call it directly, matching
 `pipelines/eia/transforms.py`'s own "page imports a pipeline's transform helper"
 precedent instead of re-implementing the same pivot logic a second time.
+
+## `cracks.py` — spot legs, because no futures legs exist (Spec 20 Session A)
+
+Confirmed live at the start of the session, not assumed: the lake holds **zero `fut.*`
+rows and zero `fut.*` series IDs**. Spec 20's own Data section asks for Spec 18's
+unadjusted nearby for `cl`/`rb`/`ho`/`g`/`lco`; none of it exists, because Spec 18's
+pipeline has never ingested a real settlement (see `pipelines/futures/CLAUDE.md`).
+
+So the crack legs are **spot**, from Spec 10's FRED pipeline. Three product legs were
+missing and were added to `pipelines/macro/fred_series.py` this session — `DGASNYH`,
+`DGASUSGULF`, `DHOILNYH`, each probed live against the FRED API before use rather than
+guessed, per the project's own "never guess a series_id" rule. All three run daily back
+to 1986-06-02.
+
+Consequences worth knowing before extending this:
+- Every series here is `derived.crack.<name>.spot`. `spot` is the only tenor computable
+  today; `core.cracks.crack_board`'s `m1`/`m2`/`m6` columns stay `NaN` until real
+  futures land, never `0.0` (the sanctions/Adanos "no data isn't zero" precedent).
+- `crack_gasoil_nwe` and `crack_sg_go` are implemented and unit-tested but **not** wired
+  in — ICE gasoil and Singapore gasoil have no legs in the lake at all. A crack whose
+  legs are absent is omitted from `build_cracks` entirely rather than emitted as a column
+  of NaN.
+- Registered in `infra/run_scheduled.py`'s **`weekly_fri`** group directly after `macro`,
+  not `daily`. Spec 20 says the series is "written daily" — it is daily-*frequency*, but
+  its legs only refresh on the weekly FRED cadence, so a daily rerun would rewrite
+  identical rows from unchanged inputs.
+- The crude and product legs have genuinely ragged right-hand ends (FRED publishes
+  `DCOILWTICO` a few days behind the product spots — observed live, e.g. WTI ending
+  2026-08-25 while the product spots ran to 2026-09-01). `core.cracks` intersects leg
+  indices rather than forward-filling, so a crack is only ever computed on a date where
+  every leg actually printed.
+
+## Verified (Spec 20 Session A)
+
+45,476 real rows written across 5 cracks. `derived.crack.us321.spot` cross-checked
+against a 3:2:1 computed independently from the **EIA API** (`petroleum/pri/spt`) —
+60 overlapping days, **max absolute difference 0.0**. Annual means also reproduce known
+refining history unprompted: 2015-19 ≈ $17–19, 2020 $10.60, 2022 $41.11, 2025 $21.75.
+
+Spec 20's own worked example `crack_321(70, 2.20, 2.40) = 28.53` is **wrong**; the correct
+value is **25.20**. Correction recorded in `specs/20_refining-crack-vecm.md` and in the
+test's own docstring.
+
+## `vecm_refit.py` — the model fails out-of-sample, and that is the finding (Spec 20 Session B)
+
+Monthly refit of the crack VECM. Writes a model card to `data/lake/vecm/model_card.parquet`
+as a plain Parquet manifest — the `pipelines/futures/series_meta.py` precedent — because a
+model card is not a `ts_long` series and `core/storage.py` still has no persisted-table
+mechanism. Registered in `infra/run_scheduled.py`'s `monthly` group.
+
+**Read the card before trusting the model.** On real data it reports `oos_status = fail`:
+
+- `theil_u = 1.0725` — the VECM is 7% *worse* than a random walk. DM stat +1.81, p = 0.070
+  (significantly worse at 10%), 32 exceptions in 60 forecasts.
+- `crack_i1 = False`. ADF and Phillips-Perron disagree on the spot crack in every sample
+  window, and PP rejects the unit root decisively (p = 0.008 full sample, 0.000 on the
+  paper's 1993-2008 window). A refining margin mean-reverts — it cannot drift without
+  bound — so it is not I(1), and the Johansen/VECM framework does not transfer to it.
+- `rank = 2` in a two-variable system is the standard signal that the system is already
+  stationary, not that there are two cointegrating relations.
+- Granger runs the *opposite* way to Murat & Tokat: crack->spot p = 0.442 (nothing),
+  spot->crack p = 0.038.
+
+None of this is a bug in the implementation — all three of the spec's synthetic acceptance
+tests pass (beta recovered at 0.1611 against a 0.16 target, the obs-120 break found at
+exactly 120, the random-walk look-ahead guard holds). The cause is the **spot legs**: the
+paper models crack *futures*, and the lake has no futures at all. Revisit the whole
+specification once Spec 18 ingests real settlements.
+
+**Do not tune the specification until it passes.** The conventions require a miss to be a
+visible diagnostic; the card carries `deviation` so the caveat travels with the numbers
+rather than living only in a docstring.
+
+### April 2003 was not recovered
+
+Bai-Perron with one break finds 2005-03 (+23 months); Andrews sup-F finds 2004-08 (+16).
+The 2004-05 crude run-up is a far larger level shift and dominates the search. Allowing two
+breaks surfaces 2003-01, three months from the paper's date — partial recovery obtained by
+relaxing the break count, not a clean replication. Recorded as a miss in the spec.

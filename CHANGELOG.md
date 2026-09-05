@@ -15,6 +15,116 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 20 Session C — ECT signal and page 20 (Spec 20 complete).** `core/vecm.py`
+  gained `ect_signal` (β'y, rolling 60-month z-score, `-sign(z)` beyond entry and flat
+  inside exit with hysteresis between, scaled by the crude leg's share of the adjustment
+  speed and by inverse realised vol, flattened where it fights 3-month crack momentum),
+  `backtest_positions` (turnaround-month fractionation) and `irf_table`. `core/theme.py`
+  gained `cointegration_residual_chart`, `irf_chart` and `model_monitor_chart`. Page
+  `apps/dashboard/pages/20_cracks.py` is live. 16 new tests.
+  - **The DoD's own shift test caught a real look-ahead bug in the signal.** On its first
+    run `ect`, `z`, `raw_position` and `momentum` all matched between a truncated and a
+    full sample but `position` did not: `vol_scale` was normalised by the *full-sample*
+    median, reading observations after *t* into every earlier position. Fixed to an
+    expanding median. Left in, it would have silently inflated any backtest.
+  - **Two documented stand-ins, surfaced in the UI rather than buried.** The spec calls
+    for Spec 21's backtest engine and Spec 22's realised vol; neither `core/systematic.py`
+    nor `core/risk.py` exists. The backtest is a minimal position × forward-move
+    calculation with no costs, slippage or position limits, and the vol scaling is a plain
+    rolling standard deviation. The page says so in a warning.
+  - **Page renders its gaps honestly.** Board m1/m2/m6 tenors are empty because no
+    *current* futures exist (EIA's route ends 2024-04-05, no IBKR feed) — a two-year-old
+    settlement shown as a live tenor would be worse than a blank. The forward strip
+    carries its own as-of date and a "not current" warning. The model card shows the
+    random-walk failure as an error, per the conventions' "a miss is a visible
+    diagnostic".
+  - `model_monitor_chart` draws parity *and* the refit trigger, because a ratio of 1.02 is
+    already losing to the benchmark while sitting inside a 1.05 trigger.
+  - Crack futures extended to m3/m4 (EIA publishes ranks 1–4) so the forward strip has
+    real shape. There is still no m6 from this source.
+- **Spec 18 finally has real futures data** — 113,750 `fut.*` rows across 105 series,
+  where before there were none at all. Three sources, each covering a different end of
+  the problem, all writing the conventions' own series ids and partitioned by `source`.
+  - **`pipelines/futures/eia_futures.py` — history.** EIA's `petroleum/pri/fut` route
+    publishes real NYMEX settlements for contracts 1–4, free, through the API key Spec 01
+    already uses: WTI from 1983, heating oil from 1980, RBOB from 2005, pre-2006 NYMEX
+    unleaded 1985–2006. **113,661 rows.** The route is *discontinued* (verified against
+    its own metadata: it stops at 2024-04-05 while `pri/spt` runs to the present), so it
+    is history only and cannot drive a live board. It publishes ranks rather than contract
+    codes, so it writes `fut.<root>.f01..f04.settle` directly and bypasses `nearby_panel`
+    — `s12`/`s13`/`cv123` are computable, Dec–Dec and the roll calendar are not. RBOB
+    (`rb`) and pre-2006 unleaded (`hu`) are kept as separate roots rather than spliced at
+    ingestion, which is what `core.cracks.rbob_splice_flag` is for.
+  - **`pipelines/futures/barchart_curve.py` — one date, the whole curve.** A Barchart
+    spreads export carries no outright prices, but `SA` (strip average) and `SP` (spread)
+    on the same pair pin both legs, and every other contract follows from a spread against
+    an already-solved one. Rebuilds an **89-month Brent curve for 2026-09-04** (Nov-26
+    96.28 → Mar-34 67.51). Validated against a real published quote: reconstructed from
+    spread rows alone the front month comes out at **96.280** against Barchart's own
+    **96.28s**, over-determined anchors agree to half a cent, and an implied QAZ6−QAF7 of
+    3.17 matches the separately quoted 3.17 exactly. Without an `SA` anchor it raises
+    rather than returning a curve wrong by a constant. `source="manual"` — these settles
+    are reconstructed from a vendor export and must not pose as an exchange feed.
+  - **IBKR made ready.** New `pipelines/futures/ibkr_preflight.py` probes all four Gateway
+    ports without needing one running, flags a `settings.ibkr_port` pointing somewhere
+    closed, and prints the next step — replacing the hand-run port check every prior
+    session recorded. Current status: all four closed. Also **fixed a real latent bug**:
+    `IBKRClient.get_settles` sent a single multi-decade `durationStr`, which IB rejects
+    outright, so the very first `pull_history` run against a live Gateway would have
+    failed. It now chunks via `duration_windows` (365-day windows sharing their boundary
+    date, so the lake's own de-dup removes the duplicate bar rather than a gap losing a
+    settlement).
+  - **Fixed: manual data drops were never actually git-ignored.** `.gitignore` carried
+    `manual_settlements/*.csv`, but the path the code uses is `data/manual/futures`
+    (`client.py::MANUAL_FUTURES_DIR`), so nothing under `data/manual/` was ignored despite
+    the conventions saying it is. A dropped CSV could have been committed.
+- **Spec 20 Session B — crack VECM (Murat & Tokat 2009).** `core/vecm.py` (monthly
+  aggregation, ADF/PP/KPSS unit roots, AIC/SIC lag choice over p=1..4, Bai-Perron +
+  Andrews sup-F breaks, Johansen, VECM fit, Granger both ways, rolling-origin forecast
+  evaluation with Theil U and a Newey-West Diebold-Mariano test, and a model card) plus
+  `pipelines/derived/vecm_refit.py`, registered in the `monthly` cadence. 29 new tests.
+  New dependencies, approved first per root CLAUDE.md rule 7: `statsmodels>=0.15`,
+  `ruptures>=1.1`, `arch>=8.0` (`arch` supplies the Phillips-Perron test statsmodels
+  lacks, and is what Spec 22's GARCH engine will need anyway).
+  - **All three of the spec's synthetic acceptance tests pass**: Johansen recovers
+    beta = 0.1611 against a 0.16±0.03 target, Bai-Perron finds the obs-120 mean shift at
+    exactly 120, and the random-walk look-ahead guard holds.
+  - **On real data the model fails, and that is the finding.** Theil U = 1.0725 — 7%
+    *worse* than a random walk — DM +1.81 / p = 0.070, 32 exceptions in 60 forecasts,
+    `oos_status = fail`. Cause identified rather than papered over: the spot 3:2:1 crack
+    is **not I(1)**. ADF and Phillips-Perron disagree in every sample window and PP
+    rejects the unit root decisively (p = 0.008 full sample, 0.000 on the paper's
+    1993-2008 window), because a refining margin mean-reverts. Johansen returns rank 2 in
+    a two-variable system — the standard signal that the system is already stationary and
+    the cointegration framework does not apply. Granger also runs the opposite way to the
+    paper (crack->spot p = 0.442; spot->crack p = 0.038).
+  - **April 2003 not recovered.** Bai-Perron with one break finds 2005-03 (+23 months),
+    Andrews sup-F 2004-08 (+16); the 2004-05 crude run-up is a much larger level shift and
+    dominates. Two breaks surfaces 2003-01 — three months out, but obtained by relaxing
+    the break count, so recorded as partial, not a replication.
+  - All of the above traces to the **spot legs**: the paper models crack *futures*, and the
+    lake still holds none. Session C is gated on this — see the spec.
+- **Spec 20 Session A — refining economics / crack boards.** `core/cracks.py` (3:2:1,
+  2:1:1, single-product gasoline and distillate, NWE gasoil, Singapore gasoil, the
+  $/gal→$/bbl and $/tonne→$/bbl conversions, the crack board and the seasonal heatmap)
+  plus `pipelines/derived/cracks.py`, which wrote **45,476 real rows** across five
+  `derived.crack.<name>.spot` series. 29 new tests.
+  - **Built on spot legs, not futures — a forced deviation.** Checked live before writing
+    any code: the lake holds **zero `fut.*` rows**, because Spec 18's pipeline has never
+    ingested a real settlement. Three FRED spot product legs were missing and were added
+    to Spec 10's `fred_series.py` (`DGASNYH`, `DGASUSGULF`, `DHOILNYH` — each probed live
+    against the FRED API, never guessed), giving real crack history back to **1986**. The
+    board's `m1`/`m2`/`m6` tenor columns read `NaN`, never `0.0`, until futures land.
+  - **Cross-checked exactly.** `derived.crack.us321.spot` vs a 3:2:1 computed
+    independently from the EIA API (`petroleum/pri/spt`) — 60 overlapping days, **max
+    absolute difference 0.0**. Annual means also reproduce known refining history without
+    being fitted to it: 2015-19 ≈ $17–19, 2020 $10.60 (COVID), 2022 $41.11 (post-Ukraine
+    margin blowout), 2025 $21.75.
+  - **A wrong constant in the spec, corrected.** Spec 20's worked example
+    `crack_321(70, 2.20, 2.40) = 28.53` is arithmetically impossible — the correct value
+    is **25.20** (no gallons-per-barrel factor gives 28.53; it would need 43.47). Recorded
+    in the spec file, the pipeline guide, and the test's own docstring, alongside the
+    spec's existing "April 2003, not September" correction.
 - `tests/test_pages_browser.py` — a real-headless-Chromium render check for every
   dashboard page, closing a gap `tests/test_pages_smoke.py` (Spec 13) can't: that test
   only proves the Python script didn't raise, not that the browser actually painted

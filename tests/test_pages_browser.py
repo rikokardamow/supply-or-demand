@@ -173,11 +173,25 @@ def test_home_page_renders(streamlit_server: str, browser_page: tuple[Page, list
     "slug,title", PAGE_SLUGS_AND_TITLES, ids=[p[0] for p in PAGE_SLUGS_AND_TITLES]
 )
 def test_page_renders_in_browser(
+    streamlit_server: str,
     browser_page: tuple[Page, list[str]],
     slug: str,
     title: str,
 ) -> None:
     page, console_errors = browser_page
+
+    # Navigate only when the browser isn't already on the app. Without any navigation at
+    # all, every case here is order-dependent: selecting a single one (`-k cracks`, or a
+    # specific node id) never requests the `streamlit_server` fixture, so no server
+    # starts, the page is still about:blank, and the sidebar-nav click times out after
+    # 30s against a locator that cannot exist -- which made a perfectly green page look
+    # broken. Navigating *unconditionally* is the wrong fix: each `goto` starts a fresh
+    # Streamlit session and re-runs the whole app, and doing that 15 times pushed the
+    # three heavy trading pages over their render timeouts. Conditional navigation keeps
+    # the fast warm path for a full-module run and still makes each case self-contained.
+    if not page.url.startswith(streamlit_server):
+        page.goto(streamlit_server, timeout=30_000)
+        page.wait_for_load_state("networkidle", timeout=45_000)
     console_errors.clear()
 
     page.locator(f'[data-testid="stSidebarNav"] a[href$="/{slug}"]').click()
