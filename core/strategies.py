@@ -23,10 +23,12 @@ import pandas as pd
 from core.systematic import (
     apply_guardrails,
     blend,
+    carry,
     carry_pct,
     convexity_signal,
     log_price,
     momentum_ma,
+    momentum_on_carry,
     position,
     value,
     vol_target,
@@ -36,7 +38,11 @@ from core.systematic import (
 VALUE_OVERLAY_THRESHOLD = 1.5
 VALUE_OVERLAY_STRENGTH = 0.5
 
-_BOUCHOUEV = "Bouchouev, Virtual Barrels, ch. 5-6 (1992-2022, unleveraged)"
+# The book states 1993-2022 throughout: Fig. 5.1 and Fig. 5.6 are both captioned
+# "(1993-2022)", and the static-spread result is "the thirty-year period starting from
+# 1993" (p.112). An earlier transcription of this said 1992-2022; verified against the
+# source on 2026-09-05 and corrected.
+_BOUCHOUEV = "Bouchouev, Virtual Barrels, ch. 5-6 (1993-2022, unleveraged)"
 
 
 @dataclass(frozen=True)
@@ -101,8 +107,30 @@ def _mom_100(data: StrategyInputs) -> pd.Series:
     return position(zscore(momentum_ma(data.f01_adj, n=100), window=252), sizing="reaction")
 
 
+def _dynamic_carry(data: StrategyInputs) -> pd.Series:
+    """Bouchouev's carry-momentum, verbatim: `pi_CM = sign(C_t - MA_t(C_t; n))`.
+
+    Momentum applied to *carry*, not to price -- "a measure of the current state of supply
+    and demand, and the change in carry as a measure of expected changes in future supply
+    and demand" (Virtual Barrels p.101). This is the strategy the published 24.7% / 0.64
+    anchor actually measures.
+
+    It uses the **annual** carry C(1,13), as the book does, so it needs rank 13 and gates
+    off on a four-rank panel exactly like CARRY_1_13. That is the honest outcome: the
+    anchor belongs to a strategy that cannot be run on this lake, rather than being
+    attached to one that can and did not produce it.
+    """
+    return position(momentum_on_carry(carry(data.unadj, 1, 13), n=60), sizing="sign")
+
+
 def _carry_mom(data: StrategyInputs) -> pd.Series:
-    """A 50/50 blend of carry and momentum, sized through the reaction function."""
+    """A 50/50 blend of carry and PRICE momentum, sized through the reaction function.
+
+    This is the spec's own construction and is **not** Bouchouev's carry-momentum, which
+    applies momentum to carry itself -- see `_dynamic_carry`. It therefore carries no
+    published benchmark: crediting this blend with the book's 24.7% / 0.64 would attribute
+    to it a result produced by a different strategy.
+    """
     blended = blend(
         {
             "carry": _carry_z(data, 1, 3),
@@ -172,7 +200,18 @@ REGISTRY: dict[str, Strategy] = {
         (1, 3),
         "outright",
         _carry_mom,
-        "Blend uses C(1,3), not C(1,13).",
+        "Blend of C(1,3) carry and price momentum. NOT Bouchouev's carry-momentum, "
+        "which applies momentum to carry itself -- see DYNAMIC_CARRY. No published "
+        "anchor applies to this construction.",
+        None,
+    ),
+    "DYNAMIC_CARRY": Strategy(
+        "DYNAMIC_CARRY",
+        (1, 13),
+        "outright",
+        _dynamic_carry,
+        "Bouchouev's carry-momentum, sign(C - MA(C)) on the annual carry C(1,13). "
+        "Needs rank 13; EIA publishes 1-4.",
         Benchmark(0.247, 0.64, _BOUCHOUEV),
     ),
     "CONVEX_SPREAD": Strategy("CONVEX_SPREAD", (1, 2, 3), "spread", _convex_spread),

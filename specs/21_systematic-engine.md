@@ -2,7 +2,7 @@
 
 > See `specs/00_TRADING_CONVENTIONS.md`'s **Verified core API** section for real function signatures, schema columns and series IDs before importing any name this spec guesses.
 
-**Sources:** Bouchouev *Virtual Barrels* Ch. 5–6. Published anchors to display beside repo estimates: carry C(1,13) ≈ 20.3% annualised log-return, Sharpe 0.53, 1992–2022, unleveraged; carry–momentum blend ≈ 24.7%, Sharpe 0.64; static short front spread ≈ IR 0.50. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
+**Sources:** Bouchouev *Virtual Barrels* Ch. 5–6. Published anchors to display beside repo estimates: carry C(1,13) ≈ 20.3% annualised log-return, Sharpe 0.53, 1993–2022, unleveraged; carry–momentum blend ≈ 24.7%, Sharpe 0.64; static short front spread ≈ IR 0.50. Conventions: `specs/00_TRADING_CONVENTIONS.md`.
 
 ## Purpose
 Signals, reaction-function sizing, vol targeting, a vectorised backtester reused by Specs 20/24/25/26/27, and fractionation analytics. Page `21_systematic.py`.
@@ -40,7 +40,7 @@ Smoke-checked on the real lake (39 years of WTI), not only synthetic data: carry
 **Ambiguity resolved explicitly.** The spec's low-utilisation guardrail reads "cap long-backwardation/short-spread", naming the trade twice. It is implemented as the symmetric counterpart of the high-utilisation rule: top-decile utilisation already implies contango so **shorts** are capped, bottom-decile implies backwardation so **longs** are capped. Both cap the position the inventory state already favours, which is the crowding logic the rule exists for. Recorded in `apply_guardrails`'s own docstring.
 
 #### C(1,13) is not reproducible from this data — a miss, recorded
-The spec's headline anchors are all C(1,13): carry ≈ 20.3% annualised, Sharpe 0.53, 1992–2022, and the carry–momentum blend at ≈ 24.7% / 0.64. That spread needs **rank 13**. The lake's only futures source is EIA's discontinued NYMEX route, which publishes **contracts 1–4 only** — so `carry(near=1, far=13)` cannot be computed at all, and Session B's "CARRY_1_13 on real cl 1993–2022 within ±4 pp" test cannot pass on any data currently obtainable.
+The spec's headline anchors are all C(1,13): carry ≈ 20.3% annualised, Sharpe 0.53, 1993–2022, and the carry–momentum blend at ≈ 24.7% / 0.64. That spread needs **rank 13**. The lake's only futures source is EIA's discontinued NYMEX route, which publishes **contracts 1–4 only** — so `carry(near=1, far=13)` cannot be computed at all, and Session B's "CARRY_1_13 on real cl 1993–2022 within ±4 pp" test cannot pass on any data currently obtainable.
 
 `carry`'s `far=13` default is kept to match the spec, and raises a clear `KeyError` naming the missing rank rather than silently returning an empty series. Session B's registry must therefore either xfail that benchmark (as the spec's own text already anticipates: "xfail if history absent") or substitute a shorter, honestly-labelled spread such as C(1,3) — never relabel a C(1,3) result as the paper's C(1,13) anchor. Unblocking this needs a futures source with a deferred curve: IBKR (`python -m pipelines.futures.ibkr_preflight`) or a manual settlement CSV.
 
@@ -108,3 +108,41 @@ The two unavailable strategies get their own card naming the ranks they need, so
 
 ## Session A opener
 > Read NOTES.md, specs/00_TRADING_CONVENTIONS.md, specs/21_systematic-engine.md. Plan Session A: `core/systematic.py` signals and sizing with tests, vectorised pandas only (no per-date loops). Read `core/curve.py` first and import from it rather than recomputing spreads.
+
+
+## Verified against the source (2026-09-05)
+
+The three published anchors were checked directly against Bouchouev, *Virtual Barrels*
+(Springer, 2023). All three figures are correct as stated. Two surrounding claims were not.
+
+| Anchor | Book | Page |
+|---|---|---|
+| Carry C(1,13): 20.3% annualised log-return, Sharpe 0.53 | confirmed verbatim | p.99, Fig 5.6 |
+| Carry-momentum: 24.7% annualised, Sharpe 0.64 | confirmed verbatim | p.101 |
+| Static short front spread: 0.50 | confirmed verbatim | p.112 |
+
+"IR 0.50" is fine: footnote 6 (p.92) states the book uses information ratio and Sharpe
+ratio interchangeably, both being return over volatility with a zero benchmark.
+
+**Correction 1 — the sample period.** This spec said **1992–2022**. The book says
+**1993–2022** throughout: Fig 5.1 and Fig 5.6 are both captioned "(1993–2022)", and the
+static-spread result is "the thirty-year period starting from 1993". Corrected here and in
+`core/strategies.py::_BOUCHOUEV`.
+
+**Correction 2 — `CARRY_MOM` was not the strategy the 24.7%/0.64 anchor measures.** The
+book defines carry-momentum as
+
+> π_CM(F_t) = sign(C_t − MA_t(C_t; n))
+
+— momentum applied to **carry**, on the annual carry C(1,13). This spec's registry line
+instead specifies "CARRY_MOM (blend 0.5/0.5 → reaction)", a blend of carry and *price*
+momentum. Those are different strategies, so the anchor was crediting our blend with a
+result it never produced.
+
+Resolved by adding a ninth registry entry, `DYNAMIC_CARRY`, implementing the book's
+definition via `core.systematic.momentum_on_carry` (which existed from Session A and was
+wired into nothing). The anchor moved to it; `CARRY_MOM` keeps the spec's blend and now
+carries **no** published benchmark, with the reason in its `note`. Because the book uses
+C(1,13), `DYNAMIC_CARRY` needs rank 13 and gates off on this lake exactly like
+`CARRY_1_13` — the honest outcome, since the anchor now sits on a strategy that genuinely
+cannot be run here rather than on one that can.

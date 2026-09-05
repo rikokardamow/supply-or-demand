@@ -30,11 +30,15 @@ def _inputs(n: int = 800, ranks: tuple[int, ...] = (1, 2, 3, 4)) -> StrategyInpu
 
 
 def test_registry_holds_every_strategy_the_spec_names() -> None:
+    """The spec's own eight, plus DYNAMIC_CARRY -- added after checking the book, because
+    the spec's CARRY_MOM (a 0.5/0.5 carry+price-momentum blend) is not the strategy
+    Bouchouev's 24.7%/0.64 figure measures. See _dynamic_carry."""
     assert set(REGISTRY) == {
         "CARRY_1_13",
         "CARRY_REACT",
         "MOM_100",
         "CARRY_MOM",
+        "DYNAMIC_CARRY",
         "CONVEX_SPREAD",
         "SHORT_SPREAD_STATIC",
         "FWD_SPREAD_MR",
@@ -171,3 +175,44 @@ def test_value_overlay_is_inert_before_it_has_enough_history() -> None:
         build_positions("MOM_100", data),
         check_names=False,
     )
+
+
+# --- DYNAMIC_CARRY: the book's actual carry-momentum ------------------------------
+
+
+def test_dynamic_carry_is_registered_and_needs_the_annual_carry() -> None:
+    """Bouchouev defines carry-momentum as sign(C_t - MA(C_t)) on the ANNUAL carry
+    C(1,13) (Virtual Barrels p.101). That needs rank 13, so on this lake it gates off
+    exactly like CARRY_1_13 -- which is the honest outcome: the 24.7%/0.64 anchor belongs
+    to a strategy that cannot be run here, not to one that can.
+    """
+    assert "DYNAMIC_CARRY" in REGISTRY
+    assert REGISTRY["DYNAMIC_CARRY"].required_ranks == (1, 13)
+    assert missing_ranks(REGISTRY["DYNAMIC_CARRY"], _inputs().unadj) == (13,)
+
+
+def test_the_published_carry_momentum_anchor_moved_off_carry_mom() -> None:
+    """CARRY_MOM is the spec's 0.5/0.5 blend of carry and PRICE momentum -- a different
+    strategy from the book's momentum-on-carry. Leaving the book's figure attached to it
+    would credit our blend with a result it never produced."""
+    assert REGISTRY["CARRY_MOM"].benchmark is None
+    assert REGISTRY["DYNAMIC_CARRY"].benchmark is not None
+    assert REGISTRY["DYNAMIC_CARRY"].benchmark.sharpe == 0.64
+    assert REGISTRY["DYNAMIC_CARRY"].benchmark.ann_return == 0.247
+
+
+def test_dynamic_carry_signals_on_the_change_in_carry_not_its_level() -> None:
+    """sign(C - MA(C)): a steadily rising carry is a buy even while carry is negative,
+    which is precisely what distinguishes it from the plain carry strategy."""
+    full = _inputs(ranks=tuple(range(1, 14)))
+    pos = build_positions("DYNAMIC_CARRY", full).dropna()
+    assert set(np.unique(pos)).issubset({-1.0, 0.0, 1.0})
+
+
+def test_every_benchmark_cites_the_period_the_book_actually_states() -> None:
+    """The book says 1993-2022 throughout (Figs 5.1 and 5.6, and 'thirty-year period
+    starting from 1993'). An earlier transcription said 1992-2022."""
+    for name, strategy in REGISTRY.items():
+        if strategy.benchmark is not None:
+            assert "1993" in strategy.benchmark.source, name
+            assert "1992" not in strategy.benchmark.source, name
