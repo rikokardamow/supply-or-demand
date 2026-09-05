@@ -148,3 +148,71 @@ against:
   each other. Left as-is because contract specs (`tick_size`/`contract_unit`/`currency`) are
   meant to be objective per-contract facts both providers should agree on, not
   provider-specific data — the `source` column still records provenance for debugging.
+
+## Real futures data finally exists (2026-09-05)
+
+Spec 18 Session A left this pipeline built but empty -- no `fut.*` row had ever been
+written. Three sources now exist, covering different ends of the problem. All three
+write the conventions' own series ids, partitioned by `source`, so they coexist.
+
+| Source | What | Span | Rows |
+|---|---|---|---|
+| `eia_futures.py` | NYMEX ranks 1-4, WTI/RBOB/HO/pre-2006 unleaded | 1980-01-02 -> 2024-04-05 | 113,661 |
+| `barchart_curve.py` | Brent Financial, full 89-month outright curve | 2026-09-04 only | 89 |
+| `client.py::IBKRClient` | live + full curve | not yet connected | 0 |
+
+### `eia_futures.py` -- history, from a discontinued route
+
+EIA's `petroleum/pri/fut` publishes real NYMEX settlements for contracts 1-4, free,
+through the same API key Spec 01 already uses. **The route is discontinued**: it stops at
+2024-04-05 (confirmed against the route's own metadata, while `petroleum/pri/spt` runs to
+the present). So it is a history source and cannot drive a live board.
+
+It gives *ranks*, not contract codes -- no expiry, open interest or volume -- so it
+bypasses `core/curve.py::nearby_panel` (which derives ranks *from* codes plus expiries)
+and writes `fut.<root>.f01..f04.settle` directly. Consequences: `s12`/`s13`/`cv123` are
+computable; Dec-Dec spreads, the roll calendar, `series_meta` rows and anything past rank
+4 are not.
+
+RBOB (`rb`, from 2005-10) and pre-2006 NYMEX regular unleaded (`hu`, to 2006-12) are kept
+as **separate roots**. They are different contracts; splicing them at ingestion would bake
+an analytical decision into the lake. `core.cracks.rbob_splice_flag` exists for exactly
+this splice, and it is a downstream choice.
+
+### `barchart_curve.py` -- one date, but the whole curve
+
+A Barchart futures-spreads export carries no outright prices, only `SP` (leg1-leg2), `SA`
+(strip average of its legs) and `BF` (butterfly, ignored). `SA` and `SP` on the same pair
+pin both outrights (`a = SA + SP/2`); every other contract then follows from a spread
+against an already-solved one. Spreads alone fix only the curve's *shape*, so with no `SA`
+anchor `reconstruct_curve` raises rather than returning a curve wrong by a constant.
+
+**Validated against a real published quote**: rebuilt from spread rows alone, the
+2026-09-04 Brent front month comes out at **96.280** against Barchart's own **96.28s**
+settlement, the over-determined anchors agree to half a cent, and an implied QAZ6-QAF7 of
+3.17 matches the separately quoted 3.17 exactly.
+
+Barchart's `QA` is Crude Oil Brent Financial (NYMEX) -> root `lco`. **Confirmed with the
+user, not inferred from the price level** -- the level was merely consistent with Brent.
+`PRODUCT_ROOTS` is the map; an unknown product is skipped, never guessed.
+
+`source="manual"`: these settles are *reconstructed from a vendor export*, not an exchange
+settlement feed, and must not pose as one.
+
+### IBKR -- infrastructure ready, still not connected
+
+`ibkr_preflight.py` is a readiness check that runs without a Gateway
+(`python -m pipelines.futures.ibkr_preflight`). It probes all four ports, reports which
+are open, flags a `settings.ibkr_port` that points somewhere closed, and prints the exact
+next step. Every earlier session recorded "all four ports closed" by hand; this makes that
+reproducible. Current status on this machine: all four closed, `FUTURES_SOURCE=manual`.
+
+`IBKRClient.get_settles` now **chunks its requests** (`duration_windows`,
+`IB_MAX_DAYS_PER_REQUEST = 365`). This was flagged in this file as a known gap that would
+break on first real use, and it would have: `pull_history` sends a single multi-decade
+`durationStr`, which IB rejects outright. Windows share their boundary date rather than
+leaving a one-day gap -- the duplicate bar is removed by the lake's own `(series_id, ts)`
+de-dup, whereas a gap would silently lose a settlement.
+
+Still open on the IBKR path, unchanged and still unverifiable without a live Gateway: two
+connections per root, and the unsanitised exception print.

@@ -15,6 +15,42 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 18 finally has real futures data** — 113,750 `fut.*` rows across 105 series,
+  where before there were none at all. Three sources, each covering a different end of
+  the problem, all writing the conventions' own series ids and partitioned by `source`.
+  - **`pipelines/futures/eia_futures.py` — history.** EIA's `petroleum/pri/fut` route
+    publishes real NYMEX settlements for contracts 1–4, free, through the API key Spec 01
+    already uses: WTI from 1983, heating oil from 1980, RBOB from 2005, pre-2006 NYMEX
+    unleaded 1985–2006. **113,661 rows.** The route is *discontinued* (verified against
+    its own metadata: it stops at 2024-04-05 while `pri/spt` runs to the present), so it
+    is history only and cannot drive a live board. It publishes ranks rather than contract
+    codes, so it writes `fut.<root>.f01..f04.settle` directly and bypasses `nearby_panel`
+    — `s12`/`s13`/`cv123` are computable, Dec–Dec and the roll calendar are not. RBOB
+    (`rb`) and pre-2006 unleaded (`hu`) are kept as separate roots rather than spliced at
+    ingestion, which is what `core.cracks.rbob_splice_flag` is for.
+  - **`pipelines/futures/barchart_curve.py` — one date, the whole curve.** A Barchart
+    spreads export carries no outright prices, but `SA` (strip average) and `SP` (spread)
+    on the same pair pin both legs, and every other contract follows from a spread against
+    an already-solved one. Rebuilds an **89-month Brent curve for 2026-09-04** (Nov-26
+    96.28 → Mar-34 67.51). Validated against a real published quote: reconstructed from
+    spread rows alone the front month comes out at **96.280** against Barchart's own
+    **96.28s**, over-determined anchors agree to half a cent, and an implied QAZ6−QAF7 of
+    3.17 matches the separately quoted 3.17 exactly. Without an `SA` anchor it raises
+    rather than returning a curve wrong by a constant. `source="manual"` — these settles
+    are reconstructed from a vendor export and must not pose as an exchange feed.
+  - **IBKR made ready.** New `pipelines/futures/ibkr_preflight.py` probes all four Gateway
+    ports without needing one running, flags a `settings.ibkr_port` pointing somewhere
+    closed, and prints the next step — replacing the hand-run port check every prior
+    session recorded. Current status: all four closed. Also **fixed a real latent bug**:
+    `IBKRClient.get_settles` sent a single multi-decade `durationStr`, which IB rejects
+    outright, so the very first `pull_history` run against a live Gateway would have
+    failed. It now chunks via `duration_windows` (365-day windows sharing their boundary
+    date, so the lake's own de-dup removes the duplicate bar rather than a gap losing a
+    settlement).
+  - **Fixed: manual data drops were never actually git-ignored.** `.gitignore` carried
+    `manual_settlements/*.csv`, but the path the code uses is `data/manual/futures`
+    (`client.py::MANUAL_FUTURES_DIR`), so nothing under `data/manual/` was ignored despite
+    the conventions saying it is. A dropped CSV could have been committed.
 - **Spec 20 Session B — crack VECM (Murat & Tokat 2009).** `core/vecm.py` (monthly
   aggregation, ADF/PP/KPSS unit roots, AIC/SIC lag choice over p=1..4, Bai-Perron +
   Andrews sup-F breaks, Johansen, VECM fit, Granger both ways, rolling-origin forecast

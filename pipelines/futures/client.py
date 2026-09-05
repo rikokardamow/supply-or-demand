@@ -6,7 +6,7 @@ is running on this machine) and why `ib_async` (not `ib_insync`) is the dependen
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Protocol
 
@@ -47,6 +47,33 @@ def load_contract_specs(path: Path = CONTRACT_SPECS_PATH) -> pd.DataFrame:
     before relying on these for a real trading calculation; they are not fetched live from
     anywhere, same precedent as pipelines/opec_momr/quotas.csv)."""
     return pd.read_csv(path)
+
+
+IB_MAX_DAYS_PER_REQUEST = 365
+"""IB's historical API caps how much a single daily-bar request may span. pull_history's
+own multi-decade backfill therefore has to be chunked -- a 1993-present `durationStr`
+is rejected outright, which is the first thing a real Gateway run would have hit."""
+
+
+def duration_windows(
+    start: date, end: date, max_days: int = IB_MAX_DAYS_PER_REQUEST
+) -> list[tuple[date, date]]:
+    """Split [start, end] into consecutive windows no longer than `max_days`.
+
+    Windows share their boundary date (each starts where the previous ended) rather than
+    leaving a one-day gap -- the duplicate bar is removed by the lake's own
+    (series_id, ts) de-dup on write, whereas a gap would silently lose a settlement.
+    """
+    if end < start:
+        raise ValueError("end must not be before start")
+
+    windows: list[tuple[date, date]] = []
+    cursor = start
+    while cursor < end:
+        stop = min(cursor + timedelta(days=max_days), end)
+        windows.append((cursor, stop))
+        cursor = stop
+    return windows or [(start, end)]
 
 
 class IBKRClient:
@@ -117,26 +144,28 @@ class IBKRClient:
                         localSymbol=contract.upper(),
                         exchange=specs["exchange"],
                     )
-                    bars = ib.reqHistoricalData(  # type: ignore[attr-defined]
-                        future,
-                        endDateTime=end,
-                        durationStr=f"{(end - start).days + 1} D",
-                        barSizeSetting="1 day",
-                        whatToShow="TRADES",
-                        useRTH=True,
-                        timeout=45,
-                    )
-                    for bar in bars:
-                        rows.append(
-                            {
-                                "date": pd.Timestamp(bar.date),
-                                "root": root,
-                                "contract": contract,
-                                "settle": float(bar.close),
-                                "oi": None,
-                                "volume": float(bar.volume),
-                            }
+                    # Chunked: a single multi-decade durationStr is rejected by IB.
+                    for window_start, window_end in duration_windows(start, end):
+                        bars = ib.reqHistoricalData(  # type: ignore[attr-defined]
+                            future,
+                            endDateTime=window_end,
+                            durationStr=f"{(window_end - window_start).days + 1} D",
+                            barSizeSetting="1 day",
+                            whatToShow="TRADES",
+                            useRTH=True,
+                            timeout=45,
                         )
+                        for bar in bars:
+                            rows.append(
+                                {
+                                    "date": pd.Timestamp(bar.date),
+                                    "root": root,
+                                    "contract": contract,
+                                    "settle": float(bar.close),
+                                    "oi": None,
+                                    "volume": float(bar.volume),
+                                }
+                            )
                 except Exception as exc:
                     print(f"{root} {contract}: FAILED ({type(exc).__name__}: {exc})", flush=True)
         finally:
