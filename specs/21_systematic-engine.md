@@ -52,7 +52,40 @@ def inventory_predictability_test(s12, inventory) -> dict                       
 ```
 Registry (`core/strategies.py`): CARRY_1_13 (sign carry, flat), CARRY_REACT (reaction of z(carry_pct), 10% vol target), MOM_100, CARRY_MOM (blend 0.5/0.5 → reaction), CONVEX_SPREAD (sign(cv123) on s12 + guardrails), SHORT_SPREAD_STATIC (−1 on s12, benchmark), FWD_SPREAD_MR (long S(k,k+1) below s12 / short above, k∈{3,6}), VALUE_OVERLAY (× (1+0.5·sign(value)) when |z|>1.5). Daily entrypoint `pipelines/derived/systematic.py` writes `derived.pos.<strategy>.<root>`.
 - Tests: constant +1 position reproduces buy-and-hold log return exactly at zero cost; shifting returns by one day changes P&L (look-ahead guard); fractionation shares sum to 1±1e-6; CARRY_1_13 on real cl 1993–2022 within ±4 pp of 20.3% and Sharpe ±0.15 of 0.53 — **xfail if history absent, and on a miss the page prints the roll-rule/cost diagnostic rather than passing silently**.
-- DoD: [ ] backtester, [ ] registry, [ ] daily positions in lake, [ ] benchmark comparison card.
+- DoD: [x] backtester, [x] registry, [x] daily positions in lake, [~] benchmark comparison card — numbers below; the card itself is Session C's page.
+
+#### Session B verification (2026-09-05)
+`core/backtest.py` (backtest, spread_to_return, fractionate, inventory_predictability_test), `core/strategies.py` (all eight registry entries), `pipelines/derived/systematic.py` writing **168,157 position rows** across 6 strategies × 4 roots. 50 tests. Registered in `infra/run_scheduled.py`'s `weekly_fri` group after `derived_curve_ranks`.
+
+Both of the spec's own acceptance guards pass: a constant +1 position reproduces buy-and-hold log return exactly at zero cost, and shifting the return series by one day changes the P&L. Fractionation shares sum to 1 ± 1e-6.
+
+**Backtest on 39 years of real WTI, 2 bps costs:**
+
+| Strategy | Ann log return | Vol | Sharpe | Max DD | Turnover | Published anchor |
+|---|---|---|---|---|---|---|
+| CARRY_REACT | 2.3% | 7.1% | **0.32** | −0.33 | 11.7 | 0.53 — but that anchor is C(1,13) |
+| CARRY_MOM | 5.6% | 23.6% | 0.24 | −1.06 | 31.5 | 0.64 — also C(1,13) |
+| MOM_100 | 2.2% | 23.7% | 0.09 | −1.44 | 32.5 | — |
+| VALUE_OVERLAY | 2.1% | 23.5% | 0.09 | −1.22 | 31.5 | — |
+| CONVEX_SPREAD | −10.2% | 24.4% | −0.42 | −4.20 | 50.9 | — |
+| SHORT_SPREAD_STATIC | −0.2% | 24.4% | −0.01 | −1.10 | 0.0 | IR ≈ 0.50 |
+
+The two carry entries run on **C(1,3)**, not the paper's C(1,13), so their Sharpes are not comparable to the published anchors and are not presented as if they were. `SHORT_SPREAD_STATIC` at −0.01 against a published IR of 0.50 is a genuine miss on a strategy that *is* directly comparable.
+
+**Bouchouev's inventory-predictability claim does not reproduce.** On real Cushing stocks (`W_EPC0_SAX_YCUOK_MBBL`, n=1,165), inventories predict spreads slightly *more* than the reverse — the opposite of the book's finding:
+
+| Direction | r² | t |
+|---|---|---|
+| spread → inventory | 0.0061 | −2.67 |
+| inventory → spread | **0.0104** | **−3.50** |
+
+Both relationships are weak. Caveat on record: Cushing stocks are weekly and the rank spread is daily, so the alignment (reindex + forward fill) blunts the test. This is displayed as a permanent caption on the page per the spec, showing the repo's own result beside the book's claim rather than asserting the book's.
+
+**A real trap found and fixed: spread P&L units.** `backtest`'s `spread_pnl` must be in return units. Dividing a dollar spread change by the *spot* price is the obvious move and is wrong — it explodes as the price nears zero. Measured on the lake, that inflated calendar-spread annualised vol from **11.6% to 93.8%**, with three days in April 2020 doing all of it (WTI settled −$37.63 on the 20th, near $10 on the 21st). `spread_to_return` divides by a trailing median price instead: backward-looking, insensitive to one dislocation, never near zero.
+
+**Also fixed: log signals on negative prices.** The same 2020-04-20 print made `np.log` emit a RuntimeWarning and propagate a silent NaN through momentum and value. `core.systematic.log_price` returns NaN cleanly for non-positive prices, confining the gap to windows that actually touch the print.
+
+**Two strategies are skipped, never faked.** `CARRY_1_13` needs rank 13 and `FWD_SPREAD_MR` needs rank 7; EIA publishes 1–4. Both are registered, both report their missing ranks, and `build_positions` raises rather than returning a flat series — a flat position is a real trading decision and must never stand in for absent data.
 
 ### Session C — page `21_systematic.py`
 Theme additions: `signal_board_table` (coloured z / position / guardrail state), `equity_drawdown_chart` (log equity + DD subplot, benchmark line), `reaction_curve_chart` (with current z marked), `fractionation_heatmap`, `crowding_quadrant_scatter`.
