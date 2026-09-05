@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import dataclasses
+
 import numpy as np
 import pandas as pd
+import pytest
+from core.strategies import REGISTRY
 from pipelines.derived.systematic import (
     POSITION_ROOTS,
     inputs_for_root,
@@ -37,6 +41,38 @@ def _lake(n: int = 900) -> pd.DataFrame:
     for r in (1, 2, 3, 4):
         add(f"fut.cl.f{r:02d}.settle", base - 0.4 * (r - 1))
     add("derived.curve.cl.f01_adj", base)
+    add("derived.cushing.util_decile", rng.integers(0, 10, n).astype(float))
+    add("derived.cot.cl.mm_pct_3y", rng.uniform(0, 1, n))
+    return pd.concat(frames, ignore_index=True)
+
+
+def _lake_without_f01_adj(n: int = 900) -> pd.DataFrame:
+    """Same as `_lake()` but with `derived.curve.cl.f01_adj` missing entirely -- reproduces
+    `derived_curve_ranks` having failed (or not yet run) for this root while the raw settle
+    legs it doesn't touch already exist in the lake."""
+    idx = pd.bdate_range("2015-01-01", periods=n)
+    rng = np.random.default_rng(0)
+    base = 70 + np.cumsum(rng.normal(0, 0.5, n))
+    frames = []
+
+    def add(series_id: str, values: np.ndarray) -> None:
+        frames.append(
+            pd.DataFrame(
+                {
+                    "series_id": series_id,
+                    "source": "eia",
+                    "ts": idx,
+                    "value": values,
+                    "unit": "USD/bbl",
+                    "geo": "US",
+                    "freq": "D",
+                    "revision_date": pd.Timestamp("2026-09-05"),
+                }
+            )
+        )
+
+    for r in (1, 2, 3, 4):
+        add(f"fut.cl.f{r:02d}.settle", base - 0.4 * (r - 1))
     add("derived.cushing.util_decile", rng.integers(0, 10, n).astype(float))
     add("derived.cot.cl.mm_pct_3y", rng.uniform(0, 1, n))
     return pd.concat(frames, ignore_index=True)
@@ -99,3 +135,51 @@ def test_a_root_with_no_data_produces_nothing() -> None:
     rows, skipped = rows_for_root(_lake(), "ho", pd.Timestamp("2026-09-05"))
     assert rows.empty
     assert skipped == {}
+
+
+# --- a missing adjusted front month must never fall back to the raw rank ----------
+
+
+def test_inputs_for_root_leaves_f01_adj_nan_when_the_adjusted_series_is_absent() -> None:
+    """derived.curve.cl.f01_adj missing must not silently fall back to the raw f01 rank --
+    core/systematic.py is explicit that a raw rank series scores the roll step as momentum."""
+    data = inputs_for_root(_lake_without_f01_adj(), "cl")
+    assert data is not None
+    assert data.f01_adj.isna().all()
+    assert not data.f01_adj.equals(data.unadj["f01"])
+
+
+def test_rows_for_root_skips_outright_strategies_when_the_adjusted_series_is_absent() -> None:
+    """Every strategy that actually consumes f01_adj must be reported as skipped, not
+    silently compute an all-NaN position and vanish from the written frame with no trace."""
+    rows, skipped = rows_for_root(_lake_without_f01_adj(), "cl", pd.Timestamp("2026-09-05"))
+    written = {sid.split(".")[2] for sid in rows["series_id"].unique()} if not rows.empty else set()
+    for name in ("MOM_100", "CARRY_MOM", "CARRY_REACT", "VALUE_OVERLAY"):
+        assert name not in written, name
+        assert "f01_adj" in skipped.get(name, ""), name
+
+
+def test_rows_for_root_still_writes_spread_strategies_when_the_adjusted_series_is_absent() -> None:
+    """CONVEX_SPREAD and SHORT_SPREAD_STATIC trade the unadjusted rank spread directly and
+    never touch f01_adj, so a missing adjusted series must not take them down too."""
+    rows, _ = rows_for_root(_lake_without_f01_adj(), "cl", pd.Timestamp("2026-09-05"))
+    written = {sid.split(".")[2] for sid in rows["series_id"].unique()}
+    assert {"CONVEX_SPREAD", "SHORT_SPREAD_STATIC"} <= written
+
+
+# --- a real bug must propagate, not be folded into the skip channel ---------------
+
+
+def test_rows_for_root_lets_a_non_key_error_propagate(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A genuine programming error inside a strategy's build function (anything other than
+    the documented KeyError for an absent rank) must propagate, not be swallowed into the
+    same `skipped` channel as CARRY_1_13's legitimate "needs rank 13"."""
+
+    def _broken(data: object) -> pd.Series:
+        raise TypeError("boom")
+
+    broken = dataclasses.replace(REGISTRY["MOM_100"], build=_broken)
+    monkeypatch.setitem(REGISTRY, "MOM_100", broken)
+
+    with pytest.raises(TypeError, match="boom"):
+        rows_for_root(_lake(), "cl", pd.Timestamp("2026-09-05"))

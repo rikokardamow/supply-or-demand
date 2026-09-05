@@ -9,12 +9,26 @@ returned by `rows_for_root` so the page can display them.
 
 On the lake's current futures data (EIA ranks 1-4) that means `CARRY_1_13` (needs rank 13)
 and `FWD_SPREAD_MR` (needs rank 7) are always skipped.
+
+**The same discipline applies to the adjusted front month.** `derived.curve.<root>.f01_adj`
+(written by `pipelines/derived/curve_ranks.py`, on the same `weekly_fri` cadence just before
+this module) can legitimately be absent -- that pipeline can fail for one root while the raw
+settle legs it doesn't touch still exist. `inputs_for_root` leaves `f01_adj` all-NaN rather
+than silently substituting the raw `f01` rank: `core/systematic.py` is explicit that a raw
+rank series scores the roll step as momentum, so a substitution would write a full set of
+wrong `derived.pos.*` rows indistinguishable from a correct run. `rows_for_root` then reports
+every "outright" strategy (the ones that actually consume `f01_adj`) as skipped with a
+reason, rather than letting them quietly compute an all-NaN position and vanish from the
+written frame with no trace. "spread" strategies (`CONVEX_SPREAD`, `SHORT_SPREAD_STATIC`,
+`FWD_SPREAD_MR`) trade the unadjusted rank spread directly and never touch `f01_adj`, so a
+missing adjusted series does not take them down too.
 """
 
 from __future__ import annotations
 
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from core.storage import read_ts_long, write_ts_long
 from core.strategies import (
@@ -65,7 +79,9 @@ def inputs_for_root(long_df: pd.DataFrame, root: str) -> StrategyInputs | None:
     f01_adj = (
         adjusted.iloc[:, 0].reindex(panel.index)
         if not adjusted.empty
-        else panel["f01"]
+        # Never substitute the raw rank: a roll step would then be scored as momentum.
+        # `rows_for_root` reports every strategy that actually needs this as skipped.
+        else pd.Series(np.nan, index=panel.index, dtype="float64")
     )
 
     util = _wide(long_df, [UTIL_SERIES])
@@ -117,11 +133,27 @@ def rows_for_root(
         if name not in runnable
     }
 
+    # `f01_adj` is left all-NaN by `inputs_for_root` when derived.curve.<root>.f01_adj is
+    # absent, rather than silently substituted with the raw rank. Every "outright" strategy
+    # consumes it (directly, or through vol_target/log_price); "spread" strategies trade the
+    # unadjusted rank spread and never touch it. Report the affected strategies as skipped
+    # here, before attempting to build them, so they never quietly compute an all-NaN
+    # position and vanish from the written frame with no trace.
+    if data.f01_adj.isna().all():
+        for name in list(runnable):
+            if REGISTRY[name].traded == "outright":
+                skipped[name] = (
+                    f"derived.curve.{root}.{ADJUSTED_SUFFIX} is absent from the lake -- "
+                    "an outright strategy on the raw rank would score the roll step as "
+                    "momentum, so it is skipped rather than run on the wrong input"
+                )
+                runnable.discard(name)
+
     frames = []
     for name in runnable:
         try:
             frames.append(position_rows(name, root, build_positions(name, data), ingested_at))
-        except Exception as exc:
+        except KeyError as exc:
             skipped[name] = f"{type(exc).__name__}: {exc}"
 
     frames = [f for f in frames if not f.empty]
