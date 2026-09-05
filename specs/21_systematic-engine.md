@@ -30,7 +30,19 @@ def position(blended_z, sizing="reaction") -> Series           # ∈ [-1, 1]
 def apply_guardrails(pos, util_decile, cot_pct) -> Series      # util≥9: cap short-spread at 25%; util≤2: cap long-backwardation/short-spread; cot>0.95 halve longs; <0.05 halve shorts
 ```
 - Tests: `reaction(1)=1`, `reaction(0)=0`, `reaction(2)=2e^{-1.5}≈0.446`, monotone up on [0,1] and down on [1,3]; carry sign +1 on a backwardated synthetic curve; guardrail caps applied.
-- DoD: [ ] functions, [ ] tests.
+- DoD: [x] functions, [x] tests.
+
+#### Session A verification (2026-09-05)
+`core/systematic.py` with all 15 functions; 32 tests in `tests/test_core_systematic.py`, all passing, including every acceptance value the spec names: `reaction(1)=1`, `reaction(0)=0`, `reaction(2)=2e^-1.5=0.446`, monotone up on [0,1] and down on [1,3], carry sign +1 on a backwardated curve, and each guardrail cap. Vectorised pandas throughout, no per-date loops; convexity is imported from `core/curve.py`, not recomputed.
+
+Smoke-checked on the real lake (39 years of WTI), not only synthetic data: carry(1,3) backwardated on 49.0% of days with mean −0.043; `carry_pct` mean +1.2% annualised (p5/p95 −29.6%/+38.5%); reaction positions bounded to [−1, 1] with |pos|>0.5 on 65.5% of days; momentum/value correlation **−0.40**, negative by construction as the overlay requires; guardrails altered 12.5% of positions, taking mean |position| from 0.643 to 0.579 — binding without dominating.
+
+**Ambiguity resolved explicitly.** The spec's low-utilisation guardrail reads "cap long-backwardation/short-spread", naming the trade twice. It is implemented as the symmetric counterpart of the high-utilisation rule: top-decile utilisation already implies contango so **shorts** are capped, bottom-decile implies backwardation so **longs** are capped. Both cap the position the inventory state already favours, which is the crowding logic the rule exists for. Recorded in `apply_guardrails`'s own docstring.
+
+#### C(1,13) is not reproducible from this data — a miss, recorded
+The spec's headline anchors are all C(1,13): carry ≈ 20.3% annualised, Sharpe 0.53, 1992–2022, and the carry–momentum blend at ≈ 24.7% / 0.64. That spread needs **rank 13**. The lake's only futures source is EIA's discontinued NYMEX route, which publishes **contracts 1–4 only** — so `carry(near=1, far=13)` cannot be computed at all, and Session B's "CARRY_1_13 on real cl 1993–2022 within ±4 pp" test cannot pass on any data currently obtainable.
+
+`carry`'s `far=13` default is kept to match the spec, and raises a clear `KeyError` naming the missing rank rather than silently returning an empty series. Session B's registry must therefore either xfail that benchmark (as the spec's own text already anticipates: "xfail if history absent") or substitute a shorter, honestly-labelled spread such as C(1,3) — never relabel a C(1,3) result as the paper's C(1,13) anchor. Unblocking this needs a futures source with a deferred curve: IBKR (`python -m pipelines.futures.ibkr_preflight`) or a manual settlement CSV.
 
 ### Session B — `core/backtest.py` and strategy registry
 ```python
