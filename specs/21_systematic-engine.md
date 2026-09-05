@@ -90,10 +90,21 @@ Both relationships are weak. Caveat on record: Cushing stocks are weekly and the
 ### Session C — page `21_systematic.py`
 Theme additions: `signal_board_table` (coloured z / position / guardrail state), `equity_drawdown_chart` (log equity + DD subplot, benchmark line), `reaction_curve_chart` (with current z marked), `fractionation_heatmap`, `crowding_quadrant_scatter`.
 Visualisation spec: signal board per root; equity curves + rolling 3y Sharpe for every registry entry beside the published anchor; reaction function with live z; fractionation heatmap (strategy × regime / util decile / COT quintile / roll window / month) and share-of-total bars; crowding monitor (COT pct vs signal z, inflection quadrant shaded); the inventory-predictability test result as a permanent caption.
-- DoD: [ ] page live, [ ] published-vs-repo deviation shown, [ ] ruff/mypy/pytest green.
+- DoD: [x] page live, [x] published-vs-repo deviation shown, [x] ruff/mypy/pytest green.
+
+#### Session C verification (2026-09-05)
+Five theme primitives (`signal_board_table`, `equity_drawdown_chart`, `reaction_curve_chart`, `fractionation_heatmap`, `crowding_quadrant_scatter`) with 12 tests, and page `apps/dashboard/pages/21_systematic.py` live across five tabs. Verified in a **real browser**, not only by import: `pytest -m browser -k systematic` passes, as does the page smoke test.
+
+**Deviation is shown for one strategy only, deliberately.** The card prints a repo-vs-published deviation for `SHORT_SPREAD_STATIC` and withholds it everywhere else, with the reason on screen: every other anchor is measured on **C(1,13)** and this lake's carry strategies run on **C(1,3)**. Subtracting a C(1,3) Sharpe from a C(1,13) anchor would produce a number that looks like a result and is not one. `SHORT_SPREAD_STATIC` is the one directly comparable case and it misses badly — −0.01 against a published IR of 0.50, displayed rather than buried.
+
+The two unavailable strategies get their own card naming the ranks they need, so a reader sees six of eight running and knows exactly why. The inventory-predictability test renders its non-reproduction as an `st.error` with the weekly-vs-daily caveat attached, per the spec's permanent-caption instruction.
+
+`reaction_curve_chart` draws R(z) from the same formula the sizing uses, so the chart cannot drift from the behaviour it documents.
 
 ## Definition of Done (spec)
-- [ ] Sessions A–C. [ ] Daily positions entrypoint registered with Spec 13 orchestration. [ ] Index + CHANGELOG.
+- [x] Sessions A–C. [x] Daily positions entrypoint registered with Spec 13 orchestration. [x] Index + CHANGELOG.
+
+**Spec 21 is complete.** Carry forward: `CARRY_1_13` and `FWD_SPREAD_MR` remain registered but unrunnable until a futures source with a deferred curve exists (IBKR, or a manual settlement CSV) — at which point both should start working with no code change, since the registry already declares their rank requirements. Spec 22 replaces `core.systematic.vol_target`'s rolling standard deviation with real GARCH-MIDAS-EVT vol, and Specs 20/24/25/26/27 should now reuse `core/backtest.py` rather than building their own.
 
 ## Session A opener
 > Read CLAUDE.md, specs/00_TRADING_CONVENTIONS.md, specs/21_systematic-engine.md. Plan Session A: `core/systematic.py` signals and sizing with tests, vectorised pandas only (no per-date loops). Read `core/curve.py` first and import from it rather than recomputing spreads.

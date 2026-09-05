@@ -15,6 +15,31 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 21 complete — systematic strategies engine (Sessions A–C).** `core/systematic.py`
+  (15 signal/sizing functions), `core/backtest.py` (backtester, `spread_to_return`,
+  fractionation, inventory-predictability test), `core/strategies.py` (eight-entry
+  registry), `pipelines/derived/systematic.py` writing **168,157 position rows**, five new
+  theme primitives, and page `21_systematic.py` — verified in a real browser, not only by
+  import. 95 new tests.
+  - **Six of eight strategies run; two are skipped and say so.** `CARRY_1_13` needs nearby
+    rank 13 and `FWD_SPREAD_MR` needs rank 7; EIA's discontinued route publishes 1–4.
+    Both stay registered and `build_positions` raises rather than returning a flat series
+    — a flat position is a real trading decision and must never stand in for missing data.
+  - **The published anchors are not comparable, and the page says so.** Bouchouev's
+    figures are all measured on C(1,13); these carry strategies run on C(1,3). A deviation
+    is printed for `SHORT_SPREAD_STATIC` alone, the one directly comparable case — and it
+    misses badly, **−0.01 against a published IR of 0.50**.
+  - **Bouchouev's inventory-predictability finding does not reproduce.** On real Cushing
+    stocks (n=1,165), inventories predict spreads slightly *more* than the reverse
+    (r² 0.0104, t −3.50 vs r² 0.0061, t −2.67). Both weak. Rendered as an error on the
+    page with the caveat that weekly stocks against a daily spread blunts the test.
+  - **A real units trap, found by disbelieving the output.** Dividing a dollar spread
+    change by the *spot* price to get return units explodes as price nears zero: it
+    inflated calendar-spread annualised vol from **11.6% to 93.8%**, three days in April
+    2020 doing all of it. `spread_to_return` uses a trailing median notional instead.
+  - **Negative prices handled explicitly.** The 2020-04-20 −$37.63 settle made `np.log`
+    warn and propagate a silent NaN through momentum and value; `log_price` now returns
+    NaN cleanly, confining the gap to windows that touch the print.
 - **Spec 20 Session C — ECT signal and page 20 (Spec 20 complete).** `core/vecm.py`
   gained `ect_signal` (β'y, rolling 60-month z-score, `-sign(z)` beyond entry and flat
   inside exit with hysteresis between, scaled by the crude leg's share of the adjustment
