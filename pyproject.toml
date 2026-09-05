@@ -34,6 +34,13 @@ dependencies = [
     # statsmodels has no Phillips-Perron test, which is what `arch` is for here; `arch`
     # is also what Spec 22's GARCH-MIDAS-EVT risk engine needs, so it is not a
     # single-use addition. Confirmed with the user before adding (root NOTES.md rule 7).
+    # OpenSky Network's official Python binding (Spec 28.04, airspace/aviation). Not
+    # published to PyPI, so it installs from the upstream repo's own `python/` subdirectory
+    # and is pinned to a commit rather than a tag -- an unpinned git dependency would let a
+    # silent upstream change alter behaviour with no lockfile to catch it. v1.4.0 uses the
+    # OAuth2 client-credentials flow (client_id/client_secret); the old username/password
+    # flow no longer exists.
+    "opensky-api @ git+https://github.com/openskynetwork/opensky-api.git@2f7def6609c5d0ec5ace05b034d8bd0d2527b86b#subdirectory=python",
     "statsmodels>=0.15",
     "ruptures>=1.1",
     "arch>=8.0",
@@ -114,6 +121,7 @@ module = [
     "ruptures.*",
     "arch.*",
     "scipy.*",
+    "opensky_api.*",
 ]
 ignore_missing_imports = true
 
