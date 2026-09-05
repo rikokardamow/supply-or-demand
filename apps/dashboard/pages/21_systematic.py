@@ -145,6 +145,9 @@ with tab_board:
                 signal_board_table(board, f"Latest positions ({positions.index.max():%d %b %Y})"),
                 width="stretch",
             )
+            disclosures = {n: REGISTRY[n].note for n in latest.index if REGISTRY[n].note}
+            for name, note in disclosures.items():
+                st.caption(f"**{name}** — {note}")
 
     with card("Strategies that cannot run on this data"):
         skipped = {
@@ -186,6 +189,9 @@ with tab_equity:
                     "published Sharpe": anchor_sharpe,
                     "deviation": (stats["sharpe"] - anchor_sharpe) if comparable else np.nan,
                     "basis": basis or "-",
+                    # The registry's own disclosure text, surfaced rather than hidden --
+                    # this is where "C(1,3), not the paper's C(1,13)" reaches the reader.
+                    "note": REGISTRY[name].note or "-",
                 }
             )
         if not rows:
@@ -199,10 +205,16 @@ with tab_equity:
                         "published Sharpe": "{:.2f}",
                         "deviation": "{:+.2f}",
                     },
-                    na_rep="—",
+                    na_rep="-",
                 ),
                 width="stretch",
                 hide_index=True,
+            )
+            st.caption(
+                "**Costing convention**, inherited by Specs 20 and 24-27: cost is charged "
+                "on `pos.diff()`, the day the *signal* changes, which is one day before "
+                "the new position starts earning. No look-ahead either way, but it is a "
+                "real convention choice rather than an inevitability."
             )
             st.warning(
                 "**Deviation is shown only for SHORT_SPREAD_STATIC.** Every other "
