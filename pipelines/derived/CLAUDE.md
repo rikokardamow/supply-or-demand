@@ -131,3 +131,40 @@ refining history unprompted: 2015-19 ≈ $17–19, 2020 $10.60, 2022 $41.11, 202
 Spec 20's own worked example `crack_321(70, 2.20, 2.40) = 28.53` is **wrong**; the correct
 value is **25.20**. Correction recorded in `specs/20_refining-crack-vecm.md` and in the
 test's own docstring.
+
+## `vecm_refit.py` — the model fails out-of-sample, and that is the finding (Spec 20 Session B)
+
+Monthly refit of the crack VECM. Writes a model card to `data/lake/vecm/model_card.parquet`
+as a plain Parquet manifest — the `pipelines/futures/series_meta.py` precedent — because a
+model card is not a `ts_long` series and `core/storage.py` still has no persisted-table
+mechanism. Registered in `infra/run_scheduled.py`'s `monthly` group.
+
+**Read the card before trusting the model.** On real data it reports `oos_status = fail`:
+
+- `theil_u = 1.0725` — the VECM is 7% *worse* than a random walk. DM stat +1.81, p = 0.070
+  (significantly worse at 10%), 32 exceptions in 60 forecasts.
+- `crack_i1 = False`. ADF and Phillips-Perron disagree on the spot crack in every sample
+  window, and PP rejects the unit root decisively (p = 0.008 full sample, 0.000 on the
+  paper's 1993-2008 window). A refining margin mean-reverts — it cannot drift without
+  bound — so it is not I(1), and the Johansen/VECM framework does not transfer to it.
+- `rank = 2` in a two-variable system is the standard signal that the system is already
+  stationary, not that there are two cointegrating relations.
+- Granger runs the *opposite* way to Murat & Tokat: crack->spot p = 0.442 (nothing),
+  spot->crack p = 0.038.
+
+None of this is a bug in the implementation — all three of the spec's synthetic acceptance
+tests pass (beta recovered at 0.1611 against a 0.16 target, the obs-120 break found at
+exactly 120, the random-walk look-ahead guard holds). The cause is the **spot legs**: the
+paper models crack *futures*, and the lake has no futures at all. Revisit the whole
+specification once Spec 18 ingests real settlements.
+
+**Do not tune the specification until it passes.** The conventions require a miss to be a
+visible diagnostic; the card carries `deviation` so the caveat travels with the numbers
+rather than living only in a docstring.
+
+### April 2003 was not recovered
+
+Bai-Perron with one break finds 2005-03 (+23 months); Andrews sup-F finds 2004-08 (+16).
+The 2004-05 crude run-up is a far larger level shift and dominates the search. Allowing two
+breaks surfaces 2003-01, three months from the paper's date — partial recovery obtained by
+relaxing the break count, not a clean replication. Recorded as a miss in the spec.

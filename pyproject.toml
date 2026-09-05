@@ -29,6 +29,14 @@ dependencies = [
     "fredapi>=0.5",
     "anthropic>=0.40",
     "ib-async>=2.1",
+    # Spec 20 Session B's crack VECM. statsmodels carries Johansen/VECM/ADF/KPSS/Granger
+    # and ruptures the Bai-Perron break search -- both named explicitly by the spec.
+    # statsmodels has no Phillips-Perron test, which is what `arch` is for here; `arch`
+    # is also what Spec 22's GARCH-MIDAS-EVT risk engine needs, so it is not a
+    # single-use addition. Confirmed with the user before adding (root CLAUDE.md rule 7).
+    "statsmodels>=0.15",
+    "ruptures>=1.1",
+    "arch>=8.0",
 ]
 
 [project.optional-dependencies]
@@ -101,6 +109,11 @@ module = [
     "cartopy.*",
     "fredapi.*",
     "ib_async.*",
+    # Spec 20 Session B's econometrics stack -- none of the three ships type stubs.
+    "statsmodels.*",
+    "ruptures.*",
+    "arch.*",
+    "scipy.*",
 ]
 ignore_missing_imports = true
 
