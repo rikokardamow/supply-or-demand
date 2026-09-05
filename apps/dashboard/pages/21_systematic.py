@@ -39,12 +39,8 @@ CUSHING_STOCKS = "W_EPC0_SAX_YCUOK_MBBL"
 BENCHMARK_STRATEGY = "SHORT_SPREAD_STATIC"
 COST_BPS = 2.0
 
-# Bouchouev, Virtual Barrels Ch. 5-6. Titles and figures only, no verbatim text.
-PUBLISHED = {
-    "CARRY_1_13": (0.203, 0.53, "C(1,13), 1992-2022, unleveraged"),
-    "CARRY_MOM": (0.247, 0.64, "carry-momentum blend, C(1,13)"),
-    BENCHMARK_STRATEGY: (float("nan"), 0.50, "static short front spread, IR"),
-}
+# Published anchors live on `Strategy.benchmark` in the registry, not here -- a second
+# copy on the page would be a second source of truth and would drift.
 
 st.title("Systematic Strategies Engine")
 st.caption(
@@ -178,9 +174,9 @@ with tab_equity:
             if run is None:
                 continue
             _, stats = run
-            anchor_return, anchor_sharpe, basis = PUBLISHED.get(
-                name, (float("nan"), float("nan"), "")
-            )
+            anchor = REGISTRY[name].benchmark
+            anchor_sharpe = anchor.sharpe if anchor else float("nan")
+            basis = anchor.source if anchor else ""
             comparable = name == BENCHMARK_STRATEGY
             rows.append(
                 {
