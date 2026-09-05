@@ -130,14 +130,19 @@ _FRACTIONATION_COLUMNS = ["condition", "bin", "n", "mean", "sharpe", "share_of_t
 
 
 def fractionate(
-    daily_pnl: pd.Series, conditioners: dict[str, pd.Series], bins: int = 5
+    daily_pnl: pd.Series,
+    conditioners: dict[str, pd.Series],
+    bins: int | dict[str, int] = 5,
 ) -> pd.DataFrame:
     """Split P&L by each conditioner and report where the money actually came from.
 
     `share_of_total` is each bin's signed share of the strategy's total P&L, so the
     shares within a condition sum to 1 by construction -- the spec's own acceptance test.
-    A conditioner with fewer distinct values than `bins` is grouped on its own values
-    rather than forced into empty quantiles; one that is entirely missing is skipped.
+    A conditioner with fewer distinct values than its own bin count is grouped on its own
+    values rather than forced into empty quantiles; one that is entirely missing is
+    skipped. `bins` is a single count shared by every conditioner, or a `{condition: n}`
+    map for conditioners that need different resolutions (a 3-state regime code beside a
+    continuous utilisation series, say).
     """
     rows = []
     total = daily_pnl.sum()
@@ -149,12 +154,13 @@ def fractionate(
         if usable.empty:
             continue
 
+        n_bins = bins[condition] if isinstance(bins, dict) else bins
         # Few distinct values (a regime code, a month) group on themselves; a continuous
         # conditioner is cut into quantiles.
         grouping = (
             values
-            if values.nunique() <= bins
-            else pd.qcut(values, bins, duplicates="drop")
+            if values.nunique() <= n_bins
+            else pd.qcut(values, n_bins, duplicates="drop")
         )
 
         for label, group in usable.groupby(grouping, observed=True):

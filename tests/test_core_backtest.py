@@ -178,6 +178,22 @@ def test_fractionation_skips_a_conditioner_that_is_entirely_missing() -> None:
     assert table.empty
 
 
+def test_fractionation_bins_accepts_a_per_condition_map() -> None:
+    """A discrete regime code and a continuous utilisation series need different
+    resolutions, so `bins` also takes a `{condition: n}` map, not just a single count."""
+    pnl = _returns(400)
+    rng = np.random.default_rng(9)
+    conditioners = {
+        "regime": pd.Series(rng.integers(0, 3, len(pnl)), index=pnl.index),
+        "util": pd.Series(rng.random(len(pnl)), index=pnl.index),
+    }
+    table = fractionate(pnl, conditioners, bins={"regime": 3, "util": 4})
+    assert table[table["condition"] == "regime"]["bin"].nunique() == 3
+    assert table[table["condition"] == "util"]["bin"].nunique() == 4
+    for condition, group in table.groupby("condition"):
+        assert group["share_of_total"].sum() == pytest.approx(1.0, abs=1e-6), condition
+
+
 # --- inventory predictability (Bouchouev) -----------------------------------------
 
 

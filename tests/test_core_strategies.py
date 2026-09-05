@@ -47,6 +47,21 @@ def test_every_entry_declares_what_it_trades() -> None:
         assert strategy.traded in {"outright", "spread"}, name
 
 
+def test_carry_1_13_carries_its_published_anchor() -> None:
+    """The literature anchor travels with the registry entry itself, independent of
+    whether today's four-rank panel can actually build the strategy -- CARRY_1_13 is
+    gated off (see test_carry_1_13_is_unavailable_on_a_four_rank_panel below), but its
+    benchmark is still real literature for what CARRY_1_13 *is*."""
+    bench = REGISTRY["CARRY_1_13"].benchmark
+    assert bench is not None
+    assert bench.ann_return == pytest.approx(0.203)
+    assert bench.sharpe == pytest.approx(0.53)
+
+
+def test_a_strategy_without_a_published_anchor_has_none() -> None:
+    assert REGISTRY["MOM_100"].benchmark is None
+
+
 # --- data availability, honestly reported -----------------------------------------
 
 
