@@ -66,7 +66,7 @@ CRACK_DEFS: dict[str, CrackDef] = {
 # backfill landed the only computable tenor was `spot`; with real `fut.*` ranks the
 # genuine m1/m2 crack futures -- the variable Murat & Tokat actually model -- exist too.
 
-FUT_TENORS = {"m1": "f01", "m2": "f02"}
+FUT_TENORS = {"m1": "f01", "m2": "f02", "m3": "f03", "m4": "f04"}
 """EIA publishes contracts 1-4 only, so there is no m6 to be had from this source."""
 
 
