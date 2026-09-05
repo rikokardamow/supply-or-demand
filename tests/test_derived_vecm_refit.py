@@ -4,10 +4,13 @@ import numpy as np
 import pandas as pd
 from pipelines.derived.vecm_refit import (
     CARD_COLUMNS,
+    CRACK_FUT_HU,
+    CRACK_FUT_RBOB,
     CRACK_SERIES,
     WTI_SERIES,
     build_panel,
     card_to_row,
+    crack_series,
     refit,
 )
 
@@ -98,3 +101,67 @@ def test_refit_falls_back_to_the_full_sample_when_the_break_leaves_too_little_da
     panel = build_panel(_lake_panel())
     card = refit(panel, test_size=24, min_post_break=10_000)
     assert card["sample"] == "full"
+
+
+# --- crack futures (added once Spec 18 got real fut.* data) -----------------------
+
+
+def _lake_panel_with_futures(months: int = 180) -> pd.DataFrame:
+    """Adds the two crack-futures legs either side of the RBOB changeover."""
+    raw = _lake_panel(months=months)
+    half = len(raw) // 2
+    raw[CRACK_FUT_HU] = raw[CRACK_SERIES] + 1.0
+    raw[CRACK_FUT_RBOB] = raw[CRACK_SERIES] + 1.0
+    raw.loc[raw.index[half:], CRACK_FUT_HU] = float("nan")
+    raw.loc[raw.index[:half], CRACK_FUT_RBOB] = float("nan")
+    return raw
+
+
+def test_crack_series_prefers_futures_when_they_exist() -> None:
+    """Murat & Tokat model crack *futures*; spot was only ever a stand-in for the years
+    the lake had no fut.* rows at all."""
+    _, source = crack_series(_lake_panel_with_futures())
+    assert source == "futures_m1_spliced"
+
+
+def test_crack_series_falls_back_to_spot_when_no_futures_exist() -> None:
+    _, source = crack_series(_lake_panel())
+    assert source == "spot"
+
+
+def test_crack_series_can_be_forced_onto_spot() -> None:
+    """Session B's original spot result has to stay reproducible for comparison."""
+    _, source = crack_series(_lake_panel_with_futures(), prefer_futures=False)
+    assert source == "spot"
+
+
+def test_the_splice_takes_pre_rbob_early_and_rbob_late() -> None:
+    panel = _lake_panel_with_futures()
+    spliced, _ = crack_series(panel)
+    assert spliced.index.min() == panel.index.min()
+    assert spliced.index.max() == panel.index.max()
+    assert spliced.notna().all()
+
+
+def test_refit_records_which_crack_it_used() -> None:
+    """A card that doesn't say whether it was fitted on futures or spot is unreadable --
+    the two produce materially different results."""
+    panel = build_panel(_lake_panel_with_futures())
+    card = refit(panel, test_size=24, crack_source="futures_m1_spliced")
+    assert card["crack_source"] == "futures_m1_spliced"
+    assert "crack_source" in CARD_COLUMNS
+
+
+def test_oos_status_distinguishes_beating_the_benchmark_from_merely_tolerable() -> None:
+    """A Theil U above 1 is worse than the random walk even when it is inside the refit
+    trigger. Collapsing those two into "pass" would let a losing model read as a winner.
+    """
+    panel = build_panel(_lake_panel_with_futures())
+    card = refit(panel, test_size=24, crack_source="futures_m1_spliced")
+    assert card["oos_status"] in {"beats_rw", "within_tolerance", "fail"}
+    if card["theil_u"] < 1.0:
+        assert card["oos_status"] == "beats_rw"
+    elif card["theil_u"] > 1.05:
+        assert card["oos_status"] == "fail"
+    else:
+        assert card["oos_status"] == "within_tolerance"

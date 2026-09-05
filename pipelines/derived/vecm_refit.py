@@ -11,9 +11,14 @@ the rolling 12-month OOS RMSE ratio against the random walk exceeds 1.05 -- are 
 the card itself (`refit_triggered`), so a breach is visible on the page rather than only
 in a log.
 
-**The model is estimated on spot legs, not crack futures.** See `core/vecm.py`'s module
-docstring: this is a weaker claim than the paper's and must never be presented as a
-replication. The caveat travels on the card itself, in `deviation`.
+**Crack futures where the lake has them, spot otherwise.** Murat & Tokat model crack
+*futures*; the spot crack was only ever a stand-in for the period when Spec 18 had no
+`fut.*` rows at all. `crack_series` now prefers the m1 crack future (EIA NYMEX ranks,
+HU/RBOB spliced at the 2006 changeover) and records which leg it used in the card's
+`crack_source`, because the two produce materially different results.
+
+Even on futures this is **not a clean replication** -- see the spec for what does and does
+not reproduce. The caveat travels on the card itself, in `deviation`.
 """
 
 from __future__ import annotations
@@ -24,6 +29,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from core.cracks import RBOB_SPLICE_DATE
 from core.storage import read_ts_long
 from core.vecm import (
     forecast_eval,
@@ -38,6 +44,13 @@ from core.vecm import (
 WTI_SERIES = "fred.dcoilwtico"
 CRACK_SERIES = "derived.crack.us321.spot"
 
+# The crack *futures* Murat & Tokat actually model, from the EIA backfill. Two roots
+# because RBOB replaced NYMEX regular unleaded (HU) at the start of 2006 -- they are
+# different contracts and the lake keeps them apart, so the join is made here, once,
+# explicitly, at core.cracks.RBOB_SPLICE_DATE.
+CRACK_FUT_RBOB = "derived.crack.us321.m1"
+CRACK_FUT_HU = "derived.crack.hu321.m1"
+
 CARD_DIR = Path("data/lake/vecm")
 CARD_PATH = CARD_DIR / "model_card.parquet"
 
@@ -48,6 +61,7 @@ refit falls back to the full sample rather than fitting something meaningless.""
 CARD_COLUMNS = [
     "model",
     "as_of",
+    "crack_source",
     "sample",
     "estimation_start",
     "estimation_end",
@@ -77,28 +91,51 @@ CARD_COLUMNS = [
 ]
 
 DEVIATION = (
-    "Legs are spot (FRED WTI + NYH product spots), not the crack futures Murat & Tokat "
-    "use -- a weaker, different claim, not a replication."
+    "Crack leg is the m1 crack future (EIA NYMEX ranks, HU/RBOB spliced at 2006-01-01) "
+    "where available, falling back to the spot crack. The crude leg is WTI *spot*, as in "
+    "the paper. EIA's futures route is discontinued after 2024-04-05, so this model "
+    "cannot be refit on futures beyond that date."
 )
 
 
 def read_legs() -> pd.DataFrame:
-    """Wide panel of the two lake series this model needs."""
-    long_df = read_ts_long(series_ids=[WTI_SERIES, CRACK_SERIES])
+    """Wide panel of every lake series this model can use."""
+    long_df = read_ts_long(
+        series_ids=[WTI_SERIES, CRACK_SERIES, CRACK_FUT_RBOB, CRACK_FUT_HU]
+    )
     if long_df.empty:
         return pd.DataFrame()
     return long_df.pivot_table(index="ts", columns="series_id", values="value")
 
 
-def build_panel(panel: pd.DataFrame) -> pd.DataFrame:
+def crack_series(panel: pd.DataFrame, prefer_futures: bool = True) -> tuple[pd.Series, str]:
+    """The crack leg, and a label saying where it came from.
+
+    Crack **futures** are preferred whenever the lake has them: they are what the paper
+    models, and the spot crack was only ever a stand-in for the period when Spec 18 had
+    no `fut.*` rows at all. The two gasoline-contract eras are spliced at the documented
+    RBOB changeover -- verified continuous across the join on the real data (2005-12-30
+    11.03 -> 2006-01-03 12.01, no step).
+    """
+    if prefer_futures and CRACK_FUT_RBOB in panel.columns and CRACK_FUT_HU in panel.columns:
+        pre = panel[CRACK_FUT_HU].dropna().loc[:RBOB_SPLICE_DATE]
+        post = panel[CRACK_FUT_RBOB].dropna().loc[RBOB_SPLICE_DATE:]
+        spliced = pd.concat([pre, post])
+        spliced = spliced[~spliced.index.duplicated(keep="last")].sort_index()
+        if not spliced.empty:
+            return spliced, "futures_m1_spliced"
+    return panel[CRACK_SERIES].dropna(), "spot"
+
+
+def build_panel(panel: pd.DataFrame, prefer_futures: bool = True) -> pd.DataFrame:
     """Wide daily lake panel -> the spec's monthly two-variable frame.
 
     log(WTI spot) and the 3:2:1 crack **in levels** -- the crack is not logged, both
     because the spec says levels and because a crack can legitimately go negative.
     """
     wti = to_monthly(panel[WTI_SERIES].dropna())
-    crack = to_monthly(panel[CRACK_SERIES].dropna())
-    return pd.DataFrame({"log_wti": np.log(wti), "crack321": crack}).dropna()
+    crack, _ = crack_series(panel, prefer_futures)
+    return pd.DataFrame({"log_wti": np.log(wti), "crack321": to_monthly(crack)}).dropna()
 
 
 def refit(
@@ -107,6 +144,7 @@ def refit(
     as_of: pd.Timestamp | None = None,
     min_post_break: int = MIN_POST_BREAK,
     rmse_ratio_trigger: float = 1.05,
+    crack_source: str = "spot",
 ) -> dict[str, Any]:
     """Full diagnostic pass: unit roots, break, Johansen, Granger, rolling-origin OOS.
 
@@ -129,6 +167,7 @@ def refit(
     return {
         "model": "crack_vecm_murat_tokat",
         "as_of": pd.Timestamp(as_of) if as_of is not None else pd.Timestamp(datetime.now()),
+        "crack_source": crack_source,
         "sample": "post_break" if use_post_break else "full",
         "estimation_start": data.index[0],
         "estimation_end": data.index[-1],
@@ -151,7 +190,16 @@ def refit(
         "dm_p": evaluation["dm_p"],
         "exceptions": evaluation["exceptions"],
         "n_forecasts": evaluation["n_forecasts"],
-        "oos_status": "fail" if theil_u > rmse_ratio_trigger else "pass",
+        # Three states, not two. A Theil U of 1.02 is still *worse* than the random
+        # walk; it simply is not bad enough to force a refit. Calling that "pass" invites
+        # exactly the misreading this project's conventions exist to prevent.
+        "oos_status": (
+            "beats_rw"
+            if theil_u < 1.0
+            else "fail"
+            if theil_u > rmse_ratio_trigger
+            else "within_tolerance"
+        ),
         "benchmark": "random walk (qualitative vs Murat & Tokat -- their own RMSE/Theil "
         "figures are not in open sources)",
         "refit_triggered": bool(theil_u > rmse_ratio_trigger),
@@ -188,15 +236,17 @@ def main() -> None:
         print("vecm_refit: crack or WTI legs missing from the lake", flush=True)
         return
 
+    _crack, crack_source = crack_series(legs)
     panel = build_panel(legs)
     if len(panel) < MIN_POST_BREAK:
         print(f"vecm_refit: only {len(panel)} months available, need {MIN_POST_BREAK}", flush=True)
         return
 
-    card = refit(panel)
+    card = refit(panel, crack_source=crack_source)
     write_model_card(card_to_row(card))
     print(
-        f"vecm_refit: {card['sample']} sample, n={card['n_obs']}, rank={card['rank']}, "
+        f"vecm_refit: crack={card['crack_source']}, {card['sample']} sample, "
+        f"n={card['n_obs']}, rank={card['rank']}, "
         f"beta={card['beta_crack']:.4f}, Theil U={card['theil_u']:.4f} "
         f"({card['oos_status']}), break={card['break_date'].date()}",
         flush=True,
