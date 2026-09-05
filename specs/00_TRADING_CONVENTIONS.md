@@ -50,6 +50,40 @@ passed through as the exchange writes them — prefer four digits in anything ne
 ## Model pages (Specs 20, 22, 23 and any backtest)
 Every model or backtest card shows: estimation window, last refit date, out-of-sample test status vs the named benchmark, exception count, and structural-break test date. Published benchmark figures from the source literature are displayed beside the repo's own estimate with the deviation; a miss is a visible diagnostic, never a silent pass.
 
+## Degenerate inputs fail loudly — never substitute silently
+An absent, empty or degenerate input must stop the computation and say why. It may never be
+silently replaced with a plausible stand-in, because a plausible-looking series is
+indistinguishable from a correct one everywhere downstream: no test fails, no console warns, and
+the wrong numbers reach a page carrying the same authority as right ones. Prefer, in order:
+raise with the reason; or emit all-NaN so the existing `dropna()` paths drop the rows and nothing
+is written; or record the skip with its cause. Never fall back to a different series.
+
+Four instances of this one pattern surfaced in Spec 21 alone, which is why it is written down:
+
+| Substitution | What it would have produced |
+|---|---|
+| Raw `f01` rank standing in for `derived.curve.<root>.f01_adj` when the adjusted series was absent | Every roll step scored as momentum; `MOM_100` and `VALUE_OVERLAY` still emit full, plausible position series |
+| Outright front-month returns standing in for spread P&L on `traded="spread"` strategies | `CONVEX_SPREAD` reads Sharpe **+0.35** instead of **−0.42** — a losing strategy shown as a winning one |
+| `np.log` on the 2020-04-20 −$37.63 WTI settle | A silent NaN propagating through momentum and value (fixed by `core.systematic.log_price`) |
+| A dollar spread change divided by spot price near zero | Calendar-spread annualised vol inflated 11.6% → 93.8%, three April-2020 days doing all of it (fixed by `core.backtest.spread_to_return`) |
+
+The guardrail path in `core/strategies.py` (`required_ranks` / `missing_ranks` /
+`available_strategies`, and `build_positions` raising rather than returning a flat series) is the
+reference implementation. `StrategyInputs.guardrail_inputs` is the reference for the all-NaN
+variant: an absent conditioner must never silently flatten a real position.
+
+## Provenance of published benchmark figures
+A number displayed as a published benchmark borrows the authority of the source it names, so the
+page must say where the chain actually stops. Figures transcribed into a spec from a book and then
+into code have been verified against the *spec*, not against the *book*; say so, rather than
+letting a column headed "published Sharpe" imply a check nobody performed. Spec 21's anchors
+(20.3%/0.53, 24.7%/0.64, IR 0.50) are transcribed from `specs/21_systematic-engine.md:5`, which
+cites Bouchouev ch. 5–6; none has been checked against Virtual Barrels itself.
+
+Never subtract a repo estimate from a published anchor computed on a different construction. A
+C(1,3) Sharpe minus a C(1,13) anchor yields a number that looks like a result and is not; withhold
+the deviation and state why.
+
 ## Session protocol (unchanged from CLAUDE.md, restated)
 Plan mode first. One session per sitting. Every session ends with `uv run pytest`, `uv run ruff check .`, `uv run mypy core pipelines` green, a live in-browser check of the page, and the session's Definition-of-Done boxes ticked in the spec with the verification actually performed. Cross-check at least one real number against an independent source per data session (as every spec so far has done). Never write a secret to a tracked file.
 
