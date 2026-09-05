@@ -860,3 +860,131 @@ def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
         title=title, xaxis_title="Business days from roll-window start", yaxis_title="Year"
     )
     return fig
+
+
+def cointegration_residual_chart(
+    ect: pd.Series,
+    z: pd.Series,
+    title: str,
+    unit: str,
+    z_entry: float = 1.5,
+    z_exit: float = 0.5,
+) -> go.Figure:
+    """Row 1: the fitted cointegrating relation (beta'y) in navy. Row 2: its rolling
+    z-score with the entry bands in red and the exit bands in orange.
+
+    Two rows rather than a dual axis: the ECT is in price units and the z-score is
+    dimensionless, so sharing an axis would imply a comparability that isn't there."""
+    fig = make_subplots(
+        rows=2, row_heights=[0.55, 0.45], vertical_spacing=0.12, shared_xaxes=True
+    )
+    fig.add_trace(
+        go.Scatter(x=ect.index, y=ect.to_numpy(), name="ECT", line={"color": NAVY, "width": 2}),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=z.index, y=z.to_numpy(), name="z-score", line={"color": LIGHT_BLUE, "width": 2}
+        ),
+        row=2,
+        col=1,
+    )
+    for level, colour, label in (
+        (z_entry, RED, "entry"),
+        (-z_entry, RED, None),
+        (z_exit, ORANGE, "exit"),
+        (-z_exit, ORANGE, None),
+    ):
+        fig.add_hline(
+            y=level,
+            line={"color": colour, "width": 1, "dash": "dash"},
+            annotation_text=label,
+            annotation_position="right",
+            row=2,
+            col=1,
+        )
+    fig.update_yaxes(title_text=unit, row=1, col=1)
+    fig.update_yaxes(title_text="z", row=2, col=1)
+    fig.update_layout(title=title)
+    return fig
+
+
+def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go.Figure:
+    """Impulse response over the forecast horizon. `irf` needs a `horizon` column plus
+    `response_col`. A zero line is drawn because the sign of the response is the whole
+    point of the chart."""
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=irf["horizon"],
+            y=irf[response_col],
+            mode="lines+markers",
+            name=response_col,
+            line={"color": NAVY, "width": 2},
+            marker={"size": 5},
+        )
+    )
+    fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
+    fig.update_layout(title=title, xaxis_title="Months after shock", yaxis_title=unit)
+    return fig
+
+
+def model_monitor_chart(
+    rmse_ratio: pd.Series, trigger: float, title: str, break_date: pd.Timestamp | None = None
+) -> go.Figure:
+    """Rolling out-of-sample RMSE ratio against the benchmark, with the refit trigger and
+    the parity line.
+
+    Parity (1.0) is drawn as well as the trigger because a ratio of 1.02 is already
+    *losing* to the benchmark even though it sits inside a 1.05 trigger -- the two lines
+    keep that distinction visible, which a single threshold line would hide."""
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=rmse_ratio.index,
+            y=rmse_ratio.to_numpy(),
+            name="OOS RMSE ratio",
+            line={"color": NAVY, "width": 2},
+        )
+    )
+    fig.add_hline(
+        y=1.0,
+        line={"color": GREY, "width": 1, "dash": "dot"},
+        annotation_text="parity with benchmark",
+        annotation_position="top left",
+    )
+    fig.add_hline(
+        y=trigger,
+        line={"color": RED, "width": 1, "dash": "dash"},
+        annotation_text=f"refit trigger ({trigger})",
+        annotation_position="bottom left",
+    )
+    if break_date is not None:
+        # Deliberately add_shape + add_annotation rather than add_vline(annotation_text=).
+        # add_vline routes an annotated line through plotly's own
+        # shapeannotation.annotation_params_for_line, which averages the line's endpoints
+        # with `float(sum(x)) / len(x)` to place the label -- that requires numeric x and
+        # raises on a datetime axis (TypeError against both a pandas Timestamp and an ISO
+        # string). Caught by tests/test_pages_smoke.py, which is precisely why a page
+        # actually has to be rendered rather than merely imported.
+        stamp = pd.Timestamp(break_date)
+        fig.add_shape(
+            type="line",
+            x0=stamp,
+            x1=stamp,
+            yref="paper",
+            y0=0,
+            y1=1,
+            line={"color": ORANGE, "width": 1, "dash": "dash"},
+        )
+        fig.add_annotation(
+            x=stamp,
+            yref="paper",
+            y=1.02,
+            text="structural break",
+            showarrow=False,
+            font={"color": ORANGE, "size": 11},
+        )
+    fig.update_layout(title=title, yaxis_title="model RMSE / benchmark RMSE")
+    return fig

@@ -123,10 +123,25 @@ def ect_signal(vecm, df, z_entry=1.5, z_exit=0.5) -> DataFrame   # ect = beta'y;
 Backtest through Spec 21's engine; fractionate by turnaround months (Mar–Apr, Sep–Oct).
 Theme additions: `cointegration_residual_chart` (fitted relation + ECT with entry bands), `irf_chart`, `model_monitor_chart` (rolling OOS RMSE ratio, DM stat, break status, last refit).
 Visualisation spec: crack board table with sparklines; crack forward strip vs 1y ago; seasonal heatmap; cointegration/ECT chart; IRF (crude response to crack shock, 24m); model monitor.
-- DoD: [ ] signal never uses y_{t+1} (shift test), [ ] backtest card, [ ] page live.
+- DoD: [x] signal never uses y_{t+1} (shift test), [x] backtest card, [x] page live.
+
+#### Session C verification (2026-09-05)
+`core/vecm.py` gained `ect_signal`, `backtest_positions` and `irf_table`; `core/theme.py` gained `cointegration_residual_chart`, `irf_chart` and `model_monitor_chart`; page `apps/dashboard/pages/20_cracks.py` is live with five tabs. 16 new tests in `tests/test_core_vecm_signal.py`.
+
+**The shift test caught a real look-ahead bug in the signal itself.** On its first run `ect`, `z`, `raw_position` and `momentum` all matched between a truncated and a full sample, but `position` did not: `vol_scale` was being normalised by the **full-sample median**, which reads observations after *t* into every earlier position. Fixed to an expanding median. This is exactly the failure the DoD box exists to catch, and it would have silently inflated any backtest.
+
+**Two stand-ins, both surfaced in the UI rather than buried:**
+- *Backtest engine.* The spec says "backtest through Spec 21's engine", but `core/systematic.py` does not exist. `backtest_positions` is a minimal position × forward-move calculation with turnaround fractionation — no costs, slippage or position limits. Replace when Spec 21 lands.
+- *Volatility scaling.* The spec says "1/σ (Spec 22 realised vol)", but `core/risk.py` does not exist. A plain rolling standard deviation stands in for GARCH-MIDAS-EVT.
+
+**Page honesty, per the runbook's "render NO-DATA, never fabricate":** the board's m1/m2/m6 tenors render empty because no *current* futures exist (EIA's route ends 2024-04-05 and no IBKR feed is connected) — a two-year-old settlement shown as a live tenor would be worse than a blank. The forward strip is labelled with its own as-of date and an explicit "not current" warning. The model card renders the random-walk failure as an `st.error`.
+
+Crack futures were extended to m3/m4 (EIA publishes ranks 1–4) so the forward strip has real shape; there is still no m6 from this source.
 
 ## Definition of Done (spec)
-- [ ] Boards, VECM, ECT signal, page 20 live; monthly refit entrypoint registered in Spec 13's orchestration. [ ] Index + CHANGELOG.
+- [x] Boards, VECM, ECT signal, page 20 live; monthly refit entrypoint registered in Spec 13's orchestration. [x] Index + CHANGELOG.
+
+**Spec 20 is complete, with the model's failure displayed rather than hidden.** Carry forward into Specs 21/22: `backtest_positions` and the rolling-σ vol scaling in `core/vecm.py` are stand-ins to be replaced by the real systematic and risk engines, and page 20's backtest card should be re-pointed at them.
 
 ## Session A opener
 > Read CLAUDE.md, specs/00_TRADING_CONVENTIONS.md, specs/20_refining-crack-vecm.md. Plan Session A: `core/cracks.py` boards, derived crack series via `pipelines/derived/cracks.py`, tests. Confirm the Spec 10 FRED spot series IDs in the lake first.

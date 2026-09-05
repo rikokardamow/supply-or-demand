@@ -3,13 +3,17 @@
 Pure maths only -- never touches DuckDB (root CLAUDE.md rule 2). `pipelines/derived/
 vecm_refit.py` reads the lake, calls these functions, and writes the model card back.
 
-**Deviation from the paper, to be shown on the page and never presented as a
-replication.** Murat & Tokat regress WTI spot on the 3:2:1 crack *futures*; their whole
-result is about the forecasting content of the futures. The lake holds no `fut.*` rows at
-all (Spec 18 has never ingested a real settlement), so the crack here is the **spot**
-crack from `pipelines/derived/cracks.py`. A spot-crack VECM is a weaker, different claim.
-The paper's own RMSE/Theil figures are not in open sources either, so the page benchmark
-is qualitative, per the spec.
+**Not a clean replication, and the page must never present it as one.** Murat & Tokat
+regress WTI spot on the 3:2:1 crack *futures*. Real crack futures now exist (Spec 18's EIA
+backfill), and `pipelines/derived/vecm_refit.py` uses them in preference to the spot crack
+— which lifted the result materially. What replicates on futures: cointegration at rank 1
+on the paper's own 1993-2008 window, with beta 0.191 against the paper's ~0.16. What does
+not: the crack is still not I(1) (ADF cannot reject, Phillips-Perron rejects at p=0.000 —
+a refining margin mean-reverts), causality runs spot -> crack rather than the paper's
+crack -> spot, the April-2003 break is not recovered, and the model does not beat a random
+walk (it moves from significantly worse on spot to statistically indistinguishable on
+futures). The paper's own RMSE/Theil figures are not in open sources, so the published
+benchmark is qualitative, per the spec.
 
 Spec 20 Session B's own model specification: variables log(WTI spot) and the 3:2:1 crack
 in levels; lag order by AIC/SIC over p=1..4; constant in the cointegration space
@@ -457,3 +461,165 @@ def model_card(
             "Legs are spot, not crack futures -- a weaker claim than the paper's."
         ),
     }
+
+
+# --- error-correction signal (Session C) -------------------------------------------
+
+TURNAROUND_MONTHS = (3, 4, 9, 10)
+"""Refinery turnaround seasons -- spring (Mar-Apr) and autumn (Sep-Oct). The spec
+fractionates the backtest by these because crack behaviour differs inside them."""
+
+
+def ect_signal(
+    vecm: VECMResults,
+    df: pd.DataFrame,
+    z_entry: float = 1.5,
+    z_exit: float = 0.5,
+    z_window: int = 60,
+    vol_window: int = 12,
+    momentum_months: int = 3,
+) -> pd.DataFrame:
+    """Error-correction trading signal on the fitted cointegrating relation.
+
+    `ect = beta'y`, z-scored on a **rolling** `z_window` (60 months per the spec, never
+    the full sample -- that would use the future). Position is `-sign(z)` beyond
+    `z_entry` and flat inside `z_exit`, holding in between so the signal does not
+    flip-flop on small moves.
+
+    Two scalings and one gate, per the spec:
+
+    - `alpha_scale`: the crude leg's share of the total adjustment speed,
+      `|alpha_crude| / (|alpha_crude| + |alpha_crack|)`. Bounded 0..1, so it scales the
+      position rather than exploding it when adjustment is slow.
+    - `vol_scale`: inverse realised volatility, normalised to its own median so the
+      average scale is about 1. **This is not Spec 22's realised vol** -- `core/risk.py`
+      does not exist yet, so this is a plain rolling standard deviation standing in for
+      the GARCH-MIDAS-EVT machinery Spec 22 will provide. Replace it when Spec 22 lands.
+    - momentum gate: the position is flattened wherever it fights `momentum_months`
+      crack momentum.
+
+    Everything here is backward-looking: rolling windows, `diff`, and a forward-filled
+    hysteresis state. Nothing reads `y_{t+1}` -- `tests/test_core_vecm_signal.py`'s own
+    shift test is the guard.
+    """
+    data = df.dropna()
+    beta = np.asarray(vecm.beta[:, 0], dtype=float)
+    beta = beta / beta[0]
+    ect = pd.Series(data.to_numpy(dtype=float) @ beta, index=data.index, name="ect")
+
+    rolling = ect.rolling(z_window)
+    z = (ect - rolling.mean()) / rolling.std()
+
+    alpha = np.abs(np.asarray(vecm.alpha[:, 0], dtype=float))
+    alpha_scale = float(alpha[0] / alpha.sum()) if alpha.sum() > 0 else 0.0
+
+    crack = data.iloc[:, 1]
+    returns = crack.diff()
+    realised_vol = returns.rolling(vol_window).std()
+    vol_scale = (1.0 / realised_vol).replace([np.inf, -np.inf], np.nan)
+    # Normalised by an EXPANDING median, not the full-sample one. A full-sample median
+    # is computed from observations after t and silently leaks the future into every
+    # earlier position -- caught by this module's own shift test, which passed on ect/z/
+    # raw_position and failed only on the scaled position.
+    vol_scale = vol_scale / vol_scale.expanding(min_periods=vol_window).median()
+
+    momentum = crack.diff(momentum_months)
+
+    raw = _hysteresis_position(z, z_entry, z_exit)
+    fights_momentum = (raw != 0) & (np.sign(raw) != np.sign(momentum))
+    position = raw * alpha_scale * vol_scale
+    position[fights_momentum] = 0.0
+    position[raw == 0] = 0.0
+
+    return pd.DataFrame(
+        {
+            "ect": ect,
+            "z": z,
+            "raw_position": raw,
+            "alpha_scale": alpha_scale,
+            "vol_scale": vol_scale,
+            "momentum": momentum,
+            "position": position,
+        }
+    )
+
+
+def _hysteresis_position(z: pd.Series, z_entry: float, z_exit: float) -> pd.Series:
+    """-sign(z) beyond entry, flat inside exit, previous state in between."""
+    out = np.zeros(len(z), dtype=float)
+    state = 0.0
+    for i, value in enumerate(z.to_numpy(dtype=float)):
+        if np.isnan(value):
+            state = 0.0
+        elif abs(value) >= z_entry:
+            state = -float(np.sign(value))
+        elif abs(value) <= z_exit:
+            state = 0.0
+        out[i] = state
+    return pd.Series(out, index=z.index, name="raw_position")
+
+
+def backtest_positions(positions: pd.Series, crack: pd.Series) -> dict[str, Any]:
+    """Minimal position backtest: yesterday's position earns today's move.
+
+    **This is not Spec 21's systematic engine** -- `core/systematic.py` does not exist
+    yet. This is a deliberately small stand-in so Session C's backtest card has real
+    numbers behind it; replace it with the real engine when Spec 21 lands.
+
+    The position is shifted by one period before being applied, so a position formed at
+    *t* earns the return from *t* to *t+1* and never the return into *t*.
+    """
+    aligned = pd.DataFrame({"position": positions, "crack": crack}).dropna(subset=["crack"])
+    aligned["position"] = aligned["position"].fillna(0.0)
+    forward_move = aligned["crack"].diff().shift(-1)
+    pnl = (aligned["position"] * forward_move).fillna(0.0)
+
+    traded = pnl[aligned["position"] != 0]
+    equity = pnl.cumsum()
+    drawdown = equity - equity.cummax()
+    turnaround = pd.DatetimeIndex(pnl.index).month.isin(TURNAROUND_MONTHS)
+
+    def _sharpe(series: pd.Series) -> float:
+        if series.empty or series.std() == 0:
+            return float("nan")
+        return float(series.mean() / series.std() * np.sqrt(12))
+
+    summary = {
+        "total_pnl": float(pnl.sum()),
+        "sharpe": _sharpe(pnl),
+        "hit_rate": float((traded > 0).mean()) if len(traded) else float("nan"),
+        "max_drawdown": float(drawdown.min()),
+        "n_trades": int((aligned["position"].diff().fillna(0) != 0).sum()),
+        "n_periods": len(pnl),
+        "turnaround": {
+            "total_pnl": float(pnl[turnaround].sum()),
+            "sharpe": _sharpe(pnl[turnaround]),
+            "n_periods": int(turnaround.sum()),
+        },
+        "non_turnaround": {
+            "total_pnl": float(pnl[~turnaround].sum()),
+            "sharpe": _sharpe(pnl[~turnaround]),
+            "n_periods": int((~turnaround).sum()),
+        },
+        "engine": "session-C stand-in, not Spec 21's systematic engine",
+    }
+    return {"pnl": pnl, "equity": equity, "drawdown": drawdown, "summary": summary}
+
+
+def irf_table(vecm: VECMResults, periods: int = 24) -> pd.DataFrame:
+    """Impulse responses, horizon 0..periods.
+
+    `crude_to_crack_shock` is the spec's own page chart: the crude leg's response to a
+    one-standard-deviation shock in the crack. statsmodels indexes `irfs` as
+    [horizon, response variable, shock variable].
+    """
+    responses = vecm.irf(periods).irfs
+    return pd.DataFrame(
+        {
+            "horizon": range(responses.shape[0]),
+            "crude_to_crack_shock": responses[:, 0, 1],
+            "crack_to_crude_shock": responses[:, 1, 0],
+            "crude_to_crude_shock": responses[:, 0, 0],
+            "crack_to_crack_shock": responses[:, 1, 1],
+        }
+    )

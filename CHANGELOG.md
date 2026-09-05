@@ -15,6 +15,33 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 20 Session C — ECT signal and page 20 (Spec 20 complete).** `core/vecm.py`
+  gained `ect_signal` (β'y, rolling 60-month z-score, `-sign(z)` beyond entry and flat
+  inside exit with hysteresis between, scaled by the crude leg's share of the adjustment
+  speed and by inverse realised vol, flattened where it fights 3-month crack momentum),
+  `backtest_positions` (turnaround-month fractionation) and `irf_table`. `core/theme.py`
+  gained `cointegration_residual_chart`, `irf_chart` and `model_monitor_chart`. Page
+  `apps/dashboard/pages/20_cracks.py` is live. 16 new tests.
+  - **The DoD's own shift test caught a real look-ahead bug in the signal.** On its first
+    run `ect`, `z`, `raw_position` and `momentum` all matched between a truncated and a
+    full sample but `position` did not: `vol_scale` was normalised by the *full-sample*
+    median, reading observations after *t* into every earlier position. Fixed to an
+    expanding median. Left in, it would have silently inflated any backtest.
+  - **Two documented stand-ins, surfaced in the UI rather than buried.** The spec calls
+    for Spec 21's backtest engine and Spec 22's realised vol; neither `core/systematic.py`
+    nor `core/risk.py` exists. The backtest is a minimal position × forward-move
+    calculation with no costs, slippage or position limits, and the vol scaling is a plain
+    rolling standard deviation. The page says so in a warning.
+  - **Page renders its gaps honestly.** Board m1/m2/m6 tenors are empty because no
+    *current* futures exist (EIA's route ends 2024-04-05, no IBKR feed) — a two-year-old
+    settlement shown as a live tenor would be worse than a blank. The forward strip
+    carries its own as-of date and a "not current" warning. The model card shows the
+    random-walk failure as an error, per the conventions' "a miss is a visible
+    diagnostic".
+  - `model_monitor_chart` draws parity *and* the refit trigger, because a ratio of 1.02 is
+    already losing to the benchmark while sitting inside a 1.05 trigger.
+  - Crack futures extended to m3/m4 (EIA publishes ranks 1–4) so the forward strip has
+    real shape. There is still no m6 from this source.
 - **Spec 18 finally has real futures data** — 113,750 `fut.*` rows across 105 series,
   where before there were none at all. Three sources, each covering a different end of
   the problem, all writing the conventions' own series ids and partitioned by `source`.
