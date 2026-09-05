@@ -81,6 +81,40 @@ def _model_panel() -> pd.DataFrame:
     return pd.DataFrame() if legs.empty else build_panel(legs)
 
 
+# The VECM work below is genuinely expensive -- `forecast_eval` refits the model once per
+# rolling origin (60 refits at the default test_size), and the page would otherwise fit it
+# again for every card. Cached so a tab switch is instant rather than re-running the
+# econometrics. Returned objects are plain frames/dicts, so st.cache_data can pickle them;
+# the fitted VECMResults itself is deliberately not cached across reruns.
+@st.cache_data(ttl=3600)
+def _signal_frame() -> pd.DataFrame:
+    panel = _model_panel()
+    if panel.empty or len(panel) < 80:
+        return pd.DataFrame()
+    return ect_signal(fit_vecm(panel), panel, z_entry=Z_ENTRY, z_exit=Z_EXIT)
+
+
+@st.cache_data(ttl=3600)
+def _irf_frame() -> pd.DataFrame:
+    panel = _model_panel()
+    if panel.empty or len(panel) < 80:
+        return pd.DataFrame()
+    return irf_table(fit_vecm(panel), periods=24)
+
+
+@st.cache_data(ttl=3600)
+def _rmse_ratio() -> pd.Series:
+    """Rolling 12-month out-of-sample RMSE ratio against the random walk."""
+    panel = _model_panel()
+    if panel.empty or len(panel) < 140:
+        return pd.Series(dtype=float)
+    evaluation = forecast_eval(panel, test_size=60)
+    origins = panel.index[-evaluation["n_forecasts"] :]
+    vecm_rmse = pd.Series(evaluation["errors_vecm"] ** 2, index=origins).rolling(12).mean() ** 0.5
+    rw_rmse = pd.Series(evaluation["errors_rw"] ** 2, index=origins).rolling(12).mean() ** 0.5
+    return (vecm_rmse / rw_rmse).dropna()
+
+
 tab_board, tab_seasonal, tab_curve, tab_model, tab_signal = st.tabs(
     ["Crack Board", "Seasonality", "Forward Strip", "Cointegration & Model", "ECT Signal"]
 )
@@ -220,11 +254,10 @@ with tab_model:
             )
 
     with card("Cointegrating relation and error-correction term"):
-        if panel.empty or len(panel) < 80:
+        signal = _signal_frame()
+        if signal.empty:
             st.info("Not enough monthly observations to fit the VECM.")
         else:
-            fitted = fit_vecm(panel)
-            signal = ect_signal(fitted, panel, z_entry=Z_ENTRY, z_exit=Z_EXIT)
             st.plotly_chart(
                 cointegration_residual_chart(
                     signal["ect"].dropna(),
@@ -238,12 +271,13 @@ with tab_model:
             )
 
     with card("Impulse response — crude's reaction to a crack shock"):
-        if panel.empty or len(panel) < 80:
+        irf = _irf_frame()
+        if irf.empty:
             st.info("Not enough monthly observations to fit the VECM.")
         else:
             st.plotly_chart(
                 irf_chart(
-                    irf_table(fit_vecm(panel), periods=24),
+                    irf,
                     "crude_to_crack_shock",
                     "Response of log(WTI spot) to a 1 s.d. crack shock",
                     "log $/bbl",
@@ -252,18 +286,13 @@ with tab_model:
             )
 
     with card("Model monitor — rolling out-of-sample RMSE ratio"):
-        if panel.empty or len(panel) < 140:
+        ratio = _rmse_ratio()
+        if ratio.empty:
             st.info("Not enough history for a rolling out-of-sample evaluation.")
         else:
-            evaluation = forecast_eval(panel, test_size=60)
-            origins = panel.index[-evaluation["n_forecasts"] :]
-            ratio = (
-                pd.Series(evaluation["errors_vecm"] ** 2, index=origins).rolling(12).mean() ** 0.5
-                / pd.Series(evaluation["errors_rw"] ** 2, index=origins).rolling(12).mean() ** 0.5
-            )
             st.plotly_chart(
                 model_monitor_chart(
-                    ratio.dropna(),
+                    ratio,
                     REFIT_TRIGGER,
                     "Rolling 12-month OOS RMSE ratio vs the random walk",
                     break_date=None if card_df.empty else card_df.iloc[-1]["break_date"],
@@ -280,11 +309,10 @@ with tab_model:
 with tab_signal:
     panel = _model_panel()
     with card("Error-correction signal"):
-        if panel.empty or len(panel) < 80:
+        signal = _signal_frame()
+        if signal.empty:
             st.info("Not enough monthly observations to fit the VECM.")
         else:
-            fitted = fit_vecm(panel)
-            signal = ect_signal(fitted, panel, z_entry=Z_ENTRY, z_exit=Z_EXIT)
             result = backtest_positions(signal["position"], panel["crack321"])
             summary = result["summary"]
 
