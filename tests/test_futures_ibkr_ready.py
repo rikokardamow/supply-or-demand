@@ -87,3 +87,27 @@ def test_preflight_never_raises_when_the_probe_itself_fails() -> None:
 
     report = preflight(port_open=exploding)
     assert report["ready"] is False
+
+
+# --- contract-code / rank-code collision guard ------------------------------------
+
+
+def test_rank_pattern_matches_only_the_conventions_two_digit_rank_space() -> None:
+    from pipelines.futures.client import looks_like_rank_code
+
+    assert looks_like_rank_code("f01")
+    assert looks_like_rank_code("f36")
+    assert not looks_like_rank_code("f37")
+    assert not looks_like_rank_code("f00")
+    assert not looks_like_rank_code("z26")
+
+
+def test_a_january_contract_with_a_two_digit_year_is_rejected_as_ambiguous() -> None:
+    """`f27` could be the Jan-2027 contract or nearby rank 27. Eight such series were
+    live in the lake before this guard existed, so an operator CSV must not be able to
+    reintroduce one -- four-digit years (`f2027`) are unambiguous and accepted.
+    """
+    from pipelines.futures.client import looks_like_rank_code
+
+    assert looks_like_rank_code("f27")
+    assert not looks_like_rank_code("f2027")

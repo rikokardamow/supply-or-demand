@@ -5,6 +5,7 @@ is running on this machine) and why `ib_async` (not `ib_insync`) is the dependen
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -47,6 +48,22 @@ def load_contract_specs(path: Path = CONTRACT_SPECS_PATH) -> pd.DataFrame:
     before relying on these for a real trading calculation; they are not fetched live from
     anywhere, same precedent as pipelines/opec_momr/quotas.csv)."""
     return pd.read_csv(path)
+
+
+RANK_CODE_PATTERN = re.compile(r"f(0[1-9]|[12][0-9]|3[0-6])")
+"""The conventions' nearby-rank namespace: `fut.<root>.f01.settle` ... `f36`."""
+
+
+def looks_like_rank_code(contract: str) -> bool:
+    """True if a *contract* code is indistinguishable from a nearby rank.
+
+    January's exchange month letter is "F", so a Jan-2027 contract written with a
+    two-digit year (`f27`) collides with rank 27. Eight such series were live in the lake
+    before this was caught. Four-digit years (`f2027`) cannot collide, and are what
+    `pipelines/futures/barchart_curve.py` now emits -- anything reaching the lake from an
+    operator CSV or IBKR must clear this guard too.
+    """
+    return RANK_CODE_PATTERN.fullmatch(contract.strip().lower()) is not None
 
 
 IB_MAX_DAYS_PER_REQUEST = 365
@@ -217,6 +234,16 @@ class ManualCSVClient:
         if duplicated.any():
             dupes = df.loc[duplicated, ["date", "root", "contract"]].drop_duplicates()
             raise ValueError(f"duplicate (date, root, contract) rows: {dupes.to_dict('records')}")
+
+        # A contract code shaped like a nearby rank is ambiguous once it becomes a
+        # series_id -- see looks_like_rank_code. Reject at ingestion rather than let it
+        # silently masquerade as a rank in the lake.
+        ambiguous = sorted({c for c in df["contract"].astype(str) if looks_like_rank_code(c)})
+        if ambiguous:
+            raise ValueError(
+                f"contract codes collide with the nearby-rank namespace f01..f36: "
+                f"{ambiguous}. Use a four-digit year (e.g. 'f2027', not 'f27')."
+            )
 
     def list_contracts(self, root: str) -> list[ContractMeta]:
         df = self._read_all_csvs()

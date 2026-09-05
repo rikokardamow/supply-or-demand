@@ -24,6 +24,26 @@ Pure analytics modules never touch DuckDB; pages never call APIs. Same as today.
 - Values always `float64` on write (v0.11 lesson). Spreads and convexity are sub-dollar — add a regression test on the futures pipeline that a `0.35` spread reads back as `0.35`, not `0`.
 - Publication lag respected at signal time: EIA weekly (Wed for prior Fri), CFTC (Fri for prior Tue), MOMR (mid-month), IP (~6 weeks). A signal at date *t* may only use rows with `date <= t` **and** `release_date <= t`; use `core/calendars.py`.
 
+### Contract codes must not collide with nearby ranks (found live, 2026-09-05)
+
+This file's own two examples are in tension: futures contracts as `fut.cl.z26.settle`
+(month letter + **two**-digit year) and derived nearby ranks as `fut.cl.f01.settle` …
+`f36`. January's exchange month letter is **F**, so a January contract with a two-digit
+year in 01–36 is *indistinguishable from a rank*: `fut.cl.f27.settle` reads equally as
+"the January 2027 contract" and "nearby rank 27".
+
+This was not hypothetical — eight such series (`fut.lco.f27.settle` … `f34.settle`, the
+Jan-2027 to Jan-2034 Brent contracts) were live in the lake before it was caught, while
+building Spec 21, the first spec that reads rank series directly.
+
+**The rule:** a contract code must never match `f(0[1-9]|[12][0-9]|3[0-6])`.
+`pipelines/futures/client.py::looks_like_rank_code` is the single definition, and
+`ManualCSVClient._validate` rejects any drop that violates it, with the fix in the error
+message. `pipelines/futures/barchart_curve.py` emits four-digit years (`f2027`, `z2026`)
+throughout, which cannot collide by construction. Non-January two-digit codes (`z26`) are
+unambiguous and still accepted from exchange-native sources, so IBKR/manual codes are
+passed through as the exchange writes them — prefer four digits in anything new.
+
 ## Roll-adjusted continuous series
 `core/curve.py` owns the nearby construction. Roll `roll_days_before_expiry=5` business days before expiry (parameter). Two outputs are stored: unadjusted ranks (for spreads, always) and ratio-back-adjusted `f01` (for returns only). Never compute a spread from the adjusted series.
 

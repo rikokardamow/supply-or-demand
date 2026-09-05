@@ -16,20 +16,20 @@ def test_manual_csv_client_reads_the_synthetic_fixture() -> None:
     client = ManualCSVClient(data_dir=FIXTURE_DIR)
 
     contracts = client.list_contracts("cl")
-    assert {c.contract for c in contracts} == {"z26", "f27"}
-    z26 = next(c for c in contracts if c.contract == "z26")
-    assert z26.expiry == date(2026, 11, 20)
-    assert z26.tick_size == pytest.approx(0.01)
-    assert z26.contract_unit == "1000 bbl"
-    assert z26.currency == "USD"
+    assert {c.contract for c in contracts} == {"z2026", "f2027"}
+    z2026 = next(c for c in contracts if c.contract == "z2026")
+    assert z2026.expiry == date(2026, 11, 20)
+    assert z2026.tick_size == pytest.approx(0.01)
+    assert z2026.contract_unit == "1000 bbl"
+    assert z2026.currency == "USD"
 
     settles = client.get_settles(
-        "cl", ["z26", "f27"], date(2026, 8, 1), date(2026, 8, 3)
+        "cl", ["z2026", "f2027"], date(2026, 8, 1), date(2026, 8, 3)
     )
     assert len(settles) == 6
     assert set(settles.columns) == {"date", "root", "contract", "settle", "oi", "volume"}
-    z26_settles = settles[settles["contract"] == "z26"].sort_values("date")
-    assert z26_settles["settle"].tolist() == [61.35, 61.72, 62.10]
+    z2026_settles = settles[settles["contract"] == "z2026"].sort_values("date")
+    assert z2026_settles["settle"].tolist() == [61.35, 61.72, 62.10]
 
 
 def test_manual_csv_client_returns_empty_for_a_root_with_no_data() -> None:
@@ -53,7 +53,7 @@ def test_manual_csv_client_rejects_duplicate_date_root_contract_rows(tmp_path: P
 def test_manual_csv_client_allows_the_same_contract_code_across_different_roots(
     tmp_path: Path,
 ) -> None:
-    """Real, confirmed-live gotcha: contract codes are month+year only (e.g. "z26"),
+    """Real, confirmed-live gotcha: contract codes are month+year only (e.g. "z2026"),
     shared across every root trading that expiry cycle -- cl/z26 and ng/z26 on the
     same real date are both genuinely valid rows, not a duplicate. An earlier version
     of _validate keyed only on (date, contract) and would have wrongly rejected this."""

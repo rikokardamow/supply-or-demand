@@ -12,6 +12,8 @@ holiday-exact roll dates against. Revisit once real data demands more precision.
 
 from __future__ import annotations
 
+from datetime import date
+
 import numpy as np
 import pandas as pd
 
@@ -408,3 +410,107 @@ def tas_window_flag(dates: pd.DatetimeIndex, cl_expiry: pd.Series) -> pd.Series:
         day2 = _business_days_before(expiry, 2)
         flags |= dates.isin([day1, day2])
     return flags
+
+
+# --- rank-sourced curves (EIA publishes ranks, not contracts) ----------------------
+#
+# `nearby_panel` above derives ranks FROM contract codes plus expiries. EIA's futures
+# route publishes "Contract 1..4" directly, with no contract code, expiry, open interest
+# or volume, so that path cannot be used for it at all. These two functions recover what
+# is still recoverable from a rank panel alone.
+
+
+_LAST_BUSINESS_DAY_ROOTS = {"rb", "ho", "hu"}
+_TWENTY_FIFTH_ROOTS = {"cl"}
+
+
+def nymex_expiry(root: str, year: int, month: int) -> date:
+    """Published last-trading day for a NYMEX contract month, from the exchange's rule.
+
+    - `cl`: three business days before the 25th calendar day of the month preceding
+      delivery; if the 25th is not a business day, the count starts from the business day
+      before it.
+    - `rb`/`ho`/`hu`: the last business day of the month preceding delivery.
+
+    Business days are Monday-Friday only. `core/curve.py` already makes this
+    approximation for its roll arithmetic (documented in `pipelines/derived/NOTES.md`):
+    an exchange holiday falling in the counting window shifts the real date by a day.
+    """
+    prior_year, prior_month = (year, month - 1) if month > 1 else (year - 1, 12)
+
+    if root in _LAST_BUSINESS_DAY_ROOTS:
+        last = pd.Timestamp(year=prior_year, month=prior_month, day=1) + pd.offsets.MonthEnd(1)
+        stamp = np.busday_offset(last.date(), 0, roll="backward")
+        return pd.Timestamp(stamp).date()
+
+    if root not in _TWENTY_FIFTH_ROOTS:
+        raise ValueError(f"no expiry rule for root {root!r}")
+
+    twenty_fifth = date(prior_year, prior_month, 25)
+    anchor = np.busday_offset(twenty_fifth, 0, roll="backward")
+    return pd.Timestamp(np.busday_offset(anchor, -3, roll="backward")).date()
+
+
+def roll_dates_from_calendar(root: str, index: pd.DatetimeIndex) -> pd.Series:
+    """True on each day a rank series moves to the next contract.
+
+    EIA's "Contract 1" still quotes the expiring contract on its last trading day, so the
+    rank rolls on the **following** business day. Derived from the published expiry rule
+    rather than inferred from prices: an earlier price-based heuristic here fired 88 times
+    a year against a true ~12, because WTI's f01-f02 spread is routinely narrower than a
+    single day's move, and "correcting" a non-roll day injects the spread as a spurious
+    return -- it raised realised volatility instead of lowering it, which is how it was
+    caught.
+    """
+    index = pd.DatetimeIndex(index)
+    if len(index) == 0:
+        return pd.Series(dtype=bool)
+
+    # A contract month M expires during month M-1, so the roll landing inside this index
+    # can belong to a contract month AFTER index.max(). Stopping the range at index.max()
+    # silently drops the final roll -- caught by the no-look-ahead test, where truncating
+    # a panel just past a roll made that roll disappear and the raw jump reappear.
+    months = pd.period_range(
+        index.min() - pd.DateOffset(months=1),
+        index.max() + pd.DateOffset(months=2),
+        freq="M",
+    )
+    rolls = set()
+    for period in months:
+        expiry = nymex_expiry(root, period.year, period.month)
+        rolls.add(pd.Timestamp(np.busday_offset(expiry, 1, roll="forward")))
+
+    return pd.Series(index.isin(sorted(rolls)), index=index, name="rolled")
+
+
+def roll_flags_from_ranks(unadj: pd.DataFrame, root: str) -> pd.Series:
+    """Roll days for a rank panel, from `root`'s published expiry rule."""
+    return roll_dates_from_calendar(root, pd.DatetimeIndex(unadj.index))
+
+
+def back_adjust_from_ranks(unadj: pd.DataFrame, root: str) -> pd.Series:
+    """Ratio back-adjusted f01 built from a rank panel.
+
+    Same Panama-style construction as `nearby_panel`'s own adjustment and the same
+    anchoring: factors accumulate backwards from the most recent segment, whose factor is
+    1, so the latest adjusted price equals the latest real price. At each roll the factor
+    is `f02_{t-1} / f01_{t-1}` -- the incoming front contract's price over the outgoing
+    one's, both measured on the last day they traded side by side, which is exactly
+    `nearby_panel`'s `new_price / old_price`.
+
+    Returns are therefore each contract's own returns; the cross-contract spread jump at
+    the roll is removed. Never use this for spreads (see the conventions' own rule).
+    """
+    f01 = unadj[_rank_col(1)].astype(float)
+    f02 = unadj[_rank_col(2)].astype(float)
+    flags = roll_flags_from_ranks(unadj, root)
+
+    factor = np.ones(len(f01))
+    for position in reversed(np.flatnonzero(flags.to_numpy())):
+        old_price = f01.iloc[position - 1]
+        new_price = f02.iloc[position - 1]
+        if pd.isna(old_price) or pd.isna(new_price) or old_price == 0:
+            continue
+        factor[:position] *= new_price / old_price
+
+    return pd.Series(f01.to_numpy() * factor, index=f01.index, name=_rank_col(1))

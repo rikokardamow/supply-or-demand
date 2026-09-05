@@ -49,10 +49,16 @@ BARCHART_FOOTER = "Downloaded from Barchart.com"
 
 
 def contract_code(barchart_symbol: str, as_of_year: int) -> str:
-    """`QAX6` -> `x26`, the lake's lowercase two-digit contract convention.
+    """`QAX6` -> `x2026`: month letter plus a **four-digit** year.
 
     Barchart writes a single-digit year, so `4` on a curve struck in 2026 is 2034, not
     2024 -- the digit resolves to the first year at or after `as_of_year`.
+
+    The year is four digits, not the two the conventions' `fut.cl.z26.settle` example
+    shows, because two digits collide with the nearby-rank namespace. January's exchange
+    month letter is "F", so a Jan-2027 contract written `f27` is indistinguishable from
+    rank 27 in `fut.<root>.f01.settle ... f36`. Eight such ambiguous series existed in
+    the lake before this was fixed. Four digits cannot collide with a two-digit rank.
     """
     month_letter = barchart_symbol[-2].upper()
     year_digit = int(barchart_symbol[-1])
@@ -60,14 +66,11 @@ def contract_code(barchart_symbol: str, as_of_year: int) -> str:
     year = (as_of_year // 10) * 10 + year_digit
     if year < as_of_year:
         year += 10
-    return f"{month_letter.lower()}{year % 100:02d}"
+    return f"{month_letter.lower()}{year:04d}"
 
 
 def _delivery_key(code: str, as_of_year: int) -> tuple[int, int]:
-    year = 2000 + int(code[1:])
-    if year < as_of_year:
-        year += 100
-    return year, MONTH_CODES[code[0].upper()]
+    return int(code[1:]), MONTH_CODES[code[0].upper()]
 
 
 def load_spreads(path: Path | str) -> pd.DataFrame:
