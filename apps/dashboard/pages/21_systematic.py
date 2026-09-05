@@ -211,6 +211,13 @@ with tab_equity:
                 hide_index=True,
             )
             st.caption(
+                "**Provenance of the published column.** These anchors are transcribed "
+                "from `specs/21_systematic-engine.md`, which cites Bouchouev, *Virtual "
+                "Barrels* ch. 5-6. Nobody on this project has checked that transcription "
+                "against the book itself, so treat them as the spec's figures rather than "
+                "as independently verified ones."
+            )
+            st.caption(
                 "**Costing convention**, inherited by Specs 20 and 24-27: cost is charged "
                 "on `pos.diff()`, the day the *signal* changes, which is one day before "
                 "the new position starts earning. No look-ahead either way, but it is a "
