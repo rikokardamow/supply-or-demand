@@ -108,6 +108,23 @@ def momentum_on_carry(carry_series: pd.Series, n: int = 60) -> pd.Series:
 # --- price signals ----------------------------------------------------------------
 
 
+def log_price(prices: pd.Series) -> pd.Series:
+    """`log(price)`, with non-positive prices returned as NaN instead of a warning.
+
+    WTI genuinely settled at **-$37.63 on 2020-04-20** and the lake holds that real
+    print (this project already records it in `pipelines/macro/CLAUDE.md`, where a naive
+    "every price is positive" test failed against the same day). A log return is
+    undefined there, so it is NaN by construction rather than a RuntimeWarning plus a
+    silently propagated NaN. The gap is confined to the windows that actually touch the
+    negative print.
+    """
+    return pd.Series(
+        np.where(prices > 0, np.log(prices.where(prices > 0)), np.nan),
+        index=prices.index,
+        name=prices.name,
+    )
+
+
 def momentum_ma(f01_adj: pd.Series, n: int = 100) -> pd.Series:
     """Price less its own `n`-day moving average. Back-adjusted front month only: a raw
     rank series would score the roll step as momentum."""
@@ -116,7 +133,7 @@ def momentum_ma(f01_adj: pd.Series, n: int = 100) -> pd.Series:
 
 def momentum_ret(f01_adj: pd.Series, n: int = 252) -> pd.Series:
     """Trailing `n`-day log return."""
-    out: pd.Series = np.log(f01_adj).diff(n)
+    out: pd.Series = log_price(f01_adj).diff(n)
     return out
 
 
@@ -128,9 +145,9 @@ def value(f01_adj: pd.Series, n: int = 1260) -> pd.Series:
     momentum is selling, which is why the spec uses it as an overlay rather than as a
     standalone signal.
     """
-    log_price = np.log(f01_adj)
-    deviation = log_price - log_price.rolling(n).mean()
-    signal: pd.Series = -deviation / log_price.rolling(n).std()
+    logged = log_price(f01_adj)
+    deviation = logged - logged.rolling(n).mean()
+    signal: pd.Series = -deviation / logged.rolling(n).std()
     return signal
 
 

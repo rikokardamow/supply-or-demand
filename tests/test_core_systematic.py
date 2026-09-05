@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -281,3 +283,30 @@ def test_guardrails_leave_positions_alone_when_conditioners_are_missing() -> Non
     pos = pd.Series([1.0, -1.0], index=_index(2))
     nan = pd.Series([np.nan, np.nan], index=_index(2))
     pd.testing.assert_series_equal(apply_guardrails(pos, nan, nan), pos, check_names=False)
+
+
+# --- negative prices are real (2020-04-20) ----------------------------------------
+
+
+def test_log_signals_are_undefined_not_warning_on_a_negative_price() -> None:
+    """WTI settled at -$37.63 on 2020-04-20 and the lake holds that real print. Every
+    log-based signal is genuinely undefined there, so it must return NaN cleanly rather
+    than emit a RuntimeWarning and propagate a silent NaN.
+    """
+    prices = pd.Series([50.0, 40.0, -37.63, 20.0, 30.0], index=_index(5))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # any RuntimeWarning fails this test
+        out = momentum_ret(prices, n=1)
+        val = value(prices, n=2)
+    assert np.isnan(out.iloc[2])
+    assert np.isnan(val.iloc[2])
+
+
+def test_a_negative_price_does_not_poison_later_observations() -> None:
+    """The NaN must be confined to the days whose own window touches the negative print,
+    not carried forward for the rest of the series."""
+    prices = pd.Series([50.0, -10.0, 30.0, 31.0, 32.0, 33.0], index=_index(6))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = momentum_ret(prices, n=1)
+    assert out.iloc[-1] == pytest.approx(np.log(33.0) - np.log(32.0))

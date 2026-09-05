@@ -61,6 +61,11 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         # recomputing it in the "daily" group would just rewrite identical rows from
         # unchanged inputs.
         ("derived_cracks", "pipelines.derived.cracks"),
+        # Spec 21's daily positions. Reads the rank panel and the derived curve series,
+        # so it must follow "derived_curve_ranks" -- which itself only needs re-running
+        # when new futures land, hence its place in this same weekly group.
+        ("derived_curve_ranks", "pipelines.derived.curve_ranks"),
+        ("derived_systematic", "pipelines.derived.systematic"),
         ("adanos", "pipelines.adanos.pull_weekly"),
         ("cftc", "pipelines.cftc.pull_weekly"),
         # Must run after "cftc" above -- reads the COT data that pull just wrote.
