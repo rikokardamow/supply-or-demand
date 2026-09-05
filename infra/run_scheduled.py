@@ -55,6 +55,12 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
     "weekly_fri": [
         ("baker_hughes", "pipelines.baker_hughes.pull_rigs"),
         ("macro", "pipelines.macro.pull_weekly"),
+        # Must run after "macro" above -- reads the FRED crude/product spot legs that
+        # pull just wrote. Spec 20 calls the crack series "written daily"; the series is
+        # daily-*frequency*, but its legs only refresh on this weekly FRED cadence, so
+        # recomputing it in the "daily" group would just rewrite identical rows from
+        # unchanged inputs.
+        ("derived_cracks", "pipelines.derived.cracks"),
         ("adanos", "pipelines.adanos.pull_weekly"),
         ("cftc", "pipelines.cftc.pull_weekly"),
         # Must run after "cftc" above -- reads the COT data that pull just wrote.
@@ -65,6 +71,10 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("jodi", "pipelines.jodi.pull_jodi"),
         ("eia_padd_flows", "pipelines.eia.pull_padd_flows"),
         ("eia_production_exports", "pipelines.eia.pull_production_exports"),
+        # Spec 20's "refit monthly". Reads the crack series pipelines.derived.cracks
+        # writes on the weekly cadence, so it needs no ordering constraint inside this
+        # group -- but it must not run before that pipeline has ever run at all.
+        ("vecm_refit", "pipelines.derived.vecm_refit"),
     ],
 }
 

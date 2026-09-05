@@ -42,6 +42,12 @@ Thumbs.db
 # Local data / snapshots
 manual_settlements/*.csv
 !manual_settlements/.gitkeep
+# Manual drops. specs/00_TRADING_CONVENTIONS.md says these are git-ignored, but the
+# `manual_settlements/` rule above never matched the real path the code uses
+# (`pipelines/futures/client.py::MANUAL_FUTURES_DIR` is `data/manual/futures`), so
+# nothing under data/manual/ was actually ignored.
+data/manual/**/*.csv
+!data/manual/**/.gitkeep
 *.parquet
 *.duckdb
 data/raw/
