@@ -36,6 +36,22 @@ from core.systematic import (
 VALUE_OVERLAY_THRESHOLD = 1.5
 VALUE_OVERLAY_STRENGTH = 0.5
 
+_BOUCHOUEV = "Bouchouev, Virtual Barrels, ch. 5-6 (1992-2022, unleveraged)"
+
+
+@dataclass(frozen=True)
+class Benchmark:
+    """A published figure shown beside the repo estimate, with its source (root
+    NOTES.md: "Published literature benchmarks are shown beside repo estimates with the
+    deviation."). Carried on the registry entry itself, independent of whether today's
+    lake can actually build that strategy -- CARRY_1_13's anchor is real literature for
+    what CARRY_1_13 *is*, even while the strategy itself is gated off for lack of rank 13.
+    """
+
+    ann_return: float
+    sharpe: float
+    source: str
+
 
 @dataclass(frozen=True)
 class StrategyInputs:
@@ -62,6 +78,7 @@ class Strategy:
     traded: str
     build: Callable[[StrategyInputs], pd.Series]
     note: str = ""
+    benchmark: Benchmark | None = None
 
 
 def _carry_z(data: StrategyInputs, near: int, far: int) -> pd.Series:
@@ -144,17 +161,28 @@ REGISTRY: dict[str, Strategy] = {
         "outright",
         _carry_1_13,
         "Bouchouev's headline carry. Needs rank 13; EIA publishes 1-4.",
+        Benchmark(0.203, 0.53, _BOUCHOUEV),
     ),
     "CARRY_REACT": Strategy(
         "CARRY_REACT", (1, 3), "outright", _carry_react, "C(1,3), not the paper's C(1,13)."
     ),
     "MOM_100": Strategy("MOM_100", (1,), "outright", _mom_100),
     "CARRY_MOM": Strategy(
-        "CARRY_MOM", (1, 3), "outright", _carry_mom, "Blend uses C(1,3), not C(1,13)."
+        "CARRY_MOM",
+        (1, 3),
+        "outright",
+        _carry_mom,
+        "Blend uses C(1,3), not C(1,13).",
+        Benchmark(0.247, 0.64, _BOUCHOUEV),
     ),
     "CONVEX_SPREAD": Strategy("CONVEX_SPREAD", (1, 2, 3), "spread", _convex_spread),
     "SHORT_SPREAD_STATIC": Strategy(
-        "SHORT_SPREAD_STATIC", (1, 2), "spread", _short_spread_static, "Benchmark leg."
+        "SHORT_SPREAD_STATIC",
+        (1, 2),
+        "spread",
+        _short_spread_static,
+        "Benchmark leg.",
+        Benchmark(float("nan"), 0.50, _BOUCHOUEV + " -- IR 0.50"),
     ),
     "FWD_SPREAD_MR": Strategy(
         "FWD_SPREAD_MR",

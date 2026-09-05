@@ -1,7 +1,18 @@
 from __future__ import annotations
 
 import pytest
-from infra.run_scheduled import run_cadence
+from infra.run_scheduled import CADENCE_GROUPS, run_cadence
+
+
+def test_derived_systematic_is_registered_after_its_own_dependency() -> None:
+    """Spec 21's daily-positions entrypoint reads what `derived_curve_ranks` writes
+    (the rank panel's back-adjusted front month and convexity/regime series), so it must
+    run after it. It lives in `weekly_fri`, not `daily`, alongside `derived_curve_ranks`
+    itself -- both only need re-running when new futures land."""
+    names = [name for name, _ in CADENCE_GROUPS["weekly_fri"]]
+    assert "derived_systematic" in names
+    assert "derived_curve_ranks" in names
+    assert names.index("derived_systematic") > names.index("derived_curve_ranks")
 
 
 def test_run_cadence_returns_1_for_an_unknown_label() -> None:
