@@ -15,6 +15,32 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Spec 20 Session B — crack VECM (Murat & Tokat 2009).** `core/vecm.py` (monthly
+  aggregation, ADF/PP/KPSS unit roots, AIC/SIC lag choice over p=1..4, Bai-Perron +
+  Andrews sup-F breaks, Johansen, VECM fit, Granger both ways, rolling-origin forecast
+  evaluation with Theil U and a Newey-West Diebold-Mariano test, and a model card) plus
+  `pipelines/derived/vecm_refit.py`, registered in the `monthly` cadence. 29 new tests.
+  New dependencies, approved first per root NOTES.md rule 7: `statsmodels>=0.15`,
+  `ruptures>=1.1`, `arch>=8.0` (`arch` supplies the Phillips-Perron test statsmodels
+  lacks, and is what Spec 22's GARCH engine will need anyway).
+  - **All three of the spec's synthetic acceptance tests pass**: Johansen recovers
+    beta = 0.1611 against a 0.16±0.03 target, Bai-Perron finds the obs-120 mean shift at
+    exactly 120, and the random-walk look-ahead guard holds.
+  - **On real data the model fails, and that is the finding.** Theil U = 1.0725 — 7%
+    *worse* than a random walk — DM +1.81 / p = 0.070, 32 exceptions in 60 forecasts,
+    `oos_status = fail`. Cause identified rather than papered over: the spot 3:2:1 crack
+    is **not I(1)**. ADF and Phillips-Perron disagree in every sample window and PP
+    rejects the unit root decisively (p = 0.008 full sample, 0.000 on the paper's
+    1993-2008 window), because a refining margin mean-reverts. Johansen returns rank 2 in
+    a two-variable system — the standard signal that the system is already stationary and
+    the cointegration framework does not apply. Granger also runs the opposite way to the
+    paper (crack->spot p = 0.442; spot->crack p = 0.038).
+  - **April 2003 not recovered.** Bai-Perron with one break finds 2005-03 (+23 months),
+    Andrews sup-F 2004-08 (+16); the 2004-05 crude run-up is a much larger level shift and
+    dominates. Two breaks surfaces 2003-01 — three months out, but obtained by relaxing
+    the break count, so recorded as partial, not a replication.
+  - All of the above traces to the **spot legs**: the paper models crack *futures*, and the
+    lake still holds none. Session C is gated on this — see the spec.
 - **Spec 20 Session A — refining economics / crack boards.** `core/cracks.py` (3:2:1,
   2:1:1, single-product gasoline and distillate, NWE gasoil, Singapore gasoil, the
   $/gal→$/bbl and $/tonne→$/bbl conversions, the crack board and the seasonal heatmap)

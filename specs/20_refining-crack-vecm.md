@@ -63,7 +63,36 @@ def forecast_eval(model, test_window, h=1) -> dict    # rolling-origin; RMSE, Th
 ```
 Spec: variables log(WTI spot), crack_321 level; lag order by AIC/SIC over p=1..4; constant in the cointegration space; estimate on post-break sample, show full-sample beside it. Refit monthly; break test annually and forced when rolling 12m OOS RMSE ratio vs RW > 1.05. Page benchmark text: the qualitative Murat & Tokat results (exact RMSE/Theil not in open sources — label "qualitative benchmark").
 - Tests: Johansen on a simulated cointegrated pair with β=0.16 → rank 1, β±0.03; break test on a simulated mean shift at obs 120 → within ±3; on a pure random walk the VECM does **not** beat RW (DM p>0.1) — the look-ahead guard.
-- DoD: [ ] pipeline, [ ] April-2003 recovery test, [ ] model card fields per conventions, [ ] `pipelines/derived/vecm_refit.py` monthly entrypoint.
+- DoD: [x] pipeline, [~] April-2003 recovery test — **not recovered, see below**, [x] model card fields per conventions, [x] `pipelines/derived/vecm_refit.py` monthly entrypoint.
+
+#### Session B verification (2026-09-05)
+All three of the spec's own acceptance tests pass on synthetic data: Johansen recovers β = **0.1611** (rank 1) against the 0.16±0.03 target; Bai–Perron recovers the obs-120 mean shift at **exactly 120**; the random-walk guard holds. 20 tests in `tests/test_core_vecm.py`, 9 in `tests/test_derived_vecm_refit.py`. Dependencies added with the user's approval (root NOTES.md rule 7): `statsmodels>=0.15`, `ruptures>=1.1`, `arch>=8.0` — `arch` supplies the Phillips–Perron test statsmodels lacks, and is also what Spec 22's GARCH engine will need.
+
+#### April 2003 is NOT recovered — the honest result
+On the real 1993–2008 monthly sample (n=192, log WTI + spot 3:2:1):
+
+| Method | Break found | Distance from April 2003 |
+|---|---|---|
+| Bai–Perron, 1 break | **2005-03** | +23 months |
+| Andrews sup-F | **2004-08** | +16 months |
+| Bai–Perron, 2 breaks | **2003-01** + 2005-08 | −3 months (first break) |
+
+With a single break the 2004–05 crude run-up dominates (annual mean log WTI 3.43 → 4.04, crack 5.87 → 12.75), so the search latches onto that far larger level shift. Allowing a second break surfaces **January 2003**, three months before the paper's date — consistent with the same episode, but this is *partial* recovery obtained by relaxing the break count, not a clean replication. Recorded as a miss, per the conventions' "a miss is a visible diagnostic, never a silent pass".
+
+#### The bigger finding: the spot crack is not I(1), so the framework does not transfer
+Unit-root tests across every sample, run live:
+
+| Sample | log WTI | spot crack 3:2:1 | Johansen rank |
+|---|---|---|---|
+| Full 1986–2026 (n=483) | I(1) ✓ (ADF p=0.398, PP p=0.357) | **not I(1)** — ADF p=0.753 but **PP p=0.008** | 2 |
+| Paper 1993–2008 (n=192) | I(1) ✓ (ADF p=0.815, PP p=0.652) | **not I(1)** — ADF p=0.342 but **PP p=0.000** | **1** |
+| Post-break 2011–2026 (n=188) | I(1) ✓ | **not I(1)** — PP p=0.025 | 2 |
+
+ADF and PP disagree on the crack in every window, and PP — the more powerful test against a persistent-but-mean-reverting series — rejects the unit root decisively. That is exactly what economics predicts of a **refining margin**: it cannot drift without bound, so it mean-reverts. Murat & Tokat's crack *futures* price behaves differently from a spot margin. A Johansen rank of 2 in a two-variable system is the standard signal that the system is already stationary and the cointegration framework does not apply.
+
+The out-of-sample result follows directly: **Theil U = 1.0725** (the VECM is 7% *worse* than a random walk), DM stat +1.81 / p = 0.070 — significantly worse at 10% — with 32 exceptions in 60 forecasts. `oos_status = fail`, `refit_triggered = True`. Granger also runs the *opposite* way to the paper: crack→spot p = 0.442 (no causality), spot→crack p = 0.038.
+
+**Consequence for Session C:** the ECT signal is specified on a cointegrating relationship that does not hold on spot legs. Session C should either wait for real futures settlements (Spec 18) or ship with this failure displayed on the model-monitor card, not hidden. Do not tune the specification until it passes — the negative result is the finding.
 
 ### Session C — error-correction signal + page
 ```python
