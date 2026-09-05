@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 import pytest
 from pipelines.futures.barchart_curve import (
@@ -37,20 +39,34 @@ def test_month_codes_follow_the_exchange_convention() -> None:
     assert len(MONTH_CODES) == 12
 
 
-def test_contract_code_converts_barchart_to_the_lakes_lowercase_form() -> None:
-    """Barchart writes a single-digit year (QAX6); the lake's convention is a two-digit
-    lowercase code (x26), per specs/00_TRADING_CONVENTIONS.md's own `fut.cl.z26.settle`."""
-    assert contract_code("QAX6", as_of_year=2026) == "x26"
-    assert contract_code("QAZ6", as_of_year=2026) == "z26"
-    assert contract_code("QAF7", as_of_year=2026) == "f27"
+def test_contract_code_uses_a_four_digit_year() -> None:
+    """Barchart writes a single-digit year (QAX6); the lake uses a FOUR-digit year.
+
+    A two-digit year would collide with the nearby-rank namespace: January's exchange
+    month letter is "F", so a Jan-2027 contract written `f27` is indistinguishable from
+    rank 27 in the conventions' own `fut.<root>.f01.settle ... f36` scheme. Four digits
+    cannot collide with a two-digit rank.
+    """
+    assert contract_code("QAX6", as_of_year=2026) == "x2026"
+    assert contract_code("QAZ6", as_of_year=2026) == "z2026"
+    assert contract_code("QAF7", as_of_year=2026) == "f2027"
 
 
 def test_contract_code_rolls_a_single_digit_year_forward_past_the_decade() -> None:
     """A curve struck in 2026 running to 2034 cycles the year digit back through 0-4.
     Those are 2030-2034, never 2020-2024 -- the digit resolves to the first year at or
     after the as-of year."""
-    assert contract_code("QAZ3", as_of_year=2026) == "z33"
-    assert contract_code("QAH4", as_of_year=2026) == "h34"
+    assert contract_code("QAZ3", as_of_year=2026) == "z2033"
+    assert contract_code("QAH4", as_of_year=2026) == "h2034"
+
+
+def test_no_contract_code_can_be_mistaken_for_a_nearby_rank() -> None:
+    """The regression guard for the collision this change exists to remove: no January
+    (or any) contract code may match the rank pattern f01..f36."""
+    for symbol in ("QAF7", "QAF3", "QAF0", "QAX6", "QAZ6"):
+        code = contract_code(symbol, as_of_year=2026)
+        rank_shaped = re.fullmatch(r"f(0[1-9]|[12][0-9]|3[0-6])", code)
+        assert not rank_shaped, code
 
 
 # --- reconstruction ---------------------------------------------------------------
@@ -59,32 +75,33 @@ def test_contract_code_rolls_a_single_digit_year_forward_past_the_decade() -> No
 def test_reconstruct_curve_solves_both_legs_from_a_strip_average_and_a_spread() -> None:
     """SA = (a+b)/2 and SP = a-b together pin both outrights: a = SA + SP/2."""
     curve = reconstruct_curve(_spreads(), as_of_year=2026)
-    assert curve["x26"] == pytest.approx(96.28, abs=0.005)
-    assert curve["z26"] == pytest.approx(92.32, abs=0.005)
+    assert curve["x2026"] == pytest.approx(96.28, abs=0.005)
+    assert curve["z2026"] == pytest.approx(92.32, abs=0.005)
 
 
 def test_reconstruct_curve_matches_the_published_settlement() -> None:
     """The real independent check: Barchart quotes QAX26 at 96.28s, and the curve is
     rebuilt from spread quotes alone without ever reading that outright."""
-    assert reconstruct_curve(_spreads(), as_of_year=2026)["x26"] == pytest.approx(96.28, abs=0.005)
+    curve = reconstruct_curve(_spreads(), as_of_year=2026)
+    assert curve["x2026"] == pytest.approx(96.28, abs=0.005)
 
 
 def test_reconstruct_curve_extends_through_the_anchored_spreads() -> None:
     curve = reconstruct_curve(_spreads(), as_of_year=2026)
-    assert curve["f27"] == pytest.approx(96.28 - 7.13, abs=0.005)
-    assert curve["g27"] == pytest.approx(96.28 - 9.63, abs=0.005)
+    assert curve["f2027"] == pytest.approx(96.28 - 7.13, abs=0.005)
+    assert curve["g2027"] == pytest.approx(96.28 - 9.63, abs=0.005)
 
 
 def test_reconstruct_curve_ignores_butterflies() -> None:
     """A BF row shares Leg1/Leg2 with a real spread; treating it as one would corrupt
     the curve."""
     curve = reconstruct_curve(_spreads(), as_of_year=2026)
-    assert curve["z26"] == pytest.approx(92.32, abs=0.005)
+    assert curve["z2026"] == pytest.approx(92.32, abs=0.005)
 
 
 def test_reconstruct_curve_is_monotonically_ordered_by_delivery() -> None:
     curve = reconstruct_curve(_spreads(), as_of_year=2026)
-    assert list(curve.index) == ["x26", "z26", "f27", "g27"]
+    assert list(curve.index) == ["x2026", "z2026", "f2027", "g2027"]
 
 
 def test_reconstruct_curve_without_a_strip_average_cannot_anchor() -> None:
@@ -101,7 +118,7 @@ def test_reconstruct_curve_without_a_strip_average_cannot_anchor() -> None:
 def test_curve_to_ts_long_uses_the_conventions_contract_series_id() -> None:
     curve = reconstruct_curve(_spreads(), as_of_year=2026)
     rows = curve_to_ts_long(curve, as_of=pd.Timestamp("2026-09-04"), root="lco")
-    assert "fut.lco.x26.settle" in set(rows["series_id"])
+    assert "fut.lco.x2026.settle" in set(rows["series_id"])
     assert rows["ts"].unique().tolist() == [pd.Timestamp("2026-09-04")]
 
 
