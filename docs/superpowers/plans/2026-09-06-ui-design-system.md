@@ -1063,6 +1063,27 @@ without taking the others with it.
 `08_weather` holds the cartopy anomaly maps. Do not restyle those figures — they are
 matplotlib, out of scope, and explicitly excluded by the companion spec.
 
+**Sections handed over by the peer session (commit `fde6135`, Spec 30).** These landed
+in the old `card(...)` idiom by agreement, before this migration reached them. They are
+not on this branch yet — merge their branch before starting Task 9. The peer chose the
+better of each competing title; use these exact strings for `section()`:
+
+| File | Section title to use |
+|---|---|
+| `20_cracks.py` | `"Refiner acquisition cost vs WTI spot"` — becomes `"...vs WTI and Brent spot"` if their in-flight Brent commit has landed; check the file, don't assume |
+| `20_cracks.py` | `"Landed cost of imported crude by API gravity band"` — "imported crude" is load-bearing, do not shorten |
+| `20_cracks.py` | `"Retail pump prices"` — the card string wins here; the chart's "Retail gasoline and diesel" reads worse as a heading |
+| `05_us_gas_power.py` | `"State cost of natural gas delivered to generators vs Henry Hub"` |
+
+New functions to migrate alongside the existing ones: `_acquisition_cost_section`,
+`_landed_cost_section`, `_retail_margin_section` (cracks); `_generator_fuel_series_id`,
+`_delivered_fuel_cost_section` (gas power).
+
+One merge conflict to expect: `05_us_gas_power.py`'s `from core.theme import ...` line
+was expanded from single-line to parenthesised multi-line to add `GREY, LIGHT_BLUE,
+NAVY`. Nothing was removed. This plan rewrites that same import line, so resolve by
+keeping their colour names and switching the `card` import to `components.section`.
+
 - [ ] **Step 2: Full suite**
 
 Run: `./.venv/Scripts/python.exe -m pytest -q` then `./.venv/Scripts/python.exe -m pytest -m browser -q`
