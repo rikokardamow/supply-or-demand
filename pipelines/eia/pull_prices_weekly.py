@@ -7,3 +7,6 @@ from __future__ import annotations
 from pipelines.eia.pull_prices import main_weekly as main
 
 __all__ = ["main"]
+
+if __name__ == "__main__":
+    main()

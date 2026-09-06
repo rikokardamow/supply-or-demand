@@ -388,21 +388,27 @@ would otherwise still pass every other assertion on that test.
 `pipelines/adanos/pull_weekly.py`'s precedent — so `infra/run_scheduled.py` can address
 both EIA price cadences by the same `pull_<cadence>` convention as every other pipeline.
 
-**Correction to the claim above: `pull_prices_weekly.py` does NOT actually match
-`pull_weekly.py`'s precedent — confirmed live, Task 5, 2026-09-06.** Every sibling weekly
-entrypoint (`pipelines/adanos/pull_weekly.py`, `pipelines/cftc/pull_weekly.py`,
-`pipelines/macro/pull_weekly.py`, `pipelines/social/pull_weekly.py`) ends with
-`if __name__ == "__main__": main()`. `pipelines/eia/pull_prices_weekly.py` has no such
-guard — it only defines `main = main_weekly` and `__all__`. Running
-`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` therefore does **nothing**:
-exit 0, no output, no rows pulled, because nothing ever calls `main()`. It still works
-correctly through `infra/run_scheduled.py`, which imports the module and calls
-`module.main()` explicitly rather than relying on a `__main__` block — so the scheduled
-cadence is unaffected — but the module cannot be run standalone the way its own docstring
-and every sibling file imply, and the way this spec's own Task 5 brief instructed it be
-run. Not fixed here (Task 5 is verification/documentation only, no pipeline code changes
-permitted) — a two-line `if __name__ == "__main__": main()` addition is all a future
-session needs.
+**Correction to the claim above, since fixed: `pull_prices_weekly.py` did NOT actually
+match `pull_weekly.py`'s precedent — found live, Task 5, 2026-09-06, and closed the same
+day.** Every sibling weekly entrypoint (`pipelines/adanos/pull_weekly.py`,
+`pipelines/cftc/pull_weekly.py`, `pipelines/macro/pull_weekly.py`,
+`pipelines/social/pull_weekly.py`) ends with `if __name__ == "__main__": main()`.
+`pipelines/eia/pull_prices_weekly.py` had no such guard — it only defined
+`main = main_weekly` and `__all__`. Running `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` therefore did **nothing**: exit 0, no output, no rows
+pulled, because nothing ever called `main()` — a silent success on a run that had actually
+pulled nothing, the exact failure class this project has been hardening against. It still
+worked correctly through `infra/run_scheduled.py` (which imports the module and calls
+`module.main()` explicitly, never relying on a `__main__` block), so the scheduled cadence
+was never affected — but the module could not be run standalone the way its own docstring
+and every sibling file implied.
+
+**Fixed**: added the same `if __name__ == "__main__": main()` guard every sibling carries.
+Re-verified live immediately after: `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` now prints `eia prices petroleum/pri/gnd: 20628 rows` /
+`wrote 20628 weekly EIA price rows` and exits 0 — the identical row count as calling
+`pull_prices_weekly.main()` directly (which is what `run_scheduled.py` itself already
+does), confirming the fix closes the gap without changing the scheduled path's behaviour.
 
 ## Task 5 — real pull outcomes, revision behaviour, and full-suite verification
 
@@ -418,11 +424,15 @@ real EIA API, writing to the real lake):
   `consumption-for-eg` across 10 locations): 5,719 rows
 - Total written: 14,343 rows, all at `monthly` frequency.
 
-`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` produced no output and
-pulled nothing, for the reason recorded just above (missing `__main__` guard) — this is
-not a route failure. Calling `pull_prices_weekly.main()` directly (equivalent to what
-`infra/run_scheduled.py` actually does in production) ran cleanly: exit 0, no failures,
-`petroleum/pri/gnd` (RETAIL): 20,628 rows at `weekly` frequency.
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` initially produced no
+output and pulled nothing, for the reason recorded just above (missing `__main__` guard,
+since fixed) — this was not a route failure. Calling `pull_prices_weekly.main()` directly
+(equivalent to what `infra/run_scheduled.py` actually does in production) ran cleanly at
+the time: exit 0, no failures, `petroleum/pri/gnd` (RETAIL): 20,628 rows at `weekly`
+frequency. After the `__main__` guard fix, re-running `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` produced the identical result directly, with no
+workaround needed: `eia prices petroleum/pri/gnd: 20628 rows` / `wrote 20628 weekly EIA
+price rows`, exit 0.
 
 **Revision behaviour, observed on the real lake, not just the isolated unit test below.**
 The monthly pull was run twice in immediate succession. Both runs logged identical
