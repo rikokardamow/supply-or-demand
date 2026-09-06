@@ -1,0 +1,2110 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/electricity/electric-power-operational-data/data/?data%5B0%5D=cost-per-btu&facets%5Bfueltypeid%5D%5B%5D=NG&facets%5Blocation%5D%5B%5D=US&facets%5Bsectorid%5D%5B%5D=98&frequency=monthly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "306", "dateFormat": "YYYY-MM", "frequency":
+        "monthly", "data": [{"period": "2026-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.175", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2026-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.755", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2026-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7742", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2026-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1136", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2026-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.3417", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2026-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "10.1435", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1062", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.9112", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0873", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0422", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1735", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5413", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3455", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2918", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6035", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2101", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8913", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2025-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.0039", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.894", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6555", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.611", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.3731", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.2581", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.5089", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6915", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.3088", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.0554", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.2165", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9278", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2024-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9492", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3159", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4135", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9292", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.8796", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9505", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0079", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6038", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.5597", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7309", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.42", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4737", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2023-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.221", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.1356", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.7618", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.802", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.1319", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.0253", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.5618", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.9947", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.5593", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.2378", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1435", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.0234", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2022-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.729", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.717", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.7833", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.691", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.0559", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4394", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.0869", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5413", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2778", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0898", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3276", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "17.4288", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2021-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2339", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1885", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9942", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4962", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4134", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4171", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.0703", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.0391", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.1891", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.1211", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.1526", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4183", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2020-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6415", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9333", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9773", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.494", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.595", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4172", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.5441", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.5777", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7659", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.8908", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4868", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6436", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2019-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.021", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.7279", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1975", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4078", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1203", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2859", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2459", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1255", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0619", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1591", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2117", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6297", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2018-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.204", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6826", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3841", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1371", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1626", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1327", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2108", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2892", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4972", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3891", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4002", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6025", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2017-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1705", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.015", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.035", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1286", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0765", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.96", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9714", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6848", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4118", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.4382", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.254", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7392", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2016-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0746", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6244", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.6913", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9366", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0885", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1256", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1279", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1377", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1732", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1331", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5971", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8658", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2015-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1746", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.3585", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.5416", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1043", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2104", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1293", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4427", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8542", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9512", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1153", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.1315", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.6007", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2014-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.2759", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.985", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2568", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1564", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1144", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.9331", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2277", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4477", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.6638", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.7296", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4004", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4877", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2013-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4585", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2619", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.3339", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.9147", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4612", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5271", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4638", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.1432", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.9832", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7447", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0241", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3919", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2012-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.7426", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.0961", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1767", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.3944", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.6134", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.7534", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.018", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1028", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9459", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.936", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.7397", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1833", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2011-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.5464", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.5605", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.4541", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.3511", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.5061", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9464", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.2251", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1951", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8527", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8003", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.3606", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.1428", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2010-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8294", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.1063", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9518", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9312", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.925", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.1952", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.3551", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.5092", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.5832", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.5772", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.7999", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.4807", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2009-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.4407", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.7064", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.4719", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.5619", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.5933", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.7402", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "11.4131", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "12.0847", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "10.6947", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.9365", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.2982", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.6599", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2008-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.3175", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.7348", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.101", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8149", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.1584", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.6464", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8455", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.5874", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.7449", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.566", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.4427", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.9526", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2007-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8921", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.377", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.2916", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.6144", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.1143", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.3628", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.5195", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.5142", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.7145", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.1259", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.1578", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.7907", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2006-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.8974", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "10.8979", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.5623", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "11.489", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "10.6847", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "8.4348", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.3647", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8858", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.6603", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "7.0887", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.6629", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.2475", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2005-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.551", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.7212", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.5492", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.8922", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.2519", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.8161", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.0693", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.3364", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.134", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.5899", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.3498", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.6065", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2004-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.2031", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.5349", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.722", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.8391", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.9772", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.0754", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.2905", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.8844", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.5193", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.2272", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.8625", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.3107", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2003-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1925", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.6052", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2487", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.0864", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.6237", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.34", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.4061", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5181", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.69", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.7093", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.3025", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7917", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2002-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.03", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.0766", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-11", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.2417", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-10", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.7151", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "2.955", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.5584", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-07", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "3.7437", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "4.2512", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.1419", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.6379", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "5.7384", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "6.9469", "cost-per-btu-units":
+        "dollars per million Btu"}, {"period": "2001-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "cost-per-btu": "9.2147", "cost-per-btu-units":
+        "dollars per million Btu"}], "description": "Monthly and annual electric power
+        operations by state, sector, and energy source.\n    Source: Form EIA-923"},
+        "request": {"command": "/v2/electricity/electric-power-operational-data/data/",
+        "params": {"api_key": "FILTERED", "frequency": "monthly", "data": ["cost-per-btu"],
+        "facets": {"fueltypeid": ["NG"], "sectorid": ["98"], "location": ["US"]},
+        "sort": [{"column": "period", "direction": "desc"}], "offset": "0", "length":
+        "5000"}}, "apiVersion": "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '3091'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 Sep 2026 17:41:18 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0ev7moisf8o1idig0jg
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - bdf1848e-d1c8-4ad6-6f24-eb7ed825f8ab
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/electricity/electric-power-operational-data/data/?data%5B0%5D=consumption-for-eg&facets%5Bfueltypeid%5D%5B%5D=NG&facets%5Blocation%5D%5B%5D=US&facets%5Bsectorid%5D%5B%5D=98&frequency=monthly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "306", "dateFormat": "YYYY-MM", "frequency":
+        "monthly", "data": [{"period": "2026-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "1171228.952",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2026-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "978051.958", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2026-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "872632.023",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2026-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "890351.519", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2026-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "918830.604",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2026-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1061319.506", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1015859.893",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "918039.844", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1007849.517",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1191743.622", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1379316.594",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1461478.377", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1181425.704",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "945215.863", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "804197.788",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "803003.623", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2025-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "903706.856",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2025-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1091896.342", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1007131.93",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "959877.104", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1041341.38",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1191246.378", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1462161.874",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1493871.732", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1208310.54",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1019695.896", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "854338.592",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "889033.204", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2024-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "882726.862",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2024-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1104646.671", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "988825.948",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2023-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "932761.008", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "987438.75", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2023-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "1169564.065",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2023-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1439549.661", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1442240.991",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2023-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1149141.515", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "963441.887",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2023-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "836223.499", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "907142.292",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2023-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "838082.227", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2023-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "933888.239",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "962397.607", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "874964.384",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "919804.912", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1096751.428",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1348323.747", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1371686.878",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1115016.362", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "895130.692",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "717824.888", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "747134.195",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2022-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "774900.259", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2022-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "916155.269",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "848313.656", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2021-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "838188.654",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "910530.78", "consumption-for-eg-units": "thousand Mcf"},
+        {"period": "2021-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "960116.067",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1230289.25", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2021-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1207736.25",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1057299.176", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2021-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "785783.375",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "732307.174", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2021-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "713109.908",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2021-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "756131.302", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2021-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "831883.042",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "851680.101", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2020-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "742800.154",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "917447.836", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2020-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "983808.762",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1241366.893", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2020-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1310848.651",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1009489.138", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2020-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "806662.47", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2020-04", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "748050.305",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "857992.768", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2020-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "861789.555",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2020-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "915302.907", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "879680.677",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2019-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "789304.349", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "908263.894",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2019-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1051487.203", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1244977.148",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2019-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1223403.337", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "961627.74", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2019-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "809145.225",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2019-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "712308.817", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "782287.079",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2019-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "750534.672", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2019-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "815199.844",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "729592.314", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2018-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "732801.211",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "857712.038", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2018-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "999346.28", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2018-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "1151732.152",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1188845.245", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2018-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "922359.318",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "818605.297", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2018-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "675783.259",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "724976.983", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2018-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "660120.017",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2018-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "753242.273", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "753543.612",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2017-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "638417.559", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "743780.536",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2017-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "830513.859", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "991277.292",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2017-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1050409.731", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "822003.582",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2017-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "672507.283", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "600492.571",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2017-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "642202.555", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2017-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "542420.27", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2017-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "629307.833",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "638212.209", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2016-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "632042.041",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "713917.937", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2016-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "882732.022",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1114077.128", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2016-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1104064.516",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "936640.115", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2016-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "772474.164",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "689604.844", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2016-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "711099.77", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2016-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "657188.108",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2016-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "738215.985", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "744481.266",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2015-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "709134.347", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "767555.694",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2015-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "869875.273", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "1000505.028",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2015-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1019483.242", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "863108.651",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2015-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "711574.094", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "641852.421",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2015-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "683625.333", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2015-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "625016.16", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2015-01", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "685726.869",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "612418.501", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "575855.931",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "679475.382", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "747294.603",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "871901.137", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "818405.592",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "697376.072", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "623918.293",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "526388.856", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "535079.337",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2014-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "526747.623", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2014-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "634178.827",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "641105.195", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2013-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "575766.697",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "613073.762", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2013-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "726485.626",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "873078.179", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2013-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "883571.159",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "712801.265", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2013-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "590767.735",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "541010.34", "consumption-for-eg-units": "thousand Mcf"},
+        {"period": "2013-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "578803.63", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2013-02", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "544869.511",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2013-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "606245.175", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "570847.524",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2012-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "555890.565", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "644082.375",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2012-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "776781.063", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "973785.284",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2012-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "1051694.272", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "851886.012",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2012-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "784941.341", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "688647.07", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2012-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "650058.672",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2012-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "618592.658", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2012-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "620979.39", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2011-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "586352.106",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2011-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "517719.636", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2011-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "551052.305",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2011-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "658911.365", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2011-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "892585.287",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2011-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "909123.038", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2011-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "675248.68", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2011-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "547819.971",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2011-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "497766.094", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2011-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "456967.468",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2011-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "459364.503", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2011-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "512283.332",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "537831.888", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "472688.343",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "547290.282", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "671487.674",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "915080.963", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "868606.771",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "681455.436", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "535514.709",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "448885.242", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "431604.201",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2010-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "455950.343", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2010-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "519019.98", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2009-12", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "493994.346",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "433633.477", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2009-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "512190.752",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "663613.241", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2009-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "811544.852",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "750526.311", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2009-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "618590.464",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "491377.872", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2009-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "427646.652",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "474689.772", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2009-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "429213.947",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2009-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "459969.303", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "449149.958",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2008-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "431916.483", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "519104.68", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2008-09", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "577765.742",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2008-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "733838.487", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "751711.162",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2008-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "634409.166", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "449669.169",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2008-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "443817.216", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "434479.577",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2008-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "413002.314", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2008-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "503466.985",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "468086.452", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2007-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "421704.871",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "575662.852", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2007-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "654334.811",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "934851.438", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2007-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "729198.986",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "600421.019", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2007-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "481499.609",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "427124.88", "consumption-for-eg-units": "thousand Mcf"},
+        {"period": "2007-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "388505.934",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2007-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "399262.245", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2007-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "420958.898",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "386416.53511", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "370863.71236",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "500132.65315", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "521572.8495",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "808336.74487", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "831836.88164",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "602058.60711", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "477287.5867",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "399928.50064", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "380035.53689",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2006-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "322484.35566", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2006-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "290268.21209",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "369981.36587", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "345745.47972",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "406286.01767", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "540256.65481",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "755228.36298", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "739924.19192",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "561585.18949", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "394037.02694",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "361737.41795", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "354434.31601",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2005-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "302100.89698", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2005-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "353463.20365",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "355096.57747", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "341674.7769",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "410243.23687", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "497409.02653",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "577603.05978", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "590071.85371",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-06", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "476073.73171", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-05", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "450818.68729",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "359310.83933", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "343520.90588",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2004-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "344078.77915", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2004-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "329437.59457",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "312956.536", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2003-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "328528.754",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "389251.652", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2003-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "449750.09", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2003-08", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "664387.166",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "611990.121", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2003-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "419217.685",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "378876.308", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2003-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "333775.087",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-03", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "342677.717", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2003-02", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "317143.042",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2003-01", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "360694.247", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-12", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "335722.898",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2002-11", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "330299.871", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-10", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "420630.161",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2002-09", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "546171.241", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-08", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "693327.503",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2002-07", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "710267.124", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-06", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "529302.68", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2002-05", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "389808.548",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2002-04", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "384043.618", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-03", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "385218.308",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2002-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "323772.817", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2002-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "359714.008",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2001-12", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "348529.456", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2001-11", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "333025.306",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2001-10", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "448714.375", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2001-09", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "492960.176",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2001-08", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "668514.531", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2001-07", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "617999.52", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2001-06", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "477079.607",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2001-05", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "418573.166", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2001-04", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "369900.81", "consumption-for-eg-units":
+        "thousand Mcf"}, {"period": "2001-03", "location": "US", "stateDescription":
+        "U.S. Total", "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid":
+        "NG", "fuelTypeDescription": "natural gas", "consumption-for-eg": "346591.92",
+        "consumption-for-eg-units": "thousand Mcf"}, {"period": "2001-02", "location":
+        "US", "stateDescription": "U.S. Total", "sectorid": "98", "sectorDescription":
+        "Electric Power", "fueltypeid": "NG", "fuelTypeDescription": "natural gas",
+        "consumption-for-eg": "296964.914", "consumption-for-eg-units": "thousand
+        Mcf"}, {"period": "2001-01", "location": "US", "stateDescription": "U.S. Total",
+        "sectorid": "98", "sectorDescription": "Electric Power", "fueltypeid": "NG",
+        "fuelTypeDescription": "natural gas", "consumption-for-eg": "323638.832",
+        "consumption-for-eg-units": "thousand Mcf"}], "description": "Monthly and
+        annual electric power operations by state, sector, and energy source.\n    Source:
+        Form EIA-923"}, "request": {"command": "/v2/electricity/electric-power-operational-data/data/",
+        "params": {"api_key": "FILTERED", "frequency": "monthly", "data": ["consumption-for-eg"],
+        "facets": {"fueltypeid": ["NG"], "sectorid": ["98"], "location": ["US"]},
+        "sort": [{"column": "period", "direction": "desc"}], "offset": "0", "length":
+        "5000"}}, "apiVersion": "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '3871'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 Sep 2026 17:41:20 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0ev7n5dtikdph6igts0
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - 4dc558d0-9002-4f18-7d3f-e1b17659baf8
+    status:
+      code: 200
+      message: OK
+version: 1

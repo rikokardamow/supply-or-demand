@@ -20,6 +20,17 @@ from core.settings import settings
 BASE_URL = "https://api.eia.gov/v2"
 PAGE_SIZE = 5000
 
+# pandas-style frequency codes used to build a deterministic series_id for routes with
+# no series facet at all (see get_operational_series). Falls back to the frequency
+# string itself for anything not listed here.
+_FREQUENCY_CODES: dict[str, str] = {
+    "daily": "D",
+    "weekly": "W",
+    "monthly": "M",
+    "quarterly": "Q",
+    "annual": "A",
+}
+
 
 def _normalise_geo(area_name: str) -> str:
     if area_name == "U.S.":
@@ -61,6 +72,103 @@ class EIAClient:
             offset += PAGE_SIZE
 
         return rows
+
+    def _fetch_operational_rows(
+        self,
+        route: str,
+        data_key: str,
+        fueltypeid: str,
+        sectorid: str,
+        location: str,
+        frequency: str,
+    ) -> list[dict[str, Any]]:
+        """Sibling to `_fetch_rows` for routes with no `series` facet at all (confirmed
+        live on electricity/electric-power-operational-data -- pipelines/eia/CLAUDE.md).
+        Rows are selected by {fueltypeid, sectorid, location} instead of a series id, and
+        the value lives under the requested `data[0]` key itself (`data_key`), not under
+        a fixed "value" field -- so this cannot reuse `_fetch_rows`'s params shape,
+        though the paging loop is identical."""
+        rows: list[dict[str, Any]] = []
+        offset = 0
+
+        while True:
+            params: dict[str, Any] = {
+                "api_key": self._api_key,
+                "frequency": frequency,
+                "data[0]": data_key,
+                "facets[fueltypeid][]": fueltypeid,
+                "facets[sectorid][]": sectorid,
+                "facets[location][]": location,
+                "sort[0][column]": "period",
+                "sort[0][direction]": "desc",
+                "offset": offset,
+                "length": PAGE_SIZE,
+            }
+            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
+            try:
+                response.raise_for_status()
+            except requests.HTTPError as exc:
+                raise_sanitised(exc)
+            page = response.json()["response"]["data"]
+            rows.extend(page)
+
+            if len(page) < PAGE_SIZE:
+                break
+            offset += PAGE_SIZE
+
+        return rows
+
+    def get_operational_series(
+        self,
+        route: str,
+        data_keys: list[str],
+        fueltypeid: str,
+        sectorid: str,
+        location: str,
+        frequency: str,
+    ) -> pd.DataFrame:
+        """For routes shaped like electricity/electric-power-operational-data, which
+        (confirmed live) have no `series` facet -- `get_series`/`_fetch_rows` cannot
+        reach them at all. A row here is selected by combining `fueltypeid`, `sectorid`
+        and `location` facets, one `data_key` (e.g. "cost-per-btu") at a time; that key
+        also names both the value column and its `<data_key>-units` unit column in the
+        response, rather than the fixed "value"/"units" pair every other route in this
+        client uses.
+
+        EIA gives no series id for this shape at all, so this project mints one:
+        `ELEC.<DATA_KEY>.<fueltypeid>-<location>-<sectorid>.<freq_code>`, e.g.
+        `ELEC.COST_PER_BTU.NG-US-98.M` -- deterministic from the request's own facets,
+        documented in pipelines/eia/CLAUDE.md, and permanent once written."""
+        pulled_at = datetime.now(UTC)
+        freq_code = _FREQUENCY_CODES.get(frequency, frequency)
+        frames: list[pd.DataFrame] = []
+        for key in data_keys:
+            rows = self._fetch_operational_rows(
+                route, key, fueltypeid, sectorid, location, frequency
+            )
+            # Some real states return a literal null for the latest month rather than
+            # being absent (confirmed live, pipelines/eia/CLAUDE.md) -- guard here too,
+            # matching get_series's own null handling.
+            rows = [row for row in rows if row.get(key) is not None]
+            series_id = (
+                f"ELEC.{key.upper().replace('-', '_')}.{fueltypeid}-{location}-{sectorid}"
+                f".{freq_code}"
+            )
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "series_id": series_id,
+                        "source": "eia",
+                        "ts": pd.to_datetime([row["period"] for row in rows]),
+                        "value": [float(row[key]) for row in rows],
+                        "unit": [row[f"{key}-units"] for row in rows],
+                        "geo": [row["location"] for row in rows],
+                        "freq": frequency,
+                        "revision_date": pulled_at,
+                    }
+                )
+            )
+        return pd.concat(frames, ignore_index=True)
 
     def list_series(self, route: str) -> list[dict[str, str]]:
         """List every series id/name available under a route, via its facet endpoint.

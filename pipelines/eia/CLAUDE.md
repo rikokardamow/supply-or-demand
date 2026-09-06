@@ -321,3 +321,40 @@ Recorded here rather than silently dropped, per this file's own discipline of wr
 findings a future session can check without re-walking the API — a later session hitting
 either version of this claim (dead series, or "no it isn't") should not have to redo this
 work from scratch.
+
+## Task 2 — gas prices, and a minted series-ID scheme for the no-`series`-facet route
+
+`natural-gas/pri/sum` (`pull_prices.GAS`) pulls clean via the existing `get_series` —
+confirmed live, 2,232 raw rows across the 4 codes, 1,878 surviving the null-`value` skip
+(129/129/96/0 dropped on `N3050US3`/`N3020US3`/`N3010US3`/`N3035US3`, matching Task 0's
+counts above exactly), unit `$/MCF` on every surviving row.
+
+**`electricity/electric-power-operational-data` (Task 0's no-`series`-facet finding
+above) needed a genuinely new client method, not a workaround inside `get_series`.**
+`EIAClient.get_operational_series(route, data_keys, fueltypeid, sectorid, location,
+frequency)` selects rows by `{fueltypeid, sectorid, location}` facets instead of a
+`series` list, fetching one `data_key` (e.g. `"cost-per-btu"`) at a time — each key
+names both its own value column and a `<data_key>-units` column in the response, unlike
+every other route's fixed `"value"`/`"units"` pair. `_fetch_operational_rows` is a
+sibling to `_fetch_rows` with an identical offset/`PAGE_SIZE` paging loop, just a
+different `params` shape.
+
+**Series-ID scheme (minted, since EIA gives this route no id at all):**
+`ELEC.<DATA_KEY_UPPER_SNAKE>.<fueltypeid>-<location>-<sectorid>.<freq_code>`, e.g.
+`ELEC.COST_PER_BTU.NG-US-98.M` and `ELEC.CONSUMPTION_FOR_EG.NG-US-98.M` — deterministic
+from the request's own facets (uppercase the `data_key`, hyphens to underscores; `M`
+from `_FREQUENCY_CODES` in `client.py`), following EIA's own native dotted-with-hyphens
+convention (`ELEC.<short>.<fuel>-<geo>-<sector>.<freq>`), not the lowercase-dotted style
+Specs 17–29 use for this lake's other series ids. `pull_prices.GENERATOR_FUEL =
+["cost-per-btu", "consumption-for-eg"]` is the two `data_key`s requested, fixed to
+`fueltypeid=NG`, `sectorid=98` ("Electric Power" aggregate) and `location=US` (national
+scope only — Task 2 does not pull the by-state breakdown Task 0 used to find the
+non-null location codes). Confirmed live: 306 rows each key, no nulls for `US`,
+`cost-per-btu` unit `"dollars per million Btu"` (stored unconverted, per binding
+constraint), `consumption-for-eg` unit `"thousand Mcf"`. These ids are permanent once
+written to the lake.
+
+`pipelines/eia/pull_prices_weekly.py` is a thin re-export of `pull_prices.main_weekly`
+(the `petroleum/pri/gnd` retail-price pull, `WEEKLY_GROUPS`), matching
+`pipelines/adanos/pull_weekly.py`'s precedent — so `infra/run_scheduled.py` can address
+both EIA price cadences by the same `pull_<cadence>` convention as every other pipeline.
