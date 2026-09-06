@@ -1,0 +1,576 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - gamma-api.polymarket.com
+      User-Agent:
+      - energy-dashboard/0.1 (Kardamow research dashboard)
+    method: GET
+    uri: https://gamma-api.polymarket.com/events?active=true&limit=5&tag_slug=energy
+  response:
+    body:
+      string: "[{\"id\":\"311310\",\"ticker\":\"us-x-iran-ceasefire-before-oil-hits-120\",\"slug\":\"us-x-iran-ceasefire-before-oil-hits-120\",\"title\":\"US
+        x Iran ceasefire before Oil hits $120?\",\"description\":\"This market will
+        resolve to \u201CYes\u201D if there is an official ceasefire agreement, defined
+        as a publicly announced and mutually agreed halt in direct military engagement,
+        between the United States and Iran, before Crude Oil (CL) hits \u2191 $120.
+        \\n\\nThis market will resolve to \u201CNo\u201D if Crude Oil (CL) hits \u2191
+        $120 before there is an official ceasefire agreement, defined as a publicly
+        announced and mutually agreed halt in direct military engagement, between
+        the United States and Iran. \\n\\nIf there is neither a qualifying ceasefire
+        agreement between the United States and Iran nor does Crude Oil (CL) hit \u2191
+        $120 by June 30, 2026 (ET), this market will resolve 50-50.\\n\\nIf both events
+        occur on the same calendar date, this market will resolve based on which event
+        occurred earlier in ET time.\\n\\n1. Crude Oil (CL) hits \u2191 $120\\n\\nThis
+        market will resolve to \\\"Yes\\\" if, on any trading day, the official CME
+        settlement price for the Active Month (front month) of Crude Oil (CL) futures
+        is equal to or above the listed price by the final trading day of June 2026.
+        Otherwise, the market will resolve to \\\"No\\\".\\n\\nFor CME Crude Oil (CL)
+        futures contracts, the active month is the nearest of the contract months
+        listed. The active month becomes a non-active month effective two business
+        days prior to the spot month expiration. For example; if the spot month expires
+        on a Friday the next listed contract will be considered the Active Month on
+        the Wednesday prior to the spot month expiration.\\n\\nOnly the Active Month's
+        official settlement price published by CME Group will be considered. Intraday
+        trades, highs, lows, bids, offers, midpoint values, or indicative prices do
+        not count.\\n\\nNote that the settlement price may differ from the last traded
+        price. CME's methodology to determine the settlement price can vary by commodity
+        and contract.\\n\\nOnly days on which CME publishes an official settlement
+        price for the Active Month will be included. Days without settlement prices
+        (weekends, holidays, or market closures) are ignored.\\n\\nThis market will
+        resolve based on the settlement price as it appears on the CME settlement
+        page at the time it is first published for that trading day, regardless of
+        any later corrections or updates.\\n\\nThe resolution source is the CME Group
+        website \u2014 specifically, the daily \\\"Settlement\\\" price for the Active
+        Month of Crude Oil (CL) futures.\\n\\n2. US x Iran ceasefire\\n\\nFor the
+        purposes of this market, an \u201Cofficial ceasefire agreement\u201D requires
+        clear public confirmation from both the United States government and the government
+        of Iran that they have agreed to halt military hostilities against one another,
+        or for an official ceasefire agreement to be otherwise confirmed to have been
+        reached by an overwhelming consensus of media reporting.\\n\\nIf the agreement
+        is officially reached before Trump visits China, this market will resolve
+        to \u201CYes,\u201D regardless of whether or when the ceasefire officially
+        takes effect.\\n\\nAny form of informal understanding, backchannel communication,
+        de-escalation without an announced agreement, or unilateral pause in hostilities
+        will not be considered an official ceasefire. Humanitarian pauses, limited
+        operational pauses, or temporary tactical stand-downs will not count toward
+        the resolution of this market.\\n\\nA broader peace deal, normalization agreement,
+        or political framework will qualify only if it includes a publicly announced
+        and mutually agreed halt in military engagement between the United States
+        and Iran, effective on a specified date, or otherwise confirmed by an overwhelming
+        consensus of credible reporting. Agreements that outline future negotiations
+        or de-escalation measures without an explicit, dated commitment to stop fighting
+        will not qualify.\\n\\nThe primary resolution source for whether a qualifying
+        ceasefire agreement has been reached will be  official statements from the
+        United States government and the government of Iran. However, an overwhelming
+        consensus of credible media reporting confirming that an official ceasefire
+        agreement has been reached will suffice.\",\"resolutionSource\":\"\",\"startDate\":\"2026-03-26T20:50:38.938582Z\",\"creationDate\":\"2026-03-26T20:50:38.938576Z\",\"endDate\":\"2026-06-30T00:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/us-x-iran-ceasefire-before-oil-hits-120-zS2us0Vso1Ou.jpg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/us-x-iran-ceasefire-before-oil-hits-120-zS2us0Vso1Ou.jpg\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":true,\"volume\":283336.22909600026,\"openInterest\":93084.660888,\"createdAt\":\"2026-03-26T20:45:03.621889Z\",\"updatedAt\":\"2026-08-13T02:51:44.021729Z\",\"enableOrderBook\":true,\"commentCount\":15,\"markets\":[{\"id\":\"1734822\",\"question\":\"US
+        x Iran ceasefire before Oil hits $120?\",\"conditionId\":\"0x265a3b26257a298caad9712ac84cadcec5d084ad01e45d7f22c764a21c2d23e4\",\"slug\":\"us-x-iran-ceasefire-before-oil-hits-120\",\"resolutionSource\":\"\",\"endDate\":\"2026-06-30T00:00:00Z\",\"startDate\":\"2026-03-26T20:47:49.331Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/us-x-iran-ceasefire-before-oil-hits-120-zS2us0Vso1Ou.jpg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/us-x-iran-ceasefire-before-oil-hits-120-zS2us0Vso1Ou.jpg\",\"description\":\"This
+        market will resolve to \u201CYes\u201D if there is an official ceasefire agreement,
+        defined as a publicly announced and mutually agreed halt in direct military
+        engagement, between the United States and Iran, before Crude Oil (CL) hits
+        \u2191 $120. \\n\\nThis market will resolve to \u201CNo\u201D if Crude Oil
+        (CL) hits \u2191 $120 before there is an official ceasefire agreement, defined
+        as a publicly announced and mutually agreed halt in direct military engagement,
+        between the United States and Iran. \\n\\nIf there is neither a qualifying
+        ceasefire agreement between the United States and Iran nor does Crude Oil
+        (CL) hit \u2191 $120 by June 30, 2026 (ET), this market will resolve 50-50.\\n\\nIf
+        both events occur on the same calendar date, this market will resolve based
+        on which event occurred earlier in ET time.\\n\\n1. Crude Oil (CL) hits \u2191
+        $120\\n\\nThis market will resolve to \\\"Yes\\\" if, on any trading day,
+        the official CME settlement price for the Active Month (front month) of Crude
+        Oil (CL) futures is equal to or above the listed price by the final trading
+        day of June 2026. Otherwise, the market will resolve to \\\"No\\\".\\n\\nFor
+        CME Crude Oil (CL) futures contracts, the active month is the nearest of the
+        contract months listed. The active month becomes a non-active month effective
+        two business days prior to the spot month expiration. For example; if the
+        spot month expires on a Friday the next listed contract will be considered
+        the Active Month on the Wednesday prior to the spot month expiration.\\n\\nOnly
+        the Active Month's official settlement price published by CME Group will be
+        considered. Intraday trades, highs, lows, bids, offers, midpoint values, or
+        indicative prices do not count.\\n\\nNote that the settlement price may differ
+        from the last traded price. CME's methodology to determine the settlement
+        price can vary by commodity and contract.\\n\\nOnly days on which CME publishes
+        an official settlement price for the Active Month will be included. Days without
+        settlement prices (weekends, holidays, or market closures) are ignored.\\n\\nThis
+        market will resolve based on the settlement price as it appears on the CME
+        settlement page at the time it is first published for that trading day, regardless
+        of any later corrections or updates.\\n\\nThe resolution source is the CME
+        Group website \u2014 specifically, the daily \\\"Settlement\\\" price for
+        the Active Month of Crude Oil (CL) futures.\\n\\n2. US x Iran ceasefire\\n\\nFor
+        the purposes of this market, an \u201Cofficial ceasefire agreement\u201D requires
+        clear public confirmation from both the United States government and the government
+        of Iran that they have agreed to halt military hostilities against one another,
+        or for an official ceasefire agreement to be otherwise confirmed to have been
+        reached by an overwhelming consensus of media reporting.\\n\\nIf the agreement
+        is officially reached before Trump visits China, this market will resolve
+        to \u201CYes,\u201D regardless of whether or when the ceasefire officially
+        takes effect.\\n\\nAny form of informal understanding, backchannel communication,
+        de-escalation without an announced agreement, or unilateral pause in hostilities
+        will not be considered an official ceasefire. Humanitarian pauses, limited
+        operational pauses, or temporary tactical stand-downs will not count toward
+        the resolution of this market.\\n\\nA broader peace deal, normalization agreement,
+        or political framework will qualify only if it includes a publicly announced
+        and mutually agreed halt in military engagement between the United States
+        and Iran, effective on a specified date, or otherwise confirmed by an overwhelming
+        consensus of credible reporting. Agreements that outline future negotiations
+        or de-escalation measures without an explicit, dated commitment to stop fighting
+        will not qualify.\\n\\nThe primary resolution source for whether a qualifying
+        ceasefire agreement has been reached will be  official statements from the
+        United States government and the government of Iran. However, an overwhelming
+        consensus of credible media reporting confirming that an official ceasefire
+        agreement has been reached will suffice.\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"1\\\",
+        \\\"0\\\"]\",\"volume\":\"283336.22909600026\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-03-26T20:45:04.008645Z\",\"updatedAt\":\"2026-04-09T02:44:14.358065Z\",\"closedTime\":\"2026-04-08
+        02:40:11+00\",\"new\":false,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0x0bd74884ebd2df03f2bb67e43a6b63809b41697f5a1fc6f5610e130cef02eb45\",\"umaEndDate\":\"2026-04-08T02:40:11Z\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":283336.22909600026,\"endDateIso\":\"2026-06-30\",\"startDateIso\":\"2026-03-26\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"66066997059903471776471393966692138132837454107455721884712528971870351268854\\\",
+        \\\"95275792025519422104010496903638379055335652370539561639986734769785128152596\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":283336.22909600026,\"customLiveness\":0,\"acceptingOrders\":false,\"negRisk\":false,\"negRiskRequestID\":\"\",\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-03-26T20:46:43Z\",\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"rewardsMinSize\":200,\"rewardsMaxSpread\":4.5,\"spread\":0.001,\"automaticallyResolved\":true,\"oneDayPriceChange\":0.8795,\"oneHourPriceChange\":0.002,\"oneWeekPriceChange\":0.6095,\"lastTradePrice\":0.998,\"bestBid\":0.999,\"bestAsk\":1,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[\\\"proposed\\\"]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-03-26T20:45:29.583061Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"104039\",\"label\":\"U.S.
+        x Iran\",\"slug\":\"trump-iran\",\"forceShow\":false,\"createdAt\":\"2026-03-02T20:09:15.156731Z\",\"updatedAt\":\"2026-04-17T20:30:08.870525Z\",\"isCarousel\":false,\"requiresTranslation\":false},{\"id\":\"104010\",\"label\":\"Iran
+        Ceasefire\",\"slug\":\"diplomacy-ceasefire\",\"forceShow\":false,\"createdAt\":\"2026-03-02T19:58:33.637952Z\",\"updatedAt\":\"2026-04-17T20:18:43.047208Z\",\"isCarousel\":false,\"requiresTranslation\":false},{\"id\":\"502\",\"label\":\"conflict\",\"slug\":\"conflict\",\"publishedAt\":\"2023-11-14
+        16:11:08.716+00\",\"createdAt\":\"2023-11-14T16:11:08.73Z\",\"updatedAt\":\"2026-03-09T22:33:58.608605Z\",\"requiresTranslation\":false},{\"id\":\"309\",\"label\":\"Oil\",\"slug\":\"oil\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:53:13.969+00\",\"createdAt\":\"2023-11-02T21:53:13.977Z\",\"updatedAt\":\"2026-04-17T20:40:55.156199Z\",\"isCarousel\":false,\"requiresTranslation\":false},{\"id\":\"154\",\"label\":\"Middle
+        East\",\"slug\":\"middle-east\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:26:20.585+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:26:20.601Z\",\"updatedAt\":\"2026-04-17T20:19:53.885899Z\",\"forceHide\":true,\"requiresTranslation\":false},{\"id\":\"78\",\"label\":\"Iran\",\"slug\":\"iran\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:16:51.647+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:16:51.667Z\",\"updatedAt\":\"2026-04-17T20:19:53.890971Z\",\"requiresTranslation\":false},{\"id\":\"334\",\"label\":\"ceasefire\",\"slug\":\"ceasefire\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:56:29.082+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:56:29.099Z\",\"updatedAt\":\"2026-03-09T22:33:38.503645Z\",\"requiresTranslation\":false},{\"id\":\"404\",\"label\":\"energy\",\"slug\":\"energy\",\"publishedAt\":\"2023-11-02
+        22:15:05.743+00\",\"createdAt\":\"2023-11-02T22:15:05.775Z\",\"updatedAt\":\"2026-04-15T21:03:19.352632Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2026-04-08T02:40:11Z\",\"showAllOutcomes\":true,\"showMarketImages\":true,\"automaticallyResolved\":true,\"enableNegRisk\":false,\"automaticallyActive\":true,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"eventMetadata\":{\"context_description\":\"President
+        Trump's announcement of a two-week US-Iran ceasefire on April 7, 2026, just
+        hours before markets opened, has driven trader consensus to 99.8% on Yes,
+        as Brent crude prices peaked near $119 per barrel last week amid Strait of
+        Hormuz threats but never reached $120. Escalation fears from Iranian denials
+        of talks and US strike warnings had spiked oil earlier in March, yet de-escalation
+        via this agreement\u2014confirmed by White House statements and celebrated
+        regionally\u2014precedes any further surge. While implementation risks or
+        breakdowns could prompt volatility, late verification of oil data or disputes
+        over ceasefire terms represent the only realistic paths to No resolution.\",\"context_requires_regen\":true,\"context_updated_at\":\"2026-04-08T03:21:50.667Z\"},\"version\":\"v1\"},{\"id\":\"840763\",\"ticker\":\"will-there-be-a-power-grid-emergency-before-october-1-1786552244191\",\"slug\":\"will-there-be-a-power-grid-emergency-before-october-1-1786552244191\",\"title\":\"Will
+        there be a power grid emergency before October 1?\",\"description\":\"This
+        event tracks whether each listed U.S. regional grid operator declares a NERC
+        Energy Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3) from this event's
+        creation through that market's deadline of 11:59 PM local time on September
+        30, 2026. Each regional market resolves independently to \\\"Yes\\\" or \\\"No\\\"
+        under its own operator, sources, and rules shown on that market, and more
+        than one market may resolve \\\"Yes\\\".\\n\\nEach market is confirmed by
+        any official communication from the relevant grid operator \u2014 its newsroom
+        or press releases (linked in that market's rules), market or grid notices,
+        or real-time system-status postings \u2014 or by credible national news reporting.
+        A lower EEA-1 declaration does not qualify in any market. A declaration qualifies
+        as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify in any market. Because Energy Emergency
+        Alerts are federally reportable, a qualifying declaration is also verifiable
+        through mandatory NERC or U.S. Department of Energy records (DOE Form OE-417,
+        published at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source
+        captures it.\",\"resolutionSource\":\"\",\"startDate\":\"2026-08-12T21:26:05Z\",\"creationDate\":\"2026-08-12T21:27:28.660855Z\",\"endDate\":\"2026-10-02T06:59:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-phoenix-be-under-an-extreme-heat-warning-for-10-days-in-august-2026-2026072-mFaXtLdrzngM.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-phoenix-be-under-an-extreme-heat-warning-for-10-days-in-august-2026-2026072-mFaXtLdrzngM.png\",\"active\":true,\"closed\":false,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":true,\"liquidity\":6645.6334,\"volume\":13330.289888999998,\"openInterest\":2705.8731,\"sortBy\":\"ascending\",\"createdAt\":\"2026-08-12T21:25:44.882501Z\",\"updatedAt\":\"2026-09-06T09:22:43.580525Z\",\"competitive\":0.9097318565352862,\"volume24hr\":166.4,\"volume1wk\":2763.868241,\"volume1mo\":2924.648241,\"volume1yr\":2924.648241,\"enableOrderBook\":true,\"liquidityClob\":6645.6334,\"negRisk\":false,\"commentCount\":0,\"markets\":[{\"id\":\"3552739\",\"question\":\"Will
+        there be a power grid emergency in California before October 1?\",\"conditionId\":\"0x816ad62e223b464c89dead2aee0f55e9f3c5548832b11ed19e87dadf8d008d87\",\"slug\":\"will-there-be-a-power-grid-emergency-in-california-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-02T06:59:00Z\",\"liquidity\":\"716.5819\",\"startDate\":\"2026-08-12T21:26:06Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if the California Independent System Operator
+        (CAISO), which operates the electric grid serving most of California, declares
+        a NERC Energy Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3) at any
+        point from this market's creation through 11:59 PM PT on September 30, 2026.
+        \\n\\nA lower EEA-1 declaration does not qualify. A declaration qualifies
+        as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify. Because Energy Emergency Alerts are
+        federally reportable, a qualifying declaration is also verifiable through
+        mandatory NERC or U.S. Department of Energy records (DOE Form OE-417, published
+        at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source captures
+        it.\\n\\nThe declaration will be confirmed by any official CAISO communication
+        \u2014 its newsroom (https://www.caiso.com/about/news), market notices, or
+        real-time system-condition (Today's Outlook) postings \u2014 or by credible
+        national news reporting. It qualifies as long as the declaration itself happened
+        before the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.105\\\",
+        \\\"0.895\\\"]\",\"volume\":\"1886.876665\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:45.793779Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"California
+        (CAISO)\",\"groupItemThreshold\":\"0\",\"questionID\":\"0x7df25b41261669894a6b0a8fa9d785b70471f7fc75ca6c45a77e878b986e1d8e\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":1886.876665,\"liquidityNum\":716.5819,\"endDateIso\":\"2026-10-02\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"18316839969527785097497375610436945275801686310941336630464331708965840278605\\\",
+        \\\"99881099164537022411936304010602590742350816461678078618796678307655402379908\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":1886.876665,\"liquidityClob\":716.5819,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:06Z\",\"cyom\":false,\"competitive\":0.865033195648883,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334094\",\"conditionId\":\"0x816ad62e223b464c89dead2aee0f55e9f3c5548832b11ed19e87dadf8d008d87\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":9,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.01,\"oneDayPriceChange\":0.005,\"oneWeekPriceChange\":-0.06,\"lastTradePrice\":0.15,\"bestBid\":0.1,\"bestAsk\":0.11,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:53.485009Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552740\",\"question\":\"Will
+        there be a power grid emergency in Texas before October 1?\",\"conditionId\":\"0x0964e880ace5fb7d411f371c7ad5202f7357bfbeba8d50115f0a87a06a2051b6\",\"slug\":\"will-there-be-a-power-grid-emergency-in-texas-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-01T04:59:00Z\",\"liquidity\":\"2286.4709\",\"startDate\":\"2026-08-12T21:26:06Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if the Electric Reliability Council of Texas (ERCOT)
+        declares a NERC Energy Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3)
+        at any point from this market's creation through 11:59 PM CT on September
+        30, 2026. \\n\\nA lower EEA-1 declaration does not qualify. A declaration
+        qualifies as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify. Because Energy Emergency Alerts are
+        federally reportable, a qualifying declaration is also verifiable through
+        mandatory NERC or U.S. Department of Energy records (DOE Form OE-417, published
+        at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source captures
+        it.\\n\\nThe declaration will be confirmed by any official ERCOT communication
+        \u2014 its news releases (https://www.ercot.com/news/releases), market notices,
+        or real-time grid-condition postings \u2014 or by credible national news reporting.
+        It qualifies as long as the declaration itself happened before the deadline,
+        even if it is only documented or reported afterward.\\n\\nOtherwise, this
+        market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.055\\\",
+        \\\"0.945\\\"]\",\"volume\":\"2282.4744149999997\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:45.968686Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"Texas
+        (ERCOT)\",\"groupItemThreshold\":\"1\",\"questionID\":\"0xc365f2fa7ecc84c7a9f41625060ddba5c03b7cc92d64193d1e2864e461db648c\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":2282.4744149999997,\"liquidityNum\":2286.4709,\"endDateIso\":\"2026-10-01\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"volume24hr\":157.21,\"volume1wk\":2141.694415,\"volume1mo\":2282.4744149999997,\"volume1yr\":2282.4744149999997,\"clobTokenIds\":\"[\\\"31793361741745058173109179484654330122766148351873864159333388734081975482804\\\",
+        \\\"103031944124019464995334922436541959895834991271487242070288902847249864021947\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volume24hrClob\":157.21,\"volume1wkClob\":2141.694415,\"volume1moClob\":2282.4744149999997,\"volume1yrClob\":2282.4744149999997,\"volumeClob\":2282.4744149999997,\"liquidityClob\":2286.4709,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:06Z\",\"cyom\":false,\"competitive\":0.8347071221385196,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334097\",\"conditionId\":\"0x0964e880ace5fb7d411f371c7ad5202f7357bfbeba8d50115f0a87a06a2051b6\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":1,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.01,\"oneDayPriceChange\":-0.015,\"oneWeekPriceChange\":-0.34,\"lastTradePrice\":0.05,\"bestBid\":0.05,\"bestAsk\":0.06,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:53.658708Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552741\",\"question\":\"Will
+        there be a power grid emergency in the Central US before October 1?\",\"conditionId\":\"0x542142ad49db76e1cc5d0c0d7636ed541489c1c9f60ee6cbfb649bd1233719fc\",\"slug\":\"will-there-be-a-power-grid-emergency-in-the-central-us-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-01T04:59:00Z\",\"liquidity\":\"43.7689\",\"startDate\":\"2026-08-12T21:26:06Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if the Southwest Power Pool (SPP) \u2014 the regional
+        transmission organization serving all or part of 17 states across the central
+        and western U.S. \u2014 declares a NERC Energy Emergency Alert at Level 2
+        (EEA-2) or Level 3 (EEA-3) for any of its balancing authority areas from this
+        market's creation through 11:59 PM CT on September 30, 2026. \\\"Central US\\\"
+        in the title is a general label \u2014 only an SPP declaration counts, and
+        emergencies in other central-U.S. grid operators do not qualify.\\n\\nA lower
+        EEA-1 declaration does not qualify. A declaration qualifies as long as it
+        happened before the deadline, even if it is only documented or reported afterward.
+        A DOE Section 202(c) emergency order is not a NERC EEA declaration and does
+        not qualify. Because Energy Emergency Alerts are federally reportable, a qualifying
+        declaration is also verifiable through mandatory NERC or U.S. Department of
+        Energy records (DOE Form OE-417, published at https://www.oe.netl.doe.gov/oe417.aspx)
+        even if no other source captures it.\\n\\nThe declaration will be confirmed
+        by any official SPP communication \u2014 its press releases (https://www.spp.org/newsroom/press-releases/),
+        Grid Notices, or its real-time Current Grid Conditions page \u2014 or by credible
+        national news reporting. It qualifies as long as the declaration itself happened
+        before the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.305\\\",
+        \\\"0.695\\\"]\",\"volume\":\"741.840491\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:46.147336Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"Central
+        US (SPP)\",\"groupItemThreshold\":\"2\",\"questionID\":\"0x704f63d5a2e3b6a18d0fbf58eab27f46013885842a83aa7cc3655dc3ce592f8d\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":741.840491,\"liquidityNum\":43.7689,\"endDateIso\":\"2026-10-01\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"volume24hr\":9.19,\"volume1wk\":622.1738260000001,\"volume1mo\":642.1738260000001,\"volume1yr\":642.1738260000001,\"clobTokenIds\":\"[\\\"71234598946002042650807764337342513714730949935758288735310387680777257066955\\\",
+        \\\"66893213089190949559441432089832839480612109855208541051436856757485988233394\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volume24hrClob\":9.19,\"volume1wkClob\":622.1738260000001,\"volume1moClob\":642.1738260000001,\"volume1yrClob\":642.1738260000001,\"volumeClob\":741.840491,\"liquidityClob\":43.7689,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:06Z\",\"cyom\":false,\"competitive\":0.45278292912020424,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334099\",\"conditionId\":\"0x542142ad49db76e1cc5d0c0d7636ed541489c1c9f60ee6cbfb649bd1233719fc\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":38,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.53,\"oneDayPriceChange\":0.19,\"oneHourPriceChange\":-0.01,\"oneWeekPriceChange\":-0.065,\"lastTradePrice\":0.1,\"bestBid\":0.04,\"bestAsk\":0.57,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:53.828884Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552742\",\"question\":\"Will
+        there be a power grid emergency in the Midwest before October 1?\",\"conditionId\":\"0x09396492c21c8e722548b54d06ae0888d81f654fcd41e8121a1992c36178f54c\",\"slug\":\"will-there-be-a-power-grid-emergency-in-the-midwest-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-01T04:59:00Z\",\"liquidity\":\"1524.0201\",\"startDate\":\"2026-08-12T21:26:06Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if the Midcontinent Independent System Operator
+        (MISO) \u2014 the regional transmission organization serving all or part of
+        15 U.S. states from the Great Lakes to the Gulf Coast \u2014 declares a NERC
+        Energy Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3) for any of its
+        balancing authority areas from this market's creation through 11:59 PM CT
+        on September 30, 2026. \\\"Midwest\\\" in the title is a general label \u2014
+        only a MISO declaration counts, and emergencies in other grid operators do
+        not qualify.\\n\\nA lower EEA-1 declaration does not qualify. A declaration
+        qualifies as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify. Because Energy Emergency Alerts are
+        federally reportable, a qualifying declaration is also verifiable through
+        mandatory NERC or U.S. Department of Energy records (DOE Form OE-417, published
+        at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source captures
+        it.\\n\\nThe declaration will be confirmed by any official MISO communication
+        \u2014 its Media Center (https://www.misoenergy.org/meet-miso/media-center/),
+        market notices, or real-time grid-condition postings \u2014 or by credible
+        national news reporting. It qualifies as long as the declaration itself happened
+        before the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.185\\\",
+        \\\"0.815\\\"]\",\"volume\":\"6726.561803999999\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:46.338166Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"Midwest
+        (MISO)\",\"groupItemThreshold\":\"3\",\"questionID\":\"0xfa7ea8134924052d039241252388ff4c9e3232c633e7e69be1eb61fe363ce5a8\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":6726.561803999999,\"liquidityNum\":1524.0201,\"endDateIso\":\"2026-10-01\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"71171900167119604583038328253373637380188723031281355099535317729077496302745\\\",
+        \\\"14149021091765510678521823351687546738923234042406276535834721169953179775634\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":6726.561803999999,\"liquidityClob\":1524.0201,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:06Z\",\"cyom\":false,\"competitive\":0.9097318565352862,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334102\",\"conditionId\":\"0x09396492c21c8e722548b54d06ae0888d81f654fcd41e8121a1992c36178f54c\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":21,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.01,\"oneWeekPriceChange\":-0.24,\"lastTradePrice\":0.18,\"bestBid\":0.18,\"bestAsk\":0.19,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:54.006133Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552743\",\"question\":\"Will
+        there be a power grid emergency in the Mid-Atlantic before October 1?\",\"conditionId\":\"0x442774835980d2efbac5a4d485ad6badc395c08f2ee40a184965edb136e5fe34\",\"slug\":\"will-there-be-a-power-grid-emergency-in-the-mid-atlantic-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-02T03:59:00Z\",\"liquidity\":\"836.577\",\"startDate\":\"2026-08-12T21:26:05Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if PJM Interconnection declares a NERC Energy
+        Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3) anywhere across its
+        footprint from this market's creation through 11:59 PM ET on September 30,
+        2026. PJM serves all or part of Delaware, Illinois, Indiana, Kentucky, Maryland,
+        Michigan, New Jersey, North Carolina, Ohio, Pennsylvania, Tennessee, Virginia,
+        West Virginia, and the District of Columbia; a qualifying declaration anywhere
+        in that footprint counts, and \\\"Mid-Atlantic\\\" in the title is only a
+        general label. \\n\\nA lower EEA-1 declaration does not qualify. A declaration
+        qualifies as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify. Because Energy Emergency Alerts are
+        federally reportable, a qualifying declaration is also verifiable through
+        mandatory NERC or U.S. Department of Energy records (DOE Form OE-417, published
+        at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source captures
+        it.\\n\\nThe declaration will be confirmed by any official PJM communication
+        \u2014 its Inside Lines blog (https://insidelines.pjm.com/), emergency-procedure
+        or market messages, or real-time system-status postings \u2014 or by credible
+        national news reporting. It qualifies as long as the declaration itself happened
+        before the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.15\\\",
+        \\\"0.85\\\"]\",\"volume\":\"82.18\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:46.563516Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"Mid-Atlantic
+        (PJM)\",\"groupItemThreshold\":\"4\",\"questionID\":\"0x12dd4e6b1323323827f11fcd919ffeb5c09ca72b3b7740db9d4631f6fd2de694\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":82.18,\"liquidityNum\":836.577,\"endDateIso\":\"2026-10-02\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"89848033064659169147771346554566990226954480363416456196163491675736348078912\\\",
+        \\\"59164361265858516305364624667107120259768995727573751566393512037583586446238\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":82.18,\"liquidityClob\":836.577,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:05Z\",\"cyom\":false,\"competitive\":0.8908685968819599,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334103\",\"conditionId\":\"0x442774835980d2efbac5a4d485ad6badc395c08f2ee40a184965edb136e5fe34\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":15,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.02,\"oneDayPriceChange\":0.015,\"oneWeekPriceChange\":-0.26,\"lastTradePrice\":0.44,\"bestBid\":0.14,\"bestAsk\":0.16,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:54.171156Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552744\",\"question\":\"Will
+        there be a power grid emergency in New York before October 1?\",\"conditionId\":\"0xca189292dab153174f7f25834c4ab473898203f17d967e4a85224d78707693f2\",\"slug\":\"will-there-be-a-power-grid-emergency-in-new-york-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-02T03:59:00Z\",\"liquidity\":\"850.1599\",\"startDate\":\"2026-08-12T21:26:05Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if the New York Independent System Operator (NYISO)
+        declares a NERC Energy Emergency Alert at Level 2 (EEA-2) or Level 3 (EEA-3)
+        at any point from this market's creation through 11:59 PM ET on September
+        30, 2026. \\n\\nA lower EEA-1 declaration does not qualify. A declaration
+        qualifies as long as it happened before the deadline, even if it is only documented
+        or reported afterward. A DOE Section 202(c) emergency order is not a NERC
+        EEA declaration and does not qualify. Because Energy Emergency Alerts are
+        federally reportable, a qualifying declaration is also verifiable through
+        mandatory NERC or U.S. Department of Energy records (DOE Form OE-417, published
+        at https://www.oe.netl.doe.gov/oe417.aspx) even if no other source captures
+        it.\\n\\nThe declaration will be confirmed by any official NYISO communication
+        \u2014 its News & Media page (https://www.nyiso.com/news-and-media), market
+        notices, or real-time system-conditions postings \u2014 or by credible national
+        news reporting. It qualifies as long as the declaration itself happened before
+        the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.125\\\",
+        \\\"0.875\\\"]\",\"volume\":\"1494.996514\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:46.735932Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"New
+        York (NYISO)\",\"groupItemThreshold\":\"5\",\"questionID\":\"0xe42c70a06cec5cc4e57eca66d7246a796c6fed6b8a77c306d81f0b72e9f221e5\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":1494.996514,\"liquidityNum\":850.1599,\"endDateIso\":\"2026-10-02\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"45083519045991033350086134209953748308533556633487692783399985268559450527321\\\",
+        \\\"6751966478308856789189060523680626307174339113379064957229309571915431308223\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":1494.996514,\"liquidityClob\":850.1599,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:05Z\",\"cyom\":false,\"competitive\":0.8767123287671234,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334105\",\"conditionId\":\"0xca189292dab153174f7f25834c4ab473898203f17d967e4a85224d78707693f2\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":12,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.01,\"oneDayPriceChange\":-0.01,\"oneWeekPriceChange\":-0.28,\"lastTradePrice\":0.08,\"bestBid\":0.12,\"bestAsk\":0.13,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:54.340209Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"},{\"id\":\"3552745\",\"question\":\"Will
+        there be a power grid emergency in New England before October 1?\",\"conditionId\":\"0xa950feaf28ca3d740794901eac939fb7faa3a92dbe26121994263ab6e3dfd1b4\",\"slug\":\"will-there-be-a-power-grid-emergency-in-new-england-before-october-1-1786552244191\",\"resolutionSource\":\"\",\"endDate\":\"2026-10-02T03:59:00Z\",\"liquidity\":\"182.2985\",\"startDate\":\"2026-08-12T21:26:05Z\",\"description\":\"This
+        market resolves \\\"Yes\\\" if ISO New England (ISO-NE) \u2014 the grid operator
+        for the six New England states of Connecticut, Maine, Massachusetts, New Hampshire,
+        Rhode Island, and Vermont \u2014 declares a NERC Energy Emergency Alert at
+        Level 2 (EEA-2) or Level 3 (EEA-3) at any point from this market's creation
+        through 11:59 PM ET on September 30, 2026. \\n\\nA lower EEA-1 declaration
+        does not qualify. A declaration qualifies as long as it happened before the
+        deadline, even if it is only documented or reported afterward. A DOE Section
+        202(c) emergency order is not a NERC EEA declaration and does not qualify.
+        Because Energy Emergency Alerts are federally reportable, a qualifying declaration
+        is also verifiable through mandatory NERC or U.S. Department of Energy records
+        (DOE Form OE-417, published at https://www.oe.netl.doe.gov/oe417.aspx) even
+        if no other source captures it.\\n\\nThe declaration will be confirmed by
+        any official ISO New England communication \u2014 its press releases (https://www.iso-ne.com/about/news-media/press-releases),
+        market notices, or real-time system-status postings \u2014 or by credible
+        national news reporting. It qualifies as long as the declaration itself happened
+        before the deadline, even if it is only documented or reported afterward.\\n\\nOtherwise,
+        this market resolves \\\"No\\\".\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0.08\\\",
+        \\\"0.92\\\"]\",\"volume\":\"115.36\",\"active\":true,\"closed\":false,\"marketMakerAddress\":\"\",\"createdAt\":\"2026-08-12T21:25:46.922021Z\",\"updatedAt\":\"2026-09-06T09:22:15.094212Z\",\"new\":false,\"featured\":false,\"archived\":false,\"resolvedBy\":\"0x65070BE91477460D8A7AeEb94ef92fe056C2f2A7\",\"restricted\":true,\"groupItemTitle\":\"New
+        England (ISO-NE)\",\"groupItemThreshold\":\"6\",\"questionID\":\"0x1c2f95ee771a70da4c075c486f22e3d12dbc12b6074432cc17b1f664fc75ce5c\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.01,\"orderMinSize\":5,\"volumeNum\":115.36,\"liquidityNum\":182.2985,\"endDateIso\":\"2026-10-02\",\"startDateIso\":\"2026-08-12\",\"hasReviewedDates\":true,\"clobTokenIds\":\"[\\\"92706881796918754945386550969370382521757453542968109077094616177119991564186\\\",
+        \\\"108625030207102321737912609890134733832344517627733386108586397626181308481327\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"volumeClob\":115.36,\"liquidityClob\":182.2985,\"makerBaseFee\":1000,\"takerBaseFee\":1000,\"customLiveness\":0,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"acceptingOrdersTimestamp\":\"2026-08-12T21:26:05Z\",\"cyom\":false,\"competitive\":0.8500510030601836,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"1334108\",\"conditionId\":\"0xa950feaf28ca3d740794901eac939fb7faa3a92dbe26121994263ab6e3dfd1b4\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":4,\"startDate\":\"2026-09-06\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":20,\"rewardsMaxSpread\":4.5,\"spread\":0.04,\"oneDayPriceChange\":-0.005,\"oneWeekPriceChange\":-0.17,\"lastTradePrice\":0.1,\"bestBid\":0.06,\"bestAsk\":0.1,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"showGmpSeries\":false,\"showGmpOutcome\":false,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"deployingTimestamp\":\"2026-08-12T21:25:54.523069Z\",\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":true,\"requiresTranslation\":false,\"feeType\":\"weather_fees\",\"feeSchedule\":{\"exponent\":1,\"rate\":0.05,\"takerOnly\":true,\"rebateRate\":0.25},\"version\":\"v1\"}],\"tags\":[{\"id\":\"404\",\"label\":\"energy\",\"slug\":\"energy\",\"publishedAt\":\"2023-11-02
+        22:15:05.743+00\",\"createdAt\":\"2023-11-02T22:15:05.775Z\",\"updatedAt\":\"2026-04-15T21:03:19.352632Z\",\"requiresTranslation\":false},{\"id\":\"84\",\"label\":\"Weather\",\"slug\":\"weather\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:17:34.81+00\",\"createdAt\":\"2023-11-02T21:17:34.814Z\",\"updatedAt\":\"2026-03-09T22:33:58.564774Z\",\"requiresTranslation\":false},{\"id\":\"87\",\"label\":\"climate\",\"slug\":\"climate\",\"publishedAt\":\"2023-11-02
+        21:17:38.407+00\",\"createdAt\":\"2023-11-02T21:17:38.424Z\",\"updatedAt\":\"2026-03-09T22:28:03.35922Z\",\"requiresTranslation\":false},{\"id\":\"103037\",\"label\":\"Climate
+        & Science\",\"slug\":\"climate-science\",\"forceShow\":false,\"createdAt\":\"2025-12-30T23:31:52.33537Z\",\"updatedAt\":\"2026-04-17T20:18:03.05623Z\",\"isCarousel\":false,\"requiresTranslation\":false}],\"cyom\":false,\"showAllOutcomes\":true,\"showMarketImages\":false,\"enableNegRisk\":false,\"automaticallyActive\":true,\"gmpChartMode\":\"default\",\"negRiskAugmented\":false,\"estimateValue\":false,\"cumulativeMarkets\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"eventMetadata\":{\"context_description\":\"Rising
+        electricity demand from data centers and electrification, combined with elevated
+        forced outage rates on aging coal and gas units, continues to pressure reserve
+        margins even as summer peaks recede. NERC\u2019s 2026 Summer Reliability Assessment
+        found adequate resources for normal conditions across North America after
+        record solar, battery, and gas additions, yet flagged elevated risks in New
+        England, western ERCOT, and the Northwest during extreme heat or low renewable
+        output. Early September remains a noted vulnerability window in parts of the
+        Northwest around evening peaks. Traders should monitor NOAA\u2019s updated
+        temperature outlooks, the EIA Short-Term Energy Outlook on September 9, and
+        any NERC Energy Emergency Alert declarations by CAISO, ERCOT, or PJM, as overlapping
+        heat, transmission constraints, or variable generation shortfalls could trigger
+        EEA-2 or EEA-3 events before October 1.\",\"context_requires_regen\":false,\"context_updated_at\":\"2026-09-06T08:18:15.541Z\"},\"version\":\"v1\"},{\"id\":\"902712\",\"ticker\":\"will-saudi-arabia-boost-oil-production-in-q4\",\"slug\":\"will-saudi-arabia-boost-oil-production-in-q4\",\"title\":\"Will
+        Saudi Arabia boost oil production in Q4?\",\"description\":\"This market will
+        resolve to \\\"Yes\\\" if Saudi Arabia increases their level of crude oil
+        production (in tb/d) in Q4 of 2023 over the level in Q3 of 2023. Otherwise,
+        this market will resolve to \\\"No\\\".\\n\\nThe resolution source for this
+        market will be information released by OPEC based on direct communication,
+        after the close of the 4th financial quarter for 2023 (e.g. https://www.opec.org/opec_web/en/publications/338.htm
+        + https://www.opec.org/opec_web/static_files_project/media/downloads/publications/Addendum_October%20MOMR.pdf).\\n\",\"resolutionSource\":\"\",\"startDate\":\"2023-10-19T21:47:57.799Z\",\"creationDate\":\"2023-10-19T21:49:11.016Z\",\"endDate\":\"2024-01-17T00:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/saudi+oil+production.jpeg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/saudi+oil+production.jpeg\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":true,\"liquidity\":0,\"volume\":20509.21,\"openInterest\":0,\"sortBy\":\"ascending\",\"published_at\":\"2023-10-19
+        21:32:38.686+00\",\"createdAt\":\"2023-10-19T21:32:38.717Z\",\"updatedAt\":\"2024-03-22T02:05:00.039465Z\",\"commentsEnabled\":false,\"competitive\":0,\"volume24hr\":0,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"liquidityAmm\":0,\"liquidityClob\":0,\"commentCount\":3,\"markets\":[{\"id\":\"252719\",\"question\":\"Will
+        Saudi Arabia boost oil production in Q4?\",\"conditionId\":\"0xdf8a3a7b24dc0c468403a124f0868d5919df5d1d48718bba7ae45b2c3f9ad24b\",\"slug\":\"will-saudi-arabia-boost-oil-production-in-q4\",\"resolutionSource\":\"\",\"endDate\":\"2024-01-17T00:00:00Z\",\"liquidity\":\"0\",\"startDate\":\"2023-10-19T21:47:57.799Z\",\"fee\":\"20000000000000000\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/saudi+oil+production.jpeg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/saudi+oil+production.jpeg\",\"description\":\"This
+        market will resolve to \\\"Yes\\\" if Saudi Arabia increases their level of
+        crude oil production (in tb/d) in Q4 of 2023 over the level in Q3 of 2023.
+        Otherwise, this market will resolve to \\\"No\\\".\\n\\nThe resolution source
+        for this market will be information released by OPEC based on direct communication,
+        after the close of the 4th financial quarter for 2023 (e.g. https://www.opec.org/opec_web/en/publications/338.htm
+        + https://www.opec.org/opec_web/static_files_project/media/downloads/publications/Addendum_October%20MOMR.pdf).\\n\",\"outcomes\":\"[\\\"Yes\\\",
+        \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0\\\", \\\"1\\\"]\",\"volume\":\"20509.212682999998\",\"active\":true,\"marketType\":\"normal\",\"closed\":true,\"marketMakerAddress\":\"0xC2F6Ce3BF3867d74ab97E244d078C9585F1622ed\",\"createdAt\":\"2023-10-19T21:32:38.498Z\",\"updatedAt\":\"2024-01-18T16:05:17.877Z\",\"closedTime\":\"2024-01-17
+        18:15:22+00\",\"wideFormat\":false,\"new\":false,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"1\",\"questionID\":\"0x3d041c434e8b5a8b7b21b6103b045690e30059eafbdec521a82e86ba04859302\",\"umaEndDate\":\"2024-01-17
+        18:15:22+00\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":20509.21,\"liquidityNum\":0,\"endDateIso\":\"2024-01-17\",\"startDateIso\":\"2023-10-19\",\"hasReviewedDates\":true,\"commentsEnabled\":false,\"volume24hr\":0,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"secondsDelay\":0,\"clobTokenIds\":\"[\\\"1670057878925585717745503711657769024832907450721315318649688002284648992887\\\",
+        \\\"44813375637840789576383827924256722010768623527681070854884964210230219678305\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500.0\",\"umaReward\":\"5.0\",\"fpmmLive\":true,\"volume24hrAmm\":0,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume24hrClob\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeAmm\":0,\"volumeClob\":20509.21,\"liquidityAmm\":0,\"liquidityClob\":0,\"makerBaseFee\":0,\"takerBaseFee\":0,\"customLiveness\":0,\"acceptingOrders\":true,\"notificationsEnabled\":true,\"creator\":\"\",\"ready\":false,\"funded\":false,\"cyom\":false,\"competitive\":0,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"rewardsMinSize\":0,\"rewardsMaxSpread\":0,\"spread\":1,\"oneDayPriceChange\":0,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":0,\"bestBid\":0,\"bestAsk\":1,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"308\",\"label\":\"Saudi
+        Arabia\",\"slug\":\"saudi-arabia\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:53:11.96+00\",\"createdAt\":\"2023-11-02T21:53:11.98Z\",\"updatedAt\":\"2026-08-18T10:00:08.112546Z\",\"isCarousel\":false,\"requiresTranslation\":false},{\"id\":\"225\",\"label\":\"economics\",\"slug\":\"economics\",\"publishedAt\":\"2023-11-02
+        21:39:03.207+00\",\"createdAt\":\"2023-11-02T21:39:03.224Z\",\"updatedAt\":\"2026-04-17T20:33:09.97626Z\",\"requiresTranslation\":false},{\"id\":\"247\",\"label\":\"oil
+        production\",\"slug\":\"oil-production\",\"publishedAt\":\"2023-11-02 21:43:21.261+00\",\"createdAt\":\"2023-11-02T21:43:21.271Z\",\"updatedAt\":\"2026-04-17T20:13:49.738259Z\",\"requiresTranslation\":false},{\"id\":\"404\",\"label\":\"energy\",\"slug\":\"energy\",\"publishedAt\":\"2023-11-02
+        22:15:05.743+00\",\"createdAt\":\"2023-11-02T22:15:05.775Z\",\"updatedAt\":\"2026-04-15T21:03:19.352632Z\",\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2024-01-17T18:15:22Z\",\"showAllOutcomes\":false,\"showMarketImages\":true,\"enableNegRisk\":false,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"version\":\"v1\"}]\n"
+    headers:
+      Age:
+      - '251'
+      CF-RAY:
+      - a36c70311b8421fc-DUB
+      Cache-Control:
+      - public, max-age=300
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 Sep 2026 09:27:30 GMT
+      Server:
+      - cloudflare
+      Server-Timing:
+      - cfCacheStatus;desc="HIT"
+      - cfEdge;dur=4,cfOrigin;dur=0
+      Speculation-Rules:
+      - '"/cdn-cgi/speculation"'
+      Strict-Transport-Security:
+      - max-age=7776000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      cf-cache-status:
+      - HIT
+      deprecation:
+      - 'true'
+      expires:
+      - Sun, 06 Sep 2026 09:32:30 GMT
+      last-modified:
+      - Sun, 06 Sep 2026 09:23:19 GMT
+      set-cookie:
+      - __cf_bm=OdquBHs_fDVna9HJcwhl92oZF6fY_6104uJLrBOQVBw-1788686850.739197-1.0.1.1-Nq1qeTTvXLn2rAgDy_yQ3_SC5BtspQujWX5zXyPG6yiBNDdn2kVKBYSt0EoVmyUH6L8pXEgZbhksO3BI_1KV.FGGA7z6UIBictx1NaoYMQ7FGoTbcvoEGjCVVerqL7PM;
+        HttpOnly; SameSite=None; Secure; Path=/; Domain=polymarket.com; Expires=Sun,
+        06 Sep 2026 09:57:30 GMT
+      sunset:
+      - Fri, 01 May 2026 00:00:00 GMT
+      vary:
+      - Accept-Encoding,Origin
+      warning:
+      - 299 - "use /events/keyset"
+      x-envoy-upstream-service-time:
+      - '37'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - gamma-api.polymarket.com
+      User-Agent:
+      - energy-dashboard/0.1 (Kardamow research dashboard)
+    method: GET
+    uri: https://gamma-api.polymarket.com/events?active=true&limit=5&tag_slug=geopolitics
+  response:
+    body:
+      string: "[{\"id\":\"10127\",\"ticker\":\"ukraine-responsible-for-russia-attack\",\"slug\":\"ukraine-responsible-for-russia-attack\",\"title\":\"Ukraine
+        responsible for Moscow attack? \",\"description\":\"This market will resolve
+        to 'Yes' if the March 22 attack at Crocus City Hall is officially attributed
+        to a Ukrainian group by March 31, 2024, 11:59 PM ET.\\n\\n\u2018Ukrainian
+        group\u2019 will be considered any group which primarily consists of Ukrainians,
+        or is otherwise affiliated with the government of Ukraine.\\n\\nThis market
+        may resolve once it is definitively determined whether or not the attack was
+        attributed to a Ukrainian group.\\n\\nThe primary resolution source for this
+        market will be official information from the Russian and Ukrainian governments
+        and security services. However, a consensus of credible reporting may also
+        be used.\",\"resolutionSource\":\"\",\"startDate\":\"2024-03-22T21:14:25.931284Z\",\"creationDate\":\"2024-03-22T21:14:25.93128Z\",\"endDate\":\"2024-03-31T12:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/Screenshot+2024-03-22+at+8.18.21%E2%80%AFPM.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/Screenshot+2024-03-22+at+8.18.21%E2%80%AFPM.png\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":false,\"volume\":349784.90005,\"createdAt\":\"2024-03-22T20:21:47.853134Z\",\"updatedAt\":\"2026-05-20T15:00:03.693801Z\",\"competitive\":1,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"negRisk\":false,\"commentCount\":-12,\"markets\":[{\"id\":\"500414\",\"question\":\"Ukraine
+        responsible for Moscow attack? \",\"conditionId\":\"0x6bf8a16a0d31d4a2431ccad2ffa7341415ebdb3a63d7dcb7765c0a5d8ca92655\",\"slug\":\"ukraine-responsible-for-russia-attack\",\"resolutionSource\":\"\",\"endDate\":\"2024-03-31T12:00:00Z\",\"startDate\":\"2024-03-22T21:09:58.519Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/Screenshot+2024-03-22+at+8.18.21%E2%80%AFPM.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/Screenshot+2024-03-22+at+8.18.21%E2%80%AFPM.png\",\"description\":\"This
+        market will resolve to 'Yes' if the March 22 attack at Crocus City Hall is
+        officially attributed to a Ukrainian group by March 31, 2024, 11:59 PM ET.\\n\\n\u2018Ukrainian
+        group\u2019 will be considered any group which primarily consists of Ukrainians,
+        or is otherwise affiliated with the government of Ukraine.\\n\\nThis market
+        may resolve once it is definitively determined whether or not the attack was
+        attributed to a Ukrainian group.\\n\\nThe primary resolution source for this
+        market will be official information from the Russian and Ukrainian governments
+        and security services. However, a consensus of credible reporting may also
+        be used.\",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0\\\",
+        \\\"1\\\"]\",\"volume\":\"349784.90005\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2024-03-22T20:21:47.932435Z\",\"updatedAt\":\"2024-05-07T23:10:02.446538Z\",\"closedTime\":\"2024-04-01
+        06:26:38+00\",\"new\":true,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0x1ba023abc3dcacf84b4b744a0b7232748330f0a5c2392b759a2f86ef3dd99d73\",\"umaEndDate\":\"2024-04-01
+        06:26:38+00\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":349784.9,\"hasReviewedDates\":true,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"clobTokenIds\":\"[\\\"41572124979752437058476553866557397589280217202715912791636911795291305575846\\\",
+        \\\"55628821425423048357350190574572471652550178723292312926620642809612337499028\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"fpmmLive\":true,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeClob\":349784.90005,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"rewardsMinSize\":200,\"rewardsMaxSpread\":3.5,\"spread\":1,\"oneDayPriceChange\":0,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":0,\"bestBid\":0,\"bestAsk\":1,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"96\",\"label\":\"Ukraine\",\"slug\":\"ukraine\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:18:49.922+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:18:49.94Z\",\"updatedAt\":\"2026-04-17T21:11:46.161003Z\",\"requiresTranslation\":false},{\"id\":\"471\",\"label\":\"terrorism\",\"slug\":\"terrorism\",\"publishedAt\":\"2023-11-07
+        16:08:09.087+00\",\"createdAt\":\"2023-11-07T16:08:09.112Z\",\"updatedAt\":\"2026-04-17T20:22:14.201828Z\",\"requiresTranslation\":false},{\"id\":\"1363\",\"label\":\"global
+        politics\",\"slug\":\"global-politics\",\"publishedAt\":\"2024-02-20 19:22:03.51+00\",\"createdAt\":\"2024-02-20T19:22:03.517Z\",\"updatedAt\":\"2026-04-17T20:19:23.10694Z\",\"requiresTranslation\":false},{\"id\":\"1424\",\"label\":\"world
+        news\",\"slug\":\"world-news\",\"publishedAt\":\"2024-02-22 22:32:50.951+00\",\"createdAt\":\"2024-02-22T22:32:50.96Z\",\"updatedAt\":\"2026-04-17T21:08:23.0739Z\",\"requiresTranslation\":false},{\"id\":\"2\",\"label\":\"Politics\",\"slug\":\"politics\",\"forceShow\":false,\"publishedAt\":\"2023-10-25
+        18:55:50.674+00\",\"updatedBy\":13,\"createdAt\":\"2023-10-25T18:55:50.681Z\",\"updatedAt\":\"2026-04-17T20:39:54.201881Z\",\"forceHide\":true,\"requiresTranslation\":false},{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2024-04-01T06:29:45.961609Z\",\"showAllOutcomes\":false,\"showMarketImages\":true,\"enableNegRisk\":false,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"eventMetadata\":{\"context_requires_regen\":true},\"version\":\"v1\"},{\"id\":\"10140\",\"ticker\":\"will-putin-remain-president-of-russia-through-2024\",\"slug\":\"will-putin-remain-president-of-russia-through-2024\",\"title\":\"Will
+        Putin remain President of Russia through 2024?\",\"description\":\"This market
+        will resolve to \u201CYes\u201D if Vladimir Putin remains the President of
+        Russia without interruption from March 25, 2024 through December 31, 2024,
+        11:59 PM ET. Otherwise, this market will resolve to \u201CNo\u201D.\\n\\nThe
+        resolution source for this market will be the CIA World Factbook page for
+        Russia, currently available at https://www.cia.gov/the-world-factbook/countries/russia/#government.
+        A consensus of credible reporting will also suffice.\",\"resolutionSource\":\"\",\"startDate\":\"2024-03-26T15:14:22.590679Z\",\"creationDate\":\"2024-03-26T15:14:22.590674Z\",\"endDate\":\"2024-12-31T12:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/putin_cp.jpg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/putin_cp.jpg\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":true,\"volume\":2187634.15316501,\"createdAt\":\"2024-03-26T14:25:57.621876Z\",\"updatedAt\":\"2025-01-02T08:31:11.087338Z\",\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"negRisk\":false,\"commentCount\":20,\"markets\":[{\"id\":\"500444\",\"question\":\"Will
+        Putin remain President of Russia through 2024?\",\"conditionId\":\"0x0f99544f8db2651fdafb79636924b4d9ec73c9b61d77a9e56f467c6b0c932c3d\",\"slug\":\"will-putin-remain-president-of-russia-through-2024\",\"resolutionSource\":\"\",\"endDate\":\"2024-12-31T12:00:00Z\",\"startDate\":\"2024-03-26T15:11:43.387Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/putin_cp.jpg\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/putin_cp.jpg\",\"description\":\"This
+        market will resolve to \u201CYes\u201D if Vladimir Putin remains the President
+        of Russia without interruption from March 25, 2024 through December 31, 2024,
+        11:59 PM ET. Otherwise, this market will resolve to \u201CNo\u201D.\\n\\nThe
+        resolution source for this market will be the CIA World Factbook page for
+        Russia, currently available at https://www.cia.gov/the-world-factbook/countries/russia/#government.
+        A consensus of credible reporting will also suffice.\",\"outcomes\":\"[\\\"Yes\\\",
+        \\\"No\\\"]\",\"outcomePrices\":\"[\\\"1\\\", \\\"0\\\"]\",\"volume\":\"2187634.15316501\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2024-03-26T14:25:57.793994Z\",\"updatedAt\":\"2025-01-02T08:31:02.476651Z\",\"closedTime\":\"2025-01-01
+        09:42:22+00\",\"new\":false,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0xc3e7e19b61e764e6d1b80b9900621bd30cfe692442ba05ed46a9488fb596a646\",\"umaEndDate\":\"2025-01-01T09:42:22Z\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":2187634.15316501,\"endDateIso\":\"2024-12-31\",\"startDateIso\":\"2024-03-26\",\"hasReviewedDates\":true,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"clobTokenIds\":\"[\\\"91042003396216233623470161230196591963738595484488580875732105008921748200107\\\",
+        \\\"53069919980057468004647727206689406329204104980687938811171263356233528716111\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"fpmmLive\":true,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeClob\":2187634.15316501,\"acceptingOrders\":false,\"negRisk\":false,\"ready\":false,\"funded\":false,\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"551\",\"conditionId\":\"0x0f99544f8db2651fdafb79636924b4d9ec73c9b61d77a9e56f467c6b0c932c3d\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":5,\"startDate\":\"2024-04-05\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":200,\"rewardsMaxSpread\":3.5,\"spread\":0.001,\"automaticallyResolved\":true,\"oneDayPriceChange\":0.001,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":1,\"bestBid\":0.999,\"bestAsk\":1,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"1363\",\"label\":\"global
+        politics\",\"slug\":\"global-politics\",\"publishedAt\":\"2024-02-20 19:22:03.51+00\",\"createdAt\":\"2024-02-20T19:22:03.517Z\",\"updatedAt\":\"2026-04-17T20:19:23.10694Z\",\"requiresTranslation\":false},{\"id\":\"95\",\"label\":\"Russia\",\"slug\":\"russia\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:18:49.314+00\",\"createdAt\":\"2023-11-02T21:18:49.32Z\",\"updatedAt\":\"2026-04-15T21:03:39.348071Z\",\"isCarousel\":false,\"requiresTranslation\":false},{\"id\":\"270\",\"label\":\"putin\",\"slug\":\"putin\",\"publishedAt\":\"2023-11-02
+        21:46:19.507+00\",\"createdAt\":\"2023-11-02T21:46:19.528Z\",\"updatedAt\":\"2026-04-17T20:26:28.78978Z\",\"requiresTranslation\":false},{\"id\":\"204\",\"label\":\"vladimir
+        putin\",\"slug\":\"vladimir-putin\",\"publishedAt\":\"2023-11-02 21:35:05.331+00\",\"createdAt\":\"2023-11-02T21:35:05.339Z\",\"updatedAt\":\"2026-04-17T17:21:50.967659Z\",\"requiresTranslation\":false},{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false},{\"id\":\"2\",\"label\":\"Politics\",\"slug\":\"politics\",\"forceShow\":false,\"publishedAt\":\"2023-10-25
+        18:55:50.674+00\",\"updatedBy\":13,\"createdAt\":\"2023-10-25T18:55:50.681Z\",\"updatedAt\":\"2026-04-17T20:39:54.201881Z\",\"forceHide\":true,\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2025-01-01T09:42:22Z\",\"showAllOutcomes\":true,\"showMarketImages\":true,\"automaticallyResolved\":true,\"enableNegRisk\":false,\"automaticallyActive\":true,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"version\":\"v1\"},{\"id\":\"10177\",\"ticker\":\"ukraine-aid-package-in-april\",\"slug\":\"ukraine-aid-package-in-april\",\"title\":\"Ukraine
+        aid package in April?\",\"description\":\"This market will resolve to \\\"Yes\\\"
+        if a new bill containing at least $5 billion in aid to Ukraine is signed into
+        law in the US between April 1 and April 30, 2024, 11:59 PM ET. Otherwise,
+        this market will resolve to \\\"No\\\".\\n\\nFunding for replenishment of
+        US stocks sent to Ukraine counts as Ukraine aid. Aid in the form of a loan
+        will count toward this market's resolution.\\n\\nThe primary resolution source
+        for this market will be information from the US federal government, however
+        a consensus of credible reporting may also be used. \",\"resolutionSource\":\"\",\"startDate\":\"2024-04-01T18:59:34.673256Z\",\"creationDate\":\"2024-04-01T18:59:34.673253Z\",\"endDate\":\"2024-04-30T12:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/ukraine-aid-package-in-april-084312e3-0a7a-47e2-a44f-d1dfe27427b4.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/ukraine-aid-package-in-april-084312e3-0a7a-47e2-a44f-d1dfe27427b4.png\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":true,\"volume\":54742.139217,\"createdAt\":\"2024-03-29T16:09:25.107614Z\",\"updatedAt\":\"2024-05-07T23:10:20.211401Z\",\"competitive\":1,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"negRisk\":false,\"commentCount\":0,\"markets\":[{\"id\":\"500559\",\"question\":\"Ukraine
+        aid package in April?\",\"conditionId\":\"0xd4dfcc32f0a03aef3c273345a8a9c0cc5680082e03e39aecdd7660c5c90ac15e\",\"slug\":\"ukraine-aid-package-in-april\",\"resolutionSource\":\"\",\"endDate\":\"2024-04-30T12:00:00Z\",\"startDate\":\"2024-04-01T18:59:14.113Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/ukraine-aid-package-in-april-7e05c4eb-e5a0-4864-9d91-d84d0ef03a3e.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/ukraine-aid-package-in-april-7e05c4eb-e5a0-4864-9d91-d84d0ef03a3e.png\",\"description\":\"This
+        market will resolve to \\\"Yes\\\" if a new bill containing at least $5 billion
+        in aid to Ukraine is signed into law in the US between April 1 and April 30,
+        2024, 11:59 PM ET. Otherwise, this market will resolve to \\\"No\\\".\\n\\nFunding
+        for replenishment of US stocks sent to Ukraine counts as Ukraine aid. Aid
+        in the form of a loan will count toward this market's resolution.\\n\\nThe
+        primary resolution source for this market will be information from the US
+        federal government, however a consensus of credible reporting may also be
+        used. \",\"outcomes\":\"[\\\"Yes\\\", \\\"No\\\"]\",\"outcomePrices\":\"[\\\"1\\\",
+        \\\"0\\\"]\",\"volume\":\"54742.139217\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2024-03-29T16:09:25.424625Z\",\"updatedAt\":\"2024-05-07T23:09:20.712318Z\",\"closedTime\":\"2024-04-24
+        19:21:16+00\",\"new\":false,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0xd63dc0065d35f5632af78149c37b5b593f5bbce0f7d6ec23a577ae45247df74d\",\"umaEndDate\":\"2024-04-24
+        19:21:16+00\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":54742.14,\"hasReviewedDates\":true,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"clobTokenIds\":\"[\\\"77481256943995434202292971246354522270868792838271225931046506968561560173692\\\",
+        \\\"109841049529393487235894106320461418807582257063087248172158841903773615409652\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"fpmmLive\":true,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeClob\":54742.139217,\"acceptingOrders\":true,\"negRisk\":false,\"ready\":false,\"funded\":false,\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"528\",\"conditionId\":\"0xd4dfcc32f0a03aef3c273345a8a9c0cc5680082e03e39aecdd7660c5c90ac15e\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":15,\"startDate\":\"2024-04-05\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":200,\"rewardsMaxSpread\":3.5,\"spread\":1,\"oneDayPriceChange\":0,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":0,\"bestBid\":0,\"bestAsk\":1,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"2\",\"label\":\"Politics\",\"slug\":\"politics\",\"forceShow\":false,\"publishedAt\":\"2023-10-25
+        18:55:50.674+00\",\"updatedBy\":13,\"createdAt\":\"2023-10-25T18:55:50.681Z\",\"updatedAt\":\"2026-04-17T20:39:54.201881Z\",\"forceHide\":true,\"requiresTranslation\":false},{\"id\":\"1363\",\"label\":\"global
+        politics\",\"slug\":\"global-politics\",\"publishedAt\":\"2024-02-20 19:22:03.51+00\",\"createdAt\":\"2024-02-20T19:22:03.517Z\",\"updatedAt\":\"2026-04-17T20:19:23.10694Z\",\"requiresTranslation\":false},{\"id\":\"96\",\"label\":\"Ukraine\",\"slug\":\"ukraine\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:18:49.922+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:18:49.94Z\",\"updatedAt\":\"2026-04-17T21:11:46.161003Z\",\"requiresTranslation\":false},{\"id\":\"719\",\"label\":\"aid\",\"slug\":\"aid\",\"publishedAt\":\"2023-12-12
+        18:47:23.507+00\",\"createdAt\":\"2023-12-12T18:47:23.518Z\",\"updatedAt\":\"2026-04-17T20:45:34.528525Z\",\"requiresTranslation\":false},{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2024-04-24T19:26:04.615907Z\",\"showAllOutcomes\":false,\"showMarketImages\":true,\"enableNegRisk\":false,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"version\":\"v1\"},{\"id\":\"10259\",\"ticker\":\"will-ukraine-join-nato-in-2024\",\"slug\":\"will-ukraine-join-nato-in-2024\",\"title\":\"Will
+        Ukraine join NATO in 2024?\",\"description\":\"If Ukraine has officially joined
+        NATO as a full member state at any point by December 31, 2024, 11:59 PM ET
+        this market will resolve to \u201CYes\u201D. Otherwise, this market will resolve
+        to \\\"No.\\\"\\n\\nThe primary settlement source for this market will be
+        the official NATO website (https://www.nato.int/cps/en/natohq/nato_countries.htm),
+        however other credible sources may be used.\",\"resolutionSource\":\"\",\"startDate\":\"2024-04-04T18:39:44.00629Z\",\"creationDate\":\"2024-04-04T18:39:44.006286Z\",\"endDate\":\"2024-12-31T12:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-ukraine-join-nato-in-2024-0e47cf2e-8d05-47d8-aef8-de912a4d2462.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-ukraine-join-nato-in-2024-0e47cf2e-8d05-47d8-aef8-de912a4d2462.png\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":false,\"volume\":2220103.217027,\"createdAt\":\"2024-04-04T18:35:34.529697Z\",\"updatedAt\":\"2025-01-02T06:15:17.539475Z\",\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"negRisk\":false,\"commentCount\":38,\"markets\":[{\"id\":\"500734\",\"question\":\"Will
+        Ukraine join NATO in 2024?\",\"conditionId\":\"0xb36d9c4fb1fac427ee93c27730c7c2b88c8e6000c7ff693bbcab68458b658f6c\",\"slug\":\"will-ukraine-join-nato-in-2024\",\"resolutionSource\":\"\",\"endDate\":\"2024-12-31T12:00:00Z\",\"startDate\":\"2024-04-04T18:36:20.181Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-ukraine-join-nato-in-2024-62bef2ac-c3f5-4a62-a022-77fe23b2d098.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/will-ukraine-join-nato-in-2024-62bef2ac-c3f5-4a62-a022-77fe23b2d098.png\",\"description\":\"If
+        Ukraine has officially joined NATO as a full member state at any point by
+        December 31, 2024, 11:59 PM ET this market will resolve to \u201CYes\u201D.
+        Otherwise, this market will resolve to \\\"No.\\\"\\n\\nThe primary settlement
+        source for this market will be the official NATO website (https://www.nato.int/cps/en/natohq/nato_countries.htm),
+        however other credible sources may be used.\",\"outcomes\":\"[\\\"Yes\\\",
+        \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0\\\", \\\"1\\\"]\",\"volume\":\"2220103.217027\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2024-04-04T18:35:35.091045Z\",\"updatedAt\":\"2025-01-02T06:15:00.732429Z\",\"closedTime\":\"2025-01-01
+        08:07:56+00\",\"new\":true,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0xa8b4970dd050b174231dc495994a29b9e45d3107b5838a75bc8d0a1c20916fbd\",\"umaEndDate\":\"2025-01-01T08:07:56Z\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":2220103.217027,\"endDateIso\":\"2024-12-31\",\"startDateIso\":\"2024-04-04\",\"hasReviewedDates\":true,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"clobTokenIds\":\"[\\\"89144445588044134346931198010027480833223547477221275357099459646085230373849\\\",
+        \\\"44795777213166734780683981700931023559706484916796547101264618771298529290835\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"fpmmLive\":true,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeClob\":2220103.217027,\"acceptingOrders\":false,\"negRisk\":false,\"ready\":false,\"funded\":false,\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"rewardsMinSize\":200,\"rewardsMaxSpread\":3.5,\"spread\":0.003,\"automaticallyResolved\":true,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":1,\"bestAsk\":0.003,\"automaticallyActive\":true,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"96\",\"label\":\"Ukraine\",\"slug\":\"ukraine\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:18:49.922+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:18:49.94Z\",\"updatedAt\":\"2026-04-17T21:11:46.161003Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false},{\"id\":\"2\",\"label\":\"Politics\",\"slug\":\"politics\",\"forceShow\":false,\"publishedAt\":\"2023-10-25
+        18:55:50.674+00\",\"updatedBy\":13,\"createdAt\":\"2023-10-25T18:55:50.681Z\",\"updatedAt\":\"2026-04-17T20:39:54.201881Z\",\"forceHide\":true,\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2025-01-01T08:07:56Z\",\"showAllOutcomes\":true,\"showMarketImages\":true,\"automaticallyResolved\":true,\"enableNegRisk\":false,\"automaticallyActive\":true,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"version\":\"v1\"},{\"id\":\"10351\",\"ticker\":\"iran-nuke-by-july-31\",\"slug\":\"iran-nuke-by-july-31\",\"title\":\"Iran
+        Nuke by July 31?\",\"description\":\"This market will resolve to \\\"Yes\\\"
+        if credible reports from international nuclear agencies, Iran's government
+        itself, or credible global news sources officially confirm that Iran possesses
+        a nuclear weapon by July 31, 2024, 11:59 PM ET. \\n\\nOtherwise, this market
+        will resolve to \\\"No\\\".\",\"resolutionSource\":\"\",\"startDate\":\"2024-04-15T16:05:27.452418Z\",\"creationDate\":\"2024-04-15T16:05:27.452414Z\",\"endDate\":\"2024-07-31T12:00:00Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/iran-nuke-by-july-31-7939041f-eb6e-4f97-aff4-37c2243365e9.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/iran-nuke-by-july-31-7939041f-eb6e-4f97-aff4-37c2243365e9.png\",\"active\":true,\"closed\":true,\"archived\":false,\"new\":false,\"featured\":false,\"restricted\":false,\"volume\":116621.042454,\"createdAt\":\"2024-04-15T15:15:10.330891Z\",\"updatedAt\":\"2024-08-02T17:13:10.795585Z\",\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"enableOrderBook\":true,\"negRisk\":false,\"commentCount\":6,\"markets\":[{\"id\":\"500945\",\"question\":\"Iran
+        Nuke by July 31?\",\"conditionId\":\"0x9ced49b3bb85caa25de45a49221bd9f0ef0aca2eb80dfa2700dfe0ac37f799d5\",\"slug\":\"iran-nuke-by-july-31\",\"resolutionSource\":\"\",\"endDate\":\"2024-07-31T12:00:00Z\",\"startDate\":\"2024-04-15T16:03:38.792Z\",\"image\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/iran-nuke-by-july-31-92c2f47d-046b-41ed-81f9-e564c4b246f6.png\",\"icon\":\"https://polymarket-upload.s3.us-east-2.amazonaws.com/iran-nuke-by-july-31-92c2f47d-046b-41ed-81f9-e564c4b246f6.png\",\"description\":\"This
+        market will resolve to \\\"Yes\\\" if credible reports from international
+        nuclear agencies, Iran's government itself, or credible global news sources
+        officially confirm that Iran possesses a nuclear weapon by July 31, 2024,
+        11:59 PM ET. \\n\\nOtherwise, this market will resolve to \\\"No\\\". \",\"outcomes\":\"[\\\"Yes\\\",
+        \\\"No\\\"]\",\"outcomePrices\":\"[\\\"0\\\", \\\"1\\\"]\",\"volume\":\"116621.042454\",\"active\":true,\"closed\":true,\"marketMakerAddress\":\"\",\"createdAt\":\"2024-04-15T15:15:10.646795Z\",\"updatedAt\":\"2024-08-02T17:13:05.860976Z\",\"closedTime\":\"2024-08-01
+        06:14:10+00\",\"new\":true,\"featured\":false,\"submitted_by\":\"0x91430CaD2d3975766499717fA0D66A78D814E5c5\",\"archived\":false,\"resolvedBy\":\"0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74\",\"restricted\":true,\"groupItemTitle\":\"\",\"groupItemThreshold\":\"0\",\"questionID\":\"0xcf1e57a7ad96a1f9064666138e1ba2cc67d8a36e6478655ffa7a2a204a489991\",\"umaEndDate\":\"2024-08-01T06:14:10Z\",\"enableOrderBook\":true,\"orderPriceMinTickSize\":0.001,\"orderMinSize\":5,\"umaResolutionStatus\":\"resolved\",\"volumeNum\":116621.04,\"endDateIso\":\"2024-07-31\",\"startDateIso\":\"2024-04-15\",\"hasReviewedDates\":true,\"volume1wk\":0,\"volume1mo\":0,\"volume1yr\":0,\"clobTokenIds\":\"[\\\"6658546157264223909425894484865756341720547551336186512712519105405232215723\\\",
+        \\\"46282707374766937987793767721153659299759007962529842825316692341223714047833\\\"]\",\"comboStatus\":\"disabled\",\"umaBond\":\"500\",\"umaReward\":\"5\",\"fpmmLive\":true,\"volume1wkAmm\":0,\"volume1moAmm\":0,\"volume1yrAmm\":0,\"volume1wkClob\":0,\"volume1moClob\":0,\"volume1yrClob\":0,\"volumeClob\":116621.042454,\"acceptingOrders\":false,\"negRisk\":false,\"ready\":false,\"funded\":false,\"cyom\":false,\"pagerDutyNotificationEnabled\":false,\"approved\":true,\"clobRewards\":[{\"id\":\"878\",\"conditionId\":\"0x9ced49b3bb85caa25de45a49221bd9f0ef0aca2eb80dfa2700dfe0ac37f799d5\",\"assetAddress\":\"0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174\",\"rewardsAmount\":0,\"rewardsDailyRate\":10,\"startDate\":\"2024-04-15\",\"endDate\":\"2500-12-31\"}],\"rewardsMinSize\":200,\"rewardsMaxSpread\":3.5,\"spread\":0.004,\"automaticallyResolved\":true,\"oneDayPriceChange\":-0.0025,\"oneHourPriceChange\":0,\"oneWeekPriceChange\":0,\"oneMonthPriceChange\":0,\"oneYearPriceChange\":0,\"lastTradePrice\":1,\"bestAsk\":0.004,\"clearBookOnStart\":true,\"manualActivation\":false,\"negRiskOther\":false,\"umaResolutionStatuses\":\"[]\",\"pendingDeployment\":false,\"deploying\":false,\"rfqEnabled\":false,\"holdingRewardsEnabled\":false,\"feesEnabled\":false,\"requiresTranslation\":false,\"feeType\":null,\"version\":\"v1\"}],\"tags\":[{\"id\":\"78\",\"label\":\"Iran\",\"slug\":\"iran\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:16:51.647+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:16:51.667Z\",\"updatedAt\":\"2026-04-17T20:19:53.890971Z\",\"requiresTranslation\":false},{\"id\":\"154\",\"label\":\"Middle
+        East\",\"slug\":\"middle-east\",\"forceShow\":false,\"publishedAt\":\"2023-11-02
+        21:26:20.585+00\",\"updatedBy\":15,\"createdAt\":\"2023-11-02T21:26:20.601Z\",\"updatedAt\":\"2026-04-17T20:19:53.885899Z\",\"forceHide\":true,\"requiresTranslation\":false},{\"id\":\"2\",\"label\":\"Politics\",\"slug\":\"politics\",\"forceShow\":false,\"publishedAt\":\"2023-10-25
+        18:55:50.674+00\",\"updatedBy\":13,\"createdAt\":\"2023-10-25T18:55:50.681Z\",\"updatedAt\":\"2026-04-17T20:39:54.201881Z\",\"forceHide\":true,\"requiresTranslation\":false},{\"id\":\"100215\",\"label\":\"All\",\"slug\":\"all\",\"forceShow\":false,\"updatedAt\":\"2026-04-17T20:23:54.340488Z\",\"requiresTranslation\":false},{\"id\":\"100265\",\"label\":\"Geopolitics\",\"slug\":\"geopolitics\",\"forceShow\":true,\"createdAt\":\"2024-06-12T20:13:03.615956Z\",\"updatedAt\":\"2026-04-17T20:49:04.209055Z\",\"requiresTranslation\":false}],\"cyom\":false,\"closedTime\":\"2024-08-01T06:14:10Z\",\"showAllOutcomes\":true,\"showMarketImages\":true,\"automaticallyResolved\":true,\"enableNegRisk\":false,\"negRiskAugmented\":false,\"pendingDeployment\":false,\"deploying\":false,\"requiresTranslation\":false,\"version\":\"v1\"}]\n"
+    headers:
+      Age:
+      - '251'
+      CF-RAY:
+      - a36c70317f8226bf-DUB
+      Cache-Control:
+      - public, max-age=300
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 Sep 2026 09:27:30 GMT
+      Server:
+      - cloudflare
+      Server-Timing:
+      - cfCacheStatus;desc="HIT"
+      - cfEdge;dur=5,cfOrigin;dur=0
+      Speculation-Rules:
+      - '"/cdn-cgi/speculation"'
+      Strict-Transport-Security:
+      - max-age=7776000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      cf-cache-status:
+      - HIT
+      deprecation:
+      - 'true'
+      expires:
+      - Sun, 06 Sep 2026 09:32:30 GMT
+      last-modified:
+      - Sun, 06 Sep 2026 09:23:19 GMT
+      set-cookie:
+      - __cf_bm=Jac7Ugysn7pfATsim9wnG5_mX5BoyTT7_xhtPsbj6P0-1788686850.790773-1.0.1.1-43w9oCmhWbAP.JZ8NMU1SaK1b83ocBZdumYULGiqBom8PkX7thKdCY7bIov7VIWmjRTcVRNQlY5NTRj6CtGkaI1pXBJJ8kUmXnEcrmAPfDrkCJ2txauUWFurkMKkL4bw;
+        HttpOnly; SameSite=None; Secure; Path=/; Domain=polymarket.com; Expires=Sun,
+        06 Sep 2026 09:57:30 GMT
+      sunset:
+      - Fri, 01 May 2026 00:00:00 GMT
+      vary:
+      - Accept-Encoding,Origin
+      warning:
+      - 299 - "use /events/keyset"
+      x-envoy-upstream-service-time:
+      - '44'
+    status:
+      code: 200
+      message: OK
+version: 1

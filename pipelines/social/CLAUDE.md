@@ -103,6 +103,62 @@ header was present on the 403 to explain it. Treat this as a real, if rare and
 unexplained, failure mode — Task 3's fetch should tolerate one non-2xx response and
 retry, not treat a single 403 as proof StockTwits is blocking us.
 
+## Task 3: Polymarket and StockTwits fetchers implemented
+
+`fetch_polymarket(tag_slug, limit)` and `fetch_stocktwits(symbol, limit)` are now in
+`pipelines/social/client.py`. The brief's `fetch_polymarket(query)` (passing
+`{"search": query}`) was never implemented -- Task 0 had already proven `search`/`q`
+are silently ignored (see above). `fetch_polymarket` takes a tag slug instead and
+stamps `Post["query"]` with the tag used.
+
+**Additional live tag_slug probes, beyond Task 0's `energy`:** to prove `tag_slug`
+genuinely filters rather than merely relabelling the same rows, three more slugs were
+probed live at `?limit=5&active=true&tag_slug=<slug>`:
+
+- `geopolitics` -> HTTP 200, 5 rows, genuinely distinct (`Ukraine responsible for
+  Moscow attack?`, `Will Putin remain President of Russia through 2024?`, ...), event
+  IDs disjoint from `energy`'s.
+- `crypto` -> HTTP 200, 5 rows, distinct again (`Will ETH or SOL reach all-time high
+  first?`, ...).
+- `politics` -> HTTP 200, 5 rows, distinct again (`Which party wins 2024 US
+  Presidential Election?`, ...).
+
+No probed slug failed or returned the `energy`/default set under a different name --
+unlike `q`/`search`, `tag_slug` behaves as a real filter every time it was tried. This
+is recorded as proof, not as an invitation to widen Task 3's actual scope: per Ruling
+F8, only the `energy` tag is used going into the pull; `geopolitics`/`crypto`/`politics`
+were probed solely to demonstrate the filter is genuine, not adopted as topics.
+`test_fetch_polymarket_tag_slug_actually_filters` in `tests/test_social_client.py`
+locks in the `energy` vs `geopolitics` comparison as a regression check (disjoint
+`post_id` sets).
+
+**Polymarket `num_comments` uses the real `commentCount` field**, confirmed live and
+populated (`15`, `0`, `3` across three `energy`-tag events pulled) -- `0` here is a
+genuine count from a real field, not a fabricated default. `score` stays `None`:
+Polymarket has no per-event score field at all (the nested per-market `bestBid`/
+`bestAsk`/`volume`/`liquidity` fields are a different thing and out of scope).
+
+**StockTwits message URL**: CLAUDE.md above notes there is no permalink field and a
+URL "would have to be constructed from `user.username` + `id` if ever needed" -- Task 3
+does this: `https://stocktwits.com/<username>/message/<id>`, falling back to an
+id-only URL only if `user.username` is somehow absent (not observed in any message
+pulled). `score` and `num_comments` both stay `None`: no numeric score field and no
+comment/reply-count field exist on a StockTwits message (`entities.sentiment` is
+categorical Bullish/Bearish, not numeric, and is out of scope per the plan's deferred
+list; `discussion` is a boolean, not a count).
+
+**StockTwits transient-403 tolerance**: implemented as `_get_tolerating_one_failure`,
+a single retry after a fixed 2-second pause on ANY non-2xx (not just 429, since the
+observed 403 carried no rate-limit header to size a backoff from). No 403 recurred
+during Task 3's own live cassette recording (both `energy`/`geopolitics` Polymarket
+calls and the `XOM` StockTwits call succeeded first try), so the retry path itself is
+covered by two mock-based unit tests instead of a cassette
+(`test_fetch_stocktwits_retries_once_after_a_single_non_2xx`,
+`test_fetch_stocktwits_gives_up_and_logs_after_a_second_failure`) -- a real 403 is rare
+and cannot be reliably reproduced on demand, so `urlopen` is monkeypatched to raise it.
+On a second consecutive failure the real status codes are logged and the `HTTPError`
+is re-raised; StockTwits never silently returns `[]`.
+
 ## Provenance
 Fetch logic adapted from TauricResearch/TradingAgents (Apache-2.0), commit
 `9dee508c44662702281a8dbaad1f7b42179b5ba7` (`main`, dated 2026-09-01, merge of
