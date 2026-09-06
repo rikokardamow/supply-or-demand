@@ -14,6 +14,7 @@ Specs for each sub-project live in `specs/`. Always read the relevant spec befor
 6. British English in all prose, labels, and docstrings.
 7. Small, typed, tested functions. Ask before adding a dependency or changing a schema.
 8. End every session green: `pytest` passes, `ruff check .` clean, work committed.
+   See § Code review procedure for the full order.
 
 ## Stack
 Python 3.12, uv, pandas (+polars where it earns its keep), duckdb, plotly, streamlit,
@@ -30,6 +31,31 @@ Tests: pytest + vcrpy cassettes in `tests/cassettes/`.
 - Run app: `streamlit run apps/dashboard/app.py`
 - Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines infra`
 - New pipeline: scaffold under `pipelines/<source>/` with its own `NOTES.md`, client, and cassette test.
+
+## Code review procedure
+Run these in order — cheapest first, and never skip step 1.
+1. `ruff check .` → `mypy core pipelines infra` → `pytest`. Fix everything here before
+   asking an agent to read the diff; review agents waste effort on what the linter already knows.
+   `mypy` is the gate. Pyright runs live in the editor via the `pyright-lsp` plugin and is
+   stricter by default — treat its extra findings as signal, not as a merge blocker.
+2. `/code-review high` on the working diff. `--fix` applies findings; `--comment` posts them
+   inline on a PR. Use `/simplify` instead when the diff is correct but overgrown.
+3. Targeted agents from `pr-review-toolkit` (`/review-pr`, or invoke one directly):
+   - `silent-failure-hunter` — required on any pipeline or ingest diff. A swallowed exception
+     in the DuckDB/Parquet path becomes a quietly wrong number on a published chart.
+   - `pr-test-analyzer` — new pipeline code, checked against its cassette.
+   - `type-design-analyzer` — changes to `core/schemas.py` invariants.
+   - `code-reviewer` — reads this NOTES.md and checks the diff against the golden rules.
+4. `/security-review` before merging anything that touches `infra/`, `railway.toml`,
+   `core/settings.py`, or a new API client — i.e. anywhere a key could leak (golden rule 1).
+5. `/code-review ultra` before a large merge to `main` (multi-agent cloud review of the branch;
+   user-triggered and billed, so ask first).
+6. `/superpowers:requesting-code-review` when closing out a spec — it reviews against the
+   spec's acceptance criteria rather than the diff alone.
+
+Further plugins worth adding (`claude plugin install <name>@claude-plugins-official`):
+`claude-security` (deeper, slower vulnerability scan than step 4), `duckdb-skills`
+(query-correctness guidance).
 
 ## Data release calendar (schedule pulls around these)
 EIA WPSR Wed 10:30 ET · EIA gas storage Thu 10:30 ET · AGSI+/ALSI+ daily ~19:30 CET ·
