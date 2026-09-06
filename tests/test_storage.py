@@ -106,6 +106,53 @@ def test_write_ts_long_tolerates_a_tz_aware_revision_date_against_a_tz_naive_par
     assert result.iloc[0]["value"] == 100.0
 
 
+def test_read_ts_long_source_narrows_to_that_partition_only() -> None:
+    """`source` must narrow the glob to that partition's own directory, not just filter
+    rows after the fact -- reproduces the real call site (06_supply.py's revision
+    waterfall) where reading only `opec_momr`'s own partition, rather than the whole
+    lake, is the entire point of the parameter."""
+    write_ts_long(_make_df(datetime(2024, 1, 2), 1.0), source="testsrc")
+    other = _make_df(datetime(2024, 1, 2), 2.0)
+    other["series_id"] = ["OTHER"]
+    other["source"] = ["othersrc"]
+    write_ts_long(other, source="othersrc")
+
+    result = read_ts_long(source="testsrc")
+
+    assert list(result["series_id"]) == ["TEST1"]
+    assert result.iloc[0]["value"] == 1.0
+
+
+def test_read_ts_long_series_prefix_filters_at_the_sql_level() -> None:
+    """Reproduces the real call site: the page needs every series matching
+    `momr.demand_balance_revision*`, a dynamic prefix it cannot enumerate as exact
+    ids, and must not pay for materialising the rest of the lake to get it."""
+    matching = _make_df(datetime(2024, 1, 2), 1.0)
+    matching["series_id"] = ["momr.demand_balance_revision_opec"]
+    non_matching = _make_df(datetime(2024, 1, 2), 2.0)
+    non_matching["series_id"] = ["momr.production_vs_quota"]
+    write_ts_long(pd.concat([matching, non_matching], ignore_index=True), source="testsrc")
+
+    result = read_ts_long(series_prefix="momr.demand_balance_revision")
+
+    assert list(result["series_id"]) == ["momr.demand_balance_revision_opec"]
+
+
+def test_read_ts_long_omitting_source_and_prefix_returns_everything() -> None:
+    """Backward-compatibility guarantee for the eleven-plus existing callers: leaving
+    the new parameters unset must return exactly what the current three-parameter
+    signature returns today -- every row across every source, unfiltered by either."""
+    write_ts_long(_make_df(datetime(2024, 1, 2), 1.0), source="testsrc")
+    other = _make_df(datetime(2024, 1, 2), 2.0)
+    other["series_id"] = ["OTHER"]
+    other["source"] = ["othersrc"]
+    write_ts_long(other, source="othersrc")
+
+    result = read_ts_long()
+
+    assert set(result["series_id"]) == {"TEST1", "OTHER"}
+
+
 def test_round_trip() -> None:
     df = _make_df(datetime(2024, 1, 2), 100.0)
 
