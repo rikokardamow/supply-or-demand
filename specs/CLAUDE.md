@@ -42,6 +42,17 @@ accents/highlights; orange `#e67e22` seasonal median; grey `rgba(150,150,150,0.2
 light grid `#e6e6e6`; horizontal legend top-left; direct annotations near last point
 ("Latest / YoY / vs median") instead of relying on legends; dual axes navy-left / light-blue-right.
 
+## Project skills (`.claude/skills/`)
+Domain reference distilled from the reading corpus, loaded automatically when relevant.
+Specs say *how to build*; skills say *how to read the result*. See `.claude/skills/README.md`.
+`energy-analyst` — a single consolidated reference covering units and conversions, the physical
+chain, crude quality, benchmarks and PRAs (assessed prices), curve structure and storage economics,
+spreads, refining and cracks (Spec 07), OPEC and supply (Spec 06), gas price formation, LNG and
+freight (Specs 02, 11), US gas structure, power and spark spreads, basis and volumetric risk,
+volatility structure, price-control regimes and shock decomposition, demand elasticities, macro
+releases (Spec 10), forecast evaluation (any forecast, incl. Chronos), spot–futures behaviour, and
+the dark-fleet/AIS caveats behind Spec 11.
+
 ## When unsure
 Prefer the smallest change that satisfies the spec's acceptance criteria. If an API responds
 unexpectedly, record the real response as a cassette and adapt — do not guess schemas.

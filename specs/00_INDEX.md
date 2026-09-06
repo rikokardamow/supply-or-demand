@@ -136,3 +136,15 @@ The lake holds volumes almost everywhere and prices almost nowhere: one gas pric
 (`fred.dhhngsp`), no retail pump prices at all, and no grade-differentiated crude price beneath
 Spec 19s quality-mismatch work or Spec 20s crack VECM. Spec 30 supplies those missing
 denominators. Extends `pipelines/eia/`, adds no schema and no new pipeline package.
+
+## Spec 31 — EIA coverage extensions
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 31 | EIA coverage extensions (gas storage capacity, Grid Monitor for ERCOT/PJM, gas consumption by sector, power-sector coal, biofuels capacity and feedstocks, weekly ethanol) | not started | **yes — new `pipelines/coal/`; the rest are new routes on the existing EIA client** | 01, 02, 30 |
+
+Six independent items, each buildable or droppable on its own — the reason they were split out
+of Spec 30 rather than bundled into it. The Grid Monitor item is not a duplicate of
+`pipelines/gridstatus_iso/`: that library reaches CAISO and NYISO only, because ERCOT is blocked
+by bot protection (confirmed live 403) and PJM needs a Data Miner 2 key. Those are the two
+markets where gas-fired generation most moves the gas book.
