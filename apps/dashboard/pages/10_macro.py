@@ -349,11 +349,12 @@ def _social_comparison_section(ticker: str, result: Overlap) -> None:
     # never actually None -- the "—" fallback exists so this reads correctly even if
     # that invariant is ever loosened, rather than crashing on a None format spec.
     rate_text = f"{rate:.0%} sign agreement" if rate is not None else "— sign agreement"
+    overlap_word = "day" if result.overlap_days == 1 else "days"
     fig.add_annotation(
         x=result.frame["ts"].iloc[-1],
         y=result.frame["social"].iloc[-1],
         text=(
-            f"{result.overlap_days} overlapping days · "
+            f"{result.overlap_days} overlapping {overlap_word} · "
             f"{result.dropped_days} dropped · "
             f"{rate_text}"
         ),
