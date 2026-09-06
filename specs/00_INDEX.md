@@ -99,9 +99,29 @@ Specs 28.00–28.11 comprise the GRP module. This module is built against `specs
 
 | Spec | Title | Status | New source? | Depends on |
 |---|---|---|---|---|
-| 29 | Self-hosted social sentiment (Reddit / Polymarket / StockTwits), scored in-repo and shown beside Adanos with the deviation | **Complete (Tasks 0–9).** `pipelines/social/` (Reddit RSS + Polymarket + StockTwits pulls), `core/sentiment.py` (VADER scoring, Adanos overlap/deviation/rolling correlation) and a new "Self-hosted social sentiment" section on page `10_macro.py` (comparison, deviation, Set B topic attention, Polymarket tag attention) are all live; full suite, ruff, mypy all green. **Polymarket has no keyword search**: live probes found `q`/`search` are silently ignored (HTTP 200, identical unfiltered listing regardless of value) — the only real filter is `tag_slug`, so it contributes one tag-level series ("energy"), not per-topic coverage across Set B's seventeen topics. **Reddit's unauthenticated RSS rate limit is ~1 request/60s**, so a full run costs 58 Reddit + 12 StockTwits + 1 Polymarket = 71 requests, wall-clock dominated by ~58 minutes of throttled Reddit calls | **yes — Reddit RSS, Polymarket, StockTwits (all self-hosted, no vendor)**; new dep `vaderSentiment` confirmed (rule 7) | 17 |
+| 29 | Self-hosted social sentiment (Reddit / Polymarket / StockTwits), scored in-repo and shown beside Adanos with the deviation | **Complete (Tasks 0–9).** `pipelines/social/` (Reddit RSS + Polymarket + StockTwits pulls), `core/sentiment.py` (VADER scoring, Adanos overlap/deviation/rolling correlation) and a new "Self-hosted social sentiment" section on page `10_macro.py` (comparison, deviation, Set B topic attention, Polymarket tag attention) are all live; full suite, ruff, mypy all green. **Polymarket has no keyword search**: live probes found `q`/`search` are silently ignored (HTTP 200, identical unfiltered listing regardless of value) — the only real filter is `tag_slug`, so it contributes one tag-level series ("energy"), not per-topic coverage across Set B's seventeen topics. **Reddit's unauthenticated RSS rate limit is ~1 request/60s**, so a full run costs 58 Reddit + 12 StockTwits + 1 Polymarket = 71 requests, wall-clock dominated by ~58 minutes of throttled Reddit calls. **Populated-page rendering verified 2026-09-06** against a real pull and a real screenshot, not just against unit tests — see below | **yes — Reddit RSS, Polymarket, StockTwits (all self-hosted, no vendor)**; new dep `vaderSentiment` confirmed (rule 7) | 17 |
 
 Adds `pipelines/social/` and `core/sentiment.py`, extends page `10_macro.py`. Covers the
 live-confirmed Adanos gap recorded in `pipelines/adanos/CLAUDE.md` (the five OPEC/OPEC+
 exposure tickers resolve but return near-zero buzz) and adds commodity/geopolitical topic
 queries a ticker basket cannot express. Adanos is retained, not replaced.
+
+**Rendering verified 2026-09-06.** A full pull wrote 1574 `ts_long` rows and 945 events,
+then exited 1 on `core.failures.PartialFailureError` after one Reddit 429 on the
+`dubai_swap` topic — data was written before the failure surfaced, and the non-zero exit is
+honest: that one subject of 29 wrote no rows at all rather than zeros. All 945 social events
+came back severity 1, confirming the fix for a defect where the news tagger's
+`extract_severity` had been scoring Reddit chatter up to severity 3, which would have
+rendered on price charts through `event_overlay.py`'s `severity >= 2` filter. The pull-dated
+snapshot series now exist (11 rows, all dated 2026-09-06), and `overlap()` returns
+`overlap_days=1` for XOM, CVX, XLE and COP — up from 0 for 10 of 12 tickers before the axis
+fix. The page was rendered in a real browser against this data: the comparison panel draws,
+annotated "1 overlapping day · 1 dropped · 0% sign agreement", and topic attention shows
+real post counts.
+
+One overlapping day is not a finding: the deviation panel is mechanically correct but says
+nothing yet, and needs several weekly pulls before vendor-versus-self-hosted disagreement can
+be read at all. Separately, the dashboard caches lake reads
+(`apps/dashboard/components/lake.py`), so a running app shows pre-write data until
+restarted — this is why a first screenshot showed "no overlap yet" while the lake already
+had the row.
