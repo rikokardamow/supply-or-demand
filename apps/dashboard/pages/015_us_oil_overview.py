@@ -81,7 +81,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
 
@@ -104,7 +104,7 @@ def _simple_section(
         series = series[series.index >= cutoff]
     fig = simple_time_series_chart(series, title=title, unit=unit)
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
 
@@ -154,7 +154,7 @@ def _four_week_avg_overlay(
     stats = seasonal_stats(combined_df, value_col="value", years=range(2018, current_year + 1))
     fig = multi_year_overlay_chart(stats, title=title, unit=unit)
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
 
@@ -183,7 +183,7 @@ def _wti_real_price_section() -> None:
     )
     fig.update_layout(title=title, yaxis_title="$/bbl (2018 USD)")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "This is the price refiners are actually responding to once inflation's "
             "stripped out — the nominal quote alone overstates how attractive the "

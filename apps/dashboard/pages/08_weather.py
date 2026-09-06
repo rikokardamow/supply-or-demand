@@ -133,7 +133,7 @@ def _climatology_section(region: str) -> None:
         )
 
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _eu_hdd_vs_gas_section(window_days: int) -> None:
@@ -155,7 +155,7 @@ def _eu_hdd_vs_gas_section(window_days: int) -> None:
         right_label="Net withdrawal (GWh/d)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "Colder-than-normal EU weather shows up in storage draws within days, not "
             "weeks — this is the fastest-moving read on whether a cold snap is actually "
@@ -183,7 +183,7 @@ def _us_hdd_vs_gas_section(window_days: int) -> None:
         right_label="Net withdrawal (BCF/week)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "EIA's storage route publishes a weekly level, not a daily injection/"
             "withdrawal split like GIE's AGSI — net withdrawal here is the "
@@ -229,7 +229,7 @@ def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
         right_label="Load (MW)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             f"{iso}'s load pull keeps a trailing 60-day window (see "
             "pipelines/gridstatus_iso/CLAUDE.md), so this chart covers a recent "
@@ -376,7 +376,7 @@ def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
         right_label=f"ENTSO-E {zone} wind forecast, daily mean (MW)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "Two independent sources, not a unit conversion, and not a same-day "
             "overlap — `pipelines/entsoe/pull_daily.py` only ever ingests the prior "

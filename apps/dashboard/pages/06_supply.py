@@ -65,7 +65,7 @@ def _production_vs_quota_section() -> None:
     title = f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}"
     fig = production_vs_quota_chart(result, title=title, unit="tb/d")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "Quota is each country's most recently announced voluntary-adjustment target "
             "(not necessarily the same month as the actual shown) — see "
@@ -95,7 +95,7 @@ def _revision_waterfall_section() -> None:
     title = f"MOMR Revision Waterfall — {period:%B %Y}"
     fig = revision_waterfall_chart(result, title=title, unit="mb/d")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "OPEC's own precomputed change-vs-last-month figures (Table 11-2) — not "
             "re-derived from consecutive vintages."
@@ -115,7 +115,7 @@ def _oil_on_water_section() -> None:
     fig = time_series_area_chart(series, title=title, unit="mb")
     add_event_markers(fig, commodity="crude")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "OPEC's own MOMR appendix (Table 11-3) trailing-quarters view, combined "
             "across stored vintages — not a continuous monthly series. Floating "
@@ -146,7 +146,7 @@ def _rig_count_section() -> None:
     title = "US Oil Rig Count"
     fig = simple_time_series_chart(series, title=title, unit="rigs")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "Rig count vs. WTI stays a single series (navy) until Spec 07 (Henry "
             "Hub/WTI) exists — see pipelines/baker_hughes/CLAUDE.md."

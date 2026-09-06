@@ -73,7 +73,7 @@ def _dollar_vs_wti_section(days: int | None) -> None:
         right_label="WTI ($/bbl)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "A stronger dollar is a headwind for dollar-priced crude almost "
             "mechanically — this is the chart that separates a real demand story "
@@ -112,7 +112,7 @@ def _real_vs_nominal_section(days: int | None) -> None:
     )
     fig.update_layout(title=title, yaxis_title="Index (2018=100)")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "The gap between these two lines is pure inflation — whatever's left "
             "once it's closed is the actual real-terms move oil has made since 2018."
@@ -156,7 +156,7 @@ def _energy_small_multiples_section(days: int | None) -> None:
         )
         fig.update_layout(title=f"{label} ({unit})", showlegend=True)
         with cols[i], card(label):
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
 
 
 def _esi_heat_strip_section() -> None:
@@ -177,7 +177,7 @@ def _esi_heat_strip_section() -> None:
     title = "Economic Sentiment Indicator — Heat-Strip"
     fig = category_time_heatmap(wide, title=title, unit="ESI (100=long-run avg)")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "Sentiment leads hard data by a quarter or two more often than not — a "
             "country cooling off here is worth watching before it shows up in "
@@ -228,7 +228,7 @@ def _adanos_buzz_by_platform_section() -> None:
         )
     fig.update_layout(title="Ticker-basket mean buzz score by platform", yaxis_title="Buzz (0-100)")
     with card("Buzz by platform"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _adanos_sentiment_by_ticker_section() -> None:
@@ -265,7 +265,7 @@ def _adanos_sentiment_by_ticker_section() -> None:
         barmode="group",
     )
     with card("Latest sentiment by ticker"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _adanos_sector_trend_section() -> None:
@@ -278,7 +278,7 @@ def _adanos_sector_trend_section() -> None:
         series, title="Reddit Energy-sector buzz trend", unit="Buzz (0-100)"
     )
     with card("Sector buzz trend"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _adanos_sentiment_section() -> None:
@@ -340,7 +340,7 @@ def _social_comparison_section() -> None:
         yaxis_title="Sentiment (-1 to +1)",
     )
     with card(f"{ticker}: Adanos vs self-hosted"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         if result.overlap_days < 10:
             st.warning(
                 f"Only {result.overlap_days} overlapping days — too few to read as "
@@ -386,7 +386,7 @@ def _social_deviation_section() -> None:
         )
 
     with card("Deviation"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             f"Computed over {result.overlap_days} overlapping days "
             f"({result.dropped_days} dropped, where only one source reported that "
@@ -418,7 +418,7 @@ def _social_topic_attention_section() -> None:
     fig = go.Figure(go.Bar(x=latest["topic"], y=latest["value"], marker={"color": NAVY}))
     fig.update_layout(title="Latest post counts by topic", yaxis_title="Posts")
     with card("Topic attention"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "These topics have no Adanos counterpart — a ticker basket cannot "
             "express them. Attention only, not sentiment."
@@ -441,7 +441,7 @@ def _social_polymarket_attention_section() -> None:
         series, title="Polymarket 'energy' tag — post count", unit="Posts"
     )
     with card("Polymarket attention (tag-level)"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "Polymarket has no keyword search, so this is attention on the whole "
             "'energy' tag, not any single ticker or topic."

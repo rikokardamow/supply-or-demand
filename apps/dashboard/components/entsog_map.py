@@ -138,4 +138,4 @@ def render_entsog_flow_map() -> None:
             )
 
     fig.update_layout(title=f"EU Gas Corridor Map — 7-day avg to {latest_ts.date()}")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)

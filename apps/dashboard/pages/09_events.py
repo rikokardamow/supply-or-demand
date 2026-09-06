@@ -102,7 +102,6 @@ with card("News map"):
     map_key_version = st.session_state.get("news_map_key_version", 0)
     map_event = st.plotly_chart(
         render_news_map(filtered),
-        use_container_width=True,
         on_select="rerun",
         selection_mode="points",
         key=f"news_map_select_{map_key_version}",
@@ -143,7 +142,7 @@ with card("Events per week"):
     else:
         weekly_counts = filtered.set_index("ts")["event_id"].resample("W").count()
         fig = count_bar_chart(weekly_counts, title="Events per week", unit="count")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 with card(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} shown)"):
     if filtered.empty:
@@ -180,6 +179,5 @@ with card(f"Event table ({len(filtered)} of {len(events)} shown)"):
         filtered[
             ["ts", "commodity", "tags", "severity", "geo", "headline", "source", "url"]
         ].sort_values("ts", ascending=False),
-        use_container_width=True,
         hide_index=True,
     )

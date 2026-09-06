@@ -83,7 +83,7 @@ with tab_inventory:
             fig = seasonal_range_chart(
                 stats, current_year_series, title="US Crude Stocks (ex-SPR)", unit=" mb"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
 
             deviation = inventory_deviation(stocks_df[["ts", "value"]])
             latest_dev_z = deviation["dev_z"].dropna()
@@ -138,7 +138,7 @@ with tab_quality:
                 x_label="Δ US crude stocks (quarterly)",
                 y_label="Δ Brent (quarterly, USD)",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(
                 f"Source: {US_CRUDE_STOCKS_SERIES_ID} x {BRENT_SERIES_ID}, quarterly changes. "
                 f"R²={result['r2']:.4f}, {result['share_wrong_sign'] * 100:.1f}% of quarters "
@@ -155,7 +155,7 @@ with tab_quality:
         else:
             series = util_df.set_index("ts")["value"].sort_index()
             fig = simple_time_series_chart(series, title="US Refinery Utilisation", unit="%")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(f"Source: {US_REFINERY_UTILISATION_SERIES_ID} (Spec 01).")
 
     with card("Refining Constraint Index"):
@@ -199,7 +199,7 @@ with tab_shale_cot:
             )
             fig.add_hline(y=0.95, line_dash="dash", line_color=RED)
             fig.add_hline(y=0.05, line_dash="dash", line_color=RED)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(
                 f"Source: derived.cot.{root}.mm_pct_3y (real, pipelines/cftc + "
                 "pipelines/derived/fundamentals.py)."
@@ -260,7 +260,7 @@ with tab_benchmark:
             dubai_m1_m3 = dubai_structure["m1"] - dubai_structure["m3"]
 
             result = osp_signal(osp_asia, dubai_m1_m3)
-            st.dataframe(result, use_container_width=True)
+            st.dataframe(result)
             divergence_count = int(result["divergence"].sum())
             st.metric("Divergence months (OSP up, Dubai structure weakening)", divergence_count)
             st.caption(

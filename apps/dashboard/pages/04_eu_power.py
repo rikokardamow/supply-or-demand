@@ -110,7 +110,7 @@ else:
     mix_title = f"{selected_zone} Generation Mix"
     fig = generation_mix_chart(wide[ordered_cols], title=mix_title, unit="MW")
     with card(mix_title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 st.subheader("Residual load")
 load = _series_by_ts(f"entsoe.{selected_zone}.load")
@@ -125,7 +125,7 @@ else:
     residual_title = f"{selected_zone} Residual Load"
     fig = simple_time_series_chart(residual, title=residual_title, unit="MW")
     with card(residual_title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 st.subheader("Net position (latest hour, ranked)")
 flows_df = read_flows(source="entsoe")
@@ -156,7 +156,7 @@ else:
             yaxis_title="Net position (MW, +export / -import)",
         )
         with card(net_position_title):
-            st.plotly_chart(bar, use_container_width=True)
+            st.plotly_chart(bar)
 
 st.caption(f"{len(ZONES)} zones covered, {len(BORDERS)} borders flowing.")
 
@@ -194,14 +194,14 @@ else:
         right_label="Wind (MW)",
     )
     with card("ROI Demand vs. Wind"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
     roi_net_import = _eirgrid_series("inter_net")
     snsp = snsp_proxy(roi_wind, roi_net_import, roi_demand).dropna()
     latest_snsp_pct = float(snsp.iloc[-1] * 100) if not snsp.empty else 0.0
     gauge = gauge_chart(latest_snsp_pct, title="SNSP Proxy — latest (%)")
     with card("SNSP Proxy — latest (%)"):
-        st.plotly_chart(gauge, use_container_width=True)
+        st.plotly_chart(gauge)
 
     roi_ewic = _eirgrid_series("inter_ewic")
     roi_greenlink = _eirgrid_series("inter_greenlink")
@@ -223,4 +223,4 @@ else:
     inter_title = "Ireland Interconnector Flows (+import / -export)"
     inter_fig.update_layout(title=inter_title, yaxis_title="MW")
     with card(inter_title):
-        st.plotly_chart(inter_fig, use_container_width=True)
+        st.plotly_chart(inter_fig)

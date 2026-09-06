@@ -73,7 +73,7 @@ else:
     sankey_title = f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)"
     fig = sankey_chart(node_labels, sources, targets, values, title=sankey_title)
     with card(sankey_title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
     st.subheader("Corridor map")
     with card("EU Gas Corridor Map"):
@@ -96,7 +96,7 @@ else:
                 corridor_title = corridor_name.replace("_", " ")
                 fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
                 with card(corridor_title):
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig)
 
     st.subheader("Physical vs. nomination gap")
     gap_corridor = st.selectbox("Corridor", options=list(CORRIDORS), key="gap_corridor")
@@ -139,7 +139,7 @@ else:
         lines_title = f"{corridor_label} — Physical vs. Nomination"
         lines.update_layout(title=lines_title, yaxis_title="GWh/d")
         with card(lines_title):
-            st.plotly_chart(lines, use_container_width=True)
+            st.plotly_chart(lines)
 
         # A line, not a bar: with ~2 years of daily points, go.Bar's per-bar width
         # auto-calculation produces invalid negative widths in the browser (confirmed
@@ -158,4 +158,4 @@ else:
         gap_title = f"{corridor_label} — Nomination minus Physical (under-delivery when positive)"
         gap_line.update_layout(title=gap_title, yaxis_title="GWh/d")
         with card(gap_title):
-            st.plotly_chart(gap_line, use_container_width=True)
+            st.plotly_chart(gap_line)

@@ -77,6 +77,10 @@ section is wrapped in `apps.dashboard.components.card.card(title)` (a bordered
 plain `st.subheader` label with one `card(...)` per individual chart underneath, matching
 the existing pages. Maps use `go.Scattermapbox` with the free `"open-street-map"` style
 (no Mapbox token) — never `go.Scattergeo`, which only renders a flat continent outline.
+Never pass `use_container_width` to `st.plotly_chart`/`st.dataframe`: Streamlit deprecated
+it (removal was scheduled for after 2025-12-31) in favour of `width`, whose default is
+already `"stretch"` — so the argument is now pure noise. Pass nothing for a full-width
+element, or `width="content"` to size to content.
 
 ## When unsure
 Prefer the smallest change that satisfies the spec's acceptance criteria. If an API responds

@@ -83,7 +83,7 @@ def render_price_map() -> None:
     )
     latest_ts = latest["ts"].max()
     fig.update_layout(title=f"Day-Ahead Price by Zone — {pd.Timestamp(latest_ts)}")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
 
 
 def render_flow_map() -> None:
@@ -145,4 +145,4 @@ def render_flow_map() -> None:
         )
 
     fig.update_layout(title=f"Cross-Border Power Flows — 24h avg to {latest_ts}")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
