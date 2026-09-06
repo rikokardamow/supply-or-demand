@@ -8,29 +8,27 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
 
-# The `X as X` names are deliberately RE-EXPORTED: pages import the series palette from
-# core.theme (e.g. pages/01_us_padd.py:19) and those imports must keep working now that
-# the values live in core/design.py. The redundant alias is PEP 484's explicit
-# re-export form; mypy runs strict (so no_implicit_reexport), and without it every page
-# importing a colour from here fails with "does not explicitly export attribute".
-# The plain names (BODY_STACK, MUTED, PAPER, RULE, TEXT) are chrome tokens used inside
-# this module only, and are deliberately NOT part of core.theme's surface.
-from core.design import (
-    BAND as BAND,
-    BODY_STACK,
-    GREY as GREY,
-    GRID as GRID,
-    LIGHT_BLUE as LIGHT_BLUE,
-    MUTED,
-    NAVY as NAVY,
-    ORANGE as ORANGE,
-    PAPER,
-    RED as RED,
-    RULE,
-    TEXT,
-    TRANSPARENT as TRANSPARENT,
-)
+from core import design
+from core.design import BODY_STACK, MUTED, PAPER, RULE, TEXT
 from core.seasonal import REFERENCE_YEAR
+
+# The series palette is BOUND here, not imported, and that is deliberate. Pages do
+# `from core.theme import NAVY, RED` (e.g. pages/01_us_padd.py:19) and must keep
+# working now that the values live in core/design.py -- but mypy runs strict, so
+# no_implicit_reexport applies and a plain `from core.design import NAVY` would make
+# every one of those pages fail with "does not explicitly export attribute". Binding
+# the names here makes them genuinely part of this module's surface. (The PEP 484
+# `NAVY as NAVY` form works too, but isort then splits each alias onto its own
+# statement unless combine-as-imports is set repo-wide, which reformats unrelated
+# files.) Same objects either way: core/design.py remains the one definition.
+NAVY = design.NAVY
+LIGHT_BLUE = design.LIGHT_BLUE
+RED = design.RED
+ORANGE = design.ORANGE
+GREY = design.GREY
+BAND = design.BAND
+GRID = design.GRID
+TRANSPARENT = design.TRANSPARENT
 
 _MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
 _DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]
