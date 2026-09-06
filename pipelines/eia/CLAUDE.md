@@ -609,3 +609,71 @@ constraint), **both are stored exactly as EIA publishes them, unconverted** — 
 does no unit reconciliation. Whatever computes the fullness ratio (storage ÷ capacity) must
 convert one side by ×1,000 first, or it will read as ~0.1% full instead of ~100% full. Flagged
 here for Task 3, which reads both series to build that ratio.
+
+## Task 4 (31A) — final verification gate, real pulls, and a computed fullness ratio
+
+Real (not cassette) runs, 2026-09-06:
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_gas_capacity` — exit 0: `wrote 972 gas
+capacity rows across 6 regions` (matches Task 1's live-confirmed count exactly).
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_gas_consumption` — exit 0: `wrote 1896
+gas consumption rows` (Task 0 counted 642+642+306+306 = 1,896 raw rows across the four
+national sectors with no nulls — matches exactly).
+
+**Region pairing, read from the real lake with `source="eia"`-narrowed `read_ts_long`
+calls (never unbounded).** All 6 `CAPACITY_GEO_MAP` regions have a storage counterpart
+and vice versa: L48/East/Midwest/SouthCentral/Mountain/Pacific each show 162 capacity
+rows and 870 storage rows. The two `STORAGE_GEO_MAP` regions with no capacity series —
+`SouthCentral_Salt` and `SouthCentral_Nonsalt` (870 storage rows each) — are exactly the
+two Task 0 already named as expected gaps (no salt/non-salt capacity split exists on this
+route). No unexpected mismatch either direction.
+
+**Fullness ratio, computed for real with the MMcf→Bcf conversion (÷1,000) Task 1 flagged
+as still outstanding — the actual point of this plan.** Latest capacity is monthly
+(2026-06-01); latest storage is weekly (2026-08-28) — the ~3-month lag is EIA's own
+publication cadence for `stor/cap`, not a bug, and capacity moves little month to month so
+comparing latest-to-latest is a reasonable approximation:
+
+| Region | Capacity (MMcf) | Capacity (Bcf) | Storage (Bcf) | Fullness |
+|---|---|---|---|---|
+| L48 | 4,748,719 | 4,748.7 | 3,214 | **67.7%** |
+| East | 1,077,656 | 1,077.7 | 753 | **69.9%** |
+| Midwest | 1,228,327 | 1,228.3 | 890 | **72.5%** |
+| SouthCentral | 1,586,383 | 1,586.4 | 1,051 | **66.3%** |
+| Mountain | 485,916 | 485.9 | 236 | **48.6%** |
+| Pacific | 370,438 | 370.4 | 285 | **76.9%** |
+
+**Believable.** All six land in a plausible band for late-August/early-September
+injection-season fill (L48's 4,748.7 Bcf working capacity and 3,214 Bcf in storage are
+both independently consistent with EIA's own published national figures for this period).
+Mountain's lower fill (48.6%) is a real regional pattern, not a data error. None of this
+is close to the ~0.07% a forgotten unit conversion would have produced — confirming the
+conversion is the one thing that had to be right, and is.
+
+**Full suite** (`.venv/Scripts/pytest.exe`, run after both real pulls above): 737 passed,
+2 failed, 16 deselected (142s). Both failures —
+`tests/test_pages_smoke.py::test_page_loads_without_raising[04_eu_power.py]` and
+`[20_cracks.py]` — raised `MemoryError: cannot allocate memory for array` inside
+`core/storage.py`'s DuckDB read, not inside any file this plan touched. Re-run in
+isolation immediately after (`pytest tests/test_pages_smoke.py::...[04_eu_power.py]
+...[20_cracks.py]`): **both passed**, 2/2, no error. Attributed to transient memory
+pressure during the full-suite run (a concurrent session is active in this repo) rather
+than a real regression — not fixed here per this task's verify-only scope.
+
+**Lint**: `.venv/Scripts/ruff.exe check .` — all checks passed.
+
+**Types**: `.venv/Scripts/mypy.exe core pipelines infra` — first invocation hit mypy's own
+`INTERNAL ERROR` (a mypy-side crash, not a type error, most plausibly transient
+file-contention with the same concurrent session). Immediately re-run with
+`--show-traceback`: `Success: no issues found in 159 source files`.
+
+**Two spec corrections made to `specs/31_eia-coverage-extensions.md`**, both contradicted
+by Task 0's live discovery: item 1's "State and region level, 1989–2026" corrected to note
+the regional series Task 1 actually uses begin 2013 (only an ambiguous national "Total"
+series reaches 1989); item 6's "National and PADD1–4" corrected to "all five PADDs" (6
+series: US plus PADD1 through PADD5, confirmed live by Task 0).
+
+**Item 1 status, precisely: capacity data and the fullness ratio are real and in the
+lake; the page section (Task 3) is not shipped.** It is blocked on a concurrent session's
+permission for `apps/dashboard/**`, out of this task's scope, and not touched here.
