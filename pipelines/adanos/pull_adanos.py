@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 
 import pandas as pd
 import requests
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 from pipelines.adanos.client import AdanosClient
 from pipelines.adanos.tickers import COMPARE_BATCH_SIZE, PLATFORMS, TICKERS
@@ -35,10 +36,7 @@ def pull_platform(client: AdanosClient, platform: str, ingested_at: pd.Timestamp
         try:
             df = client.compare(batch, platform)
         except requests.exceptions.RequestException as exc:
-            print(
-                f"adanos {platform} compare({batch}): FAILED ({type(exc).__name__}) — skipping",
-                flush=True,
-            )
+            record_failure(f"adanos {platform} compare({batch})", exc)
             continue
 
         print(
@@ -98,7 +96,7 @@ def pull_sector_trend(client: AdanosClient, ingested_at: pd.Timestamp) -> pd.Dat
     try:
         sectors = client.trending_sectors(platform="reddit")
     except requests.exceptions.RequestException as exc:
-        print(f"adanos sector trend: FAILED ({type(exc).__name__}) — skipping", flush=True)
+        record_failure("adanos sector trend", exc)
         return pd.DataFrame()
 
     print(f"adanos sector trend: remaining={client.last_rate_limit_remaining}", flush=True)
@@ -123,6 +121,7 @@ def pull_sector_trend(client: AdanosClient, ingested_at: pd.Timestamp) -> pd.Dat
     )
 
 
+@fails_loudly("adanos.pull_adanos")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
     client = AdanosClient()

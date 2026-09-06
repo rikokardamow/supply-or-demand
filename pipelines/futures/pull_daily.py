@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 
 from pipelines.futures.client import ROOTS, get_client
 from pipelines.futures.pull import pull_root
@@ -23,6 +24,7 @@ def trailing_window(today: date, trailing_days: int = TRAILING_DAYS) -> date:
     return today - timedelta(days=trailing_days - 1)
 
 
+@fails_loudly("futures.pull_daily")
 def main() -> None:
     client = get_client()
     ingested_at = pd.Timestamp(datetime.now())
@@ -34,7 +36,7 @@ def main() -> None:
         try:
             total_rows += pull_root(client, root, start, today, ingested_at)
         except Exception as exc:
-            print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{root}", exc)
 
     print(f"pull_daily: {total_rows} total rows written", flush=True)
 

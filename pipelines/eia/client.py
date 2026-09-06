@@ -1,4 +1,11 @@
-"""EIA API v2 client. Route/facet pattern documented in pipelines/eia/NOTES.md."""
+"""EIA API v2 client. Route/facet pattern documented in pipelines/eia/NOTES.md.
+
+Never let a raw exception from this client escape: EIA authenticates via an `api_key`
+*query parameter*, and requests.HTTPError's default string embeds the full request URL,
+so printing one leaks the real key into whatever log caught it (golden rule 1). This is
+the same leak pipelines/entsoe/client.py documents hitting live on 2026-08-30, via a
+different provider's query-parameter auth. Every error path here goes through
+core.failures.raise_sanitised."""
 
 from __future__ import annotations
 
@@ -7,6 +14,7 @@ from typing import Any
 
 import pandas as pd
 import requests
+from core.failures import raise_sanitised
 from core.settings import settings
 
 BASE_URL = "https://api.eia.gov/v2"
@@ -41,7 +49,10 @@ class EIAClient:
                 "length": PAGE_SIZE,
             }
             response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.HTTPError as exc:
+                raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
 
@@ -56,7 +67,10 @@ class EIAClient:
         Use this to discover series codes instead of guessing them."""
         params = {"api_key": self._api_key}
         response = requests.get(f"{BASE_URL}/{route}/facet/series", params=params, timeout=30)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            raise_sanitised(exc)
         result: list[dict[str, str]] = response.json()["response"]["facets"]
         return result
 

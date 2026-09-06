@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import pandas as pd
 import requests
+from core.failures import fails_loudly, record_failure
 from core.settings import settings
 from core.storage import write_events
 
@@ -43,7 +44,7 @@ def pull_news(
         try:
             articles = gdelt_client.search(spec["query"])
         except requests.exceptions.RequestException as exc:
-            print(f"gdelt {label}: FAILED ({type(exc).__name__}) — skipping", flush=True)
+            record_failure(f"gdelt {label}", exc)
         else:
             print(f"gdelt {label}: {len(articles)} articles", flush=True)
             if not articles.empty:
@@ -57,7 +58,7 @@ def pull_news(
             try:
                 g_articles = guardian_client.search(spec["query"])
             except requests.exceptions.RequestException as exc:
-                print(f"guardian {label}: FAILED ({type(exc).__name__}) — skipping", flush=True)
+                record_failure(f"guardian {label}", exc)
             else:
                 print(f"guardian {label}: {len(g_articles)} articles", flush=True)
                 if not g_articles.empty:
@@ -75,6 +76,7 @@ def pull_news(
     return drop_fuzzy_duplicates(merged)
 
 
+@fails_loudly("news.pull_news")
 def main() -> None:
     guardian_client = GuardianClient() if settings.guardian_key else None
     if guardian_client is None:

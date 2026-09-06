@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.entsoe.client import ENTSOEClient
@@ -40,7 +41,7 @@ def pull_actuals(
         except RuntimeError as exc:
             # One flaky zone/indicator shouldn't abort the whole 13-zone pull -- see
             # pull_prices.py's identical reasoning. Re-run to retry whatever failed.
-            print(f"{zone} load: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{zone} load", exc)
         else:
             print(f"{zone} load: {len(load)} rows", flush=True)
             if not load.empty:
@@ -62,7 +63,7 @@ def pull_actuals(
         try:
             generation = client.get_generation(zone, start, end)
         except RuntimeError as exc:
-            print(f"{zone} generation: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{zone} generation", exc)
         else:
             print(f"{zone} generation: {len(generation)} rows", flush=True)
             if not generation.empty:
@@ -87,7 +88,7 @@ def pull_actuals(
         try:
             wind_solar = client.get_wind_and_solar_forecast(zone, start, end)
         except RuntimeError as exc:
-            print(f"{zone} wind/solar forecast: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{zone} wind/solar forecast", exc)
         else:
             print(f"{zone} wind/solar forecast: {len(wind_solar)} rows", flush=True)
             if not wind_solar.empty:
@@ -123,6 +124,7 @@ def pull_actuals(
     }
 
 
+@fails_loudly("entsoe.pull_actuals")
 def main() -> None:
     client = ENTSOEClient()
     end = date.today()

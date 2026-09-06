@@ -13,6 +13,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.weather.aggregate import population_weighted
@@ -143,6 +144,7 @@ def pull_gfs_degree_days_forecast(ingested_at: pd.Timestamp) -> pd.DataFrame:
     return _mark_as_gfs(pd.concat([forecast_long, forecast_popw], ignore_index=True))
 
 
+@fails_loudly("weather.pull_daily")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
 
@@ -161,20 +163,20 @@ def main() -> None:
         # One model's own outage/rate-limit must never block the rest of the daily
         # pull -- same cross-pipeline resilience principle infra/run_scheduled.py
         # already applies one level up, applied here between the two weather models.
-        print(f"ECMWF anomaly maps: FAILED ({type(exc).__name__}: {exc})", flush=True)
+        record_failure("ECMWF anomaly maps", exc)
 
     try:
         gfs_rendered = render_gfs_anomaly_maps()
         print(f"rendered {len(gfs_rendered)} GFS anomaly maps: {gfs_rendered}", flush=True)
     except Exception as exc:
-        print(f"GFS anomaly maps: FAILED ({type(exc).__name__}: {exc})", flush=True)
+        record_failure("GFS anomaly maps", exc)
 
     try:
         gfs_hdd_cdd = pull_gfs_degree_days_forecast(ingested_at)
         write_ts_long(gfs_hdd_cdd, source="gfs")
         print(f"wrote {len(gfs_hdd_cdd)} GFS HDD/CDD rows", flush=True)
     except Exception as exc:
-        print(f"GFS HDD/CDD forecast: FAILED ({type(exc).__name__}: {exc})", flush=True)
+        record_failure("GFS HDD/CDD forecast", exc)
 
 
 if __name__ == "__main__":

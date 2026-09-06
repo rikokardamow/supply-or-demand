@@ -6,10 +6,12 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pandas as pd
+from core.failures import fails_loudly
 
 from pipelines.cftc.pull import pull_all
 
 
+@fails_loudly("cftc.pull_history")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
     total = pull_all(start=None, end=None, ingested_at=ingested_at)

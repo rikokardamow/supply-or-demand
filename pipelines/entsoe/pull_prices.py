@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.entsoe.client import ENTSOEClient
@@ -30,7 +31,7 @@ def pull_prices(
             # the raw exception — see client.py's leak-prevention rule) — one flaky
             # zone shouldn't abort an otherwise-successful multi-zone pull; re-run
             # later to pick up whatever failed.
-            print(f"{zone}: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{zone}", exc)
             failed_zones.append(zone)
             continue
         print(f"{zone}: {len(raw)} rows", flush=True)
@@ -60,6 +61,7 @@ def pull_prices(
     return pd.concat(frames, ignore_index=True)
 
 
+@fails_loudly("entsoe.pull_prices")
 def main() -> None:
     client = ENTSOEClient()
     end = date.today()

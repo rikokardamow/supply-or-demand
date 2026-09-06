@@ -18,6 +18,7 @@ from core.curve import (
     nearby_panel,
     time_spreads,
 )
+from core.failures import fails_loudly, record_failure
 from core.storage import read_ts_long, write_ts_long
 
 from pipelines.futures.client import ROOTS
@@ -98,6 +99,7 @@ def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
     return total
 
 
+@fails_loudly("derived.curve")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now())
     meta = read_series_meta()
@@ -107,7 +109,7 @@ def main() -> None:
         try:
             total_rows += pull_root(root, meta, ingested_at)
         except Exception as exc:
-            print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{root}", exc)
 
     print(f"derived.curve: {total_rows} total rows written", flush=True)
 

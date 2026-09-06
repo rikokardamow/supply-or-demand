@@ -6,6 +6,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_flows
 
 from pipelines.entsoe.client import ENTSOEClient
@@ -27,7 +28,7 @@ def pull_flows(
         except RuntimeError as exc:
             # One flaky border shouldn't abort the whole pull -- see pull_prices.py's
             # identical reasoning. Re-run to retry whatever failed.
-            print(f"{zone_from} -> {zone_to}: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{zone_from} -> {zone_to}", exc)
             failed_borders.append((zone_from, zone_to))
             continue
         print(f"{zone_from} -> {zone_to}: {len(raw)} rows", flush=True)
@@ -56,6 +57,7 @@ def pull_flows(
     return pd.concat(frames, ignore_index=True)
 
 
+@fails_loudly("entsoe.pull_flows")
 def main() -> None:
     client = ENTSOEClient()
     end = date.today()

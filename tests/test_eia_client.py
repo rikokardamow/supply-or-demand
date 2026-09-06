@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+import requests
 from core.schemas import validate_flows
 from pipelines.eia.client import EIAClient
 
@@ -169,3 +170,32 @@ def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
     assert (df["from_node"] == "PADD3").all()
     assert (df["to_node"] == "PADD2").all()
     assert (df["mode"] == "pipeline").all()
+
+
+def _forbidden_response(url: str) -> requests.Response:
+    response = requests.Response()
+    response.status_code = 403
+    response.reason = "Forbidden"
+    response.url = url
+    return response
+
+
+def test_an_http_error_never_carries_the_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Golden rule 1. EIA authenticates via an `api_key` query parameter and requests puts
+    the full URL in HTTPError's message, so an unwrapped error here leaks the real key into
+    whatever log catches it -- infra/run_scheduled.py prints exactly that string."""
+    key = "REALKEY0123456789"
+    monkeypatch.setattr(
+        "pipelines.eia.client.requests.get",
+        lambda *a, **kw: _forbidden_response(f"https://api.eia.gov/v2/x/data/?api_key={key}"),
+    )
+
+    client = EIAClient(api_key=key)
+    with pytest.raises(RuntimeError) as caught:
+        client.get_series(route="petroleum/stoc/wstk", series=["WCESTUS1"], frequency="weekly")
+
+    assert key not in str(caught.value)
+    assert "403" in str(caught.value)
+    # `from None`: otherwise Python prints the original, unredacted exception as context.
+    assert caught.value.__cause__ is None
+    assert caught.value.__suppress_context__

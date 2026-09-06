@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.gridstatus_iso.client import GridstatusISOClient
@@ -21,6 +22,7 @@ def _slug(name: str) -> str:
     return name.lower().replace(" ", "_").replace("-", "_")
 
 
+@fails_loudly("gridstatus_iso.pull_iso")
 def main() -> None:
     end = date.today()
     start = end - timedelta(days=LOOKBACK_DAYS)
@@ -36,7 +38,7 @@ def main() -> None:
         try:
             load = client.get_load(start, end)
         except Exception as exc:  # broad: gridstatus raises a mix of error types
-            print(f"{iso_name} load: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{iso_name} load", exc)
         else:
             print(f"{iso_name} load: {len(load)} rows", flush=True)
             if not load.empty:
@@ -58,7 +60,7 @@ def main() -> None:
         try:
             fuel_mix = client.get_fuel_mix(start, end)
         except Exception as exc:  # broad: gridstatus raises a mix of error types
-            print(f"{iso_name} fuel_mix: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{iso_name} fuel_mix", exc)
         else:
             print(f"{iso_name} fuel_mix: {len(fuel_mix)} rows", flush=True)
             if not fuel_mix.empty:
@@ -83,7 +85,7 @@ def main() -> None:
         try:
             lmp = client.get_lmp(start, end)
         except Exception as exc:  # broad: gridstatus raises a mix of error types
-            print(f"{iso_name} lmp: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{iso_name} lmp", exc)
         else:
             print(f"{iso_name} lmp: {len(lmp)} rows", flush=True)
             if not lmp.empty:

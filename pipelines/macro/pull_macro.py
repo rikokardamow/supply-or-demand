@@ -13,6 +13,7 @@ from datetime import UTC, date, datetime
 
 import pandas as pd
 import requests
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.macro.eurostat_client import EurostatESIClient
@@ -35,7 +36,7 @@ def pull_fred(client: FREDClient, ingested_at: pd.Timestamp) -> pd.DataFrame:
             # ("Bad Request. The series does not exist."), confirmed live earlier
             # this session -- RequestException covers genuine connectivity failures.
             # One flaky series must never abort the rest of the 38.
-            print(f"fred {series_id}: FAILED ({type(exc).__name__}) — skipping", flush=True)
+            record_failure(f"fred {series_id}", exc)
             continue
 
         print(f"fred {series_id}: {len(df)} rows", flush=True)
@@ -65,7 +66,7 @@ def pull_fx(client: FrankfurterClient, ingested_at: pd.Timestamp) -> pd.DataFram
     try:
         rates = client.get_rates(FX_HISTORY_START, date.today(), FX_SYMBOLS)
     except requests.exceptions.RequestException as exc:
-        print(f"frankfurter fx: FAILED ({type(exc).__name__}) — skipping", flush=True)
+        record_failure("frankfurter fx", exc)
         return pd.DataFrame()
 
     print(f"frankfurter fx: {len(rates)} rows", flush=True)
@@ -90,7 +91,7 @@ def pull_esi(client: EurostatESIClient, ingested_at: pd.Timestamp) -> pd.DataFra
     try:
         esi = client.get_esi()
     except requests.exceptions.RequestException as exc:
-        print(f"eurostat esi: FAILED ({type(exc).__name__}) — skipping", flush=True)
+        record_failure("eurostat esi", exc)
         return pd.DataFrame()
 
     print(f"eurostat esi: {len(esi)} rows", flush=True)
@@ -111,6 +112,7 @@ def pull_esi(client: EurostatESIClient, ingested_at: pd.Timestamp) -> pd.DataFra
     )
 
 
+@fails_loudly("macro.pull_macro")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
 

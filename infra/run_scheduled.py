@@ -27,6 +27,8 @@ import argparse
 import importlib
 import sys
 
+from core.failures import describe_exception
+
 # (label, module path). `main` is resolved from each module at call time.
 CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
     "daily": [
@@ -89,7 +91,13 @@ def run_cadence(label: str) -> int:
     Windows Task Scheduler's own "Last Run Result" column reflects real status.
     One flaky pipeline never blocks the rest, matching the same per-source
     resilience pattern already established inside every individual pipeline's own
-    pull script, applied here at the cross-pipeline level too."""
+    pull script, applied here at the cross-pipeline level too.
+
+    "Succeeded" means the pipeline's own items succeeded, not merely that `main()`
+    returned. Each pull script's per-item `except` records to a `core.failures`
+    scope and its `main()` carries `@fails_loudly`, so a run where every contract
+    failed raises PartialFailureError here instead of returning quietly -- before
+    that, this loop printed "OK" and exited 0 for a run that ingested nothing."""
     group = CADENCE_GROUPS.get(label)
     if group is None:
         print(f"unknown cadence {label!r} -- choices: {sorted(CADENCE_GROUPS)}", flush=True)
@@ -104,7 +112,12 @@ def run_cadence(label: str) -> int:
             # Deliberately broad: one pipeline's own exception type is never
             # predictable in advance, and the whole point of this loop is that no
             # single pipeline's failure mode may abort the rest.
-            print(f"{name}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            #
+            # describe_exception, not f"{exc}": this is the exact line that printed a
+            # real EIA api_key into the log, because requests puts the full request URL
+            # in HTTPError's message. The clients now sanitise at source; this is the
+            # backstop for every exception type that reaches here from anywhere else.
+            print(f"{name}: FAILED ({describe_exception(exc)})", flush=True)
             results.append((name, False))
         else:
             print(f"{name}: OK", flush=True)
