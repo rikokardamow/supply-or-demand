@@ -454,3 +454,132 @@ teeth against a regression to append-only writes.
 Full suite (`.venv/Scripts/pytest.exe`), lint and types, all run 2026-09-06 after the pulls
 above: **723 passed, 16 deselected, 0 failed** (109s); `ruff check .` — all checks passed;
 `mypy core pipelines infra` — no issues found in 157 source files.
+
+## Spec 31 routes — confirmed live 2026-09-06
+
+Task 0 (discovery only, no pull code) for Spec 31's six independent coverage items. This
+plan builds items 1 and 3 (`natural-gas/stor/cap`, `natural-gas/cons/sum`); the other four
+items' routes (plans 31B/31C) are walked here too, for series-facet shape only, since
+discovery is cheap and shared and de-risks those plans before they are written.
+
+| Route | Series facet? | Count | Codes used | Frequency | geo quirk | Item |
+|---|---|---|---|---|---|---|
+| `natural-gas/stor/cap` | yes | 123 | `NGM_EPG0_SACW0_R48_MMCF` (L48), `NGM_EPG0_SACW0_R83_MMCF` (East), `NGM_EPG0_SACW0_R85_MMCF` (Midwest), `NGM_EPG0_SACW0_R84_MMCF` (South Central, aggregate only), `NGM_EPG0_SACW0_R86_MMCF` (Mountain), `NGM_EPG0_SACW0_R91_MMCF` (Pacific) — all "Working" capacity | `monthly` | **yes** — `area-name` is the literal string `"NA"` for every row on this convention | 1 (31A) |
+| `natural-gas/cons/sum` | yes | 315 | `N3010US2` (residential), `N3020US2` (commercial), `N3035US2` (industrial), `N3045US2` (electric power) — all US national | `monthly` | no — `geo` resolves to `"US"` cleanly | 3 (31A) |
+| `electricity/rto/region-data` | **no** — 400 on `facet/series` | n/a | not selected — plan 31B scope; facets are `respondent`+`type`, one `value` data key | `hourly`/`local-hourly` only (declared) | not checked (no series id to key a `geo_map` on) | 2 (31B) |
+| `electricity/rto/fuel-type-data` | **no** — 400 | n/a | not selected — plan 31B scope; facets `respondent`+`fueltype`, one `value` data key | `hourly`/`local-hourly` only (declared) | not checked | 2 (31B) |
+| `electricity/rto/interchange-data` | **no** — 400 | n/a | not selected — plan 31B scope; facets `fromba`+`toba` (this is the `flows`-shaped one), one `value` data key | `hourly`/`local-hourly` only (declared) | not checked | 2 (31B) |
+| `coal/consumption-and-quality` | **no** — 400 | n/a | not selected — plan 31C scope; facets `location`+`sector`; data keys `receipts`, `consumption`, `stocks`, `price`, `heat-content`, `sulfur-content`, `ash-content` | `quarterly`/`annual` only (declared) | not checked | 4 (31C) |
+| `petroleum/pnp/capbio` | yes | 3 | not selected — plan 31C scope; all 3 are US national (biodiesel, renewable-diesel-and-other-biofuels, fuel-ethanol capacity) | `monthly` (declared and confirmed live) | no — sample code confirmed `geo="US"` | 5 (31C) |
+| `petroleum/pnp/feedbiofuel` | yes | 26 | not selected — plan 31C scope; all 26 are US national feedstock inputs | `monthly` (declared and confirmed live) | no — sample code confirmed `geo="US"` | 5 (31C) |
+| `petroleum/pnp/wprode` | yes | 6 | not selected — plan 31C scope; US + **all five** PADDs (1–5 all present — see correction below) | `weekly`/`four-week-average` (declared); `weekly` confirmed live | no — sample code confirmed `geo="US"` | 6 (31C) |
+
+**Routes with no series facet (need a facet-dict query shape, not `facets[series][]`):**
+`electricity/rto/region-data`, `electricity/rto/fuel-type-data`, `electricity/rto/interchange-data`,
+`coal/consumption-and-quality`.
+**Routes that failed or returned nothing:** none. Every route above returned either a real
+series list or a real (non-series) facet/data-key shape when queried the right way — the
+four "no series facet" routes return `400 Bad Request` specifically on `facet/series`,
+exactly like `electricity/electric-power-operational-data` in Spec 30: a route shape, not a
+failure.
+
+**The `electricity/rto/*` routes are not one shape — confirmed live, not assumed, and none
+of the three matches `get_operational_series`'s existing signature.** All three return `400
+Bad Request` on `facet/series`, but they are three *different* non-series shapes:
+- `region-data`: facets `respondent` (balancing-authority code, e.g. `PJM`, `ERCO`) and
+  `type` (a demand/generation/forecast type code); one `data[0]=value`.
+- `fuel-type-data`: facets `respondent` and `fueltype`; one `data[0]=value`.
+- `interchange-data`: facets `fromba` and `toba` only — no `type`/`fueltype` at all, and
+  this is the one that maps onto `get_flows`'s `(from_node, to_node)` shape, as the spec
+  expects.
+None matches `get_operational_series`'s `{fueltypeid, sectorid, location}` signature, so
+plan 31B needs either a new method per shape or a more general facet-dict version of
+`_fetch_operational_rows` — not decided here, `pipelines/eia/client.py` is out of scope for
+Task 0.
+
+**Grid Monitor is hourly-only, not monthly — a real volume finding for plan 31B.**
+`region-data`, `fuel-type-data` and `interchange-data` each declare only `hourly` and
+`local-hourly` frequencies (confirmed live via each route's own metadata endpoint,
+`GET /v2/{route}` with no `/data`/`/facet` suffix) — there is no daily/monthly rollup to
+fall back to. Combined with "all 65 Lower-48 balancing authorities" (the spec's own scope),
+a full pull is hourly × 65 BAs × (demand + generation-by-fuel + interchange) — several
+orders of magnitude more rows than any other route in this file. Plan 31B should decide its
+own row-volume strategy (a trailing window, a BA subset, or a downsample) before writing
+pull code; not decided here.
+
+**`natural-gas/stor/cap` has a genuine convention split by era, and the spec's own
+"1989–2026" claim does not hold at the regional level Task 1 needs — confirmed live, not
+assumed.** The route carries two generations of series:
+- An older, ambiguous-total convention (`N5290US2`, "U.S. Total Natural Gas Underground
+  Storage Capacity") that does reach back to 1989-01 nationally and resolves `area-name` to
+  `"US"` cleanly — but it is not explicitly split working/total, and its 2026-06 value
+  (9,369,932 MMcf) is almost exactly double the "Working" L48 figure below, consistent with
+  Total = Working + base gas, not the working-gas figure a fullness ratio needs.
+- A newer, explicitly `Working`-labelled convention (`NGA_EPG0_SACW0_*`/`NGM_EPG0_SACW0_*`),
+  the one chosen for the six codes above — but **every one of these regional series, old-
+  style aggregates and new-style alike, starts 2013-01, not 1989.** Confirmed live: all six
+  chosen codes return exactly 162 monthly rows each, 2013-01-01 to 2026-06-01. State-level
+  codes (e.g. `N5290CA2`, California) reach back further (2002-01) and resolve `area-name`
+  cleanly, but state-level is out of this plan's scope (national/region only, per the spec).
+
+**Task 1 should present the capacity panel as 2013-onward, not 1989-onward** — the earlier
+span exists only for the ambiguous national total, not for the working-gas regional
+breakdown the fullness ratio is built on.
+
+**`natural-gas/stor/cap`'s `area-name` quirk is not confined to the six chosen region-level
+codes — confirmed live.** Every non-state-level series checked (both the new
+`NGA_EPG0_SACW0_NUS_MMCF`/`NGM_EPG0_SACW0_R48_MMCF` national/regional codes and the old-
+convention regional aggregates like `N5290832`) returns `area-name: "NA"` literally, for
+every row — the same quirk as `natural-gas/stor/wkly` and `petroleum/pri/land3`. Only
+genuinely state-level codes (e.g. `N5290CA2` → `"CALIFORNIA"`) and the one old-convention
+*national* total (`N5290US2` → `"U.S."`) populate `area-name` properly. An explicit
+`geo_map` (same pattern as `pull_gas_storage.py`'s `STORAGE_GEO_MAP`) is required for the
+six codes chosen above; `_normalise_geo(area-name)` alone would collapse all six to
+`geo="NA"`.
+
+**Storage/capacity region pairing, against `pull_gas_storage.py`'s `STORAGE_GEO_MAP` —
+confirmed live.** `natural-gas/stor/cap` (123 series, full facet dump inspected) has a
+working-capacity series for six of `STORAGE_GEO_MAP`'s eight regions:
+
+| `STORAGE_GEO_MAP` region | Capacity series? | Code |
+|---|---|---|
+| L48 | yes | `NGM_EPG0_SACW0_R48_MMCF` |
+| East | yes | `NGM_EPG0_SACW0_R83_MMCF` |
+| Midwest | yes | `NGM_EPG0_SACW0_R85_MMCF` |
+| SouthCentral | yes (aggregate only) | `NGM_EPG0_SACW0_R84_MMCF` |
+| SouthCentral_Salt | **no** | — |
+| SouthCentral_Nonsalt | **no** | — |
+| Mountain | yes | `NGM_EPG0_SACW0_R86_MMCF` |
+| Pacific | yes | `NGM_EPG0_SACW0_R91_MMCF` |
+
+**No salt/nonsalt capacity split exists — confirmed by inspecting the full 123-series facet
+dump for this route: no series name or id contains "salt" or "non-salt" anywhere.**
+`pull_gas_storage.py`'s two salt/nonsalt storage series (`NW2_EPG0_SSO_R33_BCF`,
+`NW2_EPG0_SNO_R33_BCF`) will have to display without a percent-full figure of their own, or
+fall back to the South Central *aggregate* capacity as a coarser denominator — a real gap,
+not an oversight to fix here.
+
+**`natural-gas/cons/sum` national codes — clean, confirmed live, no quirks.** `N3010US2`
+(residential, 642 rows, 1973-01–2026-06), `N3020US2` (commercial, 642 rows, same span),
+`N3035US2` (industrial, 306 rows, 2001-01–2026-06) and `N3045US2` (electric power, 306
+rows, same span) all resolve `geo="US"` cleanly via the existing `_normalise_geo` path — no
+`geo_map` needed for this route. No null `value` rows encountered across any of the four
+(no drop message printed on the pull). Other national codes exist on this route but are out
+of this plan's four-sector scope: `N9140US2` (total consumption, useful as a cross-check),
+`N3025US2` (vehicle fuel), `N9160US2` (lease/plant fuel), `N9170US2` (pipeline &
+distribution use), `N3060US2` (total delivered to consumers).
+
+**`petroleum/pnp/wprode` carries all five PADDs, not "PADD1–4" as the spec text states —
+confirmed live, not assumed; a spec correction for plan 31C.** All 6 series
+(`W_EPOOXE_YOP_NUS_MBBLD` plus `_R10_`…`_R50_` for PADD1–5) were returned by
+`list_series()`; PADD5 (`W_EPOOXE_YOP_R50_MBBLD`, West Coast) is real and present, not
+missing. `weekly` frequency confirmed live on the US code (848 rows, 2010-06-04–2026-08-28);
+the route also declares a `four-week-average` frequency (no `monthly`/`daily`/`annual`).
+`geo` resolves to `"US"` cleanly on the sample checked.
+
+**`petroleum/pnp/capbio` and `petroleum/pnp/feedbiofuel` — both clean, national-only, no
+quirks, confirmed live.** `capbio` (3 series, all US-national capacity for
+biodiesel/renewable-diesel-and-other/fuel-ethanol) and `feedbiofuel` (26 series, all
+US-national feedstock inputs) both declare `monthly` only; sample codes from each
+(`M_EPOOXE_8BDPC_NUS_MMGL`, `M_EPOOBDSO_YIFBP_NUS_MMLB`) confirmed live with `geo="US"` and
+no nulls (66 and 68 rows respectively).
