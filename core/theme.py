@@ -8,16 +8,23 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
 
+from core.design import (
+    BAND,
+    BODY_STACK,
+    GREY,
+    GRID,
+    LIGHT_BLUE,
+    NAVY,
+    ORANGE,
+    RED,
+    TEXT,
+    TRANSPARENT,
+)
 from core.seasonal import REFERENCE_YEAR
 
-NAVY = "#0f2a4a"
-LIGHT_BLUE = "#5b9bd5"
-RED = "#c0392b"
-ORANGE = "#e67e22"
-GREY = "#95a5a6"
-BAND = "rgba(150,150,150,0.25)"
-GRID = "#e6e6e6"
-TRANSPARENT = "rgba(0,0,0,0)"
+# These are also re-exported: pages import NAVY/RED/... from core.theme (e.g.
+# pages/01_us_padd.py:19). Those imports keep working -- but the values now live in
+# core/design.py, so chrome and charts cannot drift apart the way they had.
 
 _MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
 _DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]
@@ -28,7 +35,9 @@ def register_kardamow_template() -> None:
     template = go.layout.Template()
     template.layout.paper_bgcolor = TRANSPARENT
     template.layout.plot_bgcolor = TRANSPARENT
-    template.layout.font = {"family": "Inter, sans-serif", "color": "#1a2733"}
+    # Deliberately the body stack, never the heading stack: axis ticks, legends and
+    # data labels are numbers, and numbers never render in the serif.
+    template.layout.font = {"family": BODY_STACK, "color": TEXT}
     template.layout.colorway = [NAVY, LIGHT_BLUE, RED, ORANGE]
     template.layout.xaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
     template.layout.yaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}

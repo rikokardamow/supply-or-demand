@@ -28,6 +28,19 @@ def test_series_colours_are_unchanged_from_theme() -> None:
     assert design.GRID == "#e6e6e6"
 
 
+def test_theme_reexports_design_colours_not_its_own() -> None:
+    """Pages import NAVY/RED from core.theme; that must stay true, but the values must
+    now come from core.design so there is one definition, not two."""
+    from core import theme
+
+    assert theme.NAVY is design.NAVY
+    assert theme.RED is design.RED
+    assert theme.LIGHT_BLUE is design.LIGHT_BLUE
+    assert theme.ORANGE is design.ORANGE
+    assert theme.BAND is design.BAND
+    assert theme.GRID is design.GRID
+
+
 def test_data_never_renders_in_the_heading_family() -> None:
     assert design.HEADING_FAMILY == "Lora"
     assert design.BODY_FAMILY == "Inter"
