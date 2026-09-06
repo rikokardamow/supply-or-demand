@@ -69,8 +69,26 @@ Fetch logic adapted from TauricResearch/TradingAgents (Apache-2.0), commit
 `9dee508c44662702281a8dbaad1f7b42179b5ba7` (`main`, dated 2026-09-01, merge of
 "Post-v0.4.0 fixes: FRED vintage, Reddit 429, debate neutrality, feed bound" —
 upstream's own history independently confirms the Reddit 429 behaviour found above).
-Upstream's public fetchers return prompt-ready prose and its typed layer is
-underscore-private, so the request handling is adapted rather than imported.
+Confirmed by reading `tradingagents/dataflows/reddit.py` at that pinned commit
+(fetched directly from GitHub, not re-derived from documentation): the public
+`fetch_reddit_posts(ticker, subreddits=..., limit_per_sub=5, ...) -> str` returns a
+single formatted plaintext block (its own module docstring states the return is
+"formatted plaintext blocks ready for prompt injection"), built by joining per-post
+blocks with `"\n\n".join(blocks)`. All of the actual request/parsing logic sits
+behind underscore-private functions — `_fetch_subreddit(...) -> list[dict]`,
+`_fetch_subreddit_rss(...) -> list[dict]`, `_fetch_subreddit_json(...) -> list[dict]`
+— none of which are part of the public API. This is why the request handling in
+this pipeline is adapted rather than imported: there is no public function that
+returns structured rows, only prompt-ready prose. Two more things confirmed live in
+that same file, independently corroborating findings above rather than merely
+matching them: `_fetch_subreddit_rss`'s own docstring says RSS "carries no score /
+comment counts, so those fields are left `None`" (matches this pipeline's own
+no-score/no-comment-count finding), and it already implements a 429 back-off
+honouring `Retry-After` before giving up (matches the Reddit rate-limit gotcha
+found independently above) — plus a detail this session's probes did not test:
+`_fetch_subreddit_json`'s docstring records Reddit's richer JSON search endpoint as
+"reliably WAF-blocked (`403 Blocked`) for public clients (issue #862)", which is why
+upstream defaults to RSS.
 
 Attribution recorded verbatim in the repo-root `NOTICE` file:
 
