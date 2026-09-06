@@ -326,11 +326,13 @@ Polymarket), dominated end-to-end by Reddit's pacing at ~58 minutes.** Widening
 component directly and should be weighed against this, the same way Task 2
 weighed the brief's five subreddits down to two.
 
-`pull_social.py::main` tracks fetch attempts and failures itself (not via
-`core/failures.py`, which a concurrent session was still building, untracked,
-at the time this was written — migrate once it lands) and raises rather than
-returning normally if every attempted fetch failed, or if some failed and
-nothing at all got written. A run at this ~58-minute pace that hits nothing
-but empty RSS results — no errors at all — is a real, not theoretical,
-outcome and is logged distinctly rather than silently matching either the
-"wrote N rows" success message or the raised-failure path.
+`pull_social.py::main` uses `core.failures` (`record_failure` at each
+`_safe_fetch` except site, `main` wrapped in `failure_scope("social.pull_social")`)
+the same way every other adopted pipeline does — `pipelines/adanos/pull_adanos.py`
+is the closest sibling. Any recorded failure raises `PartialFailureError` once,
+at the end of the run, even if other fetches succeeded and wrote real data —
+that is `core.failures`' own established semantics, not something this
+pipeline weakens. A run at this ~58-minute pace that hits nothing but empty
+RSS results — no errors at all — is a real, not theoretical, outcome and is
+logged distinctly (`log.failed` is empty, so `failure_scope` does not raise)
+rather than silently matching the "wrote N rows" success message.
