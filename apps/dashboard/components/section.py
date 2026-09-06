@@ -6,7 +6,10 @@ letterspaced grey caps, and nothing is boxed.
 
 Headings are painted here rather than with st.subheader so they carry the heading stack
 from core/design.py -- including its Georgia/serif fallback, which Streamlit's own
-generated font chain does not have.
+generated font chain does not have. They are still real <h1>/<h2> tags: the inline style
+carries the face, the tag carries the document outline that screen readers navigate by
+(and that tests/test_pages_browser.py locates each page with). padding:0 is not
+decoration -- Streamlit's own h1/h2 rules add vertical padding these margins assume away.
 """
 
 from __future__ import annotations
@@ -30,8 +33,8 @@ def section(title: str) -> Iterator[None]:
     edge and overlapped the legend.
     """
     st.markdown(
-        f"<div style='font-family:{HEADING_STACK};font-size:1.05rem;font-weight:600;"
-        f"color:{TEXT};margin:1.6rem 0 0.15rem'>{title}</div>"
+        f"<h2 style='font-family:{HEADING_STACK};font-size:1.05rem;font-weight:600;"
+        f"color:{TEXT};margin:1.6rem 0 0.15rem;padding:0'>{title}</h2>"
         + _RULE.format(margin="0 0 0.9rem"),
         unsafe_allow_html=True,
     )
@@ -43,8 +46,8 @@ def page_header(
 ) -> None:
     """Page title in the heading face, with the Substack's caps meta line beneath."""
     st.markdown(
-        f"<div style='font-family:{HEADING_STACK};font-size:2.1rem;font-weight:600;"
-        f"color:{TEXT};margin:0.2rem 0 0.35rem'>{title}</div>",
+        f"<h1 style='font-family:{HEADING_STACK};font-size:2.1rem;font-weight:600;"
+        f"color:{TEXT};margin:0.2rem 0 0.35rem;padding:0'>{title}</h1>",
         unsafe_allow_html=True,
     )
     meta = " · ".join(part for part in (as_of, freshness) if part)
