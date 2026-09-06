@@ -259,9 +259,9 @@ with tab_benchmark:
             dubai_structure = pd.DataFrame({"m1": dubai_m1, "m3": dubai_m3}).dropna()
             dubai_m1_m3 = dubai_structure["m1"] - dubai_structure["m3"]
 
-            result = osp_signal(osp_asia, dubai_m1_m3)
-            st.dataframe(result)
-            divergence_count = int(result["divergence"].sum())
+            osp_result = osp_signal(osp_asia, dubai_m1_m3)
+            st.dataframe(osp_result)
+            divergence_count = int(osp_result["divergence"].sum())
             st.metric("Divergence months (OSP up, Dubai structure weakening)", divergence_count)
             st.caption(
                 "Source: manual.saudi_aramco.osp_arab_light_asia x manual.platts.dubai_m1/"

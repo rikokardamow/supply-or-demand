@@ -10,7 +10,7 @@ lint:
 	uv run ruff check .
 
 typecheck:
-	uv run mypy core pipelines infra
+	uv run mypy core pipelines infra apps
 
 test:
 	uv run pytest
