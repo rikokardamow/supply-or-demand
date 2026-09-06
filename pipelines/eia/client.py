@@ -88,6 +88,11 @@ class EIAClient:
         `_normalise_geo(area-name)`. Default None preserves every existing caller's
         area-name-based behaviour unchanged."""
         rows = self._fetch_rows(route, series, frequency)
+        # EIA genuinely returns a literal null `value` for some early-history rows
+        # (confirmed live on natural-gas/pri/sum and pri/rescom, pipelines/eia/CLAUDE.md)
+        # -- float(None) would crash a full-history pull outright. Skipped here, matching
+        # the convention core/storage.py's write_ts_long already applies on the write side.
+        rows = [row for row in rows if row.get("value") is not None]
         pulled_at = datetime.now(UTC)
         if geo_map is not None:
             geo = [geo_map[row["series"]] for row in rows]
