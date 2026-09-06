@@ -24,7 +24,10 @@ The lake ingests weekly working gas in storage (Spec 02) but **not capacity**, s
 report Bcf and cannot report **percent full**. Heading into winter the fullness ratio is
 the number that matters; absolute Bcf without the denominator is far less informative.
 
-State and region level, 1989–2026. Feeds a new panel on the existing gas storage page.
+State and region level. **Correction (Task 0, confirmed live 2026-09-06): the regional
+series Task 1 uses begin in 2013, not 1989** — only an ambiguous national "Total" series
+(not explicitly split working/total) reaches back to 1989. Feeds a new panel on the
+existing gas storage page.
 
 **Why first:** it makes data already in the lake more useful, which is the cheapest value
 available here.
@@ -84,7 +87,9 @@ than merely asserting it.
 
 ### 6. Weekly ethanol production — `petroleum/pnp/wprode`
 
-National and PADD1–4, **weekly — the same cadence as the WPSR series already in the lake**,
+National and **all five PADDs** (**corrected, Task 0, confirmed live 2026-09-06: this is
+PADD1–5, not PADD1–4 as an earlier draft stated** — 6 series in total, US plus PADD1
+through PADD5). **Weekly — the same cadence as the WPSR series already in the lake**,
 so it slots into an existing pull rhythm. The best trading-frequency proxy for ethanol
 blending economics. Found while walking the route family during Spec 30's analysis; it was
 not on the original source list.
