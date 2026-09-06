@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 import requests
+from core.failures import PartialFailureError
 from pipelines.social import pull_social
 from pipelines.social.client import Post
 
@@ -103,7 +104,9 @@ def test_main_raises_when_every_fetch_fails(monkeypatch: pytest.MonkeyPatch) -> 
     # The fail-loudly test. Without the raise this proves, a totally-broken
     # run (every platform down) would print failures and return normally --
     # infra/run_scheduled.py would then print "social: OK" and Windows Task
-    # Scheduler would show green for a run that ingested nothing.
+    # Scheduler would show green for a run that ingested nothing. Now backed by
+    # core.failures: every _safe_fetch failure is record_failure'd, and main's
+    # failure_scope raises PartialFailureError once at the end if any were.
     monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
         {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
     ])
@@ -117,30 +120,48 @@ def test_main_raises_when_every_fetch_fails(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(pull_social, "fetch_stocktwits", boom)
     monkeypatch.setattr(pull_social, "fetch_polymarket", boom)
 
-    with pytest.raises(RuntimeError, match=r"all .* fetches failed"):
+    with pytest.raises(PartialFailureError, match=r"social\.pull_social.*item\(s\) failed"):
         pull_social.main()
 
 
-def test_main_raises_when_partial_failure_leaves_nothing_written(
+def test_main_raises_on_any_failure_even_if_other_data_was_written(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # Not a total failure (Reddit "succeeds" every time -- just finds nothing),
-    # but StockTwits is down for the one ticker and nothing at all got
-    # written. This must still raise: a partial failure that happens to
-    # coincide with an all-empty result must not look like a clean success.
-    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [])
+    # core.failures' established semantics (see pipelines/adanos/pull_adanos.py,
+    # the closest sibling): ANY recorded failure fails the whole run, even one
+    # where other, unrelated fetches succeeded and real data got written. This
+    # is stricter than "raise only if nothing was written" -- and deliberately
+    # so, matching every other adopted pipeline.
+    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
+        {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
+    ])
     monkeypatch.setattr(pull_social, "TICKER_QUERIES", ["XOM"])
     monkeypatch.setattr(pull_social, "POLYMARKET_TAGS", [])
 
-    monkeypatch.setattr(pull_social, "fetch_reddit", lambda query, **kw: [])
+    def fake_reddit(query: str, **kw: object) -> list[Post]:
+        if query == "Henry Hub":
+            return [_post("Henry Hub spikes", "https://x.test/hh", "reddit", query)]
+        return []  # XOM's reddit leg finds nothing, but does not fail
+
+    monkeypatch.setattr(pull_social, "fetch_reddit", fake_reddit)
 
     def boom(*args: object, **kwargs: object) -> list[Post]:
         raise requests.exceptions.ConnectionError("stocktwits down")
 
     monkeypatch.setattr(pull_social, "fetch_stocktwits", boom)
 
-    with pytest.raises(RuntimeError, match="nothing was written"):
+    written_ts_long = []
+    monkeypatch.setattr(
+        pull_social, "write_ts_long",
+        lambda df, source: written_ts_long.append((source, df)),
+    )
+    monkeypatch.setattr(pull_social, "write_events", lambda df, source: None)
+
+    with pytest.raises(PartialFailureError):
         pull_social.main()
+
+    # The failure must not have cost the Henry Hub topic's own real data.
+    assert written_ts_long, "Henry Hub's rows should still have been written"
 
 
 def test_main_does_not_raise_on_a_genuinely_quiet_run_with_no_failures(

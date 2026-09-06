@@ -20,22 +20,27 @@ Registered in the weekly_fri group beside adanos deliberately, so the overlap
 join in core/sentiment.py has matching dates rather than a systematic one-day
 offset that would masquerade as deviation.
 
-Decision 2 (fail loudly): `main` tracks fetch attempts/failures itself and
-raises when every fetch failed, or when some failed and nothing at all got
-written -- a silent `return` here would tell infra/run_scheduled.py the run
-succeeded, so it would print OK and Windows Task Scheduler's "Last Run Result"
-would show green for a run that ingested nothing. This is deliberately a small,
-local `_RunStats`, NOT a use of `core/failures.py`: that module is being added
-by a concurrent session on this branch and is currently untracked, so depending
-on it risks building on work that may be reverted. Migrate `main` to
-`core.failures` once that module lands -- until then this is the whole of the
-fail-loudly story for pipelines/social."""
+Decision 2 (fail loudly), now on `core.failures` (landed as commit 6472262,
+"Stop leaking API keys into logs and stop hiding partial pipeline failures"):
+every `_safe_fetch` failure is recorded via `record_failure`, and `main` runs
+inside a `failure_scope` so any recorded failure raises `PartialFailureError` on
+the way out -- matching every other adopted pipeline (`pipelines/adanos/
+pull_adanos.py` is the closest sibling: same per-platform `record_failure` at
+the except site). A `with failure_scope(...) as log:` is used here rather than
+the `@fails_loudly` decorator specifically so `log.failed` stays readable inside
+`main`'s own body -- needed to tell a genuinely quiet run (every fetch
+succeeded, nothing found) apart from a run where something failed, which
+`@fails_loudly` alone would hide until after `main` returns. Both forms share
+the same underlying `failure_scope`/`raise_if_any`, so this is not a
+behavioural deviation from the decorator, only a way to read the log before it
+raises."""
 
 from __future__ import annotations
 
 from datetime import UTC, datetime
 
 import pandas as pd
+from core.failures import failure_scope, record_failure
 from core.storage import write_events, write_ts_long
 
 from pipelines.social.client import Post, fetch_polymarket, fetch_reddit, fetch_stocktwits
@@ -52,39 +57,19 @@ POLYMARKET_TAGS: list[str] = ["energy"]
 POLYMARKET_COMMODITY = "energy"
 
 
-class _RunStats:
-    """Local, file-scoped failure tracking -- see this module's docstring on
-    why this is not `core/failures.py`."""
-
-    def __init__(self) -> None:
-        self.attempted = 0
-        self.failed = 0
-
-    def reset(self) -> None:
-        self.attempted = 0
-        self.failed = 0
-
-
-_stats = _RunStats()
-
-
 def _safe_fetch(label: str, fetch: object, *args: object) -> list[Post]:
-    """Any one platform's failure is logged and skipped, never raised -- matches
-    pipelines/macro/pull_macro.py's established per-platform resilience. Every
-    call counts towards `_stats`, whether reached through pull_topic/pull_ticker/
-    pull_polymarket_tag or directly, so `main` can tell a total failure apart
-    from a genuinely quiet run at the end.
+    """Any one platform's failure is logged (via `record_failure`, redacted and
+    recorded against the enclosing `failure_scope`) and skipped, never raised --
+    matches pipelines/macro/pull_macro.py's established per-platform resilience.
 
     Catches OSError, not `requests.exceptions.RequestException`: client.py is
     built on urllib, whose URLError/HTTPError are OSError subclasses, and
     requests' own RequestException also subclasses OSError -- one catch covers
     both without this module needing to import requests at all."""
-    _stats.attempted += 1
     try:
         return list(fetch(*args))  # type: ignore[operator]
     except OSError as exc:
-        _stats.failed += 1
-        print(f"social {label}: FAILED ({type(exc).__name__}) — skipping", flush=True)
+        record_failure(label, exc)
         return []
 
 
@@ -97,7 +82,7 @@ def pull_topic(
     empty -- an empty result for a topic is a real finding (recorded in this
     package's CLAUDE.md), not a bug to paper over with zeros."""
     query = topic["query"]
-    posts = _safe_fetch(f"reddit {query}", fetch_reddit, query)
+    posts = _safe_fetch(f"social reddit {query}", fetch_reddit, query)
     print(f"social topic {topic['slug']}: {len(posts)} posts", flush=True)
 
     rows = aggregate_to_ts_long(posts, subject=topic["slug"], ingested_at=ingested_at)
@@ -112,8 +97,8 @@ def pull_ticker(
     apples-to-apples series against Adanos for the same ticker, platform and
     day."""
     posts = [
-        *_safe_fetch(f"reddit {ticker}", fetch_reddit, ticker),
-        *_safe_fetch(f"stocktwits {ticker}", fetch_stocktwits, ticker),
+        *_safe_fetch(f"social reddit {ticker}", fetch_reddit, ticker),
+        *_safe_fetch(f"social stocktwits {ticker}", fetch_stocktwits, ticker),
     ]
     print(f"social ticker {ticker}: {len(posts)} posts", flush=True)
 
@@ -128,7 +113,7 @@ def pull_polymarket_tag(
     """Polymarket tag-level attention (decision 1 above) -- the subject is the
     tag slug itself (`social.polymarket.<tag_slug>.*`), not any single topic or
     ticker, because Polymarket cannot be filtered any more finely than that."""
-    posts = _safe_fetch(f"polymarket {tag_slug}", fetch_polymarket, tag_slug)
+    posts = _safe_fetch(f"social polymarket {tag_slug}", fetch_polymarket, tag_slug)
     print(f"social polymarket tag {tag_slug}: {len(posts)} posts", flush=True)
 
     rows = aggregate_to_ts_long(posts, subject=tag_slug, ingested_at=ingested_at)
@@ -140,70 +125,60 @@ def main() -> None:
     """Decision 2: this must not swallow a total failure and exit 0. Reddit's
     confirmed ~1-request/60s unauthenticated pace (see this package's
     CLAUDE.md) makes a run that legitimately fetches zero posts across every
-    subject a real, not theoretical, possibility, so a total failure and a
-    genuinely quiet run must be told apart, not conflated: only the former (or
-    a partial failure that still leaves nothing written) raises."""
-    _stats.reset()
-    ingested_at = pd.Timestamp(datetime.now(UTC))
+    subject a real, not theoretical, possibility, so a genuinely quiet run
+    (every fetch succeeded, nothing found) must be told apart from a run where
+    something failed: only the latter raises, via `failure_scope`'s own
+    `PartialFailureError` on exit -- matching every other adopted pipeline, any
+    single recorded failure fails the whole run, even one that still wrote some
+    real data from its other, successful fetches."""
+    with failure_scope("social.pull_social") as log:
+        ingested_at = pd.Timestamp(datetime.now(UTC))
 
-    row_frames: list[pd.DataFrame] = []
-    event_frames: list[pd.DataFrame] = []
-    for topic in TOPIC_QUERIES:
-        rows, events = pull_topic(topic, ingested_at)
-        row_frames.append(rows)
-        event_frames.append(events)
-    for ticker in TICKER_QUERIES:
-        rows, events = pull_ticker(ticker, ingested_at)
-        row_frames.append(rows)
-        event_frames.append(events)
-    for tag_slug in POLYMARKET_TAGS:
-        rows, events = pull_polymarket_tag(tag_slug, ingested_at)
-        row_frames.append(rows)
-        event_frames.append(events)
+        row_frames: list[pd.DataFrame] = []
+        event_frames: list[pd.DataFrame] = []
+        for topic in TOPIC_QUERIES:
+            rows, events = pull_topic(topic, ingested_at)
+            row_frames.append(rows)
+            event_frames.append(events)
+        for ticker in TICKER_QUERIES:
+            rows, events = pull_ticker(ticker, ingested_at)
+            row_frames.append(rows)
+            event_frames.append(events)
+        for tag_slug in POLYMARKET_TAGS:
+            rows, events = pull_polymarket_tag(tag_slug, ingested_at)
+            row_frames.append(rows)
+            event_frames.append(events)
 
-    rows_all = [f for f in row_frames if not f.empty]
-    combined = pd.concat(rows_all, ignore_index=True) if rows_all else pd.DataFrame()
-    if not combined.empty:
-        for source, group in combined.groupby("source"):
-            write_ts_long(group.reset_index(drop=True), source=str(source))
-        print(f"wrote {len(combined)} social rows", flush=True)
+        rows_all = [f for f in row_frames if not f.empty]
+        combined = pd.concat(rows_all, ignore_index=True) if rows_all else pd.DataFrame()
+        if not combined.empty:
+            for source, group in combined.groupby("source"):
+                write_ts_long(group.reset_index(drop=True), source=str(source))
+            print(f"wrote {len(combined)} social rows", flush=True)
 
-    events_all = [f for f in event_frames if not f.empty]
-    combined_events = pd.concat(events_all, ignore_index=True) if events_all else pd.DataFrame()
-    if not combined_events.empty:
-        # Drop within-run duplicates first: the same post can match several
-        # queries and subreddits, and shares an event_id by construction.
-        combined_events = combined_events.drop_duplicates(subset="event_id", keep="first")
-        for source, group in combined_events.groupby("source"):
-            write_events(group.reset_index(drop=True), source=str(source))
-        print(f"wrote {len(combined_events)} social events", flush=True)
-
-    wrote_nothing = combined.empty and combined_events.empty
-    if _stats.attempted == 0:
-        # TOPIC_QUERIES/TICKER_QUERIES/POLYMARKET_TAGS are all non-empty in
-        # normal operation, but if every one were emptied there is nothing to
-        # judge either way.
-        return
-    if _stats.failed == _stats.attempted:
-        raise RuntimeError(
-            f"social pull: all {_stats.attempted} fetches failed -- see logs above. "
-            "TODO: migrate to core.failures once that module lands."
+        events_all = [f for f in event_frames if not f.empty]
+        combined_events = (
+            pd.concat(events_all, ignore_index=True) if events_all else pd.DataFrame()
         )
-    if wrote_nothing and _stats.failed > 0:
-        raise RuntimeError(
-            f"social pull: {_stats.failed}/{_stats.attempted} fetches failed and "
-            "nothing was written -- see logs above. TODO: migrate to "
-            "core.failures once that module lands."
-        )
-    if wrote_nothing:
-        # Genuinely quiet: every fetch succeeded but found nothing. This must
-        # never look identical to "wrote N social rows" above, without raising
-        # for an outcome that was not a failure.
-        print(
-            f"social pull: 0 rows and 0 events across {_stats.attempted} fetches, "
-            "0 failures -- genuinely nothing found this run",
-            flush=True,
-        )
+        if not combined_events.empty:
+            # Drop within-run duplicates first: the same post can match several
+            # queries and subreddits, and shares an event_id by construction.
+            combined_events = combined_events.drop_duplicates(subset="event_id", keep="first")
+            for source, group in combined_events.groupby("source"):
+                write_events(group.reset_index(drop=True), source=str(source))
+            print(f"wrote {len(combined_events)} social events", flush=True)
+
+        if combined.empty and combined_events.empty and not log.failed:
+            # Genuinely quiet: every fetch succeeded but found nothing. This
+            # must never look identical to "wrote N social rows" above, without
+            # raising for an outcome that was not a failure -- failure_scope
+            # only raises when `log.failed` is non-empty, so this branch is
+            # reached precisely when nothing failed and nothing was written.
+            print(
+                "social pull: 0 rows and 0 events, 0 failures -- genuinely "
+                "nothing found this run",
+                flush=True,
+            )
 
 
 if __name__ == "__main__":
