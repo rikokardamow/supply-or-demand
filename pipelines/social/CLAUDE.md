@@ -19,6 +19,45 @@ i.e. the quota was already exhausted by that single call. A second identical req
 made 2 seconds later returned **HTTP 429**. Task 3's pull design must space Reddit
 calls at least ~60 seconds apart (or honour `X-Ratelimit-Reset`), not batch them.
 
+## Task 2: site-wide search probe (Branch B taken — subreddit search kept)
+
+Task 2's brief required probing the site-wide feed
+(`https://www.reddit.com/search.rss?q=Henry+Hub&sort=new&limit=25`, no subreddit in
+the path) before choosing between one site-wide request per subject and the
+brief's per-subreddit design. **Confirmed live: site-wide search does NOT filter by
+the query at all — it was rejected, not merely "worked but was noisy".** Two
+separate probes established this:
+
+1. The exact brief URL above returned HTTP 200 with only **3 entries**, all of them
+   subreddit-description matches unrelated to Henry Hub or energy (`LKRSH:
+   Lesser-known Readerly Subreddit HUB`, `Free the Worker, Enslave the Robot` for
+   r/Technostism, `MxR Reddit`) — a fuzzy community-name match, not a post search,
+   and none carried a `published` element at all (only `updated`).
+2. Adding `type=link` to force a post search
+   (`?q=Henry+Hub&type=link&sort=new&limit=25`) returned **25 entries**, but every
+   one was a generic recent post from an unrelated subreddit (r/CitiesSkylines2,
+   r/blues, r/footballmanagergames, r/coolgithubprojects, …) — i.e. `sort=new`
+   returned the sitewide new-post firehose with the `q` parameter silently
+   ignored, the same "silently-ignored query parameter" failure mode already
+   documented above for Polymarket's `q`/`search` params.
+
+By contrast, the per-subreddit endpoint this session had already probed
+(`/r/energy/search.rss?q=Henry+Hub&restrict_sr=on&sort=new`, see above) returned
+genuinely on-topic posts (e.g. "Henry Hub natural gas prices since 1997"). **Decision:
+subreddit search is kept** (`fetch_reddit(query, subreddits=..., limit=...)` in
+`pipelines/social/client.py`), and `SUBREDDITS` was added to `queries.py` as
+`["energy", "oil"]` — two subreddits, not the brief's five, since every extra
+subreddit multiplies wall-clock time directly at the confirmed ~60s-per-request
+pace. This also means the two probes above cost one real Reddit request each
+(2 total), on top of the two used to record `tests/test_social_client.py`'s
+cassettes (4 live Reddit requests in total for Task 2, no 429s hit on any of them
+except the mid-probe 429 documented next).
+
+One of the two site-wide probes above (`type=link`) hit **HTTP 429** on a third,
+follow-up attempt made too soon after the second probe — `X-Ratelimit-Reset: 20`
+was honoured (waited it out) before the successful retry captured in point 2
+above; this 429 was not committed to any cassette.
+
 **Polymarket** (`https://gamma-api.polymarket.com/events?limit=5&active=true`, no
 auth): bare **JSON array** of event objects (not wrapped). Real field names: `id`
 (**string**, e.g. `"2890"` — not an int), `title`, `slug` (used to build
@@ -145,6 +184,6 @@ WMB).
 Note the frozen twelve include index/ETF and non-US tickers (USO, XLE, BP, CCJ,
 SU, PBR, CNQ) alongside the US majors — this reflects Reddit buzz on 2026-09-03
 as actually observed, not a curated "energy majors" shortlist. `SUBREDDITS` is
-deliberately not defined in `queries.py`: Reddit's fetch strategy (subreddit list
-vs. one site-wide request per subject) is Task 2's decision, gated on whether
-site-wide search works within the ~60-second rate limit recorded above.
+now defined in `queries.py` as `["energy", "oil"]`: Task 2 probed site-wide
+search live, found it does not filter by query at all, and kept per-subreddit
+search instead — see "Task 2: site-wide search probe" above for the evidence.
