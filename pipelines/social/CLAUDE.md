@@ -298,19 +298,19 @@ confirmed-live gotcha" above) — labelled as derived, not observed.
 **Reddit** (the only platform with a real per-request rate limit): 12 tickers
 (`TICKER_QUERIES`) + 17 topics (`TOPIC_QUERIES`) = 29 subjects, each fetched
 via `fetch_reddit`, which itself loops over `SUBREDDITS` (`["energy", "oil"]`,
-2 subreddits) — **29 × 2 = 58 Reddit RSS requests per weekly run.**
+2 subreddits) — **29 × 2 = 58 base Reddit RSS requests per weekly run.**
 `fetch_reddit`'s own inter-subreddit pacing only sleeps *within* one call (the
 `pace_seconds` local resets on every call), so nothing in this pipeline
 explicitly paces *across* the 29 separate `fetch_reddit` calls pull_social.py
-makes. In practice this does not matter: any request fired inside the prior
-request's ~60s window gets HTTP 429, and `client.py`'s own single
-backoff-and-retry (see "Critical, confirmed-live gotcha" above) then sleeps
-out the real `X-Ratelimit-Reset` before retrying — so the run still ends up
-paced at essentially one request per ~60 seconds overall, just reactively
-(via 429+retry) rather than proactively between calls. **58 requests × ~60s
-= ~3,480 seconds ≈ 58 minutes ≈ just under an hour of wall clock, honestly,
-per weekly run.** This is the real cost of Set A + Set B on Reddit; it is not
-rounded away.
+makes. In practice this does not matter for correctness, but it does cost
+real requests: the first request of every subject after the first fires
+inside the previous subject's ~60s window and gets HTTP 429, and `client.py`'s
+own single backoff-and-retry (see "Critical, confirmed-live gotcha" above)
+then sleeps out the real `X-Ratelimit-Reset` before retrying — so each of the
+29 subject boundaries costs one extra request on top of the 58 base ones.
+**58 base + 29 retries = ~87 Reddit RSS requests per weekly run. 87 requests ×
+~60s ≈ 5,220 seconds ≈ 87 minutes, honestly, per weekly run.** This is the
+real cost of Set A + Set B on Reddit; it is not rounded away.
 
 **StockTwits**: 12 requests (one per ticker in `TICKER_QUERIES`, Set A only —
 Set B topics never touch StockTwits). No rate-limit headers were ever
@@ -320,8 +320,8 @@ negligible wall-clock time.
 **Polymarket**: 1 request (`POLYMARKET_TAGS = ["energy"]`, Task 6 decision 1).
 No rate-limit headers were observed live on this platform either.
 
-**Total: 71 HTTP requests per weekly run (58 Reddit + 12 StockTwits + 1
-Polymarket), dominated end-to-end by Reddit's pacing at ~58 minutes.** Widening
+**Total: ~100 HTTP requests per weekly run (~87 Reddit + 12 StockTwits + 1
+Polymarket), dominated end-to-end by Reddit's pacing at ~87 minutes.** Widening
 `TOPIC_QUERIES`, `TICKER_QUERIES` or `SUBREDDITS` multiplies the Reddit
 component directly and should be weighed against this, the same way Task 2
 weighed the brief's five subreddits down to two.
@@ -332,7 +332,7 @@ the same way every other adopted pipeline does — `pipelines/adanos/pull_adanos
 is the closest sibling. Any recorded failure raises `PartialFailureError` once,
 at the end of the run, even if other fetches succeeded and wrote real data —
 that is `core.failures`' own established semantics, not something this
-pipeline weakens. A run at this ~58-minute pace that hits nothing but empty
+pipeline weakens. A run at this ~87-minute pace that hits nothing but empty
 RSS results — no errors at all — is a real, not theoretical, outcome and is
 logged distinctly (`log.failed` is empty, so `failure_scope` does not raise)
 rather than silently matching the "wrote N rows" success message.

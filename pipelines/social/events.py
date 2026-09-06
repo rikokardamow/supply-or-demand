@@ -12,11 +12,16 @@ import hashlib
 import pandas as pd
 from core.schemas import EVENTS_SCHEMA
 
-from pipelines.news.tagging import extract_geo, extract_severity, extract_tags
+from pipelines.news.tagging import extract_geo, extract_tags
 from pipelines.social.client import Post
 
-# Posts are chatter, not events with intensity. Severity is derived from the text
-# where the news tagger recognises something, and floors at 1 otherwise.
+# Spec 29: severity=1 fixed for every post -- these are social posts, not events with
+# real-world intensity, and this table is shared with pipelines/news/events.py. Reusing
+# the news tagger's substring matcher for severity here (as an earlier version of this
+# module did) let a headline like "XOM is on fire today" score severity 3 with tag
+# "outage" -- indistinguishable, on apps/dashboard/components/event_overlay.py's
+# severity>=2 marker filter and on apps/dashboard/pages/09_events.py's unfiltered
+# event list, from a confirmed refinery explosion. Never derive this from text again.
 _MIN_SEVERITY = 1
 
 
@@ -48,7 +53,7 @@ def posts_to_events(posts: list[Post], commodity: str) -> pd.DataFrame:
             "tags": [sorted({p["query"], *extract_tags(p["title"])}) for p in posts],
             "geo": [extract_geo(title) for title in titles],
             "commodity": commodity,
-            "severity": [max(extract_severity(title), _MIN_SEVERITY) for title in titles],
+            "severity": _MIN_SEVERITY,
             "language": "en",
         }
     )

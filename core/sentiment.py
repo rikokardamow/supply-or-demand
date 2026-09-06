@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import numpy as np
 import pandas as pd
 
 from core.storage import read_ts_long
@@ -75,13 +74,29 @@ def overlap(ticker: str, platform: str = "reddit") -> Overlap:
     )
 
 
-def agreement_rate(frame: pd.DataFrame) -> float:
-    """Share of overlapping days where the two sources agree on the sign of
-    sentiment. 0.0 for an empty frame -- no days, no agreement to report."""
+def disagrees_on_sign(adanos: pd.Series, social: pd.Series) -> pd.Series:
+    """The one definition of "disagree on sign" -- both `agreement_rate` below and
+    apps/dashboard/pages/10_macro.py's deviation-bar colouring call this rather than
+    each re-deriving their own rule, which previously let the two silently diverge
+    (`np.sign(a) == np.sign(b)` here vs. `adanos * social < 0` on the page).
+
+    Exact 0.0 is common, not an edge case: VADER returns exactly 0.0 for any title
+    with no lexicon hit, and score.py returns 0.0 for empty text. Treating a 0.0 as
+    "a sign" would flag a neutral, no-signal reading as disagreeing with a genuine
+    nonzero value on the other side -- so 0.0 on either side is never a disagreement.
+    Only a strictly negative value against a strictly positive one counts, which is
+    exactly `adanos * social < 0`."""
+    return (adanos.astype(float) * social.astype(float)) < 0
+
+
+def agreement_rate(frame: pd.DataFrame) -> float | None:
+    """Share of overlapping days where the two sources do not disagree on sign (see
+    `disagrees_on_sign`). `None` for an empty frame -- no days, nothing to report,
+    and 0.0 would read as "total disagreement" rather than "no data"."""
     if frame.empty:
-        return 0.0
-    agree = np.sign(frame["adanos"].astype(float)) == np.sign(frame["social"].astype(float))
-    return float(agree.mean())
+        return None
+    disagree = disagrees_on_sign(frame["adanos"], frame["social"])
+    return float((~disagree).mean())
 
 
 def rolling_correlation(frame: pd.DataFrame, window: int = DEFAULT_CORRELATION_WINDOW) -> pd.Series:

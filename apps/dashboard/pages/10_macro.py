@@ -19,7 +19,14 @@ import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
 from core.macro import deflate, index_to, to_currency
-from core.sentiment import DEFAULT_CORRELATION_WINDOW, agreement_rate, overlap, rolling_correlation
+from core.sentiment import (
+    DEFAULT_CORRELATION_WINDOW,
+    Overlap,
+    agreement_rate,
+    disagrees_on_sign,
+    overlap,
+    rolling_correlation,
+)
 from core.storage import read_ts_long
 from core.theme import (
     GREY,
@@ -292,12 +299,13 @@ def _adanos_sentiment_section() -> None:
     )
 
 
-def _social_comparison_section() -> None:
+def _social_comparison_section(ticker: str, result: Overlap) -> None:
     """Reddit only -- Set A (TICKER_QUERIES) exists solely to give an
     apples-to-apples overlap against Adanos for the same ticker/platform/day
-    (see pipelines/social/queries.py)."""
-    ticker = st.selectbox("Ticker", options=TICKER_QUERIES, key="social_ticker")
-    result = overlap(ticker, platform="reddit")
+    (see pipelines/social/queries.py). `ticker`/`result` come from
+    `_social_sentiment_section`, which reads the selectbox and calls `overlap()`
+    once so this and `_social_deviation_section` below don't each run their own
+    identical, uncached DuckDB scan for the same ticker."""
     if result.frame.empty:
         st.info(
             "No overlapping Adanos/self-hosted days yet — run "
@@ -324,13 +332,18 @@ def _social_comparison_section() -> None:
             line={"color": LIGHT_BLUE, "width": 2},
         )
     )
+    rate = agreement_rate(result.frame)
+    # result.frame is non-empty here (checked above), so overlap_days > 0 and rate is
+    # never actually None -- the "—" fallback exists so this reads correctly even if
+    # that invariant is ever loosened, rather than crashing on a None format spec.
+    rate_text = f"{rate:.0%} sign agreement" if rate is not None else "— sign agreement"
     fig.add_annotation(
         x=result.frame["ts"].iloc[-1],
         y=result.frame["social"].iloc[-1],
         text=(
             f"{result.overlap_days} overlapping days · "
             f"{result.dropped_days} dropped · "
-            f"{agreement_rate(result.frame):.0%} sign agreement"
+            f"{rate_text}"
         ),
         showarrow=True,
         xanchor="right",
@@ -349,16 +362,14 @@ def _social_comparison_section() -> None:
             )
 
 
-def _social_deviation_section() -> None:
-    """Keyed off the same `social_ticker` selection as the comparison chart
-    above -- Streamlit reruns top-to-bottom, so session_state already carries
-    the choice by the time this section runs."""
-    ticker = st.session_state.get("social_ticker", TICKER_QUERIES[0])
-    result = overlap(ticker, platform="reddit")
+def _social_deviation_section(ticker: str, result: Overlap) -> None:
+    """`ticker`/`result` come from `_social_sentiment_section` -- see
+    `_social_comparison_section`'s docstring for why this and that section share a
+    single `overlap()` call rather than each computing their own."""
     if result.frame.empty:
         return
 
-    disagree = result.frame["adanos"] * result.frame["social"] < 0
+    disagree = disagrees_on_sign(result.frame["adanos"], result.frame["social"])
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
@@ -385,12 +396,14 @@ def _social_deviation_section() -> None:
             f"{latest_corr.iloc[-1]:.2f}."
         )
 
-    with card("Deviation"):
+    with card(f"{ticker} deviation"):
         st.plotly_chart(fig)
         st.caption(
             f"Computed over {result.overlap_days} overlapping days "
             f"({result.dropped_days} dropped, where only one source reported that "
-            "day). Red bars mark days where the two sources disagree on sign."
+            "day). Red bars mark days where the two sources land on strictly opposite "
+            "sides of zero; an exact 0.0 on either side is never treated as "
+            "disagreement."
         )
         st.caption(corr_caption)
         if result.overlap_days < 10:
@@ -412,13 +425,38 @@ def _social_topic_attention_section() -> None:
 
     df = df.copy()
     df["topic"] = df["series_id"].str.split(".").str[2]
+    # aggregate_to_ts_long deliberately writes no row for a quiet topic (missing, not
+    # a fabricated zero) -- so "each topic's most recent row" can land on genuinely
+    # different dates across topics. Rather than call that "Latest" with no date shown
+    # (which reads as one point in time), each bar is labelled with its own date and
+    # the caption states the range spanned.
     latest = df.sort_values("ts").groupby("topic", as_index=False).last()
     latest = latest.sort_values("value", ascending=False)
+    bar_dates = pd.to_datetime(latest["ts"]).dt.strftime("%Y-%m-%d")
 
-    fig = go.Figure(go.Bar(x=latest["topic"], y=latest["value"], marker={"color": NAVY}))
-    fig.update_layout(title="Latest post counts by topic", yaxis_title="Posts")
+    fig = go.Figure(
+        go.Bar(
+            x=latest["topic"],
+            y=latest["value"],
+            marker={"color": NAVY},
+            text=bar_dates,
+            textposition="outside",
+        )
+    )
+    fig.update_layout(title="Post count by topic (most recent pull per topic)", yaxis_title="Posts")
     with card("Topic attention"):
         st.plotly_chart(fig)
+        min_date, max_date = bar_dates.min(), bar_dates.max()
+        if min_date == max_date:
+            date_caption = f"All bars are from the {max_date} pull."
+        else:
+            date_caption = (
+                f"Bars span {min_date} to {max_date}, labelled individually above — "
+                "each shows that topic's own most recent pull, not necessarily the "
+                "same run, since a quiet topic writes no row at all rather than a "
+                "zero."
+            )
+        st.caption(date_caption)
         st.caption(
             "These topics have no Adanos counterpart — a ticker basket cannot "
             "express them. Attention only, not sentiment."
@@ -449,8 +487,13 @@ def _social_polymarket_attention_section() -> None:
 
 
 def _social_sentiment_section() -> None:
-    _social_comparison_section()
-    _social_deviation_section()
+    # Selectbox and overlap() are read/called exactly once here and passed down to
+    # both sections below, rather than each section reading session_state and
+    # re-running the same uncached DuckDB scan for itself.
+    ticker = st.selectbox("Ticker", options=TICKER_QUERIES, key="social_ticker")
+    result = overlap(ticker, platform="reddit")
+    _social_comparison_section(ticker, result)
+    _social_deviation_section(ticker, result)
     _social_topic_attention_section()
     _social_polymarket_attention_section()
     kardamow_take(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
-from core.sentiment import agreement_rate, overlap, rolling_correlation
+from core.sentiment import agreement_rate, disagrees_on_sign, overlap, rolling_correlation
 
 
 def _lake_rows() -> pd.DataFrame:
@@ -96,7 +96,35 @@ def test_no_overlap_returns_an_empty_frame_not_an_error(
 
     assert result.frame.empty
     assert result.overlap_days == 0
-    assert agreement_rate(result.frame) == 0.0
+    # None, not a fabricated 0.0 -- "no days" is not the same finding as "total
+    # disagreement", and core/sentiment.py's governing rule is never fabricate a zero.
+    assert agreement_rate(result.frame) is None
+
+
+def test_exact_zero_on_either_side_is_never_a_disagreement() -> None:
+    # VADER returns exactly 0.0 for a title with no lexicon hit, and score.py returns
+    # 0.0 for empty text -- both are common, not edge cases. A 0.0 has no sign to
+    # disagree with, whichever side it's on, and both-zero obviously agrees too.
+    adanos = pd.Series([0.0, 0.4, 0.0, -0.3])
+    social = pd.Series([0.5, 0.0, 0.0, 0.0])
+    assert list(disagrees_on_sign(adanos, social)) == [False, False, False, False]
+
+
+def test_disagrees_on_sign_is_true_only_for_strictly_opposite_signed_nonzero_pairs() -> None:
+    adanos = pd.Series([0.4, -0.2, 0.5])
+    social = pd.Series([-0.1, 0.3, 0.2])
+    assert list(disagrees_on_sign(adanos, social)) == [True, True, False]
+
+
+def test_agreement_rate_and_disagrees_on_sign_cannot_diverge() -> None:
+    # Pins the relationship the two fixes above establish: agreement_rate is exactly
+    # "the share of days that do not disagree on sign" -- if a future edit changes one
+    # rule without the other, this fails.
+    frame = pd.DataFrame(
+        {"adanos": [0.4, -0.2, 0.5, 0.0, -0.1], "social": [0.1, 0.3, -0.2, 0.6, 0.0]}
+    )
+    expected = float((~disagrees_on_sign(frame["adanos"], frame["social"])).mean())
+    assert agreement_rate(frame) == pytest.approx(expected)
 
 
 def test_rolling_correlation_returns_a_series_of_the_right_length() -> None:

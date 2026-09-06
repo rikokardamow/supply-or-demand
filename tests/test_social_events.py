@@ -38,6 +38,23 @@ def test_empty_posts_return_a_correctly_typed_empty_frame() -> None:
     validate_events(events)
 
 
+def test_severity_is_always_fixed_at_1_never_derived_from_text() -> None:
+    """Spec 29: `severity=1` fixed, deliberately, because these are posts, not events
+    with intensity. A title like this one would score severity 3 (tag "outage") if
+    posts_to_events ever went back to reusing pipelines/news/tagging.py's
+    extract_severity -- and since Set B posts share the `events` table and carry a
+    real `commodity`, that severity would render as a marker visually identical to a
+    confirmed refinery explosion on apps/dashboard/components/event_overlay.py's
+    severity>=2 filter, and would show up unfiltered on
+    apps/dashboard/pages/09_events.py too. This test exists to fail loudly the moment
+    that regression is reintroduced."""
+    events = posts_to_events(
+        [_post("XOM is on fire today", "https://reddit.com/r/energy/comments/fire")],
+        commodity="crude",
+    )
+    assert events.iloc[0]["severity"] == 1
+
+
 def test_mixed_aware_and_naive_post_timestamps_both_normalise_to_tz_naive() -> None:
     """Reddit's RSS timestamps are tz-aware; Polymarket's startDate/createdAt and
     StockTwits' created_at may parse tz-naive. A frame built from a mix of sources
