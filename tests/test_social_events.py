@@ -38,19 +38,27 @@ def test_empty_posts_return_a_correctly_typed_empty_frame() -> None:
     validate_events(events)
 
 
-def test_a_naive_post_timestamp_passes_through_unchanged_rather_than_erroring() -> None:
-    """Polymarket's startDate/createdAt and StockTwits' created_at may parse to an
-    already tz-naive pd.Timestamp, unlike Reddit's tz-aware RSS timestamps.
-    pd.Timestamp.tz_localize(None) on an already-naive timestamp raises
-    `TypeError: Already tz-naive` -- posts_to_events must not do that
-    unconditionally."""
-    naive_ts = pd.Timestamp("2026-09-01T10:00:00")
+def test_mixed_aware_and_naive_post_timestamps_both_normalise_to_tz_naive() -> None:
+    """Reddit's RSS timestamps are tz-aware; Polymarket's startDate/createdAt and
+    StockTwits' created_at may parse tz-naive. A frame built from a mix of sources
+    must come out with a single, consistently tz-naive ts column, or the Parquet
+    write downstream would see mixed dtypes across rows."""
+    aware_ts = pd.Timestamp("2026-09-01T10:00:00Z")
+    naive_ts = pd.Timestamp("2026-09-01T11:00:00")
+    assert aware_ts.tzinfo is not None
     assert naive_ts.tzinfo is None
 
-    url = "https://polymarket.com/event/some-slug"
     events = posts_to_events(
-        [_post("Some market event", url, ts=naive_ts)], commodity="crude"
+        [
+            _post("Reddit post", "https://reddit.com/r/energy/comments/aware", ts=aware_ts),
+            _post("Polymarket event", "https://polymarket.com/event/naive", ts=naive_ts),
+        ],
+        commodity="crude",
     )
 
     validate_events(events)
-    assert events.iloc[0]["ts"] == naive_ts
+    assert events["ts"].dt.tz is None
+    assert list(events["ts"]) == [
+        pd.Timestamp("2026-09-01T10:00:00"),
+        pd.Timestamp("2026-09-01T11:00:00"),
+    ]
