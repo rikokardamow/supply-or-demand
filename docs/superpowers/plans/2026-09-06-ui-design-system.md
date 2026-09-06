@@ -1093,7 +1093,20 @@ Brent. With only one benchmark drawn, the imported series reads as persistently
 mispriced when it is simply following the other one. Both references are what make the
 composite/domestic/imported split legible. (From the peer session, which built it.)
 
-One merge conflict to expect: `05_us_gas_power.py`'s `from core.theme import ...` line
+**Findings from the peer's Spec 30 review, split by who owns them.** Their review found
+four things in these two files. The split follows the real seam: they own *what the
+chart shows* (they wrote the spec and know the series), this plan owns *how it looks*.
+
+Theirs to land before Task 10, in the old `card()` idiom:
+
+- `05_us_gas_power.py:268` — `GENERATOR_FUEL[0]` picks the cost series by list index. Reordering that list silently plots consumption in thousand Mcf against a `$/MMBtu` axis beside Henry Hub; nothing raises. Fixed by importing their new `GENERATOR_FUEL_COST_KEY`. Ships atomically with the constant, so there is never a window where the constant exists unused.
+- `05_us_gas_power.py:259-271` — the page re-derives the minted series ID, hardcoding `_GENERATOR_FUEL_FREQ_CODE = "M"`, duplicating `client.py`. If the route's frequency changes the page asks for `…​.M`, the client wrote `…​.Q`, and the chart says "no data" over a full lake. Fixed by calling their exported `generator_fuel_series_id()`.
+- Two spec gaps: the delivered-cost chart never computes or annotates the spread (spec line 124), and `_retail_margin_section` shows 12 pump-price levels with no wholesale leg and therefore no margin, despite its name and its own caption (spec lines 126-127). Composition, not styling — they hold the spec.
+
+Mine, in Task 9:
+
+- After they land the above, migrate their annotation to the house treatment: direct annotation near the last point, using the opaque-ground/hairline-border styling from Task 5, not an ad-hoc box.
+- `20_cracks.py:128` — `_PRICE_PALETTE` cycles four colours over 12 retail and 8 RAC series, so `R0000____3` (the US composite headline) renders identically to `R0040____3` (PADD4). **The fix is not more colours.** Cycling a categorical palette is the failure; a 9th series never gets a generated hue. Emphasise the composite (full-weight navy, direct-labelled) and drop the rest to a muted common grey, or facet into small multiples. Decide when the section is migrated and the real chart is in front of you.
 was expanded from single-line to parenthesised multi-line to add `GREY, LIGHT_BLUE,
 NAVY`. Nothing was removed. This plan rewrites that same import line, so resolve by
 keeping their colour names and switching the `card` import to `components.section`.
