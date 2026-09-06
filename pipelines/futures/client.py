@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
+from core.failures import record_failure
 from core.settings import settings
 
 ROOTS = ("cl", "rb", "ho", "ng", "lco", "g", "tfm")
@@ -184,7 +185,7 @@ class IBKRClient:
                                 }
                             )
                 except Exception as exc:
-                    print(f"{root} {contract}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+                    record_failure(f"{root} {contract}", exc)
         finally:
             ib.disconnect()  # type: ignore[attr-defined]
 

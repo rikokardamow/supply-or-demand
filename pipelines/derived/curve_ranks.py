@@ -38,6 +38,7 @@ from datetime import datetime
 
 import pandas as pd
 from core.curve import REGIME_CODES, back_adjust_from_ranks, convexity, curve_regime
+from core.failures import fails_loudly, record_failure
 from core.storage import read_ts_long, write_ts_long
 
 RANK_ROOTS = ("cl", "rb", "ho", "hu")
@@ -129,6 +130,7 @@ def derived_rows_for_root(
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
+@fails_loudly("derived.curve_ranks")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now())
     long_df = read_rank_legs()
@@ -151,7 +153,7 @@ def main() -> None:
                 flush=True,
             )
         except Exception as exc:
-            print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{root}", exc)
 
     print(f"derived.curve_ranks: {total} total rows written", flush=True)
 

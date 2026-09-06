@@ -18,6 +18,7 @@ from typing import Any
 
 import pandas as pd
 import requests
+from core.failures import raise_sanitised
 from core.settings import settings
 
 BASE_URL = "https://content.guardianapis.com/search"
@@ -80,9 +81,12 @@ class GuardianClient:
                 response.raise_for_status()
                 result: dict[str, Any] = response.json()
                 return result
-            except (requests.exceptions.RequestException, ValueError):
+            except (requests.exceptions.RequestException, ValueError) as exc:
                 if last_attempt:
-                    raise
+                    # `api-key` is a query parameter, so a raw HTTPError carries the real
+                    # key in its message (golden rule 1). Retries still see the original
+                    # exception above -- only what escapes this loop is sanitised.
+                    raise_sanitised(exc)
                 time.sleep(min(backoff, BACKOFF_CAP_SECONDS))
                 backoff *= 2
 

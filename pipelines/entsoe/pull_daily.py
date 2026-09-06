@@ -21,6 +21,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly
 from core.storage import write_flows, write_ts_long
 
 from pipelines.entsoe.client import ENTSOEClient
@@ -40,6 +41,7 @@ PRICE_END_OFFSET_DAYS = 2
 ACTUALS_LOOKBACK_DAYS = 1
 
 
+@fails_loudly("entsoe.pull_daily")
 def main() -> None:
     client = ENTSOEClient()
     today = date.today()

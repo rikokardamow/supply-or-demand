@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.fundamentals import cot_percentiles, inventory_deviation
 from core.seasonal import REFERENCE_YEAR
 from core.storage import read_ts_long, write_ts_long
@@ -88,6 +89,7 @@ def _pull_cot(root: str, ingested_at: pd.Timestamp) -> int:
     )
 
 
+@fails_loudly("derived.fundamentals")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
     total = 0
@@ -95,13 +97,13 @@ def main() -> None:
     try:
         total += _pull_inventory_deviation(ingested_at)
     except Exception as exc:
-        print(f"inv.dev_z.uscrude: FAILED ({type(exc).__name__}: {exc})", flush=True)
+        record_failure("inv.dev_z.uscrude", exc)
 
     for root in CONTRACT_CODES:
         try:
             total += _pull_cot(root, ingested_at)
         except Exception as exc:
-            print(f"cot.{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"cot.{root}", exc)
 
     print(
         "spare_cap.regime: skipped -- no real EIA STEO/IEA OMR spare-capacity data yet "

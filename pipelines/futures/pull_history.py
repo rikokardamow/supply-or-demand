@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import date, datetime
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 
 from pipelines.futures.client import ROOTS, get_client
 from pipelines.futures.pull import pull_root
@@ -15,6 +16,7 @@ from pipelines.futures.pull import pull_root
 HISTORY_START = date(1993, 1, 1)
 
 
+@fails_loudly("futures.pull_history")
 def main() -> None:
     client = get_client()
     ingested_at = pd.Timestamp(datetime.now())
@@ -27,7 +29,7 @@ def main() -> None:
         try:
             total_rows += pull_root(client, root, HISTORY_START, today, ingested_at)
         except Exception as exc:
-            print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{root}", exc)
 
     print(f"pull_history: {total_rows} total rows written", flush=True)
 

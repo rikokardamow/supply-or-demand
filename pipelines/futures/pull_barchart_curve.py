@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.futures.barchart_curve import (
@@ -61,6 +62,7 @@ def pull_file(path: Path) -> int:
     return len(rows)
 
 
+@fails_loudly("futures.pull_barchart_curve")
 def main() -> None:
     paths = [Path(a) for a in sys.argv[1:]] or sorted(BARCHART_DIR.glob("*.csv"))
     if not paths:
@@ -72,7 +74,7 @@ def main() -> None:
         try:
             total += pull_file(path)
         except (ValueError, KeyError, OSError) as exc:
-            print(f"{path.name}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{path.name}", exc)
 
     print(f"barchart: wrote {total} rows", flush=True)
 

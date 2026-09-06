@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import date
 
 import pandas as pd
+from core.failures import record_failure
 from core.storage import write_ts_long
 
 from pipelines.cftc.client import CONTRACT_CODES, CFTCClient
@@ -42,5 +43,5 @@ def pull_all(start: date | None, end: date | None, ingested_at: pd.Timestamp) ->
         try:
             total += pull_root(client, root, start, end, ingested_at)
         except Exception as exc:
-            print(f"{root}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{root}", exc)
     return total

@@ -20,6 +20,7 @@ from datetime import datetime
 
 import pandas as pd
 from core.cracks import Leg, crack_211, crack_321, crack_ho, crack_rbob
+from core.failures import fails_loudly, record_failure
 from core.storage import read_ts_long, write_ts_long
 
 TENOR = "spot"
@@ -208,6 +209,7 @@ def read_legs() -> pd.DataFrame:
     return long_df.pivot_table(index="ts", columns="series_id", values="value")
 
 
+@fails_loudly("derived.cracks")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now())
     panel = read_legs()
@@ -227,7 +229,7 @@ def main() -> None:
             total += len(rows)
             print(f"{name}: wrote {len(rows)} rows", flush=True)
         except Exception as exc:
-            print(f"{name}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+            record_failure(f"{name}", exc)
 
     total += _write_futures_cracks(ingested_at)
     print(f"derived.crack: {total} total rows written", flush=True)
@@ -251,7 +253,7 @@ def _write_futures_cracks(ingested_at: pd.Timestamp) -> int:
                 total += len(rows)
                 print(f"{name}.{tenor}: wrote {len(rows)} rows", flush=True)
             except Exception as exc:
-                print(f"{name}.{tenor}: FAILED ({type(exc).__name__}: {exc})", flush=True)
+                record_failure(f"{name}.{tenor}", exc)
     return total
 
 

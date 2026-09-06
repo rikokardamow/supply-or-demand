@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly
 
 from pipelines.cftc.pull import pull_all
 
@@ -19,6 +20,7 @@ def trailing_window(today: date, trailing_weeks: int = TRAILING_WEEKS) -> date:
     return today - timedelta(weeks=trailing_weeks)
 
 
+@fails_loudly("cftc.pull_weekly")
 def main() -> None:
     ingested_at = pd.Timestamp(datetime.now(UTC))
     start = trailing_window(ingested_at.date())

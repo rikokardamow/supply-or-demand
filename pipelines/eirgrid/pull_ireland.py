@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import UTC, date, datetime, timedelta
 
 import pandas as pd
+from core.failures import fails_loudly, record_failure
 from core.storage import write_ts_long
 
 from pipelines.eirgrid.client import EirGridClient
@@ -28,6 +29,7 @@ FIELD_MAP: dict[str, tuple[str, str]] = {
 AREAS = ["demandactual", "generationactual", "windactual", "co2intensity", "interconnection"]
 
 
+@fails_loudly("eirgrid.pull_ireland")
 def main() -> None:
     client = EirGridClient()
     end = date.today()
@@ -39,7 +41,7 @@ def main() -> None:
         try:
             raw = client.get_series(area, REGION, start, end)
         except (RuntimeError, ValueError) as exc:
-            print(f"{area}: FAILED ({exc}) — skipping", flush=True)
+            record_failure(f"{area}", exc)
             continue
         print(f"{area}: {len(raw)} rows", flush=True)
         if raw.empty:
