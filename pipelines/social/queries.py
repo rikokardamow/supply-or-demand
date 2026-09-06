@@ -31,8 +31,6 @@ class TopicQuery(TypedDict):
     theme: str
 
 
-PLATFORMS: list[str] = ["reddit", "polymarket", "stocktwits"]
-
 # Task 2's choice, not five: site-wide Reddit search ignores the query entirely
 # (confirmed live, see pipelines/social/NOTES.md), so per-subreddit search.rss
 # is kept, but narrowed from the brief's five subreddits to two -- at Reddit's
