@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numbers
 from datetime import UTC, datetime
 
 import core.theme  # noqa: F401
@@ -144,10 +145,19 @@ def _stocks_filter_panel() -> list[tuple[str, str, str, str]]:
     return [item for item in STOCKS_INFO if st.session_state[f"padd_stocks_filter_{item[0]}"]]
 
 
-def _sign_colour(value: float) -> str:
-    if pd.isna(value):
+def _sign_colour(value: object) -> str:
+    """`object`, not `float`: Styler.map applies this to every cell in the subset,
+    and types the argument as the full scalar union pandas may hold rather than the
+    float this particular column happens to carry. `numbers.Real`, not
+    `(int, float)`: numpy registers its scalar types with the numbers ABCs, but
+    `isinstance(np.int64(1), int)` is False, so an integer-typed column would
+    silently lose its colouring."""
+    if not isinstance(value, numbers.Real):
         return ""
-    colour = _POSITIVE_COLOUR if value >= 0 else _NEGATIVE_COLOUR
+    number = float(value)
+    if pd.isna(number):
+        return ""
+    colour = _POSITIVE_COLOUR if number >= 0 else _NEGATIVE_COLOUR
     return f"color: {colour}; font-weight: 600"
 
 

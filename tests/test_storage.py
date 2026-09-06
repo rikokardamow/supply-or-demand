@@ -366,3 +366,37 @@ def test_last_ts_by_source_is_empty_when_the_dataset_has_no_files() -> None:
 def test_last_ts_by_source_rejects_a_column_outside_the_schema() -> None:
     with pytest.raises(ValueError, match="not a column of the 'flows' schema"):
         last_ts_by_source("flows", "revision_date")  # flows has no revision_date
+
+
+def test_a_failed_write_leaves_the_existing_partition_intact() -> None:
+    """Regression: _write_partitioned used to unlink every existing part *before*
+    writing the replacement, so an interrupted write (full disk, Ctrl-C, power loss)
+    destroyed the whole year partition -- including all the prior history the same call
+    had just read back and merged into `combined`."""
+    write_ts_long(_make_df(datetime(2024, 1, 1), value=1.0), source="testsrc")
+    assert len(read_ts_long()) == 1
+
+    def _explode(*args: object, **kwargs: object) -> None:
+        raise OSError("No space left on device")
+
+    # A scoped MonkeyPatch, not the `monkeypatch` fixture: that one is shared with the
+    # autouse _isolated_lake fixture above, so undoing it here would also undo the chdir
+    # into tmp_path and point the read below at the real lake.
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr("pandas.DataFrame.to_parquet", _explode)
+        with pytest.raises(OSError, match="No space left on device"):
+            write_ts_long(_make_df(datetime(2024, 2, 1), value=2.0), source="testsrc")
+
+    surviving = read_ts_long()
+    assert len(surviving) == 1
+    assert surviving["value"].iloc[0] == 1.0
+
+
+def test_a_partition_write_replaces_rather_than_accumulating_parts() -> None:
+    write_ts_long(_make_df(datetime(2024, 1, 1), value=1.0), source="testsrc")
+    write_ts_long(_make_df(datetime(2024, 2, 1), value=2.0), source="testsrc")
+
+    partition = LAKE_ROOT / "ts_long" / "source=testsrc" / "year=2024"
+    assert [p.name for p in sorted(partition.glob("part-*.parquet"))] == ["part-0.parquet"]
+    # The temporary file must never be visible to the read glob.
+    assert list(partition.glob("*.parquet.tmp")) == []

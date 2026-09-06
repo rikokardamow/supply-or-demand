@@ -29,12 +29,12 @@ Tests: pytest + vcrpy cassettes in `tests/cassettes/`.
 
 ## Commands
 - Run app: `streamlit run apps/dashboard/app.py`
-- Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines infra`
+- Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines infra apps`
 - New pipeline: scaffold under `pipelines/<source>/` with its own `CLAUDE.md`, client, and cassette test.
 
 ## Code review procedure
 Run these in order — cheapest first, and never skip step 1.
-1. `ruff check .` → `mypy core pipelines infra` → `pytest`. Fix everything here before
+1. `ruff check .` → `mypy core pipelines infra apps` → `pytest`. Fix everything here before
    asking an agent to read the diff; review agents waste effort on what the linter already knows.
    `mypy` is the gate. Pyright runs live in the editor via the `pyright-lsp` plugin and is
    stricter by default — treat its extra findings as signal, not as a merge blocker.

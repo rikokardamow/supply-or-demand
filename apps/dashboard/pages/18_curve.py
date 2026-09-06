@@ -83,7 +83,7 @@ with tab_curve, card(f"{root.upper()} Curve Strip"):
     if not has_curve_data:
         _no_futures_data_message()
     else:
-        _, unadj, _ = nearby_panel(contract_panel, expiries)
+        unadj = nearby_panel(contract_panel, expiries)[1]
         offsets = {"Today": 0, "-5bd": 5, "-20bd": 20, "-252bd": 252}
         curves = {}
         for label, n in offsets.items():
@@ -106,7 +106,7 @@ with tab_spreads, card(f"{root.upper()} s12 Spread History"):
     if not has_curve_data:
         _no_futures_data_message()
     else:
-        _, unadj, _ = nearby_panel(contract_panel, expiries)
+        unadj = nearby_panel(contract_panel, expiries)[1]
         s12 = time_spreads(unadj)["s12"].dropna()
         mean = s12.rolling(252, min_periods=20).mean()
         std = s12.rolling(252, min_periods=20).std()
@@ -141,7 +141,7 @@ with tab_convexity:
         if not has_curve_data:
             _no_futures_data_message()
         else:
-            _, unadj, _ = nearby_panel(contract_panel, expiries)
+            unadj = nearby_panel(contract_panel, expiries)[1]
             cv = convexity(unadj).dropna()
             bands = rolling_quantile_bands(cv, window=252, min_periods=20)
             p05, p95 = bands["p05"], bands["p95"]
@@ -167,7 +167,7 @@ with tab_convexity:
         if not has_curve_data:
             _no_futures_data_message()
         else:
-            _, unadj, _ = nearby_panel(contract_panel, expiries)
+            unadj = nearby_panel(contract_panel, expiries)[1]
             regime = curve_regime(unadj, storage_cost_m1m2=storage_cost)
             state_codes = regime["state"].map(REGIME_CODES)
             state_labels = {code: name for name, code in REGIME_CODES.items()}
@@ -219,21 +219,23 @@ with tab_storage:
                 util_df[util_df["series_id"] == "derived.cushing.util"]
                 .set_index("ts")["value"].sort_index()
             )
-            _, cl_unadj, _ = nearby_panel(cl_panel, cl_expiries)
+            cl_unadj = nearby_panel(cl_panel, cl_expiries)[1]
             cl_s12 = time_spreads(cl_unadj)["s12"]
             merged = pd.DataFrame({"util": util, "s12": cl_s12}).dropna()
 
-            annotations = []
+            # Not `annotations`: that name is already bound at module level by
+            # `from __future__ import annotations`, and rebinding it here shadows it.
+            fit_annotations: list[tuple[float, float, str]] = []
             april_2020 = merged[merged.index.to_series().between("2020-04-01", "2020-04-30")]
             if not april_2020.empty:
                 row = april_2020.iloc[0]
-                annotations.append((float(row["util"]), float(row["s12"]), "Apr 2020"))
+                fit_annotations.append((float(row["util"]), float(row["s12"]), "Apr 2020"))
 
             fig = scatter_piecewise_fit_chart(
-                merged["util"], merged["s12"], merged.index.year,
+                merged["util"], merged["s12"], merged.index.to_series().dt.year,
                 bins=[(0.0, 0.35), (0.35, 0.75), (0.75, 1.01)],
                 title="Cushing Utilisation vs WTI s12", x_label="Utilisation", y_label="s12 (USD)",
-                annotations=annotations or None,
+                annotations=fit_annotations or None,
             )
             st.plotly_chart(fig)
             st.caption("Source: derived.cushing.util x derived.spread.cl.s12.")
@@ -252,7 +254,7 @@ with tab_roll_cal:
         if not has_curve_data:
             _no_futures_data_message()
         else:
-            _, unadj, _ = nearby_panel(contract_panel, expiries)
+            unadj = nearby_panel(contract_panel, expiries)[1]
             delta_s12 = time_spreads(unadj)["s12"].diff().dropna()
             grid = roll_window_offset_grid(delta_s12, "gsci")
             fig = bday_heatmap(

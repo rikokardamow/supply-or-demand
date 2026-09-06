@@ -233,12 +233,12 @@ with tab_equity:
             )
 
     with card("Equity and drawdown"):
-        runnable = [n for n in REGISTRY if _run(root, n) is not None]
-        if not runnable:
+        runs = {n: r for n in REGISTRY if (r := _run(root, n)) is not None}
+        if not runs:
             st.info("Nothing to plot yet.")
         else:
-            choice = st.selectbox("Strategy", runnable)
-            pnl, stats = _run(root, choice)
+            choice = st.selectbox("Strategy", list(runs))
+            pnl, stats = runs[choice]
             benchmark = _run(root, BENCHMARK_STRATEGY)
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Ann. log return", f"{stats['ann_log_return']:.1%}")
@@ -282,12 +282,12 @@ with tab_reaction, card("Reaction function with today's z"):
 # --- fractionation ----------------------------------------------------------------
 
 with tab_fraction, card("Where the P&L came from"):
-    runnable = [n for n in REGISTRY if _run(root, n) is not None]
-    if not runnable:
+    runs = {n: r for n in REGISTRY if (r := _run(root, n)) is not None}
+    if not runs:
         st.info("Nothing to attribute yet.")
     else:
-        choice = st.selectbox("Strategy ", runnable, key="fraction_strategy")
-        pnl, _ = _run(root, choice)
+        choice = st.selectbox("Strategy ", list(runs), key="fraction_strategy")
+        pnl = runs[choice][0]  # `_` is bound to a Series elsewhere in this module
         data = _root_data(root)
         conditioners = {}
         if "regime" in data:
@@ -296,7 +296,7 @@ with tab_fraction, card("Where the P&L came from"):
             conditioners["Cushing decile"] = data["util_decile"]
         if "mm_pct_3y" in data:
             conditioners["COT percentile"] = data["mm_pct_3y"]
-        conditioners["month"] = pd.Series(pnl.index.month, index=pnl.index)
+        conditioners["month"] = pnl.index.to_series().dt.month
 
         table = fractionate(pnl, conditioners, bins=5)
         if table.empty:

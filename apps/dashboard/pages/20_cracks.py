@@ -172,7 +172,10 @@ with tab_seasonal:
             st.info("No crack series in the lake.")
         else:
             heat = crack_seasonal_heatmap(spot["us321"].dropna()).tail(15)
-            heat.columns = [pd.Timestamp(2001, m, 1).strftime("%b") for m in heat.columns]
+            heat.columns = [
+                pd.Timestamp(year=2001, month=int(m), day=1).strftime("%b")
+                for m in heat.columns
+            ]
             st.plotly_chart(
                 category_time_heatmap(heat.T, "NYH 3:2:1 monthly mean by year", "$/bbl",
                                       center=float(np.nanmedian(heat.to_numpy()))),

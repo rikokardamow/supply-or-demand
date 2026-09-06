@@ -174,9 +174,29 @@ def _write_partitioned(
         subset = dedup_subset if dedup_subset is not None else list(combined.columns)
         combined = combined.drop_duplicates(subset=subset, keep="last").reset_index(drop=True)
 
+        # Write to a temporary file and swap it in, rather than deleting the existing
+        # parts first and then writing. The old order left a window in which an
+        # interrupted write -- a full disk, a Ctrl-C, a crash, a machine losing power
+        # mid-pull -- destroyed the entire year partition, including all the prior
+        # history `combined` had just read back and merged in, with nothing on disk to
+        # restore it from. `Path.replace` is `os.replace`, atomic on the same filesystem
+        # (Windows included), so a concurrent reader -- the Streamlit app is one, and it
+        # reads this lake while pipelines write to it -- sees either the old file or the
+        # new one, never a half-written or absent one.
+        #
+        # A `.tmp` left behind by a failed write is inert: it matches neither
+        # `part-*.parquet` above nor the `**/*.parquet` read glob, and the next write to
+        # this partition reuses the same name, so it cannot accumulate.
+        tmp_path = partition_dir / "part-0.parquet.tmp"
+        combined.to_parquet(tmp_path, index=False)
+        tmp_path.replace(partition_dir / "part-0.parquet")
+
+        # part-1 upwards only exist from an older layout -- every write since collapses a
+        # partition to a single part-0. Their rows are already inside `combined`, which
+        # the swap above has just made durable, so removing them now loses nothing.
         for part in existing_parts:
-            part.unlink()
-        combined.to_parquet(partition_dir / "part-0.parquet", index=False)
+            if part.name != "part-0.parquet":
+                part.unlink()
 
 
 def write_ts_long(df: pd.DataFrame, source: str) -> None:
