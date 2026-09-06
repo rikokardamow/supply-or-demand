@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
-from components.card import card
 from components.kardamow_take import kardamow_take
 from components.lake import read_sanctions_current
+from components.section import empty_state, page_header, section
 
 NEWLY_LISTED_WINDOW_DAYS = 7
 
@@ -25,11 +25,12 @@ def _load_sanctions() -> pd.DataFrame:
     return df
 
 
-st.title("OFAC SDN Sanctions")
+page_header("OFAC SDN Sanctions")
 
 sanctions = _load_sanctions()
 if sanctions.empty:
-    st.info("No sanctions data yet — run `pipelines/ofac/pull_ofac.py`.")
+    empty_state("ofac_sanctions", "daily", None)
+    st.caption("Run `pipelines/ofac/pull_ofac.py` to populate this page.")
     st.stop()
 
 all_programs = sorted({p for programs in sanctions["programs"] for p in programs})
@@ -54,7 +55,7 @@ if entity_types:
 if energy_only:
     filtered = filtered[filtered["energy_related"]]
 
-with card(f"Full SDN table ({len(filtered)} of {len(sanctions)} shown)"):
+with section(f"Full SDN table ({len(filtered)} of {len(sanctions)} shown)"):
     st.dataframe(
         filtered[
             ["name", "entity_type", "programs", "energy_related", "status", "first_seen"]
@@ -62,7 +63,7 @@ with card(f"Full SDN table ({len(filtered)} of {len(sanctions)} shown)"):
         hide_index=True,
     )
 
-with card("Newly listed this week"):
+with section("Newly listed this week"):
     cutoff = sanctions["first_seen"].max() - pd.Timedelta(days=NEWLY_LISTED_WINDOW_DAYS)
     new_this_week = filtered[filtered["first_seen"] >= cutoff]
     if new_this_week.empty:
@@ -79,7 +80,7 @@ with card("Newly listed this week"):
             hide_index=True,
         )
 
-with card("Vessel watchlist"):
+with section("Vessel watchlist"):
     vessels = filtered[filtered["entity_type"] == "vessel"]
     if vessels.empty:
         st.info("No vessel rows match the current filters.")
@@ -89,7 +90,7 @@ with card("Vessel watchlist"):
             hide_index=True,
         )
 
-with card("Delisted"):
+with section("Delisted"):
     delisted = filtered[filtered["status"] == "delisted"]
     if delisted.empty:
         st.info("No delisted rows yet.")
