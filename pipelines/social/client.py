@@ -33,6 +33,8 @@ Reddit's 429 response carries the former but not the latter."""
 
 from __future__ import annotations
 
+import json
+import logging
 import time
 import xml.etree.ElementTree as ET
 from email.message import Message
@@ -45,6 +47,8 @@ import pandas as pd
 
 from pipelines.social.queries import SUBREDDITS
 
+logger = logging.getLogger(__name__)
+
 REQUEST_TIMEOUT_SECONDS = 30
 # Descriptive and identified, per Reddit's own API etiquette.
 USER_AGENT = "energy-dashboard/0.1 (Kardamow research dashboard)"
@@ -53,6 +57,12 @@ _ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
 # Reddit's own confirmed-live pace: ~1 unauthenticated request per 60 seconds.
 # Used whenever a response carries no X-Ratelimit-Reset header to read instead.
 _DEFAULT_PACE_SECONDS = 60.0
+_POLYMARKET_URL = "https://gamma-api.polymarket.com/events?{qs}"
+_STOCKTWITS_URL = "https://api.stocktwits.com/api/2/streams/symbol/{symbol}.json"
+# Task 0 saw one unexplained HTTP 403 sandwiched between clean 200s, with no
+# rate-limit header to size a backoff from -- a short fixed pause, not a
+# computed one, is all the evidence supports.
+_STOCKTWITS_RETRY_PAUSE_SECONDS = 2.0
 
 # Swappable by tests (`monkeypatch.setattr(client, "_sleep", ...)`) so cassette
 # replay never actually blocks for real minutes-long rate-limit waits.
@@ -146,4 +156,120 @@ def fetch_reddit(
         qs = urlencode({"q": query, "restrict_sr": "on", "sort": "new", "limit": limit})
         body, pace_seconds = _get(_RSS_URL.format(sub=sub, qs=qs))
         posts.extend(_parse_atom(body, query))
+    return posts
+
+
+def fetch_polymarket(tag_slug: str, limit: int = 25) -> list[Post]:
+    """Prediction-market events under a single Polymarket tag.
+
+    Polymarket has no keyword search: `q` and `search` are confirmed live (see
+    this package's NOTES.md) to be silently ignored -- `?q=energy`,
+    `?search=energy` and even a nonsense query all return the identical
+    unfiltered list with HTTP 200. `tag_slug` is the only parameter that
+    genuinely filters, so this fetcher takes a tag rather than free text, and
+    Polymarket contributes tag-level attention rather than a per-topic series.
+    `query` is stamped with the tag slug used.
+
+    The response is a bare JSON array, not a wrapped object. `id` is a string
+    (e.g. `"2890"`) -- no int coercion. There is no canonical timestamp field;
+    `startDate` is used, falling back to `createdAt` (not `endDate` or
+    `closedTime`, which are future-dated). There is no `url` field, so one is
+    built from `slug`.
+
+    Polymarket has no per-event score field, so `score` stays None. It does
+    carry a genuine top-level `commentCount`, used for `num_comments` rather
+    than left None -- unlike `score`, this is a real, confirmed-live metric."""
+    qs = urlencode({"limit": limit, "active": "true", "tag_slug": tag_slug})
+    body, _ = _get(_POLYMARKET_URL.format(qs=qs))
+    rows = json.loads(body)
+
+    posts: list[Post] = []
+    for row in rows:
+        slug = row.get("slug")
+        title = (row.get("title") or "").strip()
+        event_id = row.get("id")
+        if not slug or not title or not event_id:
+            continue
+        num_comments = row.get("commentCount")
+        posts.append(
+            Post(
+                post_id=str(event_id),
+                url=f"https://polymarket.com/event/{slug}",
+                title=title,
+                ts=pd.Timestamp(row.get("startDate") or row.get("createdAt")),
+                platform="polymarket",
+                query=tag_slug,
+                score=None,
+                num_comments=num_comments if isinstance(num_comments, int) else None,
+            )
+        )
+    return posts
+
+
+def _get_tolerating_one_failure(url: str) -> bytes:
+    """Single request with exactly one retry, after a short fixed pause, on
+    ANY non-2xx -- not just 429. Task 0 saw one unexplained HTTP 403 with an
+    empty body sandwiched between clean 200s, with no explanatory header;
+    five immediate retries afterwards all succeeded. A lone failure is not
+    proof StockTwits is blocking us, so it must not be treated that way and
+    must not silently produce an empty list. If the retry also fails, the
+    real status code is logged and the error re-raised."""
+    request = Request(url, headers={"User-Agent": USER_AGENT})
+    try:
+        with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+            return response.read()  # type: ignore[no-any-return]
+    except HTTPError as exc:
+        _sleep(_STOCKTWITS_RETRY_PAUSE_SECONDS)
+        try:
+            with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as retried:
+                return retried.read()  # type: ignore[no-any-return]
+        except HTTPError as retry_exc:
+            logger.error(
+                "StockTwits request failed twice in a row (status %s, then %s "
+                "on retry): %s",
+                exc.code,
+                retry_exc.code,
+                url,
+            )
+            raise
+
+
+def fetch_stocktwits(symbol: str, limit: int = 25) -> list[Post]:
+    """Public symbol stream. `symbol` is a ticker, so this feeds Set A only.
+
+    The response is a wrapped JSON object; messages live under `messages`.
+    `id` is an int, `created_at` is ISO-8601. There is no permalink field on a
+    message itself, so a URL is constructed from `user.username` + `id`
+    (falling back to an id-only URL if `username` is somehow absent).
+
+    StockTwits exposes no numeric score and no comment count on a message, so
+    both `score` and `num_comments` stay None -- never a fabricated 0."""
+    body = _get_tolerating_one_failure(_STOCKTWITS_URL.format(symbol=symbol))
+    payload = json.loads(body)
+    messages = payload.get("messages", [])[:limit]
+
+    posts: list[Post] = []
+    for message in messages:
+        text = (message.get("body") or "").strip()
+        message_id = message.get("id")
+        if not text or message_id is None:
+            continue
+        username = (message.get("user") or {}).get("username")
+        url = (
+            f"https://stocktwits.com/{username}/message/{message_id}"
+            if username
+            else f"https://stocktwits.com/message/{message_id}"
+        )
+        posts.append(
+            Post(
+                post_id=str(message_id),
+                url=url,
+                title=text,
+                ts=pd.Timestamp(message["created_at"]),
+                platform="stocktwits",
+                query=symbol,
+                score=None,
+                num_comments=None,
+            )
+        )
     return posts
