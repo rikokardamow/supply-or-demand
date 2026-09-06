@@ -190,6 +190,17 @@ A new subheader "Self-hosted social sentiment" below the existing Adanos section
 Empty states follow the existing precedent: `st.info("No social data yet — run
 pipelines/social/pull_social.py.")`.
 
+## Implementation finding — Polymarket has no keyword search (added at Task 9)
+Task 0's live probe of `gamma-api.polymarket.com/events` found that `?q=...` and
+`?search=...` are **silently ignored**: every value tried, including a nonsense string,
+returned HTTP 200 with the identical unfiltered default listing — no error signal at all.
+The only parameter that actually filters is `tag_slug`. Task 6 therefore built Polymarket
+as a single tag-level pull (`pull_polymarket_tag`, tag `"energy"`), not a per-topic query
+against Set B. It contributes one `social.polymarket.energy.post_count` series — tag-level
+attention on the whole "energy" tag — rather than the seventeen per-topic series Reddit
+covers. Page `10_macro.py`'s Polymarket chart is captioned accordingly, so this section
+corrects any earlier implication that Polymarket could be queried per topic like Reddit.
+
 ## Acceptance criteria
 - Live verification done **before** pull code, real outcomes (including empty queries)
   recorded in `pipelines/social/NOTES.md`.
