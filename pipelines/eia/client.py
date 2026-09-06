@@ -154,7 +154,12 @@ class EIAClient:
             # Some real states return a literal null for the latest month rather than
             # being absent (confirmed live, pipelines/eia/CLAUDE.md) -- guard here too,
             # matching get_series's own null handling. Never fabricate a value for these.
-            rows = [row for row in rows if row.get(key) is not None]
+            raw_rows, rows = rows, [row for row in rows if row.get(key) is not None]
+            dropped = len(raw_rows) - len(rows)
+            if dropped:
+                # Visible, not silent -- matching core.storage._drop_rows_with_no_value's
+                # own rule that a dropped row must be named in the run log.
+                print(f"{route} ({key}): dropped {dropped} row(s) with no value", flush=True)
             key_id = key.upper().replace("-", "_")
             frames.append(
                 pd.DataFrame(
@@ -206,7 +211,12 @@ class EIAClient:
         # (confirmed live on natural-gas/pri/sum and pri/rescom, pipelines/eia/CLAUDE.md)
         # -- float(None) would crash a full-history pull outright. Skipped here, matching
         # the convention core/storage.py's write_ts_long already applies on the write side.
-        rows = [row for row in rows if row.get("value") is not None]
+        raw_rows, rows = rows, [row for row in rows if row.get("value") is not None]
+        dropped = len(raw_rows) - len(rows)
+        if dropped:
+            # Visible, not silent -- matching core.storage._drop_rows_with_no_value's own
+            # rule that a dropped row must be named in the run log, not swallowed here.
+            print(f"{route}: dropped {dropped} row(s) with no value", flush=True)
         pulled_at = datetime.now(UTC)
         if geo_map is not None:
             geo = [geo_map[row["series"]] for row in rows]
@@ -234,6 +244,13 @@ class EIAClient:
         """Like get_series, but returns `flows`-schema rows. `corridors` maps each
         series id to (from_node, to_node, mode)."""
         rows = self._fetch_rows(route, list(corridors), frequency)
+        # Same guard as get_series: a null `value` here would otherwise crash this
+        # method's unguarded float() outright (pre-existing asymmetry -- get_series
+        # was hardened for this, this sibling wasn't; matched here for consistency).
+        raw_rows, rows = rows, [row for row in rows if row.get("value") is not None]
+        dropped = len(raw_rows) - len(rows)
+        if dropped:
+            print(f"{route}: dropped {dropped} row(s) with no value", flush=True)
         return pd.DataFrame(
             {
                 "source": "eia",
