@@ -24,18 +24,6 @@ def _event_id(url: str) -> str:
     return hashlib.sha256(url.encode("utf-8")).hexdigest()
 
 
-def _naive_ts(ts: pd.Timestamp) -> pd.Timestamp:
-    """Strips tzinfo when present, leaves an already-naive timestamp unchanged.
-    Reddit's RSS timestamps are tz-aware, but Polymarket's startDate/createdAt and
-    StockTwits' created_at may parse naive -- pd.Timestamp.tz_localize(None) raises
-    `TypeError: Already tz-naive` on those, so the two cases must be handled
-    separately rather than calling tz_localize(None) unconditionally."""
-    ts = pd.Timestamp(ts)
-    if ts.tzinfo is None:
-        return ts
-    return ts.tz_localize(None)
-
-
 def posts_to_events(posts: list[Post], commodity: str) -> pd.DataFrame:
     """`commodity` comes from the TopicQuery that produced these posts (Set B) or
     is "equity" for ticker queries (Set A)."""
@@ -51,7 +39,7 @@ def posts_to_events(posts: list[Post], commodity: str) -> pd.DataFrame:
     return pd.DataFrame(
         {
             "event_id": [_event_id(p["url"]) for p in posts],
-            "ts": [_naive_ts(p["ts"]) for p in posts],
+            "ts": [pd.Timestamp(p["ts"]).tz_localize(None) for p in posts],
             "headline": titles,
             "source": [p["platform"] for p in posts],
             "url": [p["url"] for p in posts],
