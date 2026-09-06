@@ -5,9 +5,12 @@ Spec 20's crack VECM.
 
 Series codes were discovered live via EIAClient.list_series, never guessed from a
 dnav URL -- see pipelines/eia/NOTES.md for the real dumps and counts. This module
-covers the three petroleum price routes Task 0 confirmed: refiner acquisition cost,
-retail pump prices, and gravity-banded landed cost of imported crude (a route the
-spec's own six candidates didn't name -- found by walking GET /v2/petroleum/pri).
+covers the petroleum, gas and generator-fuel price routes Task 0 confirmed: refiner
+acquisition cost, retail pump prices, gravity-banded landed cost of imported crude (a
+route the spec's own six candidates didn't name -- found by walking
+GET /v2/petroleum/pri), citygate/sectoral delivered gas prices, and the average cost of
+gas delivered to electric generators (a route with no `series` facet at all -- see
+EIAClient.get_operational_series).
 
 Units are written exactly as EIA publishes them and are never converted here;
 conversion belongs in core/, not in a pipeline."""
@@ -82,10 +85,36 @@ LANDED_COST_GEO_MAP: dict[str, str] = {
     "I000000998": "US-API-GT45",
 }
 
-PETROLEUM_GROUPS: list[tuple[str, list[str], str]] = [
+# Citygate and sectoral delivered gas prices, from natural-gas/pri/sum. The lake holds
+# one gas price (fred.dhhngsp, Henry Hub spot) and nothing to locate it against, so
+# basis is uncomputable today. natural-gas/pri/rescom (state-level only, no national
+# row) and natural-gas/pri/fut (duplicates fred.dhhngsp and Spec 18's futures) are both
+# out of scope -- see pipelines/eia/NOTES.md's "Spec 30 price routes" section.
+GAS: list[str] = ["N3050US3", "N3010US3", "N3020US3", "N3035US3"]
+
+# EPM Table 4.13's average cost of natural gas delivered to electric generators
+# ($/MMBtu) and Table 2.4's gas consumed for generation -- the direct gas-to-power
+# bridge. electricity/electric-power-operational-data has no `series` facet at all
+# (confirmed live -- pipelines/eia/NOTES.md); these are the two `data[0]` keys
+# EIAClient.get_operational_series requests, not series ids -- the series ids it mints
+# from them are documented there and in that method's own docstring.
+GENERATOR_FUEL_ROUTE = "electricity/electric-power-operational-data"
+GENERATOR_FUEL_FUELTYPEID = "NG"
+GENERATOR_FUEL_SECTORID = "98"  # "(98) Electric Power" -- the sector aggregate, not a
+# narrower IPP/CHP/utility sub-sector also on offer under the same facet.
+GENERATOR_FUEL_LOCATION = "US"
+
+GENERATOR_FUEL: list[str] = ["cost-per-btu", "consumption-for-eg"]
+
+MONTHLY_GROUPS: list[tuple[str, list[str], str]] = [
     ("petroleum/pri/rac2", RAC, "monthly"),
-    ("petroleum/pri/gnd", RETAIL, "weekly"),
     (LAND3_ROUTE, LANDED_COST, "monthly"),
+    ("natural-gas/pri/sum", GAS, "monthly"),
+    (GENERATOR_FUEL_ROUTE, GENERATOR_FUEL, "monthly"),
+]
+
+WEEKLY_GROUPS: list[tuple[str, list[str], str]] = [
+    ("petroleum/pri/gnd", RETAIL, "weekly"),
 ]
 
 # Only land3 needs an explicit geo_map (see above); every other route here gets a
@@ -103,7 +132,20 @@ def pull_group(
     geo_map: dict[str, str] | None = None,
 ) -> pd.DataFrame:
     """One route's worth of rows. Kept separate from pull_all so a single route can be
-    exercised directly by a cassette test."""
+    exercised directly by a cassette test.
+
+    GENERATOR_FUEL_ROUTE has no `series` facet at all (see GENERATOR_FUEL above) and is
+    routed to EIAClient.get_operational_series instead of get_series -- every other
+    route here is series-facet-based and unaffected."""
+    if route == GENERATOR_FUEL_ROUTE:
+        return client.get_operational_series(
+            route=route,
+            data_keys=series,
+            fueltypeid=GENERATOR_FUEL_FUELTYPEID,
+            sectorid=GENERATOR_FUEL_SECTORID,
+            location=GENERATOR_FUEL_LOCATION,
+            frequency=frequency,
+        )
     return client.get_series(route=route, series=series, frequency=frequency, geo_map=geo_map)
 
 
@@ -126,13 +168,24 @@ def pull_all(groups: list[tuple[str, list[str], str]]) -> list[pd.DataFrame]:
 
 def main() -> None:
     with failure_scope("eia.pull_prices"):
-        frames = pull_all(PETROLEUM_GROUPS)
+        frames = pull_all(MONTHLY_GROUPS)
         if not frames:
             print("no EIA price rows pulled", flush=True)
             return
         df = pd.concat(frames, ignore_index=True)
         write_ts_long(df, source="eia")
         print(f"wrote {len(df)} EIA price rows", flush=True)
+
+
+def main_weekly() -> None:
+    with failure_scope("eia.pull_prices_weekly"):
+        frames = pull_all(WEEKLY_GROUPS)
+        if not frames:
+            print("no weekly EIA price rows pulled", flush=True)
+            return
+        df = pd.concat(frames, ignore_index=True)
+        write_ts_long(df, source="eia")
+        print(f"wrote {len(df)} weekly EIA price rows", flush=True)
 
 
 if __name__ == "__main__":

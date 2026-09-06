@@ -54,6 +54,39 @@ def test_landed_cost_uses_geo_map_for_gravity_bands() -> None:
     assert all("$" in u for u in df["unit"].unique())
 
 
+@pytest.mark.vcr
+def test_gas_prices_carry_dollar_units_and_state_or_national_geo() -> None:
+    df = pull_prices.pull_group(
+        pull_prices.EIAClient(), "natural-gas/pri/sum", pull_prices.GAS, "monthly"
+    )
+
+    validate_ts_long(df)
+    assert not df.empty
+    assert all("$" in u for u in df["unit"].unique())
+    assert df["geo"].notna().all()
+
+
+@pytest.mark.vcr
+def test_generator_fuel_cost_returns_valid_ts_long() -> None:
+    df = pull_prices.pull_group(
+        pull_prices.EIAClient(),
+        "electricity/electric-power-operational-data",
+        pull_prices.GENERATOR_FUEL,
+        "monthly",
+    )
+
+    validate_ts_long(df)
+    assert not df.empty
+
+
+def test_monthly_and_weekly_groups_are_disjoint() -> None:
+    # A route pulled on both cadences would write the same rows twice under two
+    # revision_dates -- harmless to the lake's dedup, but a real sign of confusion.
+    monthly = {route for route, _, _ in pull_prices.MONTHLY_GROUPS}
+    weekly = {route for route, _, _ in pull_prices.WEEKLY_GROUPS}
+    assert monthly.isdisjoint(weekly)
+
+
 def test_one_failing_route_does_not_abort_the_others(monkeypatch: pytest.MonkeyPatch) -> None:
     # The pattern pipelines/adanos/pull_adanos.py established: per-route resilience,
     # not just per-request retry. One dead route must never cost the rest of the pull.
