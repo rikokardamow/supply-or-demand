@@ -19,6 +19,8 @@ replaces the filename-derived sidebar.
 ## Global Constraints
 
 - Branch is `design/ui-restyle`, cut from `spec/29-social-sentiment`. Do not rebase onto `main`.
+- **A peer Claude session works this same clone.** Confirmed live on 2026-09-06: its commit landed on this branch and one of ours landed on its branch, because both sessions check out branches in one working tree. Before each task, run `ListAgents` and `git log --all --oneline -5`, and confirm the branch is still `design/ui-restyle` before committing. Stage files by name — never `git add -A`, which sweeps a peer's in-progress files into your commit. Never rewrite shared history (`rebase`, `amend`, `branch -f`) while a peer is live; fix mistakes with a follow-up commit.
+- Agreed file lanes: this plan owns `apps/dashboard/**`, `core/theme.py`, `core/design.py`, `.streamlit/config.toml`. It does not touch `pipelines/**` or other `core/*` modules.
 - `uv` is NOT on the Git Bash PATH on this machine. Run tools as `./.venv/Scripts/python.exe -m <tool>` or from PowerShell. `make dev` fails in Git Bash — this is environmental, not a bug to fix here.
 - `make check` = ruff, mypy (`core pipelines infra apps`), pytest. Must be green before every commit (golden rule 8).
 - Default pytest run excludes browser tests: `addopts = "-ra --strict-markers -m 'not browser'"`. Browser tests run explicitly with `-m browser` and need `playwright install chromium`.
@@ -1123,7 +1125,11 @@ legible, with no clipped text, no boxes, and no serif numerals.
 - [ ] **Step 7: Commit and update the changelog**
 
 ```bash
-git add -A
+# Name every file. A peer session works this same clone, and `git add -A` sweeps their
+# in-progress files into your commit -- this has already happened once on this repo.
+git add core/theme.py CLAUDE.md CHANGELOG.md tests/test_components_section.py
+git add apps/dashboard/pages          # the call sites that dropped title=
+git rm apps/dashboard/components/card.py
 git commit -m "refactor(theme): drop the unused title parameter; update CLAUDE.md for the restyle"
 ```
 
