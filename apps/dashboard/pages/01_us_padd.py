@@ -98,7 +98,8 @@ _NEGATIVE_COLOUR = RED
 def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
-        empty_state("eia_wpsr", "weekly", None)
+        empty_state("eia", "weekly", None)
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate {series_id}.")
         return
 
     stats = seasonal_stats(df, value_col="value")
@@ -188,7 +189,8 @@ with tab_refining:
     utilisation = _series_by_ts(UTILISATION_BY_GEO[geo])
 
     if gross_inputs.empty or utilisation.empty:
-        empty_state("eia_wpsr", "weekly", None)
+        empty_state("eia", "weekly", None)
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate refining data for {geo}.")
     else:
         time_range = st.segmented_control(
             "Time range",
@@ -232,7 +234,8 @@ with tab_flows:
 
     flows_df = read_flows(source="eia")
     if flows_df.empty:
-        empty_state("eia_padd_flows", "monthly", None)
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_padd_flows.py` to populate flow data.")
     else:
         balance = net_balance(flows_df)
         latest_month = balance["ts"].max()
@@ -272,7 +275,8 @@ with tab_wpsr:
     wpsr_df = read_ts_long(series_ids=all_series)
 
     if wpsr_df.empty:
-        empty_state("eia_wpsr", "weekly", None)
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_wpsr.py` to populate this table.")
     else:
         summary = wpsr_summary(wpsr_df).sort_values("series_id").reset_index(drop=True)
         styled = summary.style.map(_sign_colour, subset=["delta", "vs_median"]).format(
@@ -289,7 +293,8 @@ with tab_wpsr:
     stocks = _series_by_ts("WCESTUS1")
     product_supplied = _series_by_ts("WRPUPUS2")
     if stocks.empty or product_supplied.empty:
-        empty_state("eia_wpsr", "weekly", None)
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_wpsr.py` to populate days-of-cover data.")
     else:
         cover = days_of_cover(stocks, product_supplied).dropna()
         if not cover.empty:
