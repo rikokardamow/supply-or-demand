@@ -1,11 +1,20 @@
+# Values mirror core/design.py -- TOML cannot import Python, so
+# tests/test_config_matches_design.py asserts the two agree. Change both together.
+#
+# Chrome is measured from https://kardamow.substack.com/ so the dashboard and the
+# publication read as one thing. Lora for headings only; Inter carries every number,
+# axis tick and table cell. Borders are off: sections are hairline rules, never boxes.
 [theme]
 base = "light"
-primaryColor = "#0f2a4a"
+primaryColor = "#020617"
 backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f4f6f8"
-textColor = "#1a2733"
+secondaryBackgroundColor = "#f7f7f7"
+textColor = "#363737"
+linkColor = "#020617"
+borderColor = "#e6e6e6"
+dataframeBorderColor = "#e6e6e6"
+showWidgetBorder = false
+baseRadius = "small"
+baseFontSize = 15
 font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-
-[theme.sidebar]
-backgroundColor = "#0f2a4a"
-textColor = "#ffffff"
+headingFont = "Lora:https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap"
