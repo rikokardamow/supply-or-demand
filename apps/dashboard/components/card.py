@@ -1,17 +1,19 @@
-"""Bordered "card" section wrapper -- the institutional look documented in root
-NOTES.md's chart house style. Every chart section uses this instead of a bare
-st.subheader, going forward."""
+"""Deprecated alias of components.section.section.
+
+Kept only so pages not yet migrated to the 2026-09-06 restyle keep rendering. It
+delegates rather than duplicating, so a half-migrated app cannot show two different
+section treatments side by side. Removed once no page imports it.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-import streamlit as st
+from components.section import section
 
 
 @contextmanager
 def card(title: str) -> Iterator[None]:
-    with st.container(border=True):
-        st.markdown(f"**{title}**")
+    with section(title):
         yield
