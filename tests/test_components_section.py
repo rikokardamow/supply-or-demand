@@ -115,3 +115,24 @@ def test_source_note_renders_its_text() -> None:
     )
     assert not at.exception
     assert "WCESTUS1" in _text(at)
+
+
+def test_page_header_and_section_paint_real_headings() -> None:
+    """Titles must be <h1>/<h2>, not styled <div>s.
+
+    Two things depend on it beyond taste: a screen reader navigating by heading finds
+    nothing on a page whose title is a div, and tests/test_pages_browser.py locates every
+    page by `h1` with the title text -- so a div title makes a perfectly good page look
+    unrendered. The inline style is what carries the Substack's heading face; the tag is
+    what carries the document outline.
+    """
+    at = _run(
+        "from components.section import page_header, section\n"
+        "page_header('US PADD')\n"
+        "with section('Cushing Crude Stocks'):\n"
+        "    pass\n"
+    )
+    assert not at.exception
+    rendered = _text(at)
+    assert "<h1" in rendered, "page_header must emit an <h1>"
+    assert "<h2" in rendered, "section must emit an <h2>"
