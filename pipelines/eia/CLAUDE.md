@@ -387,3 +387,60 @@ would otherwise still pass every other assertion on that test.
 (the `petroleum/pri/gnd` retail-price pull, `WEEKLY_GROUPS`), matching
 `pipelines/adanos/pull_weekly.py`'s precedent — so `infra/run_scheduled.py` can address
 both EIA price cadences by the same `pull_<cadence>` convention as every other pipeline.
+
+**Correction to the claim above: `pull_prices_weekly.py` does NOT actually match
+`pull_weekly.py`'s precedent — confirmed live, Task 5, 2026-09-06.** Every sibling weekly
+entrypoint (`pipelines/adanos/pull_weekly.py`, `pipelines/cftc/pull_weekly.py`,
+`pipelines/macro/pull_weekly.py`, `pipelines/social/pull_weekly.py`) ends with
+`if __name__ == "__main__": main()`. `pipelines/eia/pull_prices_weekly.py` has no such
+guard — it only defines `main = main_weekly` and `__all__`. Running
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` therefore does **nothing**:
+exit 0, no output, no rows pulled, because nothing ever calls `main()`. It still works
+correctly through `infra/run_scheduled.py`, which imports the module and calls
+`module.main()` explicitly rather than relying on a `__main__` block — so the scheduled
+cadence is unaffected — but the module cannot be run standalone the way its own docstring
+and every sibling file imply, and the way this spec's own Task 5 brief instructed it be
+run. Not fixed here (Task 5 is verification/documentation only, no pipeline code changes
+permitted) — a two-line `if __name__ == "__main__": main()` addition is all a future
+session needs.
+
+## Task 5 — real pull outcomes, revision behaviour, and full-suite verification
+
+First genuine runs of both entrypoints, 2026-09-06 (not cassette-derived; live against the
+real EIA API, writing to the real lake):
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices` (monthly, `MONTHLY_GROUPS`) — exit
+0, no failures:
+- `petroleum/pri/rac2` (RAC): 3,243 rows
+- `petroleum/pri/land3` (LANDED_COST): 3,503 rows
+- `natural-gas/pri/sum` (GAS): 1,878 rows
+- `electricity/electric-power-operational-data` (GENERATOR_FUEL, both `cost-per-btu` and
+  `consumption-for-eg` across 10 locations): 5,719 rows
+- Total written: 14,343 rows, all at `monthly` frequency.
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` produced no output and
+pulled nothing, for the reason recorded just above (missing `__main__` guard) — this is
+not a route failure. Calling `pull_prices_weekly.main()` directly (equivalent to what
+`infra/run_scheduled.py` actually does in production) ran cleanly: exit 0, no failures,
+`petroleum/pri/gnd` (RETAIL): 20,628 rows at `weekly` frequency.
+
+**Revision behaviour, observed on the real lake, not just the isolated unit test below.**
+The monthly pull was run twice in immediate succession. Both runs logged identical
+per-route counts (3,243 / 3,503 / 1,878 / 5,719). Querying the lake directly after both
+runs (`SELECT COUNT(*) ... WHERE series_id IN (RAC + LANDED_COST + GAS)`) returned exactly
+8,624 rows — 3,243 + 3,503 + 1,878, i.e. the output of *one* pull, not two — and the
+`ELEC.*`-prefixed generator-fuel series_ids returned exactly 5,719. `write_ts_long`'s
+`(series_id, ts)` dedup, sorted by `revision_date`, replaced the first run's rows with the
+second run's rather than accumulating a second copy, confirmed against real data.
+
+A new unit test, `tests/test_eia_prices.py::test_a_revised_value_replaces_its_predecessor`,
+covers the same behaviour in isolation (a synthetic PMM-style value revised across two
+`write_ts_long` calls, monkeypatching `storage.LAKE_ROOT` to a `tmp_path` — never the real
+lake): it asserts `read_ts_long` returns exactly one row carrying the later value. Verified
+by hand that this test fails (`len(got) == 2`) if `write_ts_long`'s dedup is bypassed and
+the second write's row is merely appended to the first's file — the assertion has real
+teeth against a regression to append-only writes.
+
+Full suite (`.venv/Scripts/pytest.exe`), lint and types, all run 2026-09-06 after the pulls
+above: **723 passed, 16 deselected, 0 failed** (109s); `ruff check .` — all checks passed;
+`mypy core pipelines infra` — no issues found in 157 source files.
