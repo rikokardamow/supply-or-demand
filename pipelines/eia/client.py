@@ -79,7 +79,7 @@ class EIAClient:
         data_key: str,
         fueltypeid: str,
         sectorid: str,
-        location: str,
+        locations: list[str],
         frequency: str,
     ) -> list[dict[str, Any]]:
         """Sibling to `_fetch_rows` for routes with no `series` facet at all (confirmed
@@ -87,7 +87,12 @@ class EIAClient:
         Rows are selected by {fueltypeid, sectorid, location} instead of a series id, and
         the value lives under the requested `data[0]` key itself (`data_key`), not under
         a fixed "value" field -- so this cannot reuse `_fetch_rows`'s params shape,
-        though the paging loop is identical."""
+        though the paging loop is identical.
+
+        `locations` may hold several codes -- confirmed live, `facets[location][]`
+        accepts a repeated value exactly like `facets[series][]` does elsewhere in this
+        client, and each returned row carries its own `location`, so every code is
+        fetched in one paged request rather than one request per location."""
         rows: list[dict[str, Any]] = []
         offset = 0
 
@@ -98,7 +103,7 @@ class EIAClient:
                 "data[0]": data_key,
                 "facets[fueltypeid][]": fueltypeid,
                 "facets[sectorid][]": sectorid,
-                "facets[location][]": location,
+                "facets[location][]": locations,
                 "sort[0][column]": "period",
                 "sort[0][direction]": "desc",
                 "offset": offset,
@@ -124,40 +129,41 @@ class EIAClient:
         data_keys: list[str],
         fueltypeid: str,
         sectorid: str,
-        location: str,
+        locations: list[str],
         frequency: str,
     ) -> pd.DataFrame:
         """For routes shaped like electricity/electric-power-operational-data, which
         (confirmed live) have no `series` facet -- `get_series`/`_fetch_rows` cannot
         reach them at all. A row here is selected by combining `fueltypeid`, `sectorid`
-        and `location` facets, one `data_key` (e.g. "cost-per-btu") at a time; that key
-        also names both the value column and its `<data_key>-units` unit column in the
-        response, rather than the fixed "value"/"units" pair every other route in this
-        client uses.
+        and `location` facets, one `data_key` (e.g. "cost-per-btu") at a time across all
+        of `locations` in a single paged request; that key also names both the value
+        column and its `<data_key>-units` unit column in the response, rather than the
+        fixed "value"/"units" pair every other route in this client uses.
 
-        EIA gives no series id for this shape at all, so this project mints one:
+        EIA gives no series id for this shape at all, so this project mints one per row:
         `ELEC.<DATA_KEY>.<fueltypeid>-<location>-<sectorid>.<freq_code>`, e.g.
-        `ELEC.COST_PER_BTU.NG-US-98.M` -- deterministic from the request's own facets,
+        `ELEC.COST_PER_BTU.NG-US-98.M` -- deterministic from the row's own facets,
         documented in pipelines/eia/NOTES.md, and permanent once written."""
         pulled_at = datetime.now(UTC)
         freq_code = _FREQUENCY_CODES.get(frequency, frequency)
         frames: list[pd.DataFrame] = []
         for key in data_keys:
             rows = self._fetch_operational_rows(
-                route, key, fueltypeid, sectorid, location, frequency
+                route, key, fueltypeid, sectorid, locations, frequency
             )
             # Some real states return a literal null for the latest month rather than
             # being absent (confirmed live, pipelines/eia/NOTES.md) -- guard here too,
-            # matching get_series's own null handling.
+            # matching get_series's own null handling. Never fabricate a value for these.
             rows = [row for row in rows if row.get(key) is not None]
-            series_id = (
-                f"ELEC.{key.upper().replace('-', '_')}.{fueltypeid}-{location}-{sectorid}"
-                f".{freq_code}"
-            )
+            key_id = key.upper().replace("-", "_")
             frames.append(
                 pd.DataFrame(
                     {
-                        "series_id": series_id,
+                        "series_id": [
+                            f"ELEC.{key_id}.{fueltypeid}-{row['location']}-{sectorid}"
+                            f".{freq_code}"
+                            for row in rows
+                        ],
                         "source": "eia",
                         "ts": pd.to_datetime([row["period"] for row in rows]),
                         "value": [float(row[key]) for row in rows],

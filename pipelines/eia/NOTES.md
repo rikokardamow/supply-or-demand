@@ -341,18 +341,47 @@ different `params` shape.
 
 **Series-ID scheme (minted, since EIA gives this route no id at all):**
 `ELEC.<DATA_KEY_UPPER_SNAKE>.<fueltypeid>-<location>-<sectorid>.<freq_code>`, e.g.
-`ELEC.COST_PER_BTU.NG-US-98.M` and `ELEC.CONSUMPTION_FOR_EG.NG-US-98.M` — deterministic
-from the request's own facets (uppercase the `data_key`, hyphens to underscores; `M`
-from `_FREQUENCY_CODES` in `client.py`), following EIA's own native dotted-with-hyphens
+`ELEC.COST_PER_BTU.NG-US-98.M` and `ELEC.COST_PER_BTU.NG-TX-98.M` — deterministic from
+each row's own facets (uppercase the `data_key`, hyphens to underscores; `M` from
+`_FREQUENCY_CODES` in `client.py`), following EIA's own native dotted-with-hyphens
 convention (`ELEC.<short>.<fuel>-<geo>-<sector>.<freq>`), not the lowercase-dotted style
 Specs 17–29 use for this lake's other series ids. `pull_prices.GENERATOR_FUEL =
 ["cost-per-btu", "consumption-for-eg"]` is the two `data_key`s requested, fixed to
-`fueltypeid=NG`, `sectorid=98` ("Electric Power" aggregate) and `location=US` (national
-scope only — Task 2 does not pull the by-state breakdown Task 0 used to find the
-non-null location codes). Confirmed live: 306 rows each key, no nulls for `US`,
-`cost-per-btu` unit `"dollars per million Btu"` (stored unconverted, per binding
-constraint), `consumption-for-eg` unit `"thousand Mcf"`. These ids are permanent once
-written to the lake.
+`fueltypeid=NG` and `sectorid=98` ("Electric Power" aggregate). These ids are permanent
+once written to the lake.
+
+**State-level, not national-only — corrected after an initial national-only submission
+was reviewed against the spec.** Spec 30's own chart (`specs/30_eia-price-coverage.md`
+line 122, "State delivered gas cost to generators vs Henry Hub, with the spread
+annotated") needs the *dispersion* across states; a single US average washes out
+exactly what the chart exists to show. `pull_prices.GENERATOR_FUEL_LOCATIONS = ["US",
+"TX", "CA", "PA", "LA", "OH", "NY", "IL", "NJ", "MI"]` — the same 10 codes Task 0
+confirmed live (2026-09-06) carry a real, non-null `cost-per-btu` for the latest month
+(`US` kept as the national benchmark line the state series are compared against).
+`FL`, `NC`, `GA`, `AZ`, `CO`, `OK`, `WV`, `WA` were checked the same way and excluded —
+each returned `cost-per-btu: null` for 2026-06 rather than a real value. `location`
+mixes real states with census-division aggregates under one facet with no separating
+facet, so this list cannot be extended by pattern; any new state needs the same
+non-null check Task 0 did, not a guess.
+
+`EIAClient._fetch_operational_rows`/`get_operational_series` take a `locations:
+list[str]`, not a single code — confirmed live that `facets[location][]` accepts a
+repeated value exactly like `facets[series][]` does elsewhere in this client, so all 10
+locations are fetched in one paged request per `data_key` (2 requests total, each
+row tagged with its own `location`), not one request per location. Confirmed live,
+2026-09-06: `cost-per-btu`, 3,060 raw rows across the 10 locations (306 each), with
+164/32/75/28/15/14/43/16/14 nulls dropped on LA/MI/IL/CA/NJ/NY/OH/PA/TX respectively
+(0 on `US`) — all 10 locations still non-null for the latest month (2026-06) after
+filtering, matching Task 0's finding exactly. `consumption-for-eg`: 3,060 raw rows, 0
+nulls anywhere. Final pulled frame: 5,719 rows across both data keys and all 10
+locations, e.g. `TX`: 598 rows, `LA`: 448 rows (fewest — most nulls dropped, still
+correctly included since its *latest* value is real). Null rows are always skipped, per
+`get_series`'s own established convention — never fabricated as zero.
+
+The test covering this route (`tests/test_eia_prices.py::
+test_generator_fuel_cost_returns_valid_ts_long`) asserts `set(df["geo"]) ==
+set(GENERATOR_FUEL_LOCATIONS)` specifically because a regression back to national-only
+would otherwise still pass every other assertion on that test.
 
 `pipelines/eia/pull_prices_weekly.py` is a thin re-export of `pull_prices.main_weekly`
 (the `petroleum/pri/gnd` retail-price pull, `WEEKLY_GROUPS`), matching

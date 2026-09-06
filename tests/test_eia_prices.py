@@ -77,6 +77,10 @@ def test_generator_fuel_cost_returns_valid_ts_long() -> None:
 
     validate_ts_long(df)
     assert not df.empty
+    # A regression to national-only would still pass every assertion above -- this is
+    # the one that would actually catch it. Spec 30's chart needs the state-level
+    # dispersion, not a single national average (pipelines/eia/NOTES.md).
+    assert set(df["geo"]) == set(pull_prices.GENERATOR_FUEL_LOCATIONS)
 
 
 def test_monthly_and_weekly_groups_are_disjoint() -> None:
