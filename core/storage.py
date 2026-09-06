@@ -199,6 +199,32 @@ def _write_partitioned(
                 part.unlink()
 
 
+def _drop_rows_with_no_value(df: pd.DataFrame, source: str) -> pd.DataFrame:
+    """Rows whose `value` is NaN carry no observation. This project's rule is that absent
+    means absent -- a missing reading is a row that isn't there, never a row asserting
+    nothing (the same reasoning as pipelines/futures writing `oi` as None and dropping it
+    rather than faking 0.0).
+
+    Not cosmetic. `core.seasonal._daily_ffill_by_year` forward-fills each year onto a
+    dense daily grid by reindexing: that bridges an *absent* date, but leaves an explicit
+    NaN exactly where it is, and the NaN then blocks the fill for every following day
+    until the next real reading. Measured against the real lake -- FRED publishes NaN on
+    market holidays and ENTSO-E publishes it for a generation type a zone does not have,
+    and those 7,303 rows were punching holes straight through the seasonal bands the
+    series feed.
+
+    Dropped here rather than rejected in `validate_ts_long`, deliberately: a NaN from an
+    upstream API is routine, not a programming error, and raising on it would turn every
+    market holiday into a failed overnight pull. The count is printed so the drop is
+    visible in the run log rather than silent."""
+    missing = df["value"].isna()
+    if not missing.any():
+        return df
+    print(f"{source}: dropped {int(missing.sum())} row(s) with no value", flush=True)
+    kept: pd.DataFrame = df.loc[~missing].reset_index(drop=True)
+    return kept
+
+
 def write_ts_long(df: pd.DataFrame, source: str) -> None:
     validate_ts_long(df)
     # Belt and braces alongside the read-side CAST fix above: a caller whose own
@@ -208,6 +234,7 @@ def write_ts_long(df: pd.DataFrame, source: str) -> None:
     # float64 per TS_LONG_SCHEMA -- validate_ts_long's own numeric-dtype check accepts
     # int64 as "numeric", so it doesn't catch this on its own.
     df = df.astype({"value": "float64"})
+    df = _drop_rows_with_no_value(df, source)
     _write_partitioned(
         df,
         dataset="ts_long",
