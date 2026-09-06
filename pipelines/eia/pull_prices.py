@@ -21,7 +21,7 @@ import pandas as pd
 from core.failures import failure_scope, record_failure
 from core.storage import write_ts_long
 
-from pipelines.eia.client import EIAClient
+from pipelines.eia.client import _FREQUENCY_CODES, EIAClient
 
 # Refiner acquisition cost of crude oil -- composite, domestic and imported, US and
 # PADD level. The price refiners actually paid, as opposed to what the benchmark
@@ -120,7 +120,14 @@ GENERATOR_FUEL_LOCATIONS: list[str] = [
     "US", "TX", "CA", "PA", "LA", "OH", "NY", "IL", "NJ", "MI"
 ]
 
-GENERATOR_FUEL: list[str] = ["cost-per-btu", "consumption-for-eg"]
+# GENERATOR_FUEL[0] is a load-bearing ordering assumption: a dashboard page picks the
+# cost series off this list by index. Reordering the plain list would silently plot
+# consumption-for-eg (thousand Mcf) on a $/MMBtu axis instead -- nothing would raise, the
+# chart would just be wrong. Named constants make that reorder/rename fail loudly here
+# instead (see tests/test_eia_prices.py), not silently on a chart.
+GENERATOR_FUEL_COST_KEY = "cost-per-btu"
+GENERATOR_FUEL_CONSUMPTION_KEY = "consumption-for-eg"
+GENERATOR_FUEL: list[str] = [GENERATOR_FUEL_COST_KEY, GENERATOR_FUEL_CONSUMPTION_KEY]
 
 MONTHLY_GROUPS: list[tuple[str, list[str], str]] = [
     ("petroleum/pri/rac2", RAC, "monthly"),
@@ -138,6 +145,26 @@ WEEKLY_GROUPS: list[tuple[str, list[str], str]] = [
 _GEO_MAPS: dict[str, dict[str, str]] = {
     LAND3_ROUTE: LANDED_COST_GEO_MAP,
 }
+
+
+def generator_fuel_series_id(data_key: str, location: str, frequency: str = "monthly") -> str:
+    """The series_id EIAClient.get_operational_series mints for a GENERATOR_FUEL row,
+    reproduced byte-identical -- see that method's docstring and pipelines/eia/NOTES.md's
+    "Series-ID scheme" note (`ELEC.<DATA_KEY>.<fueltypeid>-<location>-<sectorid>.<freq_code>`).
+
+    A dashboard page needs this same string to look up a series_id in the lake without
+    re-pulling from the API. Exported here, rather than left for the page to re-derive
+    independently, so there is exactly one implementation of the minting scheme -- a
+    route frequency change or a `_FREQUENCY_CODES` edit would otherwise make the client's
+    minted id and the page's guessed id silently diverge (see
+    tests/test_eia_prices.py::test_generator_fuel_series_id_helper_matches_the_client_minted_id,
+    which asserts this against a real client-produced series_id, not a hardcoded literal)."""
+    freq_code = _FREQUENCY_CODES.get(frequency, frequency)
+    key_id = data_key.upper().replace("-", "_")
+    return (
+        f"ELEC.{key_id}.{GENERATOR_FUEL_FUELTYPEID}-{location}-{GENERATOR_FUEL_SECTORID}"
+        f".{freq_code}"
+    )
 
 
 def pull_group(
