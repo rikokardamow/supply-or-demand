@@ -77,7 +77,12 @@ def test_equity_drawdown_chart_works_on_a_datetime_axis() -> None:
         "t",
         "u",
     )
-    assert fig.layout.title.text == "t"
+    # Built without raising on a datetime axis -- that is what this test guards.
+    assert len(fig.data) >= 2
+    # And since the 2026-09-06 restyle the section header owns the title, so the
+    # figure must not paint one of its own (tests/test_theme_titles.py enforces this
+    # across all the builders).
+    assert fig.layout.title.text is None
 
 
 # --- reaction curve ---------------------------------------------------------------
