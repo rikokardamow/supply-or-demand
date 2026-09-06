@@ -19,7 +19,38 @@ the module carries a migration to `go.Scattermap` specifically to work around it
 ## Goal
 
 The five Plotly map surfaces become Leaflet maps that read the design tokens, with
-click and hover behaviour that works rather than being worked around.
+click and hover behaviour that works rather than being worked around — and with **real
+boundary geometry instead of centroid dots**.
+
+## Boundary geometry (added 2026-09-06, at the user's request)
+
+The maps plot dots at centroids today: `components/geo_centroids.py` exists precisely
+because the app has no boundary data, so a PADD district is a dot in the middle of it and
+a bidding zone is a dot in the middle of a country. The original draft of this spec
+carried that limitation across unchanged. It should not.
+
+- **Source: Natural Earth, 1:110m, public domain.** Already this repo's geometry source —
+  `pipelines/weather/CLAUDE.md:143` records cartopy rendering coastlines from Natural
+  Earth shapefiles cached from `naturalearth.s3.amazonaws.com`.
+- **No new dependency.** Cartopy is installed and bundles shapely 2.1.2 and pyproj, so
+  simplification needs neither geopandas nor a system GEOS.
+- **Vendored, not fetched at runtime.** A page must never depend on a network fetch to
+  draw a map. A hand-run `build_geo.py` writes simplified GeoJSON into
+  `apps/dashboard/geo/`, which is committed — the same reasoning as `geo_centroids.py`
+  and `pipelines/weather/cities.csv`: stable geographic facts, kept small and local.
+- **PADDs are drawn as per-state polygons coloured by district**, not as dissolved
+  outlines. A PADD is defined as a group of states, so this renders the same choropleth
+  with no dissolve step, and keeps internal state borders, which are informative on a
+  stocks map.
+- **Known limit, deliberately accepted:** several ENTSO-E bidding zones are not whole
+  countries (Italy, SE1-SE4, NO1-NO5, DK1/DK2; DE_LU spans two). Those keep centroid
+  markers. Shading a whole country for a sub-national zone would state something false
+  about where the price applies.
+
+Basemap style: **CartoDB Positron** — OpenStreetMap data, restyled pale by CARTO so it
+sits under the overlay rather than competing with it. Same OSM source as today's
+`"open-street-map"` style; the attribution renders `© OpenStreetMap contributors © CARTO`
+because the licence requires it.
 
 ## Non-goals
 
@@ -123,6 +154,9 @@ no-token requirement, both of which still hold.
 
 - [ ] `basemap.leaflet_map` is the only place tiles, attribution and map colour are set.
 - [ ] All four surfaces render Leaflet maps reading `core/design.py` tokens.
+- [ ] PADD districts and country-shaped bidding zones render as real polygons, not dots.
+- [ ] Vendored geometry is committed, under 900 KB per file, and regenerable by `build_geo.py`.
+- [ ] Sub-national bidding zones fall back to markers, and the page says so.
 - [ ] `news_map` click selection works through `st_folium` return state; the
       `on_select` workaround and its docstring are gone.
 - [ ] Panning or zooming any map does not trigger a lake re-read.

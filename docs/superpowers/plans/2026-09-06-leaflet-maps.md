@@ -221,7 +221,131 @@ git commit -m "feat(maps): shared Leaflet basemap on design tokens"
 
 ---
 
-### Task 2: Migrate `padd_map` — the pilot, and the go/no-go gate
+### Task 2: Boundary geometry — real polygons, not centroid dots
+
+The maps plot centroid dots today (`components/geo_centroids.py` exists precisely
+because there is no boundary geometry). This task supplies it.
+
+**Files:**
+- Create: `apps/dashboard/geo/build_geo.py`
+- Create: `apps/dashboard/geo/us_states.geojson`, `apps/dashboard/geo/countries.geojson`
+- Create: `apps/dashboard/geo/regions.py`
+- Create: `tests/test_geo.py`
+
+**Interfaces:**
+- Produces:
+  - `regions.PADD_BY_STATE: dict[str, str]` — USPS code to `"PADD1"`..`"PADD5"`
+  - `regions.load_us_states() -> dict` and `regions.load_countries() -> dict` — parsed GeoJSON
+  - `regions.ZONE_BY_COUNTRY: dict[str, str]` — ISO-2 to ENTSO-E bidding zone, for zones that ARE a country
+
+**Source and licence.** Natural Earth (public domain), already this repo's geometry
+source — `pipelines/weather/CLAUDE.md:143` records cartopy rendering coastlines from
+Natural Earth shapefiles cached from `naturalearth.s3.amazonaws.com`. Cartopy is already
+installed and bundles shapely 2.1.2 and pyproj, so simplification needs **no new
+dependency** and no geopandas.
+
+**Why per-state polygons rather than dissolved PADD outlines.** A PADD is defined as a
+group of states, so colouring each state polygon by its PADD renders the same choropleth
+without a dissolve step — and it keeps internal state borders, which are informative on
+a stocks map. Draw internal borders as hairlines in `RULE`, PADD edges heavier.
+
+- [ ] **Step 1: Write the failing test**
+
+```python
+# tests/test_geo.py
+"""Vendored boundary geometry. The files are committed rather than downloaded at
+runtime: a page must not depend on a network fetch to draw a map, and the geometry is a
+stable geographic fact, matching the geo_centroids.py / cities.csv precedent."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "apps" / "dashboard"))
+
+from geo import regions  # noqa: E402
+
+GEO_DIR = Path(__file__).parent.parent / "apps" / "dashboard" / "geo"
+
+
+def test_every_lower_48_state_maps_to_a_padd() -> None:
+    states = {f["properties"]["postal"] for f in regions.load_us_states()["features"]}
+    unmapped = states - set(regions.PADD_BY_STATE)
+    assert unmapped == set(), f"states with no PADD: {sorted(unmapped)}"
+
+
+def test_padds_are_the_five_eia_districts() -> None:
+    assert set(regions.PADD_BY_STATE.values()) == {
+        "PADD1", "PADD2", "PADD3", "PADD4", "PADD5",
+    }
+
+
+def test_geometry_is_valid_geojson_and_small_enough_to_commit() -> None:
+    for name in ("us_states.geojson", "countries.geojson"):
+        path = GEO_DIR / name
+        assert path.exists(), f"{name} not vendored"
+        # Simplified geometry keeps the repo and the page payload sane.
+        assert path.stat().st_size < 900_000, f"{name} is {path.stat().st_size} bytes"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert data["type"] == "FeatureCollection"
+        assert data["features"], f"{name} has no features"
+
+
+def test_countries_carry_the_iso_code_the_lake_joins_on() -> None:
+    props = regions.load_countries()["features"][0]["properties"]
+    assert "iso_a2" in props
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+Run: `./.venv/Scripts/python.exe -m pytest tests/test_geo.py -v`
+Expected: FAIL — `ModuleNotFoundError: No module named 'geo'`
+
+- [ ] **Step 3: Write the build script**
+
+`apps/dashboard/geo/build_geo.py` is run by hand, not at import: it reads Natural Earth
+through cartopy's cached shapefile reader, simplifies with shapely, keeps only the
+properties the app joins on (`postal`, `name` for states; `iso_a2`, `name` for
+countries), and writes the two GeoJSON files. Use the 1:110m scale — 1:10m is far too
+heavy for a browser payload. Simplify with `shapely.simplify(tolerance=0.05,
+preserve_topology=True)` and drop coordinate precision to 4 decimals (~11 m), which is
+well beyond what a continental map resolves.
+
+Document at the top of the file: the Natural Earth version, the scale, the tolerance,
+and that regenerating it is a deliberate act, not part of any pipeline run.
+
+- [ ] **Step 4: Write `regions.py`**
+
+`PADD_BY_STATE` is a literal dict of all 50 states plus DC to their PADD, taken from
+EIA's own definitions. Write it out in full — it is a stable fact, and a hand-maintained
+table here matches `geo_centroids.py`'s own reasoning. `load_us_states()` and
+`load_countries()` read the vendored files with `@st.cache_data` so the parse happens
+once per session, not once per rerun.
+
+- [ ] **Step 5: Run the tests**
+
+Run: `./.venv/Scripts/python.exe -m pytest tests/test_geo.py -v`
+Expected: 4 passed. If a state is unmapped the test names it — fix the table, never the test.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add apps/dashboard/geo tests/test_geo.py
+git commit -m "feat(geo): vendor simplified Natural Earth boundaries and the PADD state map"
+```
+
+**Known limitation, to record in the module docstring rather than discover later:**
+several ENTSO-E bidding zones are NOT whole countries — Italy, Sweden (SE1-SE4), Norway
+(NO1-NO5) and Denmark (DK1/DK2) are split sub-nationally, and DE_LU spans two. Those
+zones stay on centroid markers until someone sources real zone geometry; `ZONE_BY_COUNTRY`
+covers only the zones that genuinely are a country, and the price map must fall back to a
+marker for the rest rather than shading a whole country wrongly.
+
+---
+
+### Task 3: Migrate `padd_map` — the pilot, and the go/no-go gate
 
 **Files:**
 - Modify: `apps/dashboard/components/padd_map.py`
@@ -229,10 +353,35 @@ git commit -m "feat(maps): shared Leaflet basemap on design tokens"
 
 - [ ] **Step 1: Rewrite the renderer**
 
-Replace the `go.Figure` / `go.Scattermapbox` construction with `leaflet_map(...)` plus
-`folium.CircleMarker` for PADD nodes and `folium.PolyLine` for flows, keeping the exact
-lat/lon and colour logic already in the file. Each marker gets
-`tooltip=folium.Tooltip(<label>)` — that is the hover layer, client-side, no rerun.
+Replace the `go.Figure` / `go.Scattermapbox` construction with `leaflet_map(...)` and a
+real choropleth — this is the surface that stops being dots:
+
+```python
+states = regions.load_us_states()
+folium.GeoJson(
+    states,
+    name="PADD districts",
+    style_function=lambda feature: {
+        "fillColor": _padd_fill(regions.PADD_BY_STATE[feature["properties"]["postal"]]),
+        "color": RULE,          # hairline internal state borders
+        "weight": 0.6,
+        "fillOpacity": 0.75,
+    },
+    highlight_function=lambda _: {"weight": 2, "color": NAVY},
+    tooltip=folium.GeoJsonTooltip(
+        fields=["name"], aliases=[""], sticky=False
+    ),
+).add_to(m)
+```
+
+`_padd_fill` maps a PADD to a step on a **single-hue** sequential ramp derived from
+`NAVY` — one hue, light to dark, never a rainbow, and never the categorical series
+colours (a PADD's shade encodes a magnitude, not an identity).
+
+Flows stay `folium.PolyLine`, keeping the exact lat/lon and `bearing_degrees` logic
+already in the file. Terminals and entry points keep `folium.CircleMarker` — a point
+facility genuinely is a point.
+
 Render with `render_map(m, key="padd_flow_map")`, leaving `returned` at `()`: this
 surface has no selection behaviour.
 
@@ -277,11 +426,11 @@ git commit -m "feat(maps): move the PADD map to Leaflet, and assert through the 
 
 ---
 
-### Task 3: Migrate `entsog_map`
+### Task 4: Migrate `entsog_map`
 
 **Files:** `apps/dashboard/components/entsog_map.py`
 
-- [ ] **Step 1: Rewrite with the same pattern as Task 2**
+- [ ] **Step 1: Rewrite with the same pattern as Task 3**
 
 Corridors become `folium.PolyLine` with `folium.plugins.PolyLineTextPath` (or a terminal
 `folium.RegularPolygonMarker`) for direction, coloured `NAVY` at capacity and
@@ -301,18 +450,27 @@ git commit -m "feat(maps): move the ENTSOG corridor map to Leaflet"
 
 ---
 
-### Task 4: Migrate `power_maps` (two surfaces)
+### Task 5: Migrate `power_maps` (two surfaces)
 
 **Files:** `apps/dashboard/components/power_maps.py`
 
-- [ ] **Step 1: `render_price_map()`**
+- [ ] **Step 1: `render_price_map()` — polygons where a zone is a country, markers where it isn't**
 
-Zone prices become `folium.CircleMarker` sized by volume and coloured on a single-hue
-sequential ramp — one hue, light to dark, never a rainbow. Tooltip: zone, price, hour.
+For every bidding zone in `regions.ZONE_BY_COUNTRY`, shade that country's polygon from
+`regions.load_countries()` on a single-hue sequential ramp by price — one hue, light to
+dark, never a rainbow, never the categorical series colours.
+
+For the zones that are **not** whole countries — Italy, SE1-SE4, NO1-NO5, DK1/DK2, and
+DE_LU which spans two — fall back to a `folium.CircleMarker` at the existing centroid,
+coloured on the same ramp. **Do not shade a whole country for a sub-national zone**: it
+would state something false about where that price applies. Add a one-line note under
+the map naming which zones are shown as points and why.
+
+Tooltip on both forms: zone, price, hour.
 
 - [ ] **Step 2: `render_flow_map()`**
 
-Cross-border flows follow Task 3's PolyLine pattern.
+Cross-border flows follow Task 4's PolyLine pattern.
 
 - [ ] **Step 3: Verify and commit**
 
@@ -323,7 +481,7 @@ git commit -m "feat(maps): move the ENTSO-E price and flow maps to Leaflet"
 
 ---
 
-### Task 5: Migrate `news_map` and retire the workaround
+### Task 6: Migrate `news_map` and retire the workaround
 
 The payoff task: `news_map.py:8-21` documents that `st.plotly_chart(on_select=...)` is
 unreliable for map traces, and the module carries a `go.Scattermap` migration purely to
@@ -367,7 +525,7 @@ git commit -m "feat(maps): real click selection on the news map, retiring the on
 
 ---
 
-### Task 6: Rules, cleanup, evidence
+### Task 7: Rules, cleanup, evidence
 
 **Files:** `CLAUDE.md`, `CHANGELOG.md`
 
