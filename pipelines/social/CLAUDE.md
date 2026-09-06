@@ -114,3 +114,37 @@ returned a full 30-message page for `XOM`. This is a smaller ticker/query set th
 Set B will eventually cover; Task 3's own pull is expected to surface genuine
 zero-row queries (thinly-traded tickers, narrow keyword searches) the way Adanos's
 OPEC/OPEC+ tickers did — that will be a finding for Task 3, not evidence of a bug here.
+
+## Task 1: the frozen twelve tickers (`pipelines/social/queries.py`)
+Ranked 2026-09-06 by mean `adanos.reddit.<ticker>.buzz_score`, taken directly off
+`pipelines/adanos/tickers.py`'s 57-ticker universe. The basis is honestly narrow:
+this is **not** "over the Adanos history" — there is no history yet. It is the
+single day of Adanos data present in the lake, all timestamped 2026-09-03 (one
+pull, 57 rows total). Of those 57 tickers, 45 had nonzero buzz on that day, so the
+ranking was genuinely differentiated rather than noise, but it is still a one-day
+snapshot and will not be recomputed as more days accumulate — the set is frozen
+per Spec 29 because series IDs built from it are permanent.
+
+The chosen twelve, in the order the ranking produced them (highest mean
+`buzz_score` first):
+
+```
+CVX, XOM, USO, BP, CCJ, XLE, COP, SU, SLB, PBR, NEE, CNQ
+```
+
+Full one-day ranking as observed (mean `buzz_score` on 2026-09-03; all 57 tickers,
+descending): CVX 66.8, XOM 64.4, USO 55.2, BP 49.7, CCJ 47.2, XLE 45.0, COP 41.8,
+SU 38.0, SLB 36.3, PBR 35.7, NEE 35.0, CNQ 34.7, FSLR 34.4, ENPH 32.9, OXY 30.8,
+EQT 29.0, PSX 27.3, VLO 26.8, TAN 26.6, EPD 26.0, AMLP 25.5, OKE 25.3, NOV 25.1,
+UEC 25.0, UUUU 25.0, MPC 24.9, ET 24.1, TTE 23.1, HAL 22.9, CVE 22.7, EOG 22.7,
+XOP 22.3, BKR 20.9, UNG 19.8, E 19.4, VDE 18.2, EQNR 16.9, FANG 16.7, SHEL 16.6,
+WDS 15.1, URA 14.1, BEP 13.9, PBF 13.1, IXC 13.0, LNG 12.4, then 12 tickers at
+exactly 0.0 buzz (AR, ARADEL, DVN, BTU, GKP, GENL, SEPLAT, OANDO, ICLN, OIH, KMI,
+WMB).
+
+Note the frozen twelve include index/ETF and non-US tickers (USO, XLE, BP, CCJ,
+SU, PBR, CNQ) alongside the US majors — this reflects Reddit buzz on 2026-09-03
+as actually observed, not a curated "energy majors" shortlist. `SUBREDDITS` is
+deliberately not defined in `queries.py`: Reddit's fetch strategy (subreddit list
+vs. one site-wide request per subject) is Task 2's decision, gated on whether
+site-wide search works within the ~60-second rate limit recorded above.
