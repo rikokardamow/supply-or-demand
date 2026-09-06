@@ -19,6 +19,7 @@ import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
 from core.macro import deflate, index_to, to_currency
+from core.sentiment import DEFAULT_CORRELATION_WINDOW, agreement_rate, overlap, rolling_correlation
 from core.storage import read_ts_long
 from core.theme import (
     GREY,
@@ -30,6 +31,7 @@ from core.theme import (
     simple_time_series_chart,
 )
 from pipelines.adanos.tickers import PLATFORMS, TICKERS
+from pipelines.social.queries import TICKER_QUERIES, TOPIC_QUERIES
 
 INDEX_BASE_PERIOD = "2018-01-01"
 RANGE_DAYS = {"1Y": 365, "3Y": 1095, "5Y": 1825, "10Y": 3650, "All": None}
@@ -290,6 +292,175 @@ def _adanos_sentiment_section() -> None:
     )
 
 
+def _social_comparison_section() -> None:
+    """Reddit only -- Set A (TICKER_QUERIES) exists solely to give an
+    apples-to-apples overlap against Adanos for the same ticker/platform/day
+    (see pipelines/social/queries.py)."""
+    ticker = st.selectbox("Ticker", options=TICKER_QUERIES, key="social_ticker")
+    result = overlap(ticker, platform="reddit")
+    if result.frame.empty:
+        st.info(
+            "No overlapping Adanos/self-hosted days yet — run "
+            "`pipelines/social/pull_social.py`."
+        )
+        return
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=result.frame["ts"],
+            y=result.frame["adanos"],
+            name="Adanos (vendor)",
+            mode="lines",
+            line={"color": NAVY, "width": 2},
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=result.frame["ts"],
+            y=result.frame["social"],
+            name="Self-hosted",
+            mode="lines",
+            line={"color": LIGHT_BLUE, "width": 2},
+        )
+    )
+    fig.add_annotation(
+        x=result.frame["ts"].iloc[-1],
+        y=result.frame["social"].iloc[-1],
+        text=(
+            f"{result.overlap_days} overlapping days · "
+            f"{result.dropped_days} dropped · "
+            f"{agreement_rate(result.frame):.0%} sign agreement"
+        ),
+        showarrow=True,
+        xanchor="right",
+    )
+    fig.update_layout(
+        title=f"{ticker} sentiment — vendor vs self-hosted",
+        yaxis_title="Sentiment (-1 to +1)",
+    )
+    with card(f"{ticker}: Adanos vs self-hosted"):
+        st.plotly_chart(fig, use_container_width=True)
+        if result.overlap_days < 10:
+            st.warning(
+                f"Only {result.overlap_days} overlapping days — too few to read as "
+                "a finding. Both series need more history before the gap between "
+                "them means anything."
+            )
+
+
+def _social_deviation_section() -> None:
+    """Keyed off the same `social_ticker` selection as the comparison chart
+    above -- Streamlit reruns top-to-bottom, so session_state already carries
+    the choice by the time this section runs."""
+    ticker = st.session_state.get("social_ticker", TICKER_QUERIES[0])
+    result = overlap(ticker, platform="reddit")
+    if result.frame.empty:
+        return
+
+    disagree = result.frame["adanos"] * result.frame["social"] < 0
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=result.frame["ts"],
+            y=result.frame["gap"],
+            name="Self-hosted - Adanos",
+            marker={"color": [RED if d else NAVY for d in disagree]},
+        )
+    )
+    fig.update_layout(
+        title=f"{ticker} deviation (self-hosted - Adanos)", yaxis_title="Difference"
+    )
+
+    window = DEFAULT_CORRELATION_WINDOW
+    latest_corr = rolling_correlation(result.frame, window=window).dropna()
+    if latest_corr.empty:
+        corr_caption = (
+            f"Rolling correlation ({window}-day window): not enough overlapping "
+            "days yet for a reading."
+        )
+    else:
+        corr_caption = (
+            f"Rolling correlation ({window}-day window): latest = "
+            f"{latest_corr.iloc[-1]:.2f}."
+        )
+
+    with card("Deviation"):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            f"Computed over {result.overlap_days} overlapping days "
+            f"({result.dropped_days} dropped, where only one source reported that "
+            "day). Red bars mark days where the two sources disagree on sign."
+        )
+        st.caption(corr_caption)
+        if result.overlap_days < 10:
+            st.warning(
+                f"Only {result.overlap_days} overlapping days — too thin to read "
+                "this deviation as a finding rather than noise."
+            )
+
+
+def _social_topic_attention_section() -> None:
+    """Set B -- commodity/geopolitical topics Adanos cannot express at all,
+    since it is a ticker-basket product. Reddit only: `post_count` has no
+    Adanos counterpart to compare against."""
+    ids = [f"social.reddit.{q['slug']}.post_count" for q in TOPIC_QUERIES]
+    df = read_ts_long(series_ids=ids)
+    if df.empty:
+        st.info("No social topic data yet — run `pipelines/social/pull_social.py`.")
+        return
+
+    df = df.copy()
+    df["topic"] = df["series_id"].str.split(".").str[2]
+    latest = df.sort_values("ts").groupby("topic", as_index=False).last()
+    latest = latest.sort_values("value", ascending=False)
+
+    fig = go.Figure(go.Bar(x=latest["topic"], y=latest["value"], marker={"color": NAVY}))
+    fig.update_layout(title="Latest post counts by topic", yaxis_title="Posts")
+    with card("Topic attention"):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "These topics have no Adanos counterpart — a ticker basket cannot "
+            "express them. Attention only, not sentiment."
+        )
+
+
+def _social_polymarket_attention_section() -> None:
+    """Polymarket has no keyword search -- `q`/`search` are silently ignored
+    (confirmed live, see pipelines/social/CLAUDE.md) -- so it contributes one
+    tag-level attention series (`social.polymarket.energy.*`), never a
+    per-topic view the way Reddit does above."""
+    series = _series_by_ts("social.polymarket.energy.post_count")
+    if series.empty:
+        st.info(
+            "No Polymarket attention data yet — run `pipelines/social/pull_social.py`."
+        )
+        return
+
+    fig = simple_time_series_chart(
+        series, title="Polymarket 'energy' tag — post count", unit="Posts"
+    )
+    with card("Polymarket attention (tag-level)"):
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "Polymarket has no keyword search, so this is attention on the whole "
+            "'energy' tag, not any single ticker or topic."
+        )
+
+
+def _social_sentiment_section() -> None:
+    _social_comparison_section()
+    _social_deviation_section()
+    _social_topic_attention_section()
+    _social_polymarket_attention_section()
+    kardamow_take(
+        "Two independent readings of the same chatter, shown side by side rather "
+        "than averaged into one. Where they disagree, neither is authoritative — "
+        "the gap is the information. Attention and flow data, never a trading "
+        "signal."
+    )
+
+
 st.title("Macro & FX")
 
 range_label = st.segmented_control(
@@ -311,3 +482,6 @@ _esi_heat_strip_section()
 
 st.subheader("Energy-sector sentiment (Adanos)")
 _adanos_sentiment_section()
+
+st.subheader("Self-hosted social sentiment")
+_social_sentiment_section()
