@@ -8,26 +8,29 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
 
+# The `X as X` names are deliberately RE-EXPORTED: pages import the series palette from
+# core.theme (e.g. pages/01_us_padd.py:19) and those imports must keep working now that
+# the values live in core/design.py. The redundant alias is PEP 484's explicit
+# re-export form; mypy runs strict (so no_implicit_reexport), and without it every page
+# importing a colour from here fails with "does not explicitly export attribute".
+# The plain names (BODY_STACK, MUTED, PAPER, RULE, TEXT) are chrome tokens used inside
+# this module only, and are deliberately NOT part of core.theme's surface.
 from core.design import (
-    BAND,
+    BAND as BAND,
     BODY_STACK,
-    GREY,
-    GRID,
-    LIGHT_BLUE,
+    GREY as GREY,
+    GRID as GRID,
+    LIGHT_BLUE as LIGHT_BLUE,
     MUTED,
-    NAVY,
-    ORANGE,
+    NAVY as NAVY,
+    ORANGE as ORANGE,
     PAPER,
-    RED,
+    RED as RED,
     RULE,
     TEXT,
-    TRANSPARENT,
+    TRANSPARENT as TRANSPARENT,
 )
 from core.seasonal import REFERENCE_YEAR
-
-# These are also re-exported: pages import NAVY/RED/... from core.theme (e.g.
-# pages/01_us_padd.py:19). Those imports keep working -- but the values now live in
-# core/design.py, so chrome and charts cannot drift apart the way they had.
 
 _MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
 _DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]

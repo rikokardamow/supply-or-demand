@@ -1080,7 +1080,7 @@ better of each competing title; use these exact strings for `section()`:
 |---|---|
 | `20_cracks.py` | `"Refiner acquisition cost vs WTI and Brent spot"` — settled by their commit `5a90098` |
 | `20_cracks.py` | `"Landed cost of imported crude by API gravity band"` — "imported crude" is load-bearing, do not shorten |
-| `20_cracks.py` | `"Retail pump prices"` — the card string wins here; the chart's "Retail gasoline and diesel" reads worse as a heading |
+| `20_cracks.py` | `"Retail-to-wholesale margin"` — the card string wins; the chart's "US retail gasoline vs NY Harbor wholesale, with the margin" is a mouthful as a heading. Changed by their commit `b9ccb0d`, which rebuilt this section: it now shows 2 series (retail vs wholesale, with the margin annotated) instead of 12 pump-price levels |
 | `05_us_gas_power.py` | `"State cost of natural gas delivered to generators vs Henry Hub"` |
 
 New functions to migrate alongside the existing ones: `_acquisition_cost_section`,
