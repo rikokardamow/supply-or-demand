@@ -81,14 +81,18 @@ behind underscore-private functions — `_fetch_subreddit(...) -> list[dict]`,
 this pipeline is adapted rather than imported: there is no public function that
 returns structured rows, only prompt-ready prose. Two more things confirmed live in
 that same file, independently corroborating findings above rather than merely
-matching them: `_fetch_subreddit_rss`'s own docstring says RSS "carries no score /
-comment counts, so those fields are left `None`" (matches this pipeline's own
+matching them: `_fetch_subreddit_rss`'s own docstring says "Carries no score /
+comment counts, so those fields are left None" (matches this pipeline's own
 no-score/no-comment-count finding), and it already implements a 429 back-off
 honouring `Retry-After` before giving up (matches the Reddit rate-limit gotcha
 found independently above) — plus a detail this session's probes did not test:
-`_fetch_subreddit_json`'s docstring records Reddit's richer JSON search endpoint as
-"reliably WAF-blocked (`403 Blocked`) for public clients (issue #862)", which is why
-upstream defaults to RSS.
+Reddit's richer JSON search endpoint being WAF-blocked, tracked as issue #862.
+Two separate docstrings describe this, worded differently and not
+interchangeable: the module docstring says the endpoint "is reliably
+WAF-blocked (`HTTP 403`) for public clients (issue #862)", while
+`_fetch_subreddit_json`'s own docstring separately says "Reddit's WAF currently
+returns `403 Blocked` on this endpoint for non-OAuth clients (issue #862)" —
+either way, that is why upstream defaults to RSS.
 
 Attribution recorded verbatim in the repo-root `NOTICE` file:
 
