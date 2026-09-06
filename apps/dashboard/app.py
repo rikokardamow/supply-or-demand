@@ -40,4 +40,4 @@ with card("Lake status"):
         "own expected pull cadence (see core/freshness.py) — 🟢 within cadence, "
         "🟡 up to 2x cadence, 🔴 beyond that."
     )
-    st.dataframe(report, use_container_width=True, hide_index=True)
+    st.dataframe(report, hide_index=True)

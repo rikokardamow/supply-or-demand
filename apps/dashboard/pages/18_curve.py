@@ -99,7 +99,7 @@ with tab_curve, card(f"{root.upper()} Curve Strip"):
         fig = curve_strip_chart(
             curves, spread_bars, title=f"{root.upper()} Curve Strip", unit="USD"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(f"Source: fut.{root}.*.settle (pipelines/futures), unadjusted ranks.")
 
 with tab_spreads, card(f"{root.upper()} s12 Spread History"):
@@ -133,7 +133,7 @@ with tab_spreads, card(f"{root.upper()} s12 Spread History"):
         )
         fig.add_hline(y=0, line_dash="dash", line_color=GREY)
         fig.update_layout(title=f"{root.upper()} s12 (f01-f02)", yaxis_title="USD")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(f"Source: derived.spread.{root}.s12 (pipelines/derived/curve.py).")
 
 with tab_convexity:
@@ -160,7 +160,7 @@ with tab_convexity:
             )
             fig.add_hline(y=0, line_dash="dash", line_color=GREY)
             fig.update_layout(title=f"{root.upper()} Convexity (cv123)", yaxis_title="USD")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(f"Source: derived.curve.{root}.cv123.")
 
     with card(f"{root.upper()} Regime"):
@@ -176,10 +176,10 @@ with tab_convexity:
                 unadj["f01"], state_codes, state_labels,
                 title=f"{root.upper()} Price & Regime", unit="USD",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(f"Source: derived.curve.{root}.regime (states: {', '.join(REGIME_CODES)}).")
 
-            st.dataframe(transition_matrix(regime["state"]), use_container_width=True)
+            st.dataframe(transition_matrix(regime["state"]))
 
 with tab_storage:
     util_df = read_ts_long(series_ids=["derived.cushing.util", "derived.cushing.util_decile"])
@@ -200,7 +200,7 @@ with tab_storage:
                 util, decile, title="Cushing Utilisation vs Decile Rank",
                 left_label="Utilisation", right_label="Decile (1-10)",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(
                 "Source: derived.cushing.util / util_decile (EIA Cushing weekly stocks + "
                 "EIA's now-discontinued capacity report, forward-filled past 2024-03-01)."
@@ -235,7 +235,7 @@ with tab_storage:
                 title="Cushing Utilisation vs WTI s12", x_label="Utilisation", y_label="s12 (USD)",
                 annotations=annotations or None,
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption("Source: derived.cushing.util x derived.spread.cl.s12.")
 
 with tab_roll_cal:
@@ -243,7 +243,7 @@ with tab_roll_cal:
         gsci_cal = roll_calendar(as_of.year, "gsci").assign(index="GSCI")
         bcom_cal = roll_calendar(as_of.year, "bcom").assign(index="BCOM")
         combined = pd.concat([gsci_cal, bcom_cal]).sort_values("date").reset_index(drop=True)
-        st.dataframe(combined, use_container_width=True)
+        st.dataframe(combined)
         st.caption(
             "Source: core.calendars.roll_calendar -- real calendar arithmetic, no lake dependency."
         )
@@ -258,7 +258,7 @@ with tab_roll_cal:
             fig = bday_heatmap(
                 grid, title=f"{root.upper()} Δs12 around GSCI roll windows", unit="USD"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             st.caption(
                 f"Source: derived.spread.{root}.s12 (day-over-day Δ), aligned to GSCI's own "
                 "roll-calendar windows (core.calendars.roll_calendar)."
@@ -297,5 +297,5 @@ with tab_physical, card("DFL / Midland Diff Bands"):
         fig.add_hline(y=5, line_dash="dash", line_color=RED, annotation_text="Newman +$5")
         fig.add_hline(y=-5, line_dash="dash", line_color=RED, annotation_text="Newman -$5")
         fig.update_layout(title="WTI Midland Differential", yaxis_title="USD/bbl")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption("Source: manual.argus.wti_midland_diff (pipelines/manual_physical).")

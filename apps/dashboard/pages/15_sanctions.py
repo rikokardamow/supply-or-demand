@@ -59,7 +59,6 @@ with card(f"Full SDN table ({len(filtered)} of {len(sanctions)} shown)"):
         filtered[
             ["name", "entity_type", "programs", "energy_related", "status", "first_seen"]
         ].sort_values("first_seen", ascending=False),
-        use_container_width=True,
         hide_index=True,
     )
 
@@ -77,7 +76,6 @@ with card("Newly listed this week"):
         st.dataframe(
             new_this_week[["name", "entity_type", "programs", "energy_related", "first_seen"]]
             .sort_values(["energy_related", "first_seen"], ascending=[False, False]),
-            use_container_width=True,
             hide_index=True,
         )
 
@@ -88,7 +86,6 @@ with card("Vessel watchlist"):
     else:
         st.dataframe(
             vessels[["name", "vess_flag", "vess_owner", "programs", "imo"]].sort_values("name"),
-            use_container_width=True,
             hide_index=True,
         )
 
@@ -100,7 +97,6 @@ with card("Delisted"):
         st.dataframe(
             delisted[["name", "entity_type", "programs", "first_seen", "last_seen"]]
             .sort_values("last_seen", ascending=False),
-            use_container_width=True,
             hide_index=True,
         )
 

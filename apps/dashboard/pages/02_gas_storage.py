@@ -133,7 +133,7 @@ def _fullness_bars_section(geo: str) -> None:
         title=f"{geo} Storage Fullness",
     )
     with card(f"{geo} Storage Fullness"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
         injection = _series_by_ts(f"agsi.{geo}.injection")
         withdrawal = _series_by_ts(f"agsi.{geo}.withdrawal")
@@ -155,7 +155,7 @@ def _fullness_seasonal_section(geo: str) -> None:
         st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
         return
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         if geo == "EU":
             kardamow_take(
                 "Europe's storage is well behind its own median, and the current injection "
@@ -179,7 +179,7 @@ def _net_flow_seasonal_section(geo: str) -> None:
     title = f"{geo} Net Daily Injection/Withdrawal — Seasonal"
     fig = seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit="GWh/d")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure | None:
@@ -234,7 +234,7 @@ def _small_multiples_section() -> None:
                 continue
             fig.update_layout(height=320, showlegend=False)
             with card(f"{country} Fill %"):
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig)
                 take = _COUNTRY_TAKES.get(country)
                 if take is not None:
                     kardamow_take(take)
@@ -273,7 +273,7 @@ def _net_injection_vs_sendout_section() -> None:
     )
     add_event_markers(fig, commodity="gas")
     with card("EU Net Injection vs. ALSI Send-Out"):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         kardamow_take(
             "LNG send-out is running slightly ahead of net storage injection — the import "
             "terminals are doing more of the day-to-day balancing than the storage system "
@@ -305,7 +305,7 @@ def _country_deviation_section() -> None:
         yaxis_title="Deviation (percentage points)",
     )
     with card("Country Fill % vs. Seasonal Median (ranked)"):
-        st.plotly_chart(bar, use_container_width=True)
+        st.plotly_chart(bar)
         kardamow_take(
             "Rank the six by deviation from median and the split is geographic, not "
             "random — Poland and Italy near normal, Germany and the Netherlands the "

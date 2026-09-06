@@ -108,7 +108,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
 
     fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
     add_event_markers(fig, commodity="crude", x_axis="doy")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig)
     if take is not None:
         kardamow_take(take)
 
@@ -195,7 +195,7 @@ with tab_refining:
                 left_label="Gross inputs (Mbbl/d)",
                 right_label="Utilisation (%)",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig)
             if geo == "US":
                 kardamow_take(
                     "97.2% utilisation and gross inputs at 17,517 Mbbl/d — US refiners are "
@@ -234,7 +234,7 @@ with tab_flows:
             yaxis_title="Net receipts (Mbbl, +receiver / -sender)",
         )
         with card(f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month):%Y-%m}"):
-            st.plotly_chart(bar, use_container_width=True)
+            st.plotly_chart(bar)
             kardamow_take(
                 "The Gulf Coast pulled in a net 39,370 Mbbl in the latest month while the "
                 "Rockies and Midcontinent gave up 26,737 and 24,628 between them — PADD3's "
@@ -269,7 +269,7 @@ with tab_wpsr:
             }
         )
         with card("WPSR Summary"):
-            st.dataframe(styled, use_container_width=True)
+            st.dataframe(styled)
 
     stocks = _series_by_ts("WCESTUS1")
     product_supplied = _series_by_ts("WRPUPUS2")

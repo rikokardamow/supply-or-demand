@@ -86,7 +86,7 @@ def _headline_section() -> None:
         st.info("No data yet — run `pipelines/eia/pull_gas_storage.py`.")
         return
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _region_filter_panel() -> list[tuple[str, str]]:
@@ -132,7 +132,7 @@ def _small_multiples_section() -> None:
                 continue
             fig.update_layout(height=320, showlegend=False)
             with card(title):
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig)
 
 
 def _series_by_ts(series_id: str) -> pd.Series:
@@ -160,7 +160,7 @@ def _iso_mix_section(iso: str) -> None:
     title = f"{iso} Fuel Mix"
     fig = generation_mix_chart(wide[ordered_cols], title=title, unit="MW")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _iso_load_section(iso: str) -> None:
@@ -182,7 +182,7 @@ def _iso_load_section(iso: str) -> None:
         load, net, title=title, left_label="Load (MW)", right_label="Net load (MW)"
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _iso_lmp_section(iso: str) -> None:
@@ -195,7 +195,7 @@ def _iso_lmp_section(iso: str) -> None:
     title = f"{iso} {hub} LMP"
     fig = hour_day_heatmap(series.to_frame("value"), title=title, unit="USD/MWh")
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
 
 
 def _production_exports_section() -> None:
@@ -227,7 +227,7 @@ def _production_exports_section() -> None:
         right_label="LNG exports (MMcf)",
     )
     with card(title):
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig)
         st.caption(
             "LNG feedgas (gas consumed at liquefaction facilities before export) has no "
             "distinct EIA API series and is not shown — see pipelines/eia/NOTES.md."
