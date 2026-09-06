@@ -25,10 +25,9 @@ from core.theme import (
 )
 from pipelines.eia.pull_gas_storage import STORAGE_GEO_MAP
 from pipelines.eia.pull_prices import (
-    GENERATOR_FUEL,
-    GENERATOR_FUEL_FUELTYPEID,
+    GENERATOR_FUEL_COST_KEY,
     GENERATOR_FUEL_LOCATIONS,
-    GENERATOR_FUEL_SECTORID,
+    generator_fuel_series_id,
 )
 from pipelines.eia.pull_production_exports import LNG_EXPORTS_SERIES, PRODUCTION_SERIES
 from pipelines.gridstatus_iso.hubs import HUBS
@@ -250,26 +249,11 @@ def _production_exports_section() -> None:
         )
 
 
-# Spec 30: electricity/electric-power-operational-data has no `series` facet, so
-# pull_prices.py mints its own ids -- ELEC.<DATA_KEY>.<fueltypeid>-<location>-<sectorid>.
-# <freq_code> (see pipelines/eia/NOTES.md). "M" is the monthly freq_code this route is
-# pulled at (pull_prices.MONTHLY_GROUPS); reconstructed here rather than read off the lake
-# with an unfiltered read_ts_long(), matching the minted-id convention 20_cracks.py's own
-# derived-series ids already use on this page's sibling.
-_GENERATOR_FUEL_FREQ_CODE = "M"
 # Excludes NAVY (reserved for the US national line) and GREY (reserved for the Henry Hub
 # benchmark) so every colour on the chart carries one meaning. Cycled by index modulo its
 # length rather than zipped against GENERATOR_FUEL_LOCATIONS, so a longer state list in
 # future doesn't silently drop a series.
 _STATE_PALETTE = (LIGHT_BLUE, RED, ORANGE)
-
-
-def _generator_fuel_series_id(location: str) -> str:
-    key_id = GENERATOR_FUEL[0].upper().replace("-", "_")
-    return (
-        f"ELEC.{key_id}.{GENERATOR_FUEL_FUELTYPEID}-{location}-{GENERATOR_FUEL_SECTORID}"
-        f".{_GENERATOR_FUEL_FREQ_CODE}"
-    )
 
 
 def _delivered_fuel_cost_section() -> None:
@@ -278,7 +262,9 @@ def _delivered_fuel_cost_section() -> None:
     GENERATOR_FUEL_LOCATIONS holds US plus 9 states, and a single national average would
     wash out exactly the dispersion this chart exists to show. fred.dhhngsp was already
     in the lake as the benchmark."""
-    ids = [_generator_fuel_series_id(loc) for loc in GENERATOR_FUEL_LOCATIONS]
+    ids = [
+        generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, loc) for loc in GENERATOR_FUEL_LOCATIONS
+    ]
     df = read_ts_long(series_ids=ids)
     hh = read_ts_long(series_ids=["fred.dhhngsp"]).sort_values("ts")
     if df.empty:
@@ -288,14 +274,18 @@ def _delivered_fuel_cost_section() -> None:
     fig = go.Figure()
     states = [loc for loc in GENERATOR_FUEL_LOCATIONS if loc != "US"]
     for i, location in enumerate(states):
-        s = df[df["series_id"] == _generator_fuel_series_id(location)].sort_values("ts")
+        s = df[
+            df["series_id"] == generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, location)
+        ].sort_values("ts")
         if s.empty:
             continue
         fig.add_trace(
             go.Scatter(x=s["ts"], y=s["value"], name=location, mode="lines",
                        line={"color": _STATE_PALETTE[i % len(_STATE_PALETTE)], "width": 1.5})
         )
-    us = df[df["series_id"] == _generator_fuel_series_id("US")].sort_values("ts")
+    us = df[
+        df["series_id"] == generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, "US")
+    ].sort_values("ts")
     if not us.empty:
         fig.add_trace(
             go.Scatter(x=us["ts"], y=us["value"], name="US (national)", mode="lines",
@@ -306,6 +296,29 @@ def _delivered_fuel_cost_section() -> None:
             go.Scatter(x=hh["ts"], y=hh["value"], name="Henry Hub spot", mode="lines",
                        line={"color": GREY, "width": 2, "dash": "dot"})
         )
+
+    # Spec 30 line 124: the state-vs-Henry-Hub spread must be annotated, not just
+    # described in a caption. Only the US national line's spread is annotated (one
+    # annotation, not one per state -- ten would be noise) at the latest period the two
+    # series actually share; skipped rather than raised if they never overlap.
+    if not us.empty and not hh.empty:
+        us_by_ts = us.set_index("ts")["value"]
+        hh_by_ts = hh.set_index("ts")["value"]
+        overlap = us_by_ts.index.intersection(hh_by_ts.index)
+        if len(overlap):
+            latest = overlap.max()
+            spread = us_by_ts.loc[latest] - hh_by_ts.loc[latest]
+            sign = "+" if spread >= 0 else "-"
+            fig.add_annotation(
+                x=latest,
+                y=us_by_ts.loc[latest],
+                text=f"US {sign}${abs(spread):.2f} vs Henry Hub",
+                showarrow=True,
+                arrowhead=2,
+                ax=40,
+                ay=-30,
+            )
+
     fig.update_layout(
         title="State cost of natural gas delivered to generators vs Henry Hub",
         yaxis_title="$/MMBtu",

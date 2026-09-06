@@ -38,7 +38,7 @@ from core.theme import (
 )
 from core.vecm import backtest_positions, ect_signal, fit_vecm, forecast_eval, irf_table
 from pipelines.derived.vecm_refit import build_panel, read_legs, read_model_card
-from pipelines.eia.pull_prices import LANDED_COST, LANDED_COST_GEO_MAP, RAC, RETAIL
+from pipelines.eia.pull_prices import LANDED_COST, LANDED_COST_GEO_MAP, RAC
 
 SPOT_CRACKS = {
     "us321": "NYH 3:2:1",
@@ -207,27 +207,72 @@ def _landed_cost_section() -> None:
         )
 
 
+# US retail gasoline (all grades, all formulations) -- pipelines.eia.pull_prices.RETAIL[0],
+# referenced here by its own EIA series id rather than by list index, per the same lesson
+# Fix 1 (05_us_gas_power.py) drew: an index into a reorderable list is a silent-wrong-chart
+# risk, not a loud one.
+_US_RETAIL_GASOLINE = "EMM_EPM0_PTE_NUS_DPG"
+# NY Harbor conventional gasoline, $/gal -- one of the wholesale legs Spec 20 added to the
+# lake, and the benchmark the retail-to-wholesale margin below is measured against.
+_WHOLESALE_GASOLINE_NYH = "fred.dgasnyh"
+
+
 def _retail_margin_section() -> None:
-    df = read_ts_long(series_ids=list(RETAIL))
-    if df.empty:
-        st.info("No retail price data yet — run `pipelines/eia/pull_prices_weekly.py`.")
+    """Spec 30 lines 126-127: retail belongs beside its wholesale leg, as a secondary line
+    beneath the wholesale crack -- the point is the retail-to-wholesale margin, not the
+    pump price alone. Plots US retail gasoline against the NY Harbor wholesale leg and the
+    margin between them on its own axis, so the margin is a visible quantity rather than
+    something implied by eyeballing two overlapping lines."""
+    retail = read_ts_long(series_ids=[_US_RETAIL_GASOLINE]).sort_values("ts")
+    wholesale = read_ts_long(series_ids=[_WHOLESALE_GASOLINE_NYH]).sort_values("ts")
+    if retail.empty or wholesale.empty:
+        st.info(
+            "No retail or wholesale gasoline data yet — run "
+            "`pipelines/eia/pull_prices_weekly.py` and `pipelines/eia/pull_prices.py`."
+        )
         return
 
+    retail_by_ts = retail.set_index("ts")["value"]
+    wholesale_by_ts = wholesale.set_index("ts")["value"]
+    overlap = retail_by_ts.index.intersection(wholesale_by_ts.index)
+    margin = (retail_by_ts.loc[overlap] - wholesale_by_ts.loc[overlap]).sort_index()
+
     fig = go.Figure()
-    for i, series_id in enumerate(RETAIL):
-        s = df[df["series_id"] == series_id].sort_values("ts")
-        if s.empty:
-            continue
+    fig.add_trace(
+        go.Scatter(x=retail_by_ts.index, y=retail_by_ts.to_numpy(), name="US retail gasoline",
+                   mode="lines", line={"color": NAVY, "width": 2})
+    )
+    fig.add_trace(
+        go.Scatter(x=wholesale_by_ts.index, y=wholesale_by_ts.to_numpy(),
+                   name="NY Harbor wholesale gasoline", mode="lines",
+                   line={"color": LIGHT_BLUE, "width": 2})
+    )
+    if not margin.empty:
         fig.add_trace(
-            go.Scatter(x=s["ts"], y=s["value"], name=series_id, mode="lines",
-                       line={"color": _PRICE_PALETTE[i % len(_PRICE_PALETTE)], "width": 2})
+            go.Scatter(x=margin.index, y=margin.to_numpy(), name="Retail-wholesale margin",
+                       mode="lines", line={"color": RED, "width": 2}, yaxis="y2")
         )
-    fig.update_layout(title="Retail gasoline and diesel", yaxis_title="$/gal")
-    with card("Retail pump prices"):
+        latest = margin.index.max()
+        fig.add_annotation(
+            x=latest,
+            y=margin.loc[latest],
+            yref="y2",
+            text=f"Margin ${margin.loc[latest]:.2f}/gal",
+            showarrow=True,
+            arrowhead=2,
+            ax=40,
+            ay=-30,
+        )
+    fig.update_layout(
+        title="US retail gasoline vs NY Harbor wholesale, with the margin",
+        yaxis_title="$/gal",
+        yaxis2={"title": "Margin ($/gal)", "overlaying": "y", "side": "right"},
+    )
+    with card("Retail-to-wholesale margin"):
         st.plotly_chart(fig)
         st.caption(
-            "Shown beneath the wholesale crack deliberately — the interesting quantity "
-            "is the retail-to-wholesale margin, not the pump price alone."
+            "The margin (red, right-hand axis) between the pump price and the NY Harbor "
+            "wholesale leg is the interesting quantity here, not the pump price alone."
         )
 
 
