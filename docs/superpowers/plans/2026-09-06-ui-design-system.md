@@ -1070,7 +1070,7 @@ better of each competing title; use these exact strings for `section()`:
 
 | File | Section title to use |
 |---|---|
-| `20_cracks.py` | `"Refiner acquisition cost vs WTI spot"` — becomes `"...vs WTI and Brent spot"` if their in-flight Brent commit has landed; check the file, don't assume |
+| `20_cracks.py` | `"Refiner acquisition cost vs WTI and Brent spot"` — settled by their commit `5a90098` |
 | `20_cracks.py` | `"Landed cost of imported crude by API gravity band"` — "imported crude" is load-bearing, do not shorten |
 | `20_cracks.py` | `"Retail pump prices"` — the card string wins here; the chart's "Retail gasoline and diesel" reads worse as a heading |
 | `05_us_gas_power.py` | `"State cost of natural gas delivered to generators vs Henry Hub"` |
@@ -1078,6 +1078,12 @@ better of each competing title; use these exact strings for `section()`:
 New functions to migrate alongside the existing ones: `_acquisition_cost_section`,
 `_landed_cost_section`, `_retail_margin_section` (cracks); `_generator_fuel_series_id`,
 `_delivered_fuel_cost_section` (gas power).
+
+**Do not drop either reference line from the acquisition-cost chart in the name of
+visual cleanliness.** Domestic refiner acquisition cost tracks WTI; imported tracks
+Brent. With only one benchmark drawn, the imported series reads as persistently
+mispriced when it is simply following the other one. Both references are what make the
+composite/domestic/imported split legible. (From the peer session, which built it.)
 
 One merge conflict to expect: `05_us_gas_power.py`'s `from core.theme import ...` line
 was expanded from single-line to parenthesised multi-line to add `GREY, LIGHT_BLUE,
