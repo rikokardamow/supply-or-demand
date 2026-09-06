@@ -583,3 +583,29 @@ biodiesel/renewable-diesel-and-other/fuel-ethanol) and `feedbiofuel` (26 series,
 US-national feedstock inputs) both declare `monthly` only; sample codes from each
 (`M_EPOOXE_8BDPC_NUS_MMGL`, `M_EPOOBDSO_YIFBP_NUS_MMLB`) confirmed live with `geo="US"` and
 no nulls (66 and 68 rows respectively).
+
+## Task 1 (31A) — gas storage capacity, and a real unit mismatch with the storage volumes it denominates
+
+`pipelines/eia/pull_gas_capacity.py` pulls `natural-gas/stor/cap` (`monthly`) for the six
+codes Task 0 confirmed live above (L48/East/Midwest/SouthCentral aggregate/Mountain/
+Pacific), via `CAPACITY_GEO_MAP` and `EIAClient.get_series`'s `geo_map` parameter — required,
+not optional, since `area-name` is the literal string `"NA"` for every row on this route
+(same quirk as `natural-gas/stor/wkly`). Confirmed live 2026-09-06: 972 rows (162 per
+series × 6), 2013-01 to 2026-06, unit `MMCF` on every row, no nulls.
+
+**`SouthCentral_Salt` and `SouthCentral_Nonsalt` are deliberately absent from
+`CAPACITY_GEO_MAP`** — Task 0 confirmed no salt/non-salt split exists anywhere in this
+route's full 123-series facet dump (no series name or id contains "salt" or "non-salt").
+Six capacity regions against `STORAGE_GEO_MAP`'s eight storage regions is therefore correct
+coverage, not an omission — those two storage series have no capacity denominator of their
+own and will need to fall back to the South Central aggregate capacity (a coarser
+denominator) or display without a percent-full figure; not decided here.
+
+**Real unit mismatch, confirmed live — capacity is `MMCF`, storage volumes are `BCF`.**
+`pull_gas_storage.py`'s weekly series (`NW2_EPG0_SWO_*_BCF`) are billion cubic feet;
+`pull_gas_capacity.py`'s monthly series (`NGM_EPG0_SACW0_*_MMCF`) are million cubic feet —
+1 Bcf = 1,000 MMcf. Per this project's ingest-time convention (and this plan's own binding
+constraint), **both are stored exactly as EIA publishes them, unconverted** — `pull_capacity`
+does no unit reconciliation. Whatever computes the fullness ratio (storage ÷ capacity) must
+convert one side by ×1,000 first, or it will read as ~0.1% full instead of ~100% full. Flagged
+here for Task 3, which reads both series to build that ratio.
