@@ -271,8 +271,9 @@ independent reasons to leave it out of Spec 30:
 2. `RNGC1`..`RNGC4` are rank-labelled futures contracts — structurally identical to
    `petroleum/pri/fut`'s own `RCLC1`..`RCLC4` etc., which `pipelines/futures/eia_futures.py`
    already ingests into `fut.<root>.f01..f04.settle` (`source="eia"`) as part of **Spec
-   18**, not Spec 30. Spec 18's `core/curve.py` already treats `ng` as one of its 7 roots
-   (currently with zero real rows, since no IBKR/manual/barchart source covers it yet).
+   18**, not Spec 30. Spec 18's `pipelines/futures/client.py` already treats `ng` as one of
+   its 7 roots (currently with zero real rows, since no IBKR/manual/barchart source covers
+   it yet).
    Pulling `RNGC1`..`RNGC4` a second time via Spec 30's `pull_prices.py` would write the
    same underlying instrument under a second, separately-maintained convention — exactly
    the "same futures twice under two conventions" risk the brief calls out by name. If live
@@ -295,3 +296,28 @@ Bad Request` (no `series` facet on this route at all — see finding above; the 
 returned real series. `natural-gas/pri/rescom` returned real series but none usable at the
 national scope this family needs (see finding above) — a route that "worked" but
 contributed zero codes, not a route that failed.
+
+## Task 1 — a reviewer claim about `EMD_EPD2D_PTE_R50_DPG` checked and not upheld
+
+A Task 1 review raised a finding that `EMD_EPD2D_PTE_R50_DPG` (PADD5/West Coast No. 2
+diesel, one of `RETAIL`'s 12 codes in `pull_prices.py`) was effectively dead — "26 rows:
+1994-04 through 1994-09, plus one isolated point at 2010-09-13. Nothing since" — and should
+be dropped from `RETAIL`.
+
+**Checked live and via the already-recorded cassette, and not upheld.** A fresh
+`GET /v2/petroleum/pri/gnd/data/` for this exact series id (weekly, `sort=desc`,
+`length=5000`), run 2026-09-06, returned 1,694 rows spanning 1994-03-21 to **2026-08-31**
+(the same latest date as every other `RETAIL` code) with no gap in the period sequence
+larger than 14 days — i.e. no missing weeks anywhere in 32 years of history, let alone a
+16-year one. The cassette recorded for
+`tests/cassettes/test_eia_prices/test_retail_prices_are_weekly_and_dollars_per_gallon.yaml`
+shows the identical 1,694-row, 1994-03-21–2026-08-31 span for this series when loaded
+through `pull_prices.pull_group`. All 12 `RETAIL` codes, re-checked individually, report
+`total: 1744` (gasoline codes) or `total: 1694` (diesel codes) with `2026-08-31` as the
+latest period — none show the pattern the finding described. `EMD_EPD2D_PTE_R50_DPG` was
+**not** removed from `RETAIL`; it remains one of the 12 codes.
+
+Recorded here rather than silently dropped, per this file's own discipline of writing down
+findings a future session can check without re-walking the API — a later session hitting
+either version of this claim (dead series, or "no it isn't") should not have to redo this
+work from scratch.
