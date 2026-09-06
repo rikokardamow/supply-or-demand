@@ -172,6 +172,28 @@ def test_get_flows_returns_flows_schema_conformant_dataframe() -> None:
     assert (df["mode"] == "pipeline").all()
 
 
+def test_get_series_skips_rows_with_null_value(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Confirmed live (Spec 30 Task 0): natural-gas/pri/sum and pri/rescom return a
+    # literal JSON null for `value` on a meaningful fraction of early-history rows.
+    # float(None) used to crash the whole pull outright rather than skip the row.
+    client = EIAClient()
+    monkeypatch.setattr(
+        client,
+        "_fetch_rows",
+        lambda route, series, frequency: [
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1973-01",
+             "value": None, "units": "$/MCF"},
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1983-10",
+             "value": "3.50", "units": "$/MCF"},
+        ],
+    )
+
+    df = client.get_series(route="natural-gas/pri/sum", series=["N3050US3"], frequency="monthly")
+
+    assert len(df) == 1
+    assert df.iloc[0]["value"] == 3.50
+
+
 def _forbidden_response(url: str) -> requests.Response:
     response = requests.Response()
     response.status_code = 403
