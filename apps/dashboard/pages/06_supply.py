@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 from components.card import card
 from components.event_overlay import add_event_markers
-from core.storage import read_ts_long
+from components.lake import read_ts_long
 from core.theme import (
     production_vs_quota_chart,
     revision_waterfall_chart,

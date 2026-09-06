@@ -9,9 +9,10 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from core.storage import read_flows, read_ts_long
 from core.theme import NAVY, RED
 from pipelines.entsoe.zones import ZONES
+
+from components.lake import read_flows, read_ts_long
 
 _ARROWHEAD_FRACTION = 0.85
 

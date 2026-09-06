@@ -11,7 +11,7 @@ import pandas as pd
 import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
-from core.storage import read_sanctions_current
+from components.lake import read_sanctions_current
 
 NEWLY_LISTED_WINDOW_DAYS = 7
 

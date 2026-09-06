@@ -1,0 +1,8 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.12",
+  "extraPaths": ["apps/dashboard"],
+  "exclude": ["**/__pycache__", ".venv", "data", ".ruff_cache", ".mypy_cache", ".pytest_cache"],
+  "typeCheckingMode": "standard"
+}

@@ -19,6 +19,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
+from components.lake import read_ts_long
 from core.calendars import next_roll_window, roll_calendar
 from core.curve import (
     REGIME_CODES,
@@ -31,7 +32,6 @@ from core.curve import (
     time_spreads,
     transition_matrix,
 )
-from core.storage import read_ts_long
 from core.theme import (
     GREY,
     NAVY,

@@ -18,9 +18,10 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY
 from pipelines.entsog.transforms import latest_complete_date, pair_daily_totals
+
+from components.lake import read_flows
 
 _ARROWHEAD_FRACTION = 0.85
 _WINDOW_DAYS = 7

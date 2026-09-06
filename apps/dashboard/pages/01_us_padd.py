@@ -12,10 +12,10 @@ import streamlit as st
 from components.card import card
 from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
+from components.lake import read_flows, read_ts_long
 from components.padd_map import render_padd_flow_map
 from core.calendars import next_release
 from core.seasonal import seasonal_stats
-from core.storage import read_flows, read_ts_long
 from core.theme import NAVY, RED, dual_axis_chart, seasonal_range_chart
 from pipelines.eia.pull_wpsr import (
     GROSS_INPUTS,

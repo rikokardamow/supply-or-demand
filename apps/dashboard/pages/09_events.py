@@ -15,8 +15,9 @@ import pandas as pd
 import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
+from components.lake import read_events
 from components.news_map import render_news_map
-from core.storage import read_events, write_events
+from core.storage import write_events
 from core.theme import count_bar_chart
 from pipelines.news.kardamow_caption import generate_kardamow_caption
 from pipelines.news.newsapi_client import NewsAPIClient
@@ -95,6 +96,10 @@ with st.expander("Search NewsAPI (manual — not a scheduled source)"):
             st.info("No articles found for that query.")
         else:
             write_events(result, source="newsapi")
+            # Without this the rerun below reads the pre-write cache and the new
+            # articles simply don't appear -- for a full hour, with no error to
+            # explain it. Any future write path on this page needs the same line.
+            read_events.clear()
             st.success(f"Wrote {len(result)} event rows from NewsAPI.")
             st.rerun()
 

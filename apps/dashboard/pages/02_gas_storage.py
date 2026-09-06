@@ -11,8 +11,8 @@ import streamlit as st
 from components.card import card
 from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
+from components.lake import read_ts_long
 from core.seasonal import seasonal_stats
-from core.storage import read_ts_long
 from core.theme import (
     NAVY,
     RED,
