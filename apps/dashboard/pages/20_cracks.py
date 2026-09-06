@@ -152,13 +152,26 @@ def _acquisition_cost_section() -> None:
             go.Scatter(x=wti["ts"], y=wti["value"], name="WTI spot", mode="lines",
                        line={"color": GREY, "width": 1, "dash": "dot"})
         )
-    fig.update_layout(title="Refiner acquisition cost vs WTI spot", yaxis_title="$/bbl")
+    # Domestic acquisition cost tracks WTI; imported tracks Brent -- both reference lines
+    # are needed, or the imported line reads as persistently mispriced against WTI when it
+    # is simply following a different benchmark (specs/30_eia-price-coverage.md line 116).
+    brent = read_ts_long(series_ids=["fred.dcoilbrenteu"]).sort_values("ts")
+    if not brent.empty:
+        fig.add_trace(
+            go.Scatter(x=brent["ts"], y=brent["value"], name="Brent spot", mode="lines",
+                       line={"color": GREY, "width": 1, "dash": "dash"})
+        )
+    fig.update_layout(
+        title="Refiner acquisition cost vs WTI and Brent spot", yaxis_title="$/bbl"
+    )
     with card("Crude acquisition cost"):
         st.plotly_chart(fig)
         st.caption(
             "Composite, domestic and imported acquisition cost is what refiners paid; "
-            "the dotted line is the benchmark print. The gap between them is the part "
-            "a spot-only crack cannot see."
+            "the dotted and dashed lines are the WTI and Brent benchmark prints. Domestic "
+            "cost tracks WTI, imported cost tracks Brent — the gap between either "
+            "acquisition line and its own benchmark is the part a spot-only crack cannot "
+            "see."
         )
 
 
