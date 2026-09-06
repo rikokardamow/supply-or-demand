@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
+from core.seasonal import _daily_ffill_by_year
 from core.storage import (
     LAKE_ROOT,
     last_ts_by_source,
@@ -400,3 +401,56 @@ def test_a_partition_write_replaces_rather_than_accumulating_parts() -> None:
     assert [p.name for p in sorted(partition.glob("part-*.parquet"))] == ["part-0.parquet"]
     # The temporary file must never be visible to the read glob.
     assert list(partition.glob("*.parquet.tmp")) == []
+
+
+def test_validate_rejects_an_unexpected_column() -> None:
+    """A misnamed column would otherwise satisfy the missing-column check via its real
+    sibling, be written to parquet by _write_partitioned, and then be silently invisible
+    to every reader because _typed_select only selects the schema's own columns."""
+    df = _make_df(datetime(2024, 1, 1), value=1.0)
+    df["geo_code"] = ["US"]  # a plausible typo for the real `geo` column, which is present
+
+    with pytest.raises(ValueError, match=r"unexpected columns: \['geo_code'\]"):
+        write_ts_long(df, source="testsrc")
+
+
+def test_write_ts_long_drops_rows_with_no_value(capsys: pytest.CaptureFixture[str]) -> None:
+    df = pd.concat(
+        [_make_df(datetime(2024, 1, 1), value=1.0), _make_df(datetime(2024, 1, 1), value=2.0)],
+        ignore_index=True,
+    )
+    df.loc[1, "series_id"] = "TEST2"
+    df.loc[1, "value"] = float("nan")
+
+    write_ts_long(df, source="testsrc")
+
+    stored = read_ts_long()
+    assert list(stored["series_id"]) == ["TEST1"]
+    assert "dropped 1 row(s) with no value" in capsys.readouterr().out
+
+
+def test_a_missing_reading_does_not_punch_a_hole_in_the_seasonal_band() -> None:
+    """Why the drop above matters. core.seasonal forward-fills onto a dense daily grid by
+    reindexing, which bridges an absent date but leaves an explicit NaN in place -- and
+    that NaN then blocks the fill for every following day. FRED publishes NaN on market
+    holidays, so writing those rows put real gaps in the bands they feed."""
+    days = pd.date_range("2024-01-01", "2024-01-31", freq="D")
+    df = pd.DataFrame(
+        {
+            "series_id": "TEST1",
+            "source": "testsrc",
+            "ts": days,
+            "value": [float("nan") if d.day in (10, 11, 12) else 100.0 for d in days],
+            "unit": "mb",
+            "geo": "US",
+            "freq": "D",
+            "revision_date": pd.Timestamp("2024-02-01"),
+        }
+    )
+
+    write_ts_long(df, source="testsrc")
+
+    stored = read_ts_long()
+    assert stored["value"].notna().all()
+    filled = _daily_ffill_by_year(stored[["ts", "value"]], "value").set_index("ts")["value"]
+    assert filled.loc["2024-01-10":"2024-01-12"].tolist() == [100.0, 100.0, 100.0]

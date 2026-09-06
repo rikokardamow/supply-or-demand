@@ -126,6 +126,17 @@ def _validate_columns(df: pd.DataFrame, schema: pa.Schema) -> None:
     if missing:
         raise ValueError(f"missing columns: {sorted(missing)}")
 
+    # An unknown column is not harmless. `_write_partitioned` writes whatever columns the
+    # frame carries, so it lands in the parquet file -- and `core.storage._typed_select`
+    # then selects only the schema's own columns, so every reader silently never sees it.
+    # A pipeline that misnames a column (`geo_code` for `geo`, say) would satisfy the
+    # missing-column check via its own real `geo`, quietly write a dead column forever,
+    # and give no signal anywhere. Nothing in the lake violates this today; the check
+    # keeps it that way.
+    unexpected = set(df.columns) - required
+    if unexpected:
+        raise ValueError(f"unexpected columns: {sorted(unexpected)}")
+
     numeric_cols = {"value"}
     datetime_cols = {
         name for name in schema.names if pa.types.is_timestamp(schema.field(name).type)

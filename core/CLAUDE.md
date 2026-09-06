@@ -91,3 +91,25 @@ the dedup-keeps-latest-revision behaviour still picks the newer row correctly.
 — but prefer `datetime.now(UTC)` for new code (an unambiguous instant is always
 preferable to a naive one), and don't rely on `revision_date` still carrying real tz
 info once it's back out of the lake — `read_ts_long` always returns it tz-naive.
+
+## Open inconsistency: `ts_long.freq` is written two different ways (found 2026-09-06)
+
+`freq` carries two competing conventions and nothing enforces either. Measured against
+the real lake:
+
+| Convention | Values in use | Written by |
+|---|---|---|
+| pandas offset aliases | `D` `W` `M` `H` `Q` `A` `15T` | every source except one |
+| English words | `weekly` `monthly` `semi-annual` | `pipelines/eia` only |
+
+`weekly` (54,368 rows) and `W` (41,370 rows) mean the same thing and coexist, so any
+query that groups or filters on `freq` silently splits or half-misses those series —
+`WHERE freq = 'W'` skips every EIA weekly row without erroring.
+
+**Not fixed, deliberately.** Normalising the writer alone would make new EIA rows
+disagree with the historical ones, which is worse than the present state; doing it
+properly means rewriting the column across the existing lake, and that is a call for the
+repo owner rather than a mechanical cleanup. Until then, treat `freq` as unreliable for
+filtering: select on `series_id` or `source` instead. If you do normalise it, pandas
+aliases are the majority convention and `core/schemas.py` is the place to add the
+domain check that would keep it that way.
