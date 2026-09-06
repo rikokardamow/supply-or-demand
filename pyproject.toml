@@ -44,6 +44,14 @@ dependencies = [
     "statsmodels>=0.15",
     "ruptures>=1.1",
     "arch>=8.0",
+    # Spec 29's deterministic sentiment scorer. Chosen over an LLM deliberately: the
+    # test story is vcrpy cassettes and 00_TRADING_CONVENTIONS requires a model card
+    # for anything estimated, so a reproducible offline scorer is the right trade for
+    # a series whose entire purpose is to be compared against a vendor's. VADER is
+    # calibrated on general social-media English, not energy jargon -- "crude tanking"
+    # is bearish price language, not negative sentiment. Confirmed with the user
+    # before adding (root CLAUDE.md rule 7).
+    "vaderSentiment>=3.3,<4",
 ]
 
 [project.optional-dependencies]
@@ -66,6 +74,14 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["core", "pipelines"]
+
+# Required for the pinned opensky-api git dependency above (a direct URL reference in
+# [project.dependencies]) -- hatchling refuses to build/install the project editable
+# without this. Pre-existing latent breakage surfaced by this session's `uv sync`,
+# unrelated to Task 4's own change; fixed here so the shared venv (and the editable
+# `energy-dashboard` install every test import depends on) keeps working.
+[tool.hatch.metadata]
+allow-direct-references = true
 
 # ----------------------------------------------------------------------
 # Tooling
@@ -122,6 +138,8 @@ module = [
     "arch.*",
     "scipy.*",
     "opensky_api.*",
+    # Spec 29's VADER scorer -- ships no py.typed marker or stubs.
+    "vaderSentiment.*",
 ]
 ignore_missing_imports = true
 

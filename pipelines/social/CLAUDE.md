@@ -197,6 +197,36 @@ Attribution recorded verbatim in the repo-root `NOTICE` file:
 > pipelines/social/client.py is derived from its tradingagents/dataflows/
 > modules.
 
+## Task 4: deterministic VADER scoring (`pipelines/social/score.py`)
+
+`score_text(text) -> float` wraps `vaderSentiment`'s compound score (already on
+-1..+1; empty text scores exactly 0.0, not clamped or coerced from a `None`).
+`aggregate_to_ts_long(posts, subject, ingested_at)` groups posts by
+`(platform, day)` and emits one `social.{platform}.{subject}.post_count` row
+(unit `count`) and one `social.{platform}.{subject}.sentiment_score` row (unit
+`score_neg1_to_1`, the mean of that group's post scores) per group. **No posts
+in means no rows out** -- `aggregate_to_ts_long([], ...)` returns an empty frame,
+never a `post_count == 0` row, for the same reason `client.py` never fabricates
+a `0` for a missing `score`/`num_comments`: a zero is indistinguishable from "we
+looked and found nothing" versus "we didn't look at all", and Spec 17 already
+paid for that mistake once in Adanos's zeroed rows for unrecognised tickers.
+
+**Honest limitation, not oversold:** VADER is a general-purpose social-media
+lexicon, tuned on things like tweets and product reviews -- it has no notion of
+energy-trading jargon. "Crude tanking" reads as negative sentiment (tanking is
+a strongly negative word in VADER's lexicon) when the actual meaning is bearish
+*price* language, which is a directional fact about a market, not an emotional
+judgement about crude oil. The same applies to ordinary trading vocabulary
+generally ("crushed", "bloodbath", "killing it") -- VADER scores the words'
+everyday emotional valence, not their meaning inside a trading context. Treat
+`social.*.sentiment_score` as a rough, reproducible mood signal to compare
+against Adanos's vendor score, not as a calibrated measure of market sentiment
+in its own right. Upgrading to a jargon-aware or LLM-based scorer is
+deliberately out of scope here: it would need its own model card
+(window/refit/OOS per `00_TRADING_CONVENTIONS`) and would land as a
+separately-named `social_llm.*` series, never as a silent change to what
+`social.*.sentiment_score` means.
+
 ## Confirmed constraint: RSS carries no score and no comment count
 Post metrics are written as missing, never as 0. A fabricated zero would be
 indistinguishable from a real zero — the same failure mode Spec 17 caught in
