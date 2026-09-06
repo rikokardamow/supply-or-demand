@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 import requests
+from core import storage
 from core.schemas import validate_ts_long
 from pipelines.eia import pull_prices
 
@@ -116,3 +117,27 @@ def test_one_failing_route_does_not_abort_the_others(monkeypatch: pytest.MonkeyP
 
     assert len(calls) == 2, "the second route must still be attempted"
     assert len(frames) == 1, "only the surviving route yields a frame"
+
+
+def test_a_revised_value_replaces_its_predecessor(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    # PMM and EPM both restate prior months. write_ts_long dedups on
+    # (series_id, ts) sorted by revision_date, so the later pull must win --
+    # not produce two rows for the same month.
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+
+    def row(value: float, revised: str) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "series_id": ["R0000____3"], "source": ["eia"],
+                "ts": [pd.Timestamp("2026-01-01")], "value": [value],
+                "unit": ["$/bbl"], "geo": ["US"], "freq": ["monthly"],
+                "revision_date": [pd.Timestamp(revised)],
+            }
+        )
+
+    storage.write_ts_long(row(70.0, "2026-02-01"), source="eia")
+    storage.write_ts_long(row(72.5, "2026-03-01"), source="eia")
+
+    got = storage.read_ts_long(series_ids=["R0000____3"])
+    assert len(got) == 1, "a revision must replace, not duplicate"
+    assert got.iloc[0]["value"] == 72.5
