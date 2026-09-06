@@ -344,19 +344,32 @@ def utilisation_decile(util: pd.Series, years: int = 5) -> pd.Series:
     return util.rolling(f"{years * 365}D").apply(_decile, raw=False)
 
 
-def physical_bands(diff: pd.Series, window: int = 1260) -> pd.DataFrame:
-    """Rolling p05/p50/p95 of a physical differential series over a trailing `window`
-    trading days (default 1260 ~= 5 years). Columns: value, p05, p50, p95."""
-    rolling = diff.rolling(window, min_periods=1)
+def rolling_quantile_bands(
+    series: pd.Series, window: int, min_periods: int = 1
+) -> pd.DataFrame:
+    """Rolling p05/p50/p95 of `series` over a trailing `window` trading days. Columns:
+    value, p05, p50, p95.
+
+    The shared mechanism behind every percentile band on the curve page -- physical
+    differentials via `physical_bands` below, and convexity, which previously computed
+    its own `.rolling(...).quantile(...)` pair inline in the page. Analytics belong in
+    `core/`, and a band the page builds for itself is one no test ever sees."""
+    rolling = series.rolling(window, min_periods=min_periods)
     return pd.DataFrame(
         {
-            "value": diff,
+            "value": series,
             "p05": rolling.quantile(0.05),
             "p50": rolling.quantile(0.50),
             "p95": rolling.quantile(0.95),
         },
-        index=diff.index,
+        index=series.index,
     )
+
+
+def physical_bands(diff: pd.Series, window: int = 1260) -> pd.DataFrame:
+    """Rolling p05/p50/p95 of a physical differential series over a trailing `window`
+    trading days (default 1260 ~= 5 years). Columns: value, p05, p50, p95."""
+    return rolling_quantile_bands(diff, window=window, min_periods=1)
 
 
 def roll_window_offset_grid(delta: pd.Series, index: str, window: int = 5) -> pd.DataFrame:

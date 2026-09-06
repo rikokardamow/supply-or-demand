@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from core.storage import (
     LAKE_ROOT,
+    last_ts_by_source,
     read_events,
     read_flows,
     read_ts_long,
@@ -335,3 +336,33 @@ def test_read_events_filters_by_commodity() -> None:
 
     assert len(result) == 1
     assert result.iloc[0]["event_id"] == "e2"
+
+
+def test_last_ts_by_source_returns_one_row_per_source() -> None:
+    early = _make_df(datetime(2024, 1, 1), value=1.0)
+    late = _make_df(datetime(2024, 6, 1), value=2.0)
+    late["series_id"] = ["TEST2"]  # a distinct series, so dedup keeps both rows
+    other = _make_df(datetime(2024, 3, 1), value=3.0)
+    other["source"] = ["othersrc"]
+
+    write_ts_long(early, source="testsrc")
+    write_ts_long(late, source="testsrc")
+    write_ts_long(other, source="othersrc")
+
+    result = last_ts_by_source("ts_long", "revision_date").set_index("source")
+
+    assert set(result.index) == {"testsrc", "othersrc"}
+    assert result.loc["testsrc", "last_seen"] == pd.Timestamp("2024-06-01")
+    assert result.loc["othersrc", "last_seen"] == pd.Timestamp("2024-03-01")
+
+
+def test_last_ts_by_source_is_empty_when_the_dataset_has_no_files() -> None:
+    result = last_ts_by_source("ts_long", "revision_date")
+
+    assert result.empty
+    assert list(result.columns) == ["source", "last_seen"]
+
+
+def test_last_ts_by_source_rejects_a_column_outside_the_schema() -> None:
+    with pytest.raises(ValueError, match="not a column of the 'flows' schema"):
+        last_ts_by_source("flows", "revision_date")  # flows has no revision_date

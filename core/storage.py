@@ -355,6 +355,51 @@ def read_events(
     return _read("events", EVENTS_SCHEMA, clauses, params)
 
 
+_DATASET_SCHEMAS: dict[str, pa.Schema] = {
+    "ts_long": TS_LONG_SCHEMA,
+    "flows": FLOWS_SCHEMA,
+    "events": EVENTS_SCHEMA,
+}
+
+
+def last_ts_by_source(dataset: str, ts_col: str) -> pd.DataFrame:
+    """`(source, last_seen)` for every source present in `dataset` -- the most recent
+    `ts_col` each one has written.
+
+    A DuckDB aggregate over the parquet glob, deliberately NOT `read_ts_long()` followed
+    by a pandas groupby: the caller (core.freshness) only ever needs one timestamp per
+    source, and reading the whole dataset into a DataFrame to compute it pulled the entire
+    lake through pandas on every Streamlit rerun of the home page. Aggregating in DuckDB
+    lets its projection pushdown read only the two columns this actually needs, and the
+    result is one row per source rather than millions.
+
+    Same `_typed_select` + `union_by_name=true` scan as `_read` -- the int64-truncation
+    hazard in this module's own docstring applies to any read of these files, aggregate or
+    not."""
+    schema = _DATASET_SCHEMAS[dataset]
+    if ts_col not in schema.names:
+        raise ValueError(f"{ts_col!r} is not a column of the {dataset!r} schema")
+
+    if not _has_any_files(dataset):
+        return pd.DataFrame(
+            {
+                "source": pd.Series(dtype="object"),
+                "last_seen": pd.Series(dtype="datetime64[us]"),
+            }
+        )
+
+    con = duckdb.connect()
+    glob = _dataset_glob(dataset)
+    available = _available_columns(con, glob)
+    result: pd.DataFrame = con.execute(
+        f'SELECT "source", max("{ts_col}") AS last_seen FROM ('
+        f"SELECT {_typed_select(schema, available)} "
+        f"FROM read_parquet('{glob}', hive_partitioning=false, union_by_name=true)"
+        f') GROUP BY "source"'
+    ).df()
+    return result
+
+
 def _register_view(con: duckdb.DuckDBPyConnection, dataset: str, schema: pa.Schema) -> None:
     if _has_any_files(dataset):
         glob = _dataset_glob(dataset)

@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 
 import pandas as pd
 
-from core.storage import read_events, read_flows, read_sanctions_current, read_ts_long
+from core.storage import last_ts_by_source, read_sanctions_current
 
 # Real per-source cadence, matching infra/run_scheduled.py::CADENCE_GROUPS this
 # same session -- expected max days between successful pulls. "newsapi"
@@ -70,16 +70,17 @@ def _status(days_stale: float, expected_days: int) -> str:
     return "red"
 
 
-def _rows_for(
-    dataset: str, df: pd.DataFrame, ts_col: str, now: pd.Timestamp
-) -> list[dict[str, object]]:
+def _rows_for(dataset: str, ts_col: str, now: pd.Timestamp) -> list[dict[str, object]]:
+    """One row per source with an expected cadence. The max-per-source is computed in
+    DuckDB (core.storage.last_ts_by_source), not by reading the dataset into pandas and
+    grouping -- this runs on every rerun of the app's home page, and the whole lake is
+    far too much to pull through pandas for three timestamps."""
     rows: list[dict[str, object]] = []
-    if df.empty:
-        return rows
-    for source, group in df.groupby("source"):
+    for record in last_ts_by_source(dataset, ts_col).to_dict("records"):
+        source = str(record["source"])
         if source not in EXPECTED_CADENCE_DAYS:
             continue
-        last_seen = pd.Timestamp(group[ts_col].max())
+        last_seen = pd.Timestamp(record["last_seen"])
         days_stale = (now - last_seen).total_seconds() / 86400
         rows.append(
             {
@@ -87,7 +88,7 @@ def _rows_for(
                 "source": source,
                 "last_seen": last_seen,
                 "days_stale": round(days_stale, 1),
-                "status": _status(days_stale, EXPECTED_CADENCE_DAYS[str(source)]),
+                "status": _status(days_stale, EXPECTED_CADENCE_DAYS[source]),
             }
         )
     return rows
@@ -111,9 +112,9 @@ def staleness_report() -> pd.DataFrame:
     now = pd.Timestamp(datetime.now(UTC)).tz_localize(None)
 
     rows: list[dict[str, object]] = []
-    rows += _rows_for("ts_long", read_ts_long(), "revision_date", now)
-    rows += _rows_for("flows", read_flows(), "ts", now)
-    rows += _rows_for("events", read_events(), "ts", now)
+    rows += _rows_for("ts_long", "revision_date", now)
+    rows += _rows_for("flows", "ts", now)
+    rows += _rows_for("events", "ts", now)
 
     sanctions = read_sanctions_current()
     if not sanctions.empty:
