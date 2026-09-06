@@ -6,12 +6,13 @@ from core.sentiment import agreement_rate, disagrees_on_sign, overlap, rolling_c
 
 
 def _lake_rows() -> pd.DataFrame:
-    # Adanos has 01-03; social has 02-04. Only 02 and 03 overlap.
+    # Adanos has 01-03; social (pull-dated snapshot -- the axis overlap() joins
+    # against) has 02-04. Only 02 and 03 overlap.
     return pd.DataFrame(
         {
             "series_id": (
                 ["adanos.reddit.xom.sentiment_score"] * 3
-                + ["social.reddit.xom.sentiment_score"] * 3
+                + ["social.reddit.xom.snapshot_sentiment_score"] * 3
             ),
             "ts": pd.to_datetime(
                 ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-02", "2026-09-03", "2026-09-04"]
@@ -45,7 +46,7 @@ def test_dropped_days_tracks_the_actual_asymmetry_not_a_fixed_guess(
         {
             "series_id": (
                 ["adanos.reddit.xom.sentiment_score"] * 4
-                + ["social.reddit.xom.sentiment_score"] * 2
+                + ["social.reddit.xom.snapshot_sentiment_score"] * 2
             ),
             "ts": pd.to_datetime(
                 ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-04", "2026-09-05"]
@@ -130,6 +131,35 @@ def test_agreement_rate_and_disagrees_on_sign_cannot_diverge() -> None:
 def test_rolling_correlation_returns_a_series_of_the_right_length() -> None:
     frame = pd.DataFrame({"adanos": [0.1, 0.2, 0.3, 0.4], "social": [0.2, 0.1, 0.5, 0.3]})
     assert len(rolling_correlation(frame, window=2)) == 4
+
+
+def test_overlap_joins_against_snapshot_sentiment_score_not_post_dated_sentiment_score(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Deliberately make the post-dated and pull-dated (snapshot) social series
+    # disagree on the same day. If overlap() ever joined against the wrong axis
+    # (social.reddit.xom.sentiment_score, grouped by each post's own date) this
+    # would read back 0.99 -- a test that passed either way would be worthless,
+    # so the two values are made to disagree on purpose.
+    rows = pd.DataFrame(
+        {
+            "series_id": [
+                "adanos.reddit.xom.sentiment_score",
+                "social.reddit.xom.sentiment_score",  # wrong axis -- must be ignored
+                "social.reddit.xom.snapshot_sentiment_score",  # correct axis
+            ],
+            "ts": pd.to_datetime(["2026-09-06", "2026-09-06", "2026-09-06"]),
+            "value": [0.5, 0.99, 0.2],
+        }
+    )
+    monkeypatch.setattr("core.sentiment.read_ts_long", lambda series_ids: rows)
+
+    result = overlap("XOM", platform="reddit")
+
+    assert result.overlap_days == 1
+    assert result.frame.iloc[0]["social"] == pytest.approx(0.2)
+    assert result.frame.iloc[0]["social"] != pytest.approx(0.99)
+    assert result.frame.iloc[0]["gap"] == pytest.approx(0.2 - 0.5)
 
 
 def test_rolling_correlation_values_move_with_the_underlying_relationship() -> None:

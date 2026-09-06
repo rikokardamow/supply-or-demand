@@ -126,6 +126,42 @@ the deliberate asymmetry: ours is `post_count`, Adanos's is `buzz_score` (0–10
 not the same quantity and are not compared directly — only the two `sentiment_score`
 series are, both being on −1..+1.
 
+### Two date axes, by necessity (added after a live-data defect)
+
+Rendering this spec's page against the real lake surfaced a design defect in the
+original data model above: Adanos writes one row per **pull date** (`ts =
+ingested_at.normalize()` — a snapshot of current buzz), while `post_count` and
+`sentiment_score` as specified above are grouped by each **post's own date**.
+Reddit's RSS search returns whatever recent posts match the query, which routinely
+spans weeks or months in a single call, so a post-dated series' most recent day
+almost never coincides with an Adanos pull date. Real evidence from the lake: on
+one pull, `social.reddit.xom` wrote on 2026-04-29, 05-04, 06-12, 07-12 and 09-03,
+while `adanos.reddit.xom` wrote on 2026-09-03 and 09-06 — two days of overlap out
+of five, by coincidence, not by construction. No amount of accumulated history
+fixes this, because the two series are on different axes entirely.
+
+The fix is to emit **both** axes rather than change either one's meaning:
+
+- `social.{platform}.{subject}.post_count` / `.sentiment_score` (unchanged) stay
+  grouped by post date. This is real history and remains the basis of Set B's
+  topic-attention view — a subject's post-dated series says what was actually
+  posted, and when.
+- `social.{platform}.{subject}.snapshot_post_count` / `.snapshot_sentiment_score`
+  (new, same schema, no new metric type) are grouped by platform only, written at
+  `ts = ingested_at.normalize()`, over every post fetched in that run regardless
+  of the post's own date — the same *kind* of measurement Adanos makes, on the
+  same axis. `source`, `freq="D"` and `revision_date = ingested_at` follow every
+  other row in this spec; the missing-not-zero rule applies here exactly as it
+  does to the post-dated axis — a subject with no posts this run gets no snapshot
+  rows, never a zero-valued one.
+
+`core/sentiment.py::overlap` joins Adanos against the **snapshot** series only
+(`social.{platform}.{ticker}.snapshot_sentiment_score`), never the post-dated one
+— that is the one axis both sides genuinely share. The post-dated series is never
+read by the comparison; it remains Set B topic attention's own input, and the two
+axes are not merged into each other any more than `social.*` and `adanos.*`
+themselves are.
+
 ## Scoring — deterministic first, by decision
 Raw posts arrive as text and something must score them. This spec uses a **deterministic
 lexicon scorer** (VADER-class) as the only scorer in scope.

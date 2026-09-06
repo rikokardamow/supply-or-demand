@@ -232,6 +232,38 @@ Post metrics are written as missing, never as 0. A fabricated zero would be
 indistinguishable from a real zero — the same failure mode Spec 17 caught in
 Adanos's zeroed rows for unrecognised tickers.
 
+## Defect found and fixed: post-dated vs pull-dated axes (2026-09-06)
+
+Rendering `10_macro.py` against the real lake exposed that `social.*.post_count`/
+`.sentiment_score` and `adanos.*.sentiment_score` write on different date axes and
+were never actually comparable. Adanos writes one row per **pull date**; this
+package's `aggregate_to_ts_long` grouped by each **post's own date** -- and
+Reddit's RSS search returns posts spanning weeks or months per call. Real lake
+evidence: `social.reddit.xom` had rows on 2026-04-29, 05-04, 06-12, 07-12, 09-03;
+`adanos.reddit.xom` had rows on 2026-09-03, 09-06 -- only one coincidental overlap
+day. This produced two visible symptoms: `_social_topic_attention_section`'s bars
+showed a height of 1 for nearly every topic (each topic's most recent post-day
+usually holds exactly one post), and `core.sentiment.overlap()` returned
+`overlap_days=0` for 10 of 12 frozen tickers.
+
+**Fix**: `aggregate_to_ts_long` now also emits `snapshot_post_count` and
+`snapshot_sentiment_score` per platform, at `ts = ingested_at` (normalised to
+midnight), over every post fetched that run regardless of the post's own date --
+the same *kind* of measurement Adanos makes, on the same axis. The original
+`post_count`/`sentiment_score` rows are unchanged and still grouped by post date;
+they remain the input to the topic-attention chart's per-topic view. The
+missing-not-zero rule (see above) applies to the snapshot axis too: a
+platform/subject with no posts this run gets no snapshot row, never a zero one --
+this falls out naturally from grouping by platforms that actually appear in the
+fetched posts, so a platform absent from the run's posts never gets a spurious
+row.
+
+`core/sentiment.py::overlap` now joins Adanos against
+`social.{platform}.{ticker}.snapshot_sentiment_score`, not the post-dated
+`sentiment_score` series. The topic-attention chart on `10_macro.py` now reads
+`snapshot_post_count`, so a bar means "posts seen for this topic in its most
+recent pull", not "posts on that topic's most recent post day".
+
 ## Queries that returned nothing
 No probed query returned zero rows in this session — Reddit returned 13/25 requested,
 Polymarket's default and `tag_slug=energy` listings both returned rows, and StockTwits
