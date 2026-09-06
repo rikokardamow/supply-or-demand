@@ -7,6 +7,7 @@ from core.curve import (
     cushing_utilisation,
     physical_bands,
     roll_pressure_seasonal,
+    rolling_quantile_bands,
     tas_window_flag,
     utilisation_decile,
 )
@@ -83,6 +84,31 @@ def test_physical_bands_quantiles_are_ordered_and_centred() -> None:
     assert (tail["p05"] <= tail["p50"]).all()
     assert (tail["p50"] <= tail["p95"]).all()
     assert tail["p50"].mean() == pytest.approx(0.0, abs=0.5)
+
+
+def test_rolling_quantile_bands_respects_min_periods() -> None:
+    # The curve page's convexity band uses min_periods=20: nothing before the 20th
+    # observation should be scored at all, rather than ranked against a handful of points.
+    dates = pd.bdate_range("2020-01-01", periods=100)
+    rng = np.random.default_rng(2)
+    series = pd.Series(rng.normal(0.0, 1.0, size=len(dates)), index=dates)
+
+    bands = rolling_quantile_bands(series, window=252, min_periods=20)
+
+    assert bands["p05"].iloc[:19].isna().all()
+    assert bands["p05"].iloc[19:].notna().all()
+    assert (bands["value"] == series).all()
+
+
+def test_physical_bands_matches_the_shared_helper_at_min_periods_one() -> None:
+    dates = pd.bdate_range("2020-01-01", periods=300)
+    rng = np.random.default_rng(3)
+    diff = pd.Series(rng.normal(0.0, 1.0, size=len(dates)), index=dates)
+
+    pd.testing.assert_frame_equal(
+        physical_bands(diff, window=250),
+        rolling_quantile_bands(diff, window=250, min_periods=1),
+    )
 
 
 def test_tas_window_flag_flags_exactly_the_last_two_business_days_before_expiry() -> None:

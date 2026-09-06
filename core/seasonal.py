@@ -2,9 +2,29 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 import pandas as pd
 
 REFERENCE_YEAR = 2001  # non-leap year, used only to align day-of-year across leap/non-leap years
+FIRST_SEASONAL_YEAR = 2018  # earliest year with full coverage across this project's sources
+
+
+def default_years() -> range:
+    """Reference window for a seasonal band: `FIRST_SEASONAL_YEAR` up to but *excluding*
+    the current calendar year. The current year is left out deliberately -- it is the
+    partial track being compared *against* the band, so folding it into the band's own
+    lo/hi/median would let it move the very benchmark it is measured by. A caller that
+    genuinely wants the current year included (e.g. a multi-year overlay chart, where
+    plotting this year beside recent ones is the whole point) passes an explicit range --
+    see apps/dashboard/pages/015_us_oil_overview.py.
+
+    Computed per call rather than frozen in a default argument or module constant: this
+    was previously the literal `range(2018, 2026)`, which was correct only for as long as
+    2026 happened to be the current year and would have silently narrowed the band by a
+    year every 1 January thereafter, with no error and no visible change beyond slightly
+    different chart bands."""
+    return range(FIRST_SEASONAL_YEAR, date.today().year)
 
 
 def _drop_leap_day(df: pd.DataFrame) -> pd.DataFrame:
@@ -40,9 +60,11 @@ def _daily_ffill_by_year(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
 def seasonal_stats(
     df: pd.DataFrame,
     value_col: str,
-    years: range = range(2018, 2026),
+    years: range | None = None,
     exclude: tuple[int, ...] = (2020,),
 ) -> pd.DataFrame:
+    if years is None:
+        years = default_years()
     daily = _daily_ffill_by_year(df, value_col)
     data = _drop_leap_day(daily).copy()
     data["year"] = data["ts"].dt.year

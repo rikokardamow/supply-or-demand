@@ -19,12 +19,16 @@ import time
 from pathlib import Path
 
 import pandas as pd
-from core.seasonal import seasonal_stats
+from core.seasonal import default_years, seasonal_stats
 from core.storage import read_ts_long
 
 CACHE_PATH = Path("data/raw/weather/climatology.parquet")
 MAX_AGE_DAYS = 30
-CLIMATOLOGY_YEARS = range(2018, 2026)
+# core.seasonal's own window (2018 -> last complete year), not a literal range: this was
+# hardcoded to `range(2018, 2026)`, which would have frozen the normals at 2018-2025 from
+# 1 Jan 2027 onward. Resolved at import, which is enough here -- every caller is a
+# pipeline script that runs and exits, not the long-lived Streamlit process.
+CLIMATOLOGY_YEARS = default_years()
 
 
 def _is_stale(cache_path: Path, max_age_days: int) -> bool:

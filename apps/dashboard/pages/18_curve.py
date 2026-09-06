@@ -27,6 +27,7 @@ from core.curve import (
     nearby_panel,
     physical_bands,
     roll_window_offset_grid,
+    rolling_quantile_bands,
     time_spreads,
     transition_matrix,
 )
@@ -142,8 +143,8 @@ with tab_convexity:
         else:
             _, unadj, _ = nearby_panel(contract_panel, expiries)
             cv = convexity(unadj).dropna()
-            p05 = cv.rolling(252, min_periods=20).quantile(0.05)
-            p95 = cv.rolling(252, min_periods=20).quantile(0.95)
+            bands = rolling_quantile_bands(cv, window=252, min_periods=20)
+            p05, p95 = bands["p05"], bands["p95"]
 
             fig = go.Figure()
             fig.add_trace(go.Scatter(x=cv.index, y=cv.values, line={"color": NAVY}, name="cv123"))

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import datetime
+
 import pandas as pd
-from core.seasonal import seasonal_stats
+import pytest
+from core.seasonal import FIRST_SEASONAL_YEAR, default_years, seasonal_stats
 
 
 def _value_for(date: pd.Timestamp) -> float:
@@ -72,3 +75,38 @@ def test_weekly_data_is_ffilled_before_pivoting() -> None:
     assert stats["median"].notna().sum() > 350
     overlap = (stats[year_cols].notna().sum(axis=1) > 1).sum()
     assert overlap > 350
+
+
+def test_default_years_excludes_the_current_year() -> None:
+    years = default_years()
+
+    assert years.start == FIRST_SEASONAL_YEAR
+    assert datetime.date.today().year not in years
+    assert datetime.date.today().year - 1 in years
+
+
+def test_default_years_tracks_the_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression: the window was the literal `range(2018, 2026)`, so it silently stopped
+    widening once 2026 was no longer the current year. It must follow the calendar."""
+
+    class _FakeDate(datetime.date):
+        @classmethod
+        def today(cls) -> datetime.date:
+            return datetime.date(2031, 3, 1)
+
+    monkeypatch.setattr("core.seasonal.date", _FakeDate)
+
+    assert default_years() == range(FIRST_SEASONAL_YEAR, 2031)
+
+
+def test_seasonal_stats_uses_the_default_window_when_years_is_none() -> None:
+    last_complete_year = datetime.date.today().year - 1
+    df = _build_synthetic_df(
+        range(FIRST_SEASONAL_YEAR, last_complete_year + 1), outlier=(2020, 7, 1, 9999.0)
+    )
+
+    stats = seasonal_stats(df, value_col="value")
+    year_cols = [c for c in stats.columns if c not in ("lo", "hi", "median")]
+
+    assert str(last_complete_year) in year_cols
+    assert "2020" not in year_cols
