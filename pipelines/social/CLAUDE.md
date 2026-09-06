@@ -273,3 +273,64 @@ as actually observed, not a curated "energy majors" shortlist. `SUBREDDITS` is
 now defined in `queries.py` as `["energy", "oil"]`: Task 2 probed site-wide
 search live, found it does not filter by query at all, and kept per-subreddit
 search instead — see "Task 2: site-wide search probe" above for the evidence.
+
+## Task 6: orchestration — Polymarket is tag-scoped, not per-topic
+
+Task 6's brief called `fetch_polymarket(query)` once per topic, the same way
+`fetch_reddit(query)` is called. That is wrong given what this file already
+records above under "Task 3": Polymarket has no keyword search at all — `q`
+and `search` are silently ignored and return the identical default/unfiltered
+list for any input, confirmed live. `pull_social.py` therefore has three pull
+functions, not two: `pull_topic` (Set B, Reddit only — the only platform here
+that genuinely filters by keyword), `pull_ticker` (Set A, Reddit + StockTwits),
+and `pull_polymarket_tag` (Polymarket's own tag-level attention, subject =
+the tag slug, starting with `"energy"` only per Ruling F8 above).
+
+## Task 6: request budget — derived, not measured live
+
+**Not measured by a real full pull** — at the confirmed ~60s-per-request
+Reddit pace, a full run costs close to an hour of wall clock, which would
+also burn most of the rate-limit budget for no reason. The numbers below are
+arithmetic on counts already fixed elsewhere in this file, combined with the
+pacing this package's own `client.py` confirms live (see "Critical,
+confirmed-live gotcha" above) — labelled as derived, not observed.
+
+**Reddit** (the only platform with a real per-request rate limit): 12 tickers
+(`TICKER_QUERIES`) + 17 topics (`TOPIC_QUERIES`) = 29 subjects, each fetched
+via `fetch_reddit`, which itself loops over `SUBREDDITS` (`["energy", "oil"]`,
+2 subreddits) — **29 × 2 = 58 Reddit RSS requests per weekly run.**
+`fetch_reddit`'s own inter-subreddit pacing only sleeps *within* one call (the
+`pace_seconds` local resets on every call), so nothing in this pipeline
+explicitly paces *across* the 29 separate `fetch_reddit` calls pull_social.py
+makes. In practice this does not matter: any request fired inside the prior
+request's ~60s window gets HTTP 429, and `client.py`'s own single
+backoff-and-retry (see "Critical, confirmed-live gotcha" above) then sleeps
+out the real `X-Ratelimit-Reset` before retrying — so the run still ends up
+paced at essentially one request per ~60 seconds overall, just reactively
+(via 429+retry) rather than proactively between calls. **58 requests × ~60s
+= ~3,480 seconds ≈ 58 minutes ≈ just under an hour of wall clock, honestly,
+per weekly run.** This is the real cost of Set A + Set B on Reddit; it is not
+rounded away.
+
+**StockTwits**: 12 requests (one per ticker in `TICKER_QUERIES`, Set A only —
+Set B topics never touch StockTwits). No rate-limit headers were ever
+observed live on this platform (see "Task 3" above), so these 12 add
+negligible wall-clock time.
+
+**Polymarket**: 1 request (`POLYMARKET_TAGS = ["energy"]`, Task 6 decision 1).
+No rate-limit headers were observed live on this platform either.
+
+**Total: 71 HTTP requests per weekly run (58 Reddit + 12 StockTwits + 1
+Polymarket), dominated end-to-end by Reddit's pacing at ~58 minutes.** Widening
+`TOPIC_QUERIES`, `TICKER_QUERIES` or `SUBREDDITS` multiplies the Reddit
+component directly and should be weighed against this, the same way Task 2
+weighed the brief's five subreddits down to two.
+
+`pull_social.py::main` tracks fetch attempts and failures itself (not via
+`core/failures.py`, which a concurrent session was still building, untracked,
+at the time this was written — migrate once it lands) and raises rather than
+returning normally if every attempted fetch failed, or if some failed and
+nothing at all got written. A run at this ~58-minute pace that hits nothing
+but empty RSS results — no errors at all — is a real, not theoretical,
+outcome and is logged distinctly rather than silently matching either the
+"wrote N rows" success message or the raised-failure path.

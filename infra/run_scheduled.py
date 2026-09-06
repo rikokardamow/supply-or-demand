@@ -69,6 +69,7 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("derived_curve_ranks", "pipelines.derived.curve_ranks"),
         ("derived_systematic", "pipelines.derived.systematic"),
         ("adanos", "pipelines.adanos.pull_weekly"),
+        ("social", "pipelines.social.pull_weekly"),
         ("cftc", "pipelines.cftc.pull_weekly"),
         # Must run after "cftc" above -- reads the COT data that pull just wrote.
         ("derived_fundamentals", "pipelines.derived.fundamentals"),
