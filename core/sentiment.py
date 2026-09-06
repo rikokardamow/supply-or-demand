@@ -37,12 +37,24 @@ def overlap(ticker: str, platform: str = "reddit") -> Overlap:
     """Inner-join the vendor and self-hosted sentiment series for one ticker and
     platform. Columns: ts, adanos, social, gap (signed, social - adanos).
 
+    Joins against `social.*.snapshot_sentiment_score`, not `social.*.sentiment_score`
+    -- deliberately. Adanos writes one row per *pull* date; the plain
+    `sentiment_score` series is grouped by each post's own date, which for
+    Reddit's RSS feed can be weeks or months in the past and essentially never
+    coincides with a pull date. Comparing the two was Spec 29's original defect:
+    real evidence from the lake showed adanos.reddit.xom writing on 2026-09-03/06
+    while social.reddit.xom.sentiment_score wrote on entirely different dates
+    (2026-04-29, 05-04, 06-12, 07-12, 09-03), giving near-zero overlap regardless
+    of how much history accumulated. `snapshot_sentiment_score` is written at
+    `ts = ingested_at` (the pull date, see pipelines/social/score.py), so it is
+    on the same axis as Adanos and is the only series this join may use.
+
     `dropped_days` is the count of distinct days where one side reported a value
     and the other did not -- total distinct days across both series minus the
     days both reported."""
     subject = ticker.lower()
     adanos_id = f"adanos.{platform}.{subject}.sentiment_score"
-    social_id = f"social.{platform}.{subject}.sentiment_score"
+    social_id = f"social.{platform}.{subject}.snapshot_sentiment_score"
 
     raw = read_ts_long(series_ids=[adanos_id, social_id])
     if raw.empty:

@@ -82,6 +82,8 @@ def test_pull_polymarket_tag_uses_the_tag_slug_as_subject(
     assert set(rows["series_id"]) == {
         "social.polymarket.energy.post_count",
         "social.polymarket.energy.sentiment_score",
+        "social.polymarket.energy.snapshot_post_count",
+        "social.polymarket.energy.snapshot_sentiment_score",
     }
     assert len(events) == 1
 

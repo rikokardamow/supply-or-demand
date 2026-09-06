@@ -307,10 +307,22 @@ def _social_comparison_section(ticker: str, result: Overlap) -> None:
     once so this and `_social_deviation_section` below don't each run their own
     identical, uncached DuckDB scan for the same ticker."""
     if result.frame.empty:
-        st.info(
-            "No overlapping Adanos/self-hosted days yet — run "
-            "`pipelines/social/pull_social.py`."
-        )
+        social_id = f"social.reddit.{ticker.lower()}.snapshot_sentiment_score"
+        social_pulled = not read_ts_long(series_ids=[social_id]).empty
+        if social_pulled:
+            st.info(
+                f"{ticker}: self-hosted snapshots have started accumulating, but "
+                "no self-hosted pull date lines up with an Adanos pull date yet. "
+                "Both sides need to pull on the same day before a comparison "
+                "point appears — the snapshot series starts accumulating from "
+                "its first run, so this fills in as more weekly pulls land, not "
+                "by rerunning today's pull again."
+            )
+        else:
+            st.info(
+                "No self-hosted social data pulled yet for this ticker — run "
+                "`pipelines/social/pull_social.py`."
+            )
         return
 
     fig = go.Figure()
@@ -415,9 +427,18 @@ def _social_deviation_section(ticker: str, result: Overlap) -> None:
 
 def _social_topic_attention_section() -> None:
     """Set B -- commodity/geopolitical topics Adanos cannot express at all,
-    since it is a ticker-basket product. Reddit only: `post_count` has no
-    Adanos counterpart to compare against."""
-    ids = [f"social.reddit.{q['slug']}.post_count" for q in TOPIC_QUERIES]
+    since it is a ticker-basket product. Reddit only: post count has no
+    Adanos counterpart to compare against.
+
+    Reads `snapshot_post_count`, not `post_count`: the plain series groups
+    posts by each post's own date, so a topic's "most recent" row could be a
+    single post from weeks or months ago -- exactly the defect that made
+    nearly every topic bar show a height of 1. `snapshot_post_count` counts
+    every post seen for that topic in one pull, at the pull's own date, so a
+    bar genuinely means "how much attention this topic got in its most recent
+    pull", not "how many posts happened to land on that topic's last active
+    day"."""
+    ids = [f"social.reddit.{q['slug']}.snapshot_post_count" for q in TOPIC_QUERIES]
     df = read_ts_long(series_ids=ids)
     if df.empty:
         st.info("No social topic data yet — run `pipelines/social/pull_social.py`.")
@@ -425,11 +446,12 @@ def _social_topic_attention_section() -> None:
 
     df = df.copy()
     df["topic"] = df["series_id"].str.split(".").str[2]
-    # aggregate_to_ts_long deliberately writes no row for a quiet topic (missing, not
-    # a fabricated zero) -- so "each topic's most recent row" can land on genuinely
-    # different dates across topics. Rather than call that "Latest" with no date shown
-    # (which reads as one point in time), each bar is labelled with its own date and
-    # the caption states the range spanned.
+    # aggregate_to_ts_long deliberately writes no snapshot row for a topic with no
+    # posts that run (missing, not a fabricated zero) -- so "each topic's most
+    # recent row" can still land on genuinely different pulls across topics if a
+    # topic went quiet on a later run. Each bar is labelled with its own pull date
+    # and the caption states the range spanned, rather than implying one shared
+    # "latest" pull.
     latest = df.sort_values("ts").groupby("topic", as_index=False).last()
     latest = latest.sort_values("value", ascending=False)
     bar_dates = pd.to_datetime(latest["ts"]).dt.strftime("%Y-%m-%d")
@@ -443,7 +465,10 @@ def _social_topic_attention_section() -> None:
             textposition="outside",
         )
     )
-    fig.update_layout(title="Post count by topic (most recent pull per topic)", yaxis_title="Posts")
+    fig.update_layout(
+        title="Topic attention — posts seen in each topic's most recent pull",
+        yaxis_title="Posts",
+    )
     with card("Topic attention"):
         st.plotly_chart(fig)
         min_date, max_date = bar_dates.min(), bar_dates.max()
@@ -453,13 +478,15 @@ def _social_topic_attention_section() -> None:
             date_caption = (
                 f"Bars span {min_date} to {max_date}, labelled individually above — "
                 "each shows that topic's own most recent pull, not necessarily the "
-                "same run, since a quiet topic writes no row at all rather than a "
-                "zero."
+                "same run, since a quiet topic writes no snapshot row at all rather "
+                "than a zero."
             )
         st.caption(date_caption)
         st.caption(
-            "These topics have no Adanos counterpart — a ticker basket cannot "
-            "express them. Attention only, not sentiment."
+            "Each bar is the count of posts seen for that topic in one pull run, "
+            "not posts on that topic's most recent post date. These topics have no "
+            "Adanos counterpart — a ticker basket cannot express them. Attention "
+            "only, not sentiment."
         )
 
 
