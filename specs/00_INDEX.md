@@ -94,3 +94,14 @@ Conventions: `specs/00_TRADING_CONVENTIONS.md`. Dependency order: 18 → 19 → 
 ## Spec 28 — Geopolitical Risk Premium (GRP)
 
 Specs 28.00–28.11 comprise the GRP module. This module is built against `specs/28_ADAPTATION.md`, not the Postgres / FastAPI / Grafana stack its own text assumes. Specs 11 (AIS vessels) and 12 (flights) remain unbuilt and block GRP's airspace and maritime components.
+
+## Spec 29 — Self-hosted social sentiment
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 29 | Self-hosted social sentiment (Reddit / Polymarket / StockTwits), scored in-repo and shown beside Adanos with the deviation | not started | **yes — Reddit RSS, Polymarket, StockTwits (all self-hosted, no vendor)**; new dep `vaderSentiment` pending rule-7 confirmation | 17 |
+
+Adds `pipelines/social/` and `core/sentiment.py`, extends page `10_macro.py`. Covers the
+live-confirmed Adanos gap recorded in `pipelines/adanos/CLAUDE.md` (the five OPEC/OPEC+
+exposure tickers resolve but return near-zero buzz) and adds commodity/geopolitical topic
+queries a ticker basket cannot express. Adanos is retained, not replaced.
