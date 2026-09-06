@@ -106,13 +106,6 @@ select = [
 ]
 ignore = []
 
-[tool.ruff.lint.isort]
-# mypy runs strict, which implies no_implicit_reexport, so a module that re-exports a
-# name must write `X as X` (PEP 484). Without this, isort splits every such alias into
-# its own statement -- core/theme.py's eight re-exported series colours became eight
-# separate parenthesised imports. Combining them keeps the intent readable.
-combine-as-imports = true
-
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["B011"]
 "apps/dashboard/pages/*.py" = ["N999"]  # numbered Streamlit page filenames
