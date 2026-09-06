@@ -102,7 +102,23 @@ GENERATOR_FUEL_ROUTE = "electricity/electric-power-operational-data"
 GENERATOR_FUEL_FUELTYPEID = "NG"
 GENERATOR_FUEL_SECTORID = "98"  # "(98) Electric Power" -- the sector aggregate, not a
 # narrower IPP/CHP/utility sub-sector also on offer under the same facet.
-GENERATOR_FUEL_LOCATION = "US"
+
+# State-level, not national-only: Spec 30's own chart ("State delivered gas cost to
+# generators vs Henry Hub, with the spread annotated") needs the dispersion across
+# states, which a single national average would wash out. "US" is kept too -- it is the
+# national benchmark line the state series get compared against.
+#
+# These 10 codes are the ones Task 0 confirmed live carry a real (non-null) latest
+# value; `location` also mixes in 51 real states/DC/PR and 11 census-division
+# aggregates under the same facet with no way to separate them structurally, so the
+# rest cannot be added by pattern. FL, NC, GA, AZ, CO, OK, WV and WA were checked and
+# excluded because they returned `cost-per-btu: null` for 2026-06 rather than a real
+# value -- see pipelines/eia/CLAUDE.md's "Spec 30 price routes" section (checked
+# 2026-09-06). Nulls are always skipped by EIAClient.get_operational_series, never
+# written as a fabricated zero.
+GENERATOR_FUEL_LOCATIONS: list[str] = [
+    "US", "TX", "CA", "PA", "LA", "OH", "NY", "IL", "NJ", "MI"
+]
 
 GENERATOR_FUEL: list[str] = ["cost-per-btu", "consumption-for-eg"]
 
@@ -143,7 +159,7 @@ def pull_group(
             data_keys=series,
             fueltypeid=GENERATOR_FUEL_FUELTYPEID,
             sectorid=GENERATOR_FUEL_SECTORID,
-            location=GENERATOR_FUEL_LOCATION,
+            locations=GENERATOR_FUEL_LOCATIONS,
             frequency=frequency,
         )
     return client.get_series(route=route, series=series, frequency=frequency, geo_map=geo_map)
