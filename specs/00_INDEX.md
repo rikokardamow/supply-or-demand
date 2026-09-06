@@ -99,7 +99,7 @@ Specs 28.00–28.11 comprise the GRP module. This module is built against `specs
 
 | Spec | Title | Status | New source? | Depends on |
 |---|---|---|---|---|
-| 29 | Self-hosted social sentiment (Reddit / Polymarket / StockTwits), scored in-repo and shown beside Adanos with the deviation | not started | **yes — Reddit RSS, Polymarket, StockTwits (all self-hosted, no vendor)**; new dep `vaderSentiment` pending rule-7 confirmation | 17 |
+| 29 | Self-hosted social sentiment (Reddit / Polymarket / StockTwits), scored in-repo and shown beside Adanos with the deviation | **Complete (Tasks 0–9).** `pipelines/social/` (Reddit RSS + Polymarket + StockTwits pulls), `core/sentiment.py` (VADER scoring, Adanos overlap/deviation/rolling correlation) and a new "Self-hosted social sentiment" section on page `10_macro.py` (comparison, deviation, Set B topic attention, Polymarket tag attention) are all live; full suite, ruff, mypy all green. **Polymarket has no keyword search**: live probes found `q`/`search` are silently ignored (HTTP 200, identical unfiltered listing regardless of value) — the only real filter is `tag_slug`, so it contributes one tag-level series ("energy"), not per-topic coverage across Set B's seventeen topics. **Reddit's unauthenticated RSS rate limit is ~1 request/60s**, so a full run costs 58 Reddit + 12 StockTwits + 1 Polymarket = 71 requests, wall-clock dominated by ~58 minutes of throttled Reddit calls | **yes — Reddit RSS, Polymarket, StockTwits (all self-hosted, no vendor)**; new dep `vaderSentiment` confirmed (rule 7) | 17 |
 
 Adds `pipelines/social/` and `core/sentiment.py`, extends page `10_macro.py`. Covers the
 live-confirmed Adanos gap recorded in `pipelines/adanos/CLAUDE.md` (the five OPEC/OPEC+
