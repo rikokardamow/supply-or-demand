@@ -18,6 +18,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
 from components.kardamow_take import kardamow_take
+from components.lake import read_ts_long
 from core.macro import deflate, index_to, to_currency
 from core.sentiment import (
     DEFAULT_CORRELATION_WINDOW,
@@ -27,7 +28,6 @@ from core.sentiment import (
     overlap,
     rolling_correlation,
 )
-from core.storage import read_ts_long
 from core.theme import (
     GREY,
     LIGHT_BLUE,

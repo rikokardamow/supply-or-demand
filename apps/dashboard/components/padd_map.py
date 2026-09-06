@@ -17,8 +17,9 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from core.storage import read_flows
 from core.theme import LIGHT_BLUE, NAVY, RED
+
+from components.lake import read_flows
 
 PADD_CENTROIDS: dict[str, tuple[float, float]] = {
     # Approximate regional centroids for visualisation only, not precise geographic centres.

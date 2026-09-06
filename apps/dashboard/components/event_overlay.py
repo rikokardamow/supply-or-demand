@@ -19,8 +19,9 @@ from typing import Any
 import pandas as pd
 import plotly.graph_objects as go
 from core.seasonal import REFERENCE_YEAR
-from core.storage import read_events
 from core.theme import GREY, ORANGE, RED
+
+from components.lake import read_events
 
 SEVERITY_COLOURS = {1: GREY, 2: ORANGE, 3: RED}
 

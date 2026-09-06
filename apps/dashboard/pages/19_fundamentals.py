@@ -21,6 +21,7 @@ import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
 from components.card import card
+from components.lake import read_ts_long
 from core.fundamentals import (
     carollo_scatter,
     days_of_cover,
@@ -28,7 +29,6 @@ from core.fundamentals import (
     osp_signal,
 )
 from core.seasonal import REFERENCE_YEAR, seasonal_stats
-from core.storage import read_ts_long
 from core.theme import RED, seasonal_range_chart, sign_agreement_scatter, simple_time_series_chart
 from pipelines.cftc.client import CONTRACT_CODES
 from pipelines.manual_physical.reader import read_physical_csvs

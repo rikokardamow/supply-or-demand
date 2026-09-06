@@ -10,8 +10,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
+from components.lake import read_ts_long
 from core.seasonal import seasonal_stats
-from core.storage import read_ts_long
 from core.theme import dual_axis_chart, generation_mix_chart, hour_day_heatmap, seasonal_range_chart
 from pipelines.eia.pull_gas_storage import STORAGE_GEO_MAP
 from pipelines.eia.pull_production_exports import LNG_EXPORTS_SERIES, PRODUCTION_SERIES

@@ -9,8 +9,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
+from components.lake import read_flows, read_ts_long
 from components.power_maps import render_flow_map, render_price_map
-from core.storage import read_flows, read_ts_long
 from core.theme import (
     LIGHT_BLUE,
     NAVY,

@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
 from components.entsog_map import render_entsog_flow_map
-from core.storage import read_flows
+from components.lake import read_flows
 from core.theme import LIGHT_BLUE, NAVY, RED, current_vs_prior_year_chart, sankey_chart
 from pipelines.entsog.corridors import CORRIDORS
 from pipelines.entsog.transforms import (
