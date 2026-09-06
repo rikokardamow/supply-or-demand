@@ -125,3 +125,14 @@ be read at all. Separately, the dashboard caches lake reads
 (`apps/dashboard/components/lake.py`), so a running app shows pre-write data until
 restarted — this is why a first screenshot showed "no overlap yet" while the lake already
 had the row.
+
+## Spec 30 — EIA price coverage
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 30 | EIA price coverage (refiner acquisition cost by grade, retail pump prices, gas citygate/sectoral prices, generator delivered fuel cost) | not started | **no new vendor — four new routes on the existing EIA API client** | 01 |
+
+The lake holds volumes almost everywhere and prices almost nowhere: one gas price
+(`fred.dhhngsp`), no retail pump prices at all, and no grade-differentiated crude price beneath
+Spec 19s quality-mismatch work or Spec 20s crack VECM. Spec 30 supplies those missing
+denominators. Extends `pipelines/eia/`, adds no schema and no new pipeline package.
