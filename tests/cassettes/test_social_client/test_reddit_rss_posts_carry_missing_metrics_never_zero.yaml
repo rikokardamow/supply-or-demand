@@ -1,0 +1,403 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - www.reddit.com
+      User-Agent:
+      - energy-dashboard/0.1 (Kardamow research dashboard)
+    method: GET
+    uri: https://www.reddit.com/r/energy/search.rss?limit=25&q=Henry+Hub&restrict_sr=on&sort=new
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><feed xmlns=\"http://www.w3.org/2005/Atom\"
+        xmlns:media=\"http://search.yahoo.com/mrss/\"><category term=\"energy\" label=\"r/energy\"/><updated>2026-09-06T09:15:27+00:00</updated><icon>https://www.redditstatic.com/icon.png/</icon><id>/r/energy/search.rss?q=Henry+Hub&amp;restrict_sr=on&amp;sort=new&amp;limit=25</id><link
+        rel=\"self\" href=\"https://www.reddit.com/r/energy/search.rss?q=Henry+Hub&amp;restrict_sr=on&amp;sort=new&amp;limit=25\"
+        type=\"application/atom+xml\" /><link rel=\"alternate\" href=\"https://www.reddit.com/r/energy/search?q=Henry+Hub&amp;restrict_sr=on&amp;sort=new&amp;limit=25\"
+        type=\"text/html\" /><logo>https://b.thumbs.redditmedia.com/vREg914KrjWtqSPY7nDq9WmuSJJOeT4oODC4DqQ6mHw.png</logo><title>energy:
+        search results - Henry Hub</title><entry><author><name>/u/anuveya</name><uri>https://www.reddit.com/user/anuveya</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&amp;#32; submitted
+        by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/anuveya&quot;&gt;
+        /u/anuveya &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://datahub.io/core/natural-gas&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1szucoy/henry_hub_natural_gas_prices_since_1997_the_shale/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_1szucoy</id><link
+        href=\"https://www.reddit.com/r/energy/comments/1szucoy/henry_hub_natural_gas_prices_since_1997_the_shale/\"
+        /><updated>2026-04-30T12:14:25+00:00</updated><published>2026-04-30T12:14:25+00:00</published><title>Henry
+        Hub natural gas prices since 1997: the shale revolution collapsed prices and
+        changed everything</title></entry><entry><author><name>/u/SashSail</name><uri>https://www.reddit.com/user/SashSail</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;table&gt; &lt;tr&gt;&lt;td&gt;
+        &lt;a href=&quot;https://www.reddit.com/r/energy/comments/1sl30vg/live_global_energy_shortages_32_active_alerts/&quot;&gt;
+        &lt;img src=&quot;https://preview.redd.it/jnbht8oid4vg1.png?width=140&amp;amp;height=63&amp;amp;auto=webp&amp;amp;s=1c62f3650f289fa9b647e9192b52fcbba5c9a82c&quot;
+        alt=&quot;Live Global Energy Shortages : 32 Active Alerts Amid 2026 Hormuz
+        Crisis&quot; title=&quot;Live Global Energy Shortages : 32 Active Alerts Amid
+        2026 Hormuz Crisis&quot; /&gt; &lt;/a&gt; &lt;/td&gt;&lt;td&gt; &lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;With ongoing disruptions from
+        the Hormuz situation (Day 49 post-ceasefire), here&amp;#39;s a real-time view
+        of global energy flows and shortages:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;32 active
+        fuel shortage alerts across 25+ countries (jet fuel rationing, station closures,
+        diesel cuts, etc.)&lt;/li&gt; &lt;li&gt;EU gas storage critically low at 28%
+        fill rate&lt;/li&gt; &lt;li&gt;US SPR at historic lows&lt;/li&gt; &lt;li&gt;Major
+        pipeline outages and chokepoint impacts&lt;/li&gt; &lt;/ul&gt; &lt;p&gt;Interactive
+        map + data: &lt;a href=&quot;https://global-energy-flow.com/#shortages/data&quot;&gt;https://global-energy-flow.com/#shortages&lt;/a&gt;&lt;br/&gt;
+        Updated daily from public sources (EIA, GIE, MarineTraffic, etc.). &lt;/p&gt;
+        &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/SashSail&quot;&gt;
+        /u/SashSail &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/gallery/1sl30vg&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1sl30vg/live_global_energy_shortages_32_active_alerts/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;
+        &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</content><id>t3_1sl30vg</id><media:thumbnail
+        url=\"https://preview.redd.it/jnbht8oid4vg1.png?width=140&amp;height=63&amp;auto=webp&amp;s=1c62f3650f289fa9b647e9192b52fcbba5c9a82c\"
+        /><link href=\"https://www.reddit.com/r/energy/comments/1sl30vg/live_global_energy_shortages_32_active_alerts/\"
+        /><updated>2026-04-14T08:51:42+00:00</updated><published>2026-04-14T08:51:42+00:00</published><title>Live
+        Global Energy Shortages : 32 Active Alerts Amid 2026 Hormuz Crisis</title></entry><entry><author><name>/u/YAFONOOB</name><uri>https://www.reddit.com/user/YAFONOOB</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;table&gt; &lt;tr&gt;&lt;td&gt;
+        &lt;a href=&quot;https://www.reddit.com/r/energy/comments/1secdfi/is_this_article_hype_or_legit_america_has_just/&quot;&gt;
+        &lt;img src=&quot;https://external-preview.redd.it/--mjUUw30X7M1IUntZ7UroEr-Gc9o-to0jMcs0B2Hr0.jpeg?width=640&amp;amp;crop=smart&amp;amp;auto=webp&amp;amp;s=0507e33b159c35a446e85c8296d503beb7a187c8&quot;
+        alt=&quot;Is this article hype or legit? &amp;quot;America has just found
+        enough Green Hydrogen in California to power the nation a millennia&quot;
+        title=&quot;Is this article hype or legit? &amp;quot;America has just found
+        enough Green Hydrogen in California to power the nation a millennia&quot;
+        /&gt; &lt;/a&gt; &lt;/td&gt;&lt;td&gt; &lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;How
+        can this be? I haven&amp;#39;t seen anything on the news, if it&amp;#39;s
+        real, why aren&amp;#39;t we using it?&lt;/p&gt; &lt;p&gt;I copied the entire
+        article here, for convenience:&lt;/p&gt; &lt;p&gt;America has just found a
+        source of fuel providing energy for millennia in California&lt;/p&gt; &lt;p&gt;&lt;strong&gt;America\u2019s
+        Future Energy Source: Green Hydrogen to Power the Nation for Millennia&lt;/strong&gt;&lt;/p&gt;
+        &lt;p&gt;What propelled Saudi Arabia, the UAE, and Dubai into global powerhouses?
+        The answer is simple: oil. This non-renewable resource has been the lifeblood
+        of these regions for decades. However, oil reserves are depleting, pushing
+        the world to seek alternatives. Now, America has discovered an even more promising
+        and futuristic energy resource. Experts are astounded by the vast potential
+        of this discovery, suggesting it could surpass anything seen before. This
+        groundbreaking project, centered in Texas, could change the global energy
+        landscape forever.&lt;/p&gt; &lt;h1&gt;The Dawn of Green Hydrogen: A New Energy
+        Era&lt;/h1&gt; &lt;p&gt;Texas is making headlines with the launch of Hydrogen
+        City, the world\u2019s first large-scale green hydrogen production, storage,
+        and transport system. Situated around the Peidras Pintas Salt Dome in South
+        Texas, this project is set to revolutionize energy production. A partnership
+        between Green Hydrogen International (GHI) and Inpex Corporation aims to produce
+        280,000 tons of green hydrogen annually, which will be converted into one
+        million tons of green ammonia for export.&lt;/p&gt; &lt;h1&gt;Leveraging Renewable
+        Energy&lt;/h1&gt; &lt;p&gt;Texas is already known for its abundant renewable
+        energy resources, particularly solar and wind power. Hydrogen City plans to
+        capitalize on these resources by purchasing electricity from the ERCOT grid
+        during off-peak hours, supplementing renewable inputs. This strategy includes
+        optimizing electrolyzers and utilizing salt caverns to buffer fluctuations
+        in wind and solar power. The produced hydrogen will be directly supplied to
+        consumers, ensuring a steady, reliable energy source.&lt;/p&gt; &lt;h1&gt;The
+        Green and Blue Hydrogen Revolution&lt;/h1&gt; &lt;p&gt;Unlike traditional
+        black gold, the \u201Coil of the future\u201D is green or blue. Hydrogen City\u2019s
+        green hydrogen will be used to produce green ammonia, targeting the growing
+        demand for clean fuels in Asian markets, especially Japan. Japan\u2019s Ministry
+        of Economy, Trade, and Industry (METI) aims to increase renewable ammonia
+        production to 30 million tons by 2050, and Hydrogen City is poised to help
+        meet this goal.&lt;/p&gt; &lt;h1&gt;Impacts on America\u2019s Energy Landscape&lt;/h1&gt;
+        &lt;p&gt;The implications of Hydrogen City are profound. By replacing fossil
+        fuels with green hydrogen, the project could significantly reduce carbon emissions
+        in transportation, electricity generation, and industrial production. The
+        green ammonia produced will serve as a cleaner alternative to conventional
+        ammonia, which is typically made using fossil fuels, thus reducing greenhouse
+        gas emissions and aiding the transition to greener energy systems.&lt;/p&gt;
+        &lt;h1&gt;Expansion Plans: Beyond Initial Ambitions&lt;/h1&gt; &lt;p&gt;Hydrogen
+        City is set to generate up to 60 gigawatts (GW) of green hydrogen, potentially
+        becoming one of the largest projects of its kind globally. The salt storage
+        at Piedras Pintas Salt Dome could eventually hold up to 6 terawatt-hours (TWh)
+        of energy, similar to how Henry Hub stores natural gas.&lt;/p&gt; &lt;p&gt;The
+        project has strong scientific and technological support. ABB, a global technology
+        company, has signed a memorandum of understanding with GHI to explore the
+        use of automation, electrification, and digital technology in Hydrogen City.
+        This collaboration aims to enhance the project\u2019s electrical system architecture,
+        making it more adaptable to future requirements.&lt;/p&gt; &lt;h1&gt;Timeline
+        and Future Prospects&lt;/h1&gt; &lt;p&gt;Construction of Hydrogen City is
+        expected to begin in 2026, with commercial production slated for 2029. As
+        demand grows, additional phases will be introduced, scaling up production
+        capacity. The project\u2019s innovative storage solutions and massive scale
+        make it a cornerstone for green hydrogen production, potentially transforming
+        America\u2019s energy policy, which currently relies heavily on solar and
+        wind power.&lt;/p&gt; &lt;p&gt;If the projections hold true, Hydrogen City
+        represents an energy reserve that could last for millennia, bringing immense
+        economic benefits to multiple states. This development positions America as
+        a new hub of energy innovation, drawing comparisons to Dubai\u2019s transformation
+        through oil wealth.&lt;/p&gt; &lt;h1&gt;Top Ten Benefits of Green Hydrogen&lt;/h1&gt;
+        &lt;ol&gt; &lt;li&gt;&lt;strong&gt;Sustainable Energy&lt;/strong&gt;: Provides
+        a renewable energy source, reducing reliance on fossil fuels.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Environmental
+        Impact&lt;/strong&gt;: Significantly lowers carbon emissions and greenhouse
+        gases.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Cost-Effective&lt;/strong&gt;: Green
+        hydrogen production is more economical in the long term.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Energy
+        Security&lt;/strong&gt;: Ensures a stable and reliable energy supply.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Economic Growth&lt;/strong&gt;: Generates new jobs
+        and stimulates economic development.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Technological
+        Advancement&lt;/strong&gt;: Promotes the use of advanced technologies in energy
+        production.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Global Leadership&lt;/strong&gt;:
+        Positions America as a leader in renewable energy innovation.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Scalability&lt;/strong&gt;:
+        The project can expand to meet increasing energy demands.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Health
+        Benefits&lt;/strong&gt;: Reduces air pollution, leading to better public health
+        outcomes.&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Versatility&lt;/strong&gt;: Green
+        hydrogen can be used in various sectors, including transport, industry, and
+        power generation.&lt;/li&gt; &lt;/ol&gt; &lt;h1&gt;A Brief History of Oil
+        Production in California&lt;/h1&gt; &lt;p&gt;Oil production in California
+        dates back to the mid-19th century. The first commercial oil well in the state
+        was drilled in 1876 in Pico Canyon. By the early 20th century, California
+        had become a leading oil producer in the United States, with significant discoveries
+        in the Los Angeles Basin and the San Joaquin Valley. The state\u2019s oil
+        industry fueled economic growth and played a crucial role in the development
+        of modern infrastructure. However, environmental concerns and a shift towards
+        renewable energy have reduced California\u2019s reliance on oil production
+        in recent decades.&lt;/p&gt; &lt;h1&gt;Embracing a Greener Future&lt;/h1&gt;
+        &lt;p&gt;As we embrace the potential of green hydrogen, it\u2019s crucial
+        to leverage modern technology to maximize its benefits. Advanced composites,
+        nano-coatings, and smart technologies like IoT sensors and AI algorithms can
+        optimize thermal energy systems. Real-time monitoring and data-driven approaches
+        can ensure efficient heat storage and release, aligning production with renewable
+        energy availability.&lt;/p&gt; &lt;p&gt;Educating industry stakeholders and
+        demonstrating the benefits of firebrick technology through workshops and pilot
+        programs can encourage widespread adoption. By bridging ancient wisdom with
+        modern solutions, we can pave the way for a cleaner, sustainable future.&lt;/p&gt;
+        &lt;p&gt;For more insights into this innovative approach and to stay updated
+        on the latest advancements in sustainable technology, visit &lt;a href=&quot;https://unspillable.com/&quot;&gt;unspillable.com&lt;/a&gt;.
+        Follow us on social media to join the conversation and be part of the movement
+        towards a greener future.&lt;/p&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32;
+        submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/YAFONOOB&quot;&gt;
+        /u/YAFONOOB &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://unspillable.com/america-has-just-found-a-source-of-fuel-providing-energy-for-millennia-in-california/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1secdfi/is_this_article_hype_or_legit_america_has_just/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;
+        &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</content><id>t3_1secdfi</id><media:thumbnail
+        url=\"https://external-preview.redd.it/--mjUUw30X7M1IUntZ7UroEr-Gc9o-to0jMcs0B2Hr0.jpeg?width=640&amp;crop=smart&amp;auto=webp&amp;s=0507e33b159c35a446e85c8296d503beb7a187c8\"
+        /><link href=\"https://www.reddit.com/r/energy/comments/1secdfi/is_this_article_hype_or_legit_america_has_just/\"
+        /><updated>2026-04-06T21:35:07+00:00</updated><published>2026-04-06T21:35:07+00:00</published><title>Is
+        this article hype or legit? &quot;America has just found enough Green Hydrogen
+        in California to power the nation a millennia</title></entry><entry><author><name>/u/karlwaldman</name><uri>https://www.reddit.com/user/karlwaldman</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;I built a free Chrome extension
+        that shows real-time energy commodity prices. No account required, no ads.&lt;/p&gt;
+        &lt;p&gt;What it tracks for free:&lt;/p&gt; &lt;p&gt;- Brent Crude &amp;amp;
+        WTI&lt;/p&gt; &lt;p&gt;- Natural Gas (Henry Hub)&lt;/p&gt; &lt;p&gt;- Heating
+        Oil, Gasoline, Diesel&lt;/p&gt; &lt;p&gt;It sits in your Chrome toolbar \u2014
+        click for a popup with current prices and 24h changes. Optional side panel
+        if you want it&lt;/p&gt; &lt;p&gt;always visible.&lt;/p&gt; &lt;p&gt;Useful
+        if you work in energy and want a quick reference without opening a trading
+        platform.&lt;/p&gt; &lt;p&gt;Link: &lt;a href=&quot;https://chromewebstore.google.com/detail/ambgjkjligddglngpoigdgfiamipgnci&quot;&gt;https://chromewebstore.google.com/detail/ambgjkjligddglngpoigdgfiamipgnci&lt;/a&gt;&lt;/p&gt;
+        &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/karlwaldman&quot;&gt;
+        /u/karlwaldman &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1ro5d9v/free_browser_extension_for_live_energy_prices/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1ro5d9v/free_browser_extension_for_live_energy_prices/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_1ro5d9v</id><link
+        href=\"https://www.reddit.com/r/energy/comments/1ro5d9v/free_browser_extension_for_live_energy_prices/\"
+        /><updated>2026-03-08T13:49:51+00:00</updated><published>2026-03-08T13:49:51+00:00</published><title>Free
+        browser extension for live energy prices \u2014 crude oil, natural gas, heating
+        oil, diesel</title></entry><entry><author><name>/u/jdimov</name><uri>https://www.reddit.com/user/jdimov</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;This guide explains the infrastructure
+        and economics that connect US shale production to UK power plants. You&amp;#39;ll
+        learn how LNG shipping works, why UK gas prices track Henry Hub (Louisiana)
+        with a 6-8 week lag, and how traders calculate netback prices to decide whether
+        exporting US gas to Europe is profitable. You&amp;#39;ll see why LNG is the
+        flexible marginal source while Norwegian pipelines provide inflexible baseload,
+        and how charter rate volatility (which spiked 5x in 2025) can turn a profitable
+        cargo into a loss overnight.&lt;/p&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32;
+        submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/jdimov&quot;&gt;
+        /u/jdimov &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://a115.co.uk/global-gas-market/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1qg6k9e/the_global_gas_market/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_1qg6k9e</id><link
+        href=\"https://www.reddit.com/r/energy/comments/1qg6k9e/the_global_gas_market/\"
+        /><updated>2026-01-18T11:44:42+00:00</updated><published>2026-01-18T11:44:42+00:00</published><title>The
+        Global Gas Market</title></entry><entry><author><name>/u/Enno_Peters</name><uri>https://www.reddit.com/user/Enno_Peters</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;table&gt; &lt;tr&gt;&lt;td&gt;
+        &lt;a href=&quot;https://www.reddit.com/r/energy/comments/1bpsmpa/analysis_with_henry_hub_under_2mcf_is_there_a/&quot;&gt;
+        &lt;img src=&quot;https://external-preview.redd.it/zLU9Qs7bCRdOKmod9vR33H1dPykFGCn6ILHxiv2tcQc.jpg?width=640&amp;amp;crop=smart&amp;amp;auto=webp&amp;amp;s=24cf096335553f93101953d01129e753be8830b5&quot;
+        alt=&quot;[Analysis] With Henry Hub under $2/Mcf, is there a market for Tellurian\u2019s
+        Haynesville assets?&quot; title=&quot;[Analysis] With Henry Hub under $2/Mcf,
+        is there a market for Tellurian\u2019s Haynesville assets?&quot; /&gt; &lt;/a&gt;
+        &lt;/td&gt;&lt;td&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/Enno_Peters&quot;&gt;
+        /u/Enno_Peters &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://novilabs.com/resources/tellurian-analysis-between-bad-rock-and-a-hard-place/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1bpsmpa/analysis_with_henry_hub_under_2mcf_is_there_a/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;
+        &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</content><id>t3_1bpsmpa</id><media:thumbnail
+        url=\"https://external-preview.redd.it/zLU9Qs7bCRdOKmod9vR33H1dPykFGCn6ILHxiv2tcQc.jpg?width=640&amp;crop=smart&amp;auto=webp&amp;s=24cf096335553f93101953d01129e753be8830b5\"
+        /><link href=\"https://www.reddit.com/r/energy/comments/1bpsmpa/analysis_with_henry_hub_under_2mcf_is_there_a/\"
+        /><updated>2024-03-28T10:52:11+00:00</updated><published>2024-03-28T10:52:11+00:00</published><title>[Analysis]
+        With Henry Hub under $2/Mcf, is there a market for Tellurian\u2019s Haynesville
+        assets?</title></entry><entry><author><name>/u/FreePalestineTexas</name><uri>https://www.reddit.com/user/FreePalestineTexas</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;March 12, 2024, Release&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;We forecast the U.S. average retail gasoline price
+        will average about $3.50 per gallon (gal) this year, almost 20 cents/gal higher
+        on an annual average basis in 2024 compared with the February STEO, driven
+        by higher crude oil prices. Although still lower than 2023 over the year,
+        we expect nominal gasoline prices from May through July will exceed prices
+        for those same months in 2023.&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;&lt;strong&gt;Overview&lt;/strong&gt;
+        &lt;/p&gt; &lt;ul&gt; &lt;li&gt;&lt;a href=&quot;https://mail.google.com/mail/u/0/#m_-7024391836531280669_&quot;&gt;&lt;strong&gt;Global
+        oil markets&lt;/strong&gt;&lt;/a&gt;&lt;strong&gt;.&lt;/strong&gt; &lt;strong&gt;As
+        a result of OPEC+ extending crude oil production cuts, we have reduced our
+        forecast for global oil production growth in 2024. The lower growth contributes
+        to significant global oil inventory declines in our forecast for the second
+        quarter of 2024 (2Q24). Because of falling inventories, we now expect the
+        Brent crude oil spot price will average $88 per barrel (b) in 2Q24, up $4/b
+        from our February STEO, and we expect the Brent price will average $87/b this
+        year.&lt;/strong&gt;&lt;/li&gt; &lt;li&gt;&lt;strong&gt;U.S. retail gasoline
+        prices.&lt;/strong&gt; &lt;strong&gt;We forecast the U.S. average retail gasoline
+        price will average about $3.50 per gallon (gal) this year, almost 20 cents/gal
+        higher on an annual average basis in 2024 compared with the February STEO,
+        driven by higher crude oil prices. Although still lower than 2023 over the
+        course of the year, we expect nominal gasoline prices from May through July
+        will exceed prices for those same months in 2023.&lt;/strong&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Natural gas prices.&lt;/strong&gt; &lt;strong&gt;We
+        expect the Henry Hub spot price to remain below $2.00 per million British
+        thermal units (MMBtu) in 2Q24 as the winter heating season ends with natural
+        gas inventories 37% above the five-year average. The Henry Hub spot price
+        averaged $1.72/MMBtu in February (30% lower than in our February STEO), a
+        record low adjusted for inflation. Low prices were partially driven by reduced
+        natural gas consumption in the residential and commercial sectors this winter
+        (November\u2014March).&lt;/strong&gt;&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Natural
+        gas production.&lt;/strong&gt; &lt;strong&gt;We forecast that U.S. dry natural
+        gas production will remain unchanged in March from February at just under
+        104 billion cubic feet per day (Bcf/d). We expect lower natural gas prices
+        to cause slight declines in natural gas production the remainder of the year,
+        and we do not expect that natural gas production will return to its December
+        2023 record of 106 Bcf/d during the forecast period. Forecast U.S. dry natural
+        gas production averages 103 Bcf/d in 2024, down slightly from 2023. Production
+        increases to 104 Bcf/d in 2025, driven by expected growth in associated natural
+        gas production in the Permian Basin and growth in LNG export demand.&lt;/strong&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Electricity generation.&lt;/strong&gt; &lt;strong&gt;We
+        expect utility-scale solar generation to provide 6% of U.S. electricity generation
+        in 2024, up from 4% in 2023 and supported by a 36-gigawatt increase in solar
+        generating capacity. By contrast, we expect coal to provide 15% of generation
+        this year, down from 17% in 2023.&lt;/strong&gt;&lt;/li&gt; &lt;li&gt;&lt;strong&gt;Macroeconomics.&lt;/strong&gt;
+        &lt;strong&gt;Following the release of the Bureau of Economic Analysis\u2019s
+        end-of-2023 advance estimate of GDP and based on updates to the S&amp;amp;P
+        Global macroeconomic model, we have raised our forecast of U.S. GDP growth
+        from our February STEO to 2.6% in 2024 and 1.7% in 2025.&lt;/strong&gt; &lt;a
+        href=&quot;https://www.eia.gov/outlooks/steo/?src=email&quot;&gt;https://www.eia.gov/outlooks/steo/?src=email&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32; submitted by &amp;#32;
+        &lt;a href=&quot;https://www.reddit.com/user/FreePalestineTexas&quot;&gt;
+        /u/FreePalestineTexas &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1bd3cec/shortterm_energy_outlook/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1bd3cec/shortterm_energy_outlook/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_1bd3cec</id><link
+        href=\"https://www.reddit.com/r/energy/comments/1bd3cec/shortterm_energy_outlook/\"
+        /><updated>2024-03-12T17:40:49+00:00</updated><published>2024-03-12T17:40:49+00:00</published><title>Short-Term
+        Energy Outlook</title></entry><entry><author><name>/u/buzzyness</name><uri>https://www.reddit.com/user/buzzyness</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;table&gt; &lt;tr&gt;&lt;td&gt;
+        &lt;a href=&quot;https://www.reddit.com/r/energy/comments/188n8im/energy_eia_forecasts_im_tracking_thoughts/&quot;&gt;
+        &lt;img src=&quot;https://b.thumbs.redditmedia.com/XORFYZAQwWuGq7qaICvB_egKzC3r7VX5jFBkt0Cm2OA.jpg&quot;
+        alt=&quot;Energy /EIA forecasts I'm tracking - thoughts?&quot; title=&quot;Energy
+        /EIA forecasts I'm tracking - thoughts?&quot; /&gt; &lt;/a&gt; &lt;/td&gt;&lt;td&gt;
+        &lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;&lt;strong&gt;Energy
+        /EIA forecasts I&amp;#39;m tracking - thoughts?&lt;/strong&gt; &lt;/p&gt;
+        &lt;p&gt;&amp;#x200B;&lt;/p&gt; &lt;p&gt;&lt;a href=&quot;https://preview.redd.it/13bns4ff6r3c1.png?width=2036&amp;amp;format=png&amp;amp;auto=webp&amp;amp;s=52e0202c30d26b24a69e7381843d1270dd6d9787&quot;&gt;https://preview.redd.it/13bns4ff6r3c1.png?width=2036&amp;amp;format=png&amp;amp;auto=webp&amp;amp;s=52e0202c30d26b24a69e7381843d1270dd6d9787&lt;/a&gt;&lt;/p&gt;
+        &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/buzzyness&quot;&gt;
+        /u/buzzyness &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/188n8im/energy_eia_forecasts_im_tracking_thoughts/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/188n8im/energy_eia_forecasts_im_tracking_thoughts/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;
+        &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</content><id>t3_188n8im</id><media:thumbnail
+        url=\"https://b.thumbs.redditmedia.com/XORFYZAQwWuGq7qaICvB_egKzC3r7VX5jFBkt0Cm2OA.jpg\"
+        /><link href=\"https://www.reddit.com/r/energy/comments/188n8im/energy_eia_forecasts_im_tracking_thoughts/\"
+        /><updated>2023-12-01T21:40:30+00:00</updated><published>2023-12-01T21:40:30+00:00</published><title>Energy
+        /EIA forecasts I'm tracking - thoughts?</title></entry><entry><author><name>/u/WaitformeBumblebee</name><uri>https://www.reddit.com/user/WaitformeBumblebee</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Front month futures for Natural
+        gas in Europe (Dutch TTF) hit a 139.5 euros per MWh all time record the same
+        as $256 for a Barrel of Oil Equivalent (BOE) energy, while in the US Henry
+        Hub is trading at $3.72 per MMBTU equivalent to $20.7 BOE&lt;/p&gt; &lt;/div&gt;&lt;!--
+        SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/WaitformeBumblebee&quot;&gt;
+        /u/WaitformeBumblebee &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/rik9dx/dutch_ttf_natural_gas_in_europe_hits_record_256/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/rik9dx/dutch_ttf_natural_gas_in_europe_hits_record_256/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_rik9dx</id><link
+        href=\"https://www.reddit.com/r/energy/comments/rik9dx/dutch_ttf_natural_gas_in_europe_hits_record_256/\"
+        /><updated>2021-12-17T15:48:03+00:00</updated><published>2021-12-17T15:48:03+00:00</published><title>Dutch
+        TTF (Natural Gas in Europe) hits record $256 Barrel of Oil Equivalent</title></entry><entry><author><name>/u/WaitformeBumblebee</name><uri>https://www.reddit.com/user/WaitformeBumblebee</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Dutch Natural Gas (TTF) closed
+        yesterday at a record high, breaking the previous record from October 4th.
+        At 116.08 euros per MWh, european methane is trading above 38 USD per MMBTU
+        while Henry Hub (HH) prices (US) closed at 3.66 USD per MMBTU a difference
+        of one order of magnitude. Natural Gas dependent electricity generation saddled
+        by high fossil fuel and carbon tax prices in europe has thrown electricity
+        prices near 400 Euros per MWh.&lt;/p&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt;
+        &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/WaitformeBumblebee&quot;&gt;
+        /u/WaitformeBumblebee &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/rg4wbp/natural_gas_in_europe_closes_at_record_highs/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/rg4wbp/natural_gas_in_europe_closes_at_record_highs/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_rg4wbp</id><link
+        href=\"https://www.reddit.com/r/energy/comments/rg4wbp/natural_gas_in_europe_closes_at_record_highs/\"
+        /><updated>2021-12-14T10:45:13+00:00</updated><published>2021-12-14T10:45:13+00:00</published><title>Natural
+        Gas in Europe closes at record highs</title></entry><entry><author><name>/u/gunmoney</name><uri>https://www.reddit.com/user/gunmoney</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Transco Zone 6 traded as high
+        as $175 before settling at $141/MMBtu for tomorrow. For reference, the national
+        benchmark, Henry Hub, settled at $6.88/MMBtu for tomorrow. Exciting times
+        to be a natural gas analyst! Here to address any questions or discuss if anyone
+        is interested. &lt;/p&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;#32; submitted
+        by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/gunmoney&quot;&gt;
+        /u/gunmoney &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/7o6ck8/highest_ever_natural_gas_price_seen_today_in_the/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/7o6ck8/highest_ever_natural_gas_price_seen_today_in_the/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_7o6ck8</id><link
+        href=\"https://www.reddit.com/r/energy/comments/7o6ck8/highest_ever_natural_gas_price_seen_today_in_the/\"
+        /><updated>2018-01-04T22:06:51+00:00</updated><published>2018-01-04T22:06:51+00:00</published><title>Highest
+        ever natural gas price seen today in the US</title></entry><entry><author><name>/u/joaofava</name><uri>https://www.reddit.com/user/joaofava</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;&lt;a href=&quot;http://www.eia.gov/todayinenergy/prices.cfm&quot;&gt;http://www.eia.gov/todayinenergy/prices.cfm&lt;/a&gt;
+        Looks like someone is going to want to build some pipelines.&lt;/p&gt; &lt;/div&gt;&lt;!--
+        SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/joaofava&quot;&gt;
+        /u/joaofava &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/2ej4pk/natural_gas_is_184_in_midatlantic_390_at_henry_hub/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/2ej4pk/natural_gas_is_184_in_midatlantic_390_at_henry_hub/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_2ej4pk</id><link
+        href=\"https://www.reddit.com/r/energy/comments/2ej4pk/natural_gas_is_184_in_midatlantic_390_at_henry_hub/\"
+        /><updated>2014-08-25T14:16:17+00:00</updated><published>2014-08-25T14:16:17+00:00</published><title>Natural
+        gas is $1.84 in Mid-Atlantic, $3.90 at Henry Hub</title></entry><entry><author><name>/u/this_shit</name><uri>https://www.reddit.com/user/this_shit</uri></author><category
+        term=\"energy\" label=\"r/energy\"/><content type=\"html\">&lt;!-- SC_OFF
+        --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Wonkblog has been running a
+        &amp;quot;graph-of-the-year&amp;quot; series and &lt;a href=&quot;http://www.washingtonpost.com/blogs/wonkblog/wp/2013/12/29/sen-ron-wydens-graph-of-the-year/&quot;&gt;the
+        latest&lt;/a&gt; shows that since the local max in 2008, wellhead prices have
+        fallen 66% while residential prices have only fallen 23% (I&amp;#39;m not
+        sure what they&amp;#39;re calling &amp;#39;wellhead&amp;#39; - Henry Hub was
+        even higher in 2008...). Anyone know generally why this might be? Long-term
+        delivery contracts? Increase in retail infrastructure investments (i.e., new
+        residential delivery infrastructure)? Plain-old rent seeking? &lt;/p&gt; &lt;/div&gt;&lt;!--
+        SC_ON --&gt; &amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/this_shit&quot;&gt;
+        /u/this_shit &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1u0mmj/natural_gas_difference_between_longrun_changes_in/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;
+        &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.reddit.com/r/energy/comments/1u0mmj/natural_gas_difference_between_longrun_changes_in/&quot;&gt;[comments]&lt;/a&gt;&lt;/span&gt;</content><id>t3_1u0mmj</id><link
+        href=\"https://www.reddit.com/r/energy/comments/1u0mmj/natural_gas_difference_between_longrun_changes_in/\"
+        /><updated>2013-12-30T15:00:57+00:00</updated><published>2013-12-30T15:00:57+00:00</published><title>Natural
+        gas: difference between long-run changes in wellhead and delivered prices</title></entry></feed>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - private, max-age=3600
+      Connection:
+      - close
+      Content-Length:
+      - '33402'
+      Date:
+      - Sun, 06 Sep 2026 09:15:27 GMT
+      NEL:
+      - '{"report_to": "w3-reporting-nel", "max_age": 14400, "include_subdomains":
+        false, "success_fraction": 1.0, "failure_fraction": 1.0}'
+      Report-To:
+      - '{"group": "w3-reporting-nel", "max_age": 14400, "include_subdomains": true,  "endpoints":
+        [{ "url": "https://w3-reporting-nel.reddit.com/reports" }]}, {"group": "w3-reporting",
+        "max_age": 14400, "include_subdomains": true, "endpoints": [{ "url": "https://w3-reporting.reddit.com/reports"
+        }]}, {"group": "w3-reporting-csp", "max_age": 14400, "include_subdomains":
+        true, "endpoints": [{ "url": "https://w3-reporting-csp.reddit.com/reports"
+        }]}'
+      Server:
+      - snooserv
+      Set-Cookie:
+      - session_tracker=Z0akpR0b1a2DjH4Mmu.0.1788686127524.Z0FBQUFBQnFuUzh2OG1vZXc3NHctRU0xeVpuQjJkRlRNck9QazBscTdkRW5QQVlpanFKckdIRTJQdDJ3MXl3c0IxRDBWa2w3ODNkYkVNU1pZZGowLUMyNkpXd2hzQjViMFVtS2trMTFleEJZS1pPTlZVOXU2NDFyXzU3Ym1fQjA5Z09qd1lrYjJrZWY;
+        Domain=reddit.com; Max-Age=7199; Path=/; expires=Sun, 06-Sep-2026 11:15:27
+        GMT; secure; SameSite=None; Secure
+      - csv=2; Max-Age=63072000; Domain=.reddit.com; Path=/; Secure; SameSite=None
+      - edgebucket=anZSc4S2Cqm7jReZHm; Domain=reddit.com; Max-Age=63071999; Path=/;  secure
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains
+      Via:
+      - 1.1 varnish
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+      content-type:
+      - application/atom+xml; charset=UTF-8
+      server-timing:
+      - reddit-ct;desc="dn=FT,p=AMS,cs=MISS"
+      x-ratelimit-remaining:
+      - '0.0'
+      x-ratelimit-reset:
+      - '32'
+      x-ratelimit-used:
+      - '1'
+      x-ua-compatible:
+      - IE=edge
+    status:
+      code: 200
+      message: OK
+version: 1

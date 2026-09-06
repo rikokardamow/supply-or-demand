@@ -9,10 +9,14 @@ geopolitical topics, searched by query rather than by ticker.
 
 Same small-reference-table-as-Python precedent as pipelines/news/queries.py.
 
-Reddit's own fetch strategy (subreddit list vs. site-wide search) is Task 2's
-decision, made once it has probed whether site-wide search works within
-Reddit's ~1-request-per-60-seconds unauthenticated rate limit -- see this
-package's NOTES.md. No SUBREDDITS constant is defined here."""
+Reddit's own fetch strategy (subreddit list vs. site-wide search) was Task 2's
+decision, gated on probing whether site-wide search works within Reddit's
+~1-request-per-60-seconds unauthenticated rate limit. Confirmed live it does
+NOT: `https://www.reddit.com/search.rss?q=Henry+Hub&sort=new&limit=25` returns
+entries, but they are not filtered by the query at all -- see this package's
+NOTES.md for the two probes that established this. Subreddit search is kept,
+narrowed to two subreddits (not the brief's five) to stay inside the rate
+limit."""
 
 from __future__ import annotations
 
@@ -28,6 +32,13 @@ class TopicQuery(TypedDict):
 
 
 PLATFORMS: list[str] = ["reddit", "polymarket", "stocktwits"]
+
+# Task 2's choice, not five: site-wide Reddit search ignores the query entirely
+# (confirmed live, see pipelines/social/NOTES.md), so per-subreddit search.rss
+# is kept, but narrowed from the brief's five subreddits to two -- at Reddit's
+# confirmed ~1-request-per-60-seconds unauthenticated limit, every extra
+# subreddit multiplies the pull's wall-clock time directly.
+SUBREDDITS: list[str] = ["energy", "oil"]
 
 # Frozen 2026-09-06 by mean adanos.reddit.*.buzz_score over the single day of
 # Adanos data present in the lake (2026-09-03) -- not a history, one pull of
