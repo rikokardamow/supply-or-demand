@@ -14,9 +14,12 @@ from core.design import (
     GREY,
     GRID,
     LIGHT_BLUE,
+    MUTED,
     NAVY,
     ORANGE,
+    PAPER,
     RED,
+    RULE,
     TEXT,
     TRANSPARENT,
 )
@@ -44,9 +47,13 @@ def register_kardamow_template() -> None:
     template.layout.legend = {
         "orientation": "h",
         "yanchor": "bottom",
-        "y": 1.02,
+        # Was 1.02, which pushed the legend into the title row and made the two
+        # collide once a title was long enough to wrap. The section header owns the
+        # title now, so the legend can have that row to itself.
+        "y": 1.0,
         "xanchor": "left",
         "x": 0,
+        "font": {"family": BODY_STACK},  # legend labels are data, never the serif
     }
     pio.templates["kardamow"] = template
     pio.templates.default = "kardamow"
@@ -135,11 +142,15 @@ def seasonal_range_chart(
         ax=40,
         ay=-40,
         align="left",
-        bgcolor="white",
-        bordercolor=NAVY,
+        # Opaque ground and a hairline border so the box reads as a label rather than
+        # sitting on top of the series, which is how it rendered before the restyle.
+        bgcolor=PAPER,
+        bordercolor=RULE,
+        borderwidth=1,
+        borderpad=4,
+        opacity=0.95,
     )
     fig.update_layout(
-        title=title,
         yaxis_title=unit,
         xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
     )
@@ -172,7 +183,6 @@ def dual_axis_chart(
         )
     )
     fig.update_layout(
-        title=title,
         yaxis={"title": left_label, "color": NAVY},
         yaxis2={"title": right_label, "color": LIGHT_BLUE, "overlaying": "y", "side": "right"},
     )
@@ -183,7 +193,7 @@ def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Fig
     fig = go.Figure(
         go.Scatter(x=series.index, y=series.values, line={"color": NAVY, "width": 2})
     )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -191,7 +201,7 @@ def count_bar_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
     """A plain navy bar per period -- e.g. page 09's events-per-week volume chart,
     where the shape of interest is a simple count/volume over time, not a trend line."""
     fig = go.Figure(go.Bar(x=series.index, y=series.values, marker={"color": NAVY}))
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -214,7 +224,7 @@ def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> g
                 line={"color": colour, "width": 3 if is_current else 2},
             )
         )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -255,7 +265,7 @@ def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.F
             name="Current year",
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, xaxis_title="Days since window start")
+    fig.update_layout(yaxis_title=unit, xaxis_title="Days since window start")
     return fig
 
 
@@ -268,7 +278,6 @@ def sankey_chart(
             link={"source": sources, "target": targets, "value": values, "color": BAND},
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
@@ -321,7 +330,6 @@ def seasonal_minmaxmean_chart(
         )
     )
     fig.update_layout(
-        title=title,
         yaxis_title=unit,
         xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
     )
@@ -349,8 +357,21 @@ def fullness_comparison_bars(
             textposition="outside",
         )
     )
+    # date_label used to ride along inside layout.title as a small span. The section
+    # header owns the title now, and it has no way to reach this argument -- so the
+    # as-of date is rendered here as a muted caption rather than being dropped.
+    fig.add_annotation(
+        text=date_label,
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=1.06,
+        showarrow=False,
+        align="left",
+        xanchor="left",
+        font={"family": BODY_STACK, "size": 11, "color": MUTED},
+    )
     fig.update_layout(
-        title=f"{title} <span style='font-size:0.7em'>{date_label}</span>",
         xaxis={"range": [0, 100], "ticksuffix": "%"},
     )
     return fig
@@ -419,7 +440,7 @@ def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Fig
                 fillcolor=PSR_COLOURS.get(psr_type, PSR_DEFAULT_COLOUR),
             )
         )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -473,7 +494,7 @@ def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
             colorbar={"title": unit},
         )
     )
-    fig.update_layout(title=title, xaxis_title="Hour of day", yaxis_title="Date")
+    fig.update_layout(xaxis_title="Hour of day", yaxis_title="Date")
     return fig
 
 
@@ -497,7 +518,6 @@ def category_time_heatmap(
             colorbar={"title": unit},
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
@@ -521,7 +541,7 @@ def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Fig
     fig.add_trace(
         go.Bar(x=df["country"], y=df["quota_kbd"], name="Quota", marker_color=GREY)
     )
-    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    fig.update_layout(yaxis_title=unit, barmode="group")
     return fig
 
 
@@ -540,7 +560,7 @@ def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figu
             connector={"line": {"color": GRID}},
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
@@ -556,7 +576,7 @@ def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figur
             fillcolor="rgba(15,42,74,0.15)",
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
@@ -587,7 +607,7 @@ def grouped_agency_bars(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
             )
         )
 
-    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    fig.update_layout(yaxis_title=unit, barmode="group")
     return fig
 
 
@@ -668,7 +688,6 @@ def dual_axis_inverted_chart(
     )
 
     fig.update_layout(
-        title=title,
         yaxis={"title": spare_label, "autorange": "reversed"},
         yaxis2={"title": price_label, "overlaying": "y", "side": "right"},
     )
@@ -705,7 +724,7 @@ def sign_agreement_scatter(
             marker={"color": RED},
         )
     )
-    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label)
+    fig.update_layout(xaxis_title=x_label, yaxis_title=y_label)
     return fig
 
 
@@ -746,7 +765,7 @@ def curve_strip_chart(
         row=2,
         col=1,
     )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -788,7 +807,7 @@ def regime_ribbon_chart(
         row=2,
         col=1,
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
@@ -845,7 +864,7 @@ def scatter_piecewise_fit_chart(
             x=ax, y=ay, text=label, showarrow=True, arrowhead=2, bgcolor="white", bordercolor=RED
         )
 
-    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label, showlegend=False)
+    fig.update_layout(xaxis_title=x_label, yaxis_title=y_label, showlegend=False)
     return fig
 
 
@@ -866,7 +885,6 @@ def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
         )
     )
     fig.update_layout(
-        title=title, xaxis_title="Business days from roll-window start", yaxis_title="Year"
     )
     return fig
 
@@ -915,7 +933,6 @@ def cointegration_residual_chart(
         )
     fig.update_yaxes(title_text=unit, row=1, col=1)
     fig.update_yaxes(title_text="z", row=2, col=1)
-    fig.update_layout(title=title)
     return fig
 
 
@@ -935,7 +952,7 @@ def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go
         )
     )
     fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
-    fig.update_layout(title=title, xaxis_title="Months after shock", yaxis_title=unit)
+    fig.update_layout(xaxis_title="Months after shock", yaxis_title=unit)
     return fig
 
 
@@ -995,7 +1012,7 @@ def model_monitor_chart(
             showarrow=False,
             font={"color": ORANGE, "size": 11},
         )
-    fig.update_layout(title=title, yaxis_title="model RMSE / benchmark RMSE")
+    fig.update_layout(yaxis_title="model RMSE / benchmark RMSE")
     return fig
 
 
@@ -1042,7 +1059,6 @@ def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
             },
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
@@ -1094,7 +1110,6 @@ def equity_drawdown_chart(
     )
     fig.update_yaxes(title_text=unit, row=1, col=1)
     fig.update_yaxes(title_text="drawdown", row=2, col=1)
-    fig.update_layout(title=title)
     return fig
 
 
@@ -1125,7 +1140,7 @@ def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
                 marker={"color": RED, "size": 11},
             )
         )
-    fig.update_layout(title=title, xaxis_title="z-score", yaxis_title="position")
+    fig.update_layout(xaxis_title="z-score", yaxis_title="position")
     return fig
 
 
@@ -1154,7 +1169,7 @@ def fractionation_heatmap(
             colorbar={"title": value},
         )
     )
-    fig.update_layout(title=title, xaxis_title="bin", yaxis_title="condition")
+    fig.update_layout(xaxis_title="bin", yaxis_title="condition")
     return fig
 
 
@@ -1191,7 +1206,6 @@ def crowding_quadrant_scatter(
         )
     fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
     fig.update_layout(
-        title=title,
         xaxis_title="managed-money percentile",
         yaxis_title="signal z",
     )

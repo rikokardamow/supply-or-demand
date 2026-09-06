@@ -22,6 +22,14 @@ replaces the filename-derived sidebar.
 - **A peer Claude session works this same clone.** Confirmed live on 2026-09-06: its commit landed on this branch and one of ours landed on its branch, because both sessions check out branches in one working tree. Before each task, run `ListAgents` and `git log --all --oneline -5`, and confirm the branch is still `design/ui-restyle` before committing. Stage files by name — never `git add -A`, which sweeps a peer's in-progress files into your commit. Never rewrite shared history (`rebase`, `amend`, `branch -f`) while a peer is live; fix mistakes with a follow-up commit.
 - Agreed file lanes: this plan owns `apps/dashboard/**`, `core/theme.py`, `core/design.py`, `.streamlit/config.toml`. It does not touch `pipelines/**` or other `core/*` modules.
 - `uv` is NOT on the Git Bash PATH on this machine. Run tools as `./.venv/Scripts/python.exe -m <tool>` or from PowerShell. `make dev` fails in Git Bash — this is environmental, not a bug to fix here.
+- **Running the app from the worktree needs `PYTHONPATH`, or you will verify the wrong code.** The worktree's `.venv` is a junction to the main clone's, and that venv contains `_editable_impl_energy_dashboard.pth` pointing at `C:\Users\<user>\Documents\energy-dashboard`. So `import core` resolves to the **main clone**. Confirmed live on 2026-09-06: a screenshot taken to verify Task 5 showed the old doubled titles, because Streamlit was reading `.streamlit/config.toml` from the worktree (cwd-relative, so the new theme appeared) while importing `core` from the main clone. Always start it as:
+
+  ```bash
+  PYTHONPATH="C:/Users/<user>/Documents/energy-dashboard.worktrees/ui-restyle" \
+    ./.venv/Scripts/streamlit.exe run apps/dashboard/app.py --server.port 8502 --server.headless true
+  ```
+
+  `pytest` is unaffected — it puts the rootdir first, which is why the suite tested the right code throughout. The tell-tale is a page that half-updates: new chrome, old behaviour.
 - `make check` = ruff, mypy (`core pipelines infra apps`), pytest. Must be green before every commit (golden rule 8).
 - Default pytest run excludes browser tests: `addopts = "-ra --strict-markers -m 'not browser'"`. Browser tests run explicitly with `-m browser` and need `playwright install chromium`.
 - Series colours (`NAVY #0f2a4a`, `LIGHT_BLUE #5b9bd5`, `RED #c0392b`, `ORANGE #e67e22`, `BAND`, `GRID`) keep their exact current values. They encode data, not brand.
