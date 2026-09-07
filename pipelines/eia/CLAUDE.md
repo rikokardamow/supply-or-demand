@@ -635,7 +635,7 @@ as still outstanding — the actual point of this plan.** Latest capacity is mon
 publication cadence for `stor/cap`, not a bug, and capacity moves little month to month so
 comparing latest-to-latest is a reasonable approximation:
 
-| Region | Capacity (MMcf) | Capacity (Bcf) | Storage (Bcf) | Fullness |
+| Region | Capacity (MMcf, 2026-06-01) | Capacity (Bcf, 2026-06-01) | Storage (Bcf, 2026-08-28) | Fullness |
 |---|---|---|---|---|
 | L48 | 4,748,719 | 4,748.7 | 3,214 | **67.7%** |
 | East | 1,077,656 | 1,077.7 | 753 | **69.9%** |
@@ -643,6 +643,8 @@ comparing latest-to-latest is a reasonable approximation:
 | SouthCentral | 1,586,383 | 1,586.4 | 1,051 | **66.3%** |
 | Mountain | 485,916 | 485.9 | 236 | **48.6%** |
 | Pacific | 370,438 | 370.4 | 285 | **76.9%** |
+
+(The five sub-L48 regions' storage sums to 3,215 against L48's stated 3,214 — EIA rounding, immaterial.)
 
 **Believable.** All six land in a plausible band for late-August/early-September
 injection-season fill (L48's 4,748.7 Bcf working capacity and 3,214 Bcf in storage are
@@ -677,3 +679,23 @@ series: US plus PADD1 through PADD5, confirmed live by Task 0).
 **Item 1 status, precisely: capacity data and the fullness ratio are real and in the
 lake; the page section (Task 3) is not shipped.** It is blocked on a concurrent session's
 permission for `apps/dashboard/**`, out of this task's scope, and not touched here.
+
+## Task 3 (31A) — deferred page-section spec, recorded so it survives
+
+Task 3 is blocked and may sit deferred for a while; the spec for it previously lived only
+in a git-ignored ledger, which vanishes. Recorded here instead, per the plan
+(`docs/superpowers/plans/2026-09-06-eia-31a-gas-completeness.md`, Task 3):
+
+- Compute the ratio via `pipelines/eia/pull_gas_capacity.py::fullness_pct(storage_bcf,
+  capacity_mmcf)`, never inline — it carries the ÷1,000 MMcf→Bcf conversion so no page has
+  to remember it. Dividing Bcf by MMcf directly renders ~0.07% where the truth is ~70%.
+- M-1/Y-1 rows must join the capacity row **in force at that as-of month** (a second
+  `nearest_value_at_offset` call against the capacity series), not `iloc[-1]` — capacity
+  is revised and grows, so reusing today's figure silently understates historical
+  fullness.
+- `SouthCentral_Salt` and `SouthCentral_Nonsalt` have no capacity denominator (see Task 1
+  above) — the section must show its "no pair" message for these two and must not error
+  or fall back to a guessed figure.
+- Tests must assert the invariant (`0 < pct < 100`, L48 within a wide band) and must never
+  bake in a measured percentage as an exact expected value — fill drifts with the
+  injection season, so a hard-coded figure fails for the right reason at the wrong time.

@@ -403,11 +403,33 @@ git commit -m "feat(eia): natural gas consumption by sector, and schedule both g
 
 - [ ] **Step 2: Add the section**
 
+**A final-review correction to this sketch, made before Task 3 is picked up (it is
+currently deferred and blocked — see below): the original code divided storage (Bcf) by
+capacity (MMcf) directly, and it divided every historical row by TODAY's capacity.**
+Both are wrong and both are fixed in the corrected sketch below.
+
+1. **Unit conversion.** Storage is Bcf, capacity is MMcf (1 Bcf = 1,000 MMcf) —
+   `pipelines/eia/pull_gas_capacity.py::fullness_pct(storage_bcf, capacity_mmcf)` is the
+   presentation-time helper that now exists for exactly this; call it instead of dividing
+   inline. The original inline `stored / capacity * 100` divides Bcf by MMcf directly and
+   would render roughly 0.07% where the truth is roughly 70%.
+2. **As-of capacity join for M-1/Y-1.** Capacity is monthly and gets revised upward over
+   time (see `pipelines/eia/CLAUDE.md`'s Task 1 note), so a year-ago fullness figure must
+   be divided by the capacity **in force at that time**, not today's `iloc[-1]` value —
+   otherwise a real past fullness is silently and plausibly understated by however much
+   capacity has grown since. The fix is a second `nearest_value_at_offset` call against
+   the capacity series at the same as-of timestamp, not a single `latest_capacity` reused
+   for every row.
+
 ```python
 def _us_fullness_section(region: str) -> None:
     """US storage as percent of working gas capacity. AGSI+ publishes full_pct for
-    Europe directly; EIA publishes volume and capacity separately, so the ratio is
-    computed here from the two series Spec 31 added."""
+    Europe directly; EIA publishes volume (Bcf) and capacity (MMcf) separately, so the
+    ratio is computed here via fullness_pct, which also applies the MMcf->Bcf conversion.
+
+    SouthCentral_Salt and SouthCentral_Nonsalt have no capacity denominator at all (see
+    pipelines/eia/CLAUDE.md) -- capacity_id resolves to None for both, and the section
+    must show its "no pair" message rather than error or fall back to a guessed figure."""
     storage_id = next(
         (code for code, geo in STORAGE_GEO_MAP.items() if geo == region), None
     )
@@ -430,11 +452,19 @@ def _us_fullness_section(region: str) -> None:
         st.info(f"No usable capacity figure for {region}.")
         return
 
-    rows = [("Current", float(stored.iloc[-1]) / latest_capacity * 100, float(stored.iloc[-1]))]
+    rows = [
+        ("Current", fullness_pct(float(stored.iloc[-1]), latest_capacity), float(stored.iloc[-1]))
+    ]
     for label, days_back in [("M-1", 30), ("Y-1", 365)]:
-        prior = nearest_value_at_offset(stored, latest_ts - pd.Timedelta(days=days_back))
-        if prior is not None:
-            rows.append((label, prior / latest_capacity * 100, prior))
+        as_of = latest_ts - pd.Timedelta(days=days_back)
+        prior = nearest_value_at_offset(stored, as_of)
+        # Capacity is revised and grows over time -- join the capacity row IN FORCE AT
+        # THIS AS-OF MONTH, not today's latest_capacity. Reusing latest_capacity here
+        # would silently understate every historical fullness figure by however much
+        # capacity has grown since that date.
+        prior_capacity = nearest_value_at_offset(capacity, as_of)
+        if prior is not None and prior_capacity is not None and prior_capacity > 0:
+            rows.append((label, fullness_pct(prior, prior_capacity), prior))
 
     fig = fullness_comparison_bars(
         rows,
@@ -450,7 +480,9 @@ def _us_fullness_section(region: str) -> None:
         )
 ```
 
-Add the imports it needs (`CAPACITY_GEO_MAP`, `STORAGE_GEO_MAP`) and a call site under a `st.subheader("US storage")`, placed **after** the existing European sections so nothing pre-existing moves.
+Add the imports it needs (`CAPACITY_GEO_MAP`, `STORAGE_GEO_MAP`, `fullness_pct` from
+`pipelines.eia.pull_gas_capacity`) and a call site under a `st.subheader("US storage")`,
+placed **after** the existing European sections so nothing pre-existing moves.
 
 - [ ] **Step 3: Verify**
 
