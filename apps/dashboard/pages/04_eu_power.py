@@ -8,9 +8,9 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.lake import read_flows, read_ts_long
 from components.power_maps import render_flow_map, render_price_map
+from components.section import empty_state, page_header, section
 from core.theme import (
     LIGHT_BLUE,
     NAVY,
@@ -80,14 +80,14 @@ def _zone_filter_panel(latest_net: pd.DataFrame) -> list[str]:
     return [z for z in ZONES if st.session_state[f"eu_power_zone_filter_{z}"]]
 
 
-st.title("EU Power (ENTSO-E)")
+page_header("EU Power (ENTSO-E)")
 
 st.subheader("Day-ahead price map")
-with card("EU Day-Ahead Price Map"):
+with section("EU Day-Ahead Price Map"):
     render_price_map()
 
 st.subheader("Cross-border flows")
-with card("EU Cross-Border Flow Map"):
+with section("EU Cross-Border Flow Map"):
     render_flow_map()
 
 st.subheader("Generation mix")
@@ -99,7 +99,8 @@ generation_series_ids = [
 ]
 generation_long = read_ts_long(series_ids=generation_series_ids)
 if generation_long.empty:
-    st.info(f"No generation data yet for {selected_zone} — run `pipelines/entsoe/pull_actuals.py`.")
+    st.caption(f"Run `pipelines/entsoe/pull_actuals.py` to populate {selected_zone}.")
+    empty_state("entsoe", "daily", None)
 else:
     generation_long = generation_long.copy()
     generation_long["psr_type"] = generation_long["series_id"].str.split(".").str[-1].map(
@@ -109,7 +110,7 @@ else:
     ordered_cols = [c for c in _GENERATION_ORDER if c in wide.columns]
     mix_title = f"{selected_zone} Generation Mix"
     fig = generation_mix_chart(wide[ordered_cols], title=mix_title, unit="MW")
-    with card(mix_title):
+    with section(mix_title):
         st.plotly_chart(fig)
 
 st.subheader("Residual load")
@@ -118,20 +119,22 @@ wind_onshore = _series_by_ts(f"entsoe.{selected_zone}.forecast.{_slug('Wind Onsh
 wind_offshore = _series_by_ts(f"entsoe.{selected_zone}.forecast.{_slug('Wind Offshore')}")
 solar = _series_by_ts(f"entsoe.{selected_zone}.forecast.{_slug('Solar')}")
 if load.empty:
-    st.info(f"No load data yet for {selected_zone} — run `pipelines/entsoe/pull_actuals.py`.")
+    st.caption(f"Run `pipelines/entsoe/pull_actuals.py` to populate {selected_zone}.")
+    empty_state("entsoe", "daily", None)
 else:
     wind_total = wind_onshore.add(wind_offshore, fill_value=0.0)
     residual = residual_load(load, wind_total, solar)
     residual_title = f"{selected_zone} Residual Load"
     fig = simple_time_series_chart(residual, title=residual_title, unit="MW")
-    with card(residual_title):
+    with section(residual_title):
         st.plotly_chart(fig)
 
 st.subheader("Net position (latest hour, ranked)")
 flows_df = read_flows(source="entsoe")
 power_df = flows_df[flows_df["mode"] == "power"]
 if power_df.empty:
-    st.info("No flow data yet — run `pipelines/entsoe/pull_flows.py`.")
+    st.caption("Run `pipelines/entsoe/pull_flows.py` to populate this.")
+    empty_state("entsoe", "daily", None)
 else:
     net_df = net_position(power_df)
     latest_ts = net_df["ts"].max()
@@ -152,10 +155,9 @@ else:
         )
         net_position_title = f"Net Export Position — {pd.Timestamp(latest_ts)}"
         bar.update_layout(
-            title=net_position_title,
             yaxis_title="Net position (MW, +export / -import)",
         )
-        with card(net_position_title):
+        with section(net_position_title):
             st.plotly_chart(bar)
 
 st.caption(f"{len(ZONES)} zones covered, {len(BORDERS)} borders flowing.")
@@ -171,7 +173,8 @@ roi_demand = _eirgrid_series("demand")
 roi_wind = _eirgrid_series("wind")
 
 if roi_demand.empty or roi_wind.empty:
-    st.info("No EirGrid data yet — run `pipelines/eirgrid/pull_ireland.py`.")
+    st.caption("Run `pipelines/eirgrid/pull_ireland.py` to populate this.")
+    empty_state("eirgrid", "daily", None)
 else:
     ireland_range = st.segmented_control(
         "Time range",
@@ -193,14 +196,14 @@ else:
         left_label="Demand (MW)",
         right_label="Wind (MW)",
     )
-    with card("ROI Demand vs. Wind"):
+    with section("ROI Demand vs. Wind"):
         st.plotly_chart(fig)
 
     roi_net_import = _eirgrid_series("inter_net")
     snsp = snsp_proxy(roi_wind, roi_net_import, roi_demand).dropna()
     latest_snsp_pct = float(snsp.iloc[-1] * 100) if not snsp.empty else 0.0
     gauge = gauge_chart(latest_snsp_pct, title="SNSP Proxy — latest (%)")
-    with card("SNSP Proxy — latest (%)"):
+    with section("SNSP Proxy — latest (%)"):
         st.plotly_chart(gauge)
 
     roi_ewic = _eirgrid_series("inter_ewic")
@@ -221,6 +224,6 @@ else:
         )
     )
     inter_title = "Ireland Interconnector Flows (+import / -export)"
-    inter_fig.update_layout(title=inter_title, yaxis_title="MW")
-    with card(inter_title):
+    inter_fig.update_layout(yaxis_title="MW")
+    with section(inter_title):
         st.plotly_chart(inter_fig)
