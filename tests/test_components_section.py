@@ -6,12 +6,39 @@ browser test (-m browser) is what proves they actually paint.
 
 from __future__ import annotations
 
+from html.parser import HTMLParser
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
 DASHBOARD = Path(__file__).parent.parent / "apps" / "dashboard"
 REPO_ROOT = Path(__file__).parent.parent
+
+
+class _HeadingAttrs(HTMLParser):
+    """Collects the attributes of the first `tag` start-tag a real browser would see.
+
+    Using html.parser rather than a substring check matters: it is the only way to
+    reproduce the single-quote defect, where an attribute value containing a single
+    quote (HEADING_STACK's "'Times New Roman'") terminates the attribute early and the
+    rest of the declaration is parsed as bare, stray attributes.
+    """
+
+    def __init__(self, tag: str) -> None:
+        super().__init__()
+        self._tag = tag
+        self.attrs: dict[str, str | None] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == self._tag and self.attrs is None:
+            self.attrs = dict(attrs)
+
+
+def _find_heading_attrs(html_fragment: str, tag: str) -> dict[str, str | None]:
+    parser = _HeadingAttrs(tag)
+    parser.feed(html_fragment)
+    assert parser.attrs is not None, f"no <{tag}> found in {html_fragment!r}"
+    return parser.attrs
 
 
 def _run(body: str) -> AppTest:
@@ -117,14 +144,42 @@ def test_source_note_renders_its_text() -> None:
     assert "WCESTUS1" in _text(at)
 
 
+def test_section_heading_style_attribute_survives_html_parsing() -> None:
+    """A single-quoted style attribute is silently discarded by a real browser.
+
+    HEADING_STACK is "Lora, Georgia, 'Times New Roman', serif" -- it contains single
+    quotes. Emitting the style attribute itself in single quotes
+    (style='font-family:...'Times New Roman'...') terminates the attribute at the
+    quote before "Times"; the browser then parses "times" and "new" as bare, stray
+    attributes and throws away everything after them, including font-size. A test
+    that merely greps the markdown string for "font-family" cannot see this -- it has
+    to parse the markup as a browser does.
+    """
+    at = _run(
+        "from components.section import section\n"
+        "with section('Cushing Crude Stocks'):\n"
+        "    pass\n"
+    )
+    rendered = _text(at)
+    attrs = _find_heading_attrs(rendered, "h3")
+    style = attrs.get("style")
+    assert style is not None, f"style attribute was lost to HTML parsing; got {attrs}"
+    assert "font-family" in style
+    assert "font-size" in style
+    assert "times" not in attrs
+    assert "new" not in attrs
+
+
 def test_page_header_and_section_paint_real_headings() -> None:
-    """Titles must be <h1>/<h2>, not styled <div>s.
+    """Titles must be <h2>/<h3>, not styled <div>s.
 
     Two things depend on it beyond taste: a screen reader navigating by heading finds
     nothing on a page whose title is a div, and tests/test_pages_browser.py locates every
-    page by `h1` with the title text -- so a div title makes a perfectly good page look
+    page by its title's heading level -- so a div title makes a perfectly good page look
     unrendered. The inline style is what carries the Substack's heading face; the tag is
-    what carries the document outline.
+    what carries the document outline. <h1> is reserved for the "Kardamow" wordmark
+    painted once in apps/dashboard/app.py, so page_header() and section() sit one level
+    lower each: <h2> and <h3>.
     """
     at = _run(
         "from components.section import page_header, section\n"
@@ -134,5 +189,5 @@ def test_page_header_and_section_paint_real_headings() -> None:
     )
     assert not at.exception
     rendered = _text(at)
-    assert "<h1" in rendered, "page_header must emit an <h1>"
-    assert "<h2" in rendered, "section must emit an <h2>"
+    assert "<h2" in rendered, "page_header must emit an <h2>"
+    assert "<h3" in rendered, "section must emit an <h3>"

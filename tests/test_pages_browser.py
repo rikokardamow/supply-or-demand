@@ -35,12 +35,18 @@ pytestmark = pytest.mark.browser
 REPO_ROOT = Path(__file__).parent.parent
 PAGES_DIR = REPO_ROOT / "apps" / "dashboard" / "pages"
 APP_ENTRYPOINT = "apps/dashboard/app.py"
-# The masthead in app.py paints "Kardamow"; the home page's own <h1> is this.
+# The masthead in app.py paints "Kardamow" as the document's only <h1>; each page's own
+# title -- this one for the home page -- is an <h2> beneath it (components/section.py).
 HOME_TITLE = "Energy Dashboard"
+HOME_TAG = "h2"  # 00_home.py uses page_header(), not st.title()
 
-# Pages are mid-migration from st.title() to components.section.page_header():
-# both paint the page's <h1>, so the check has to accept either. (2026-09-06.)
-_TITLE_RE = re.compile(r'(?:st\.title|page_header)\(\s*["\'](.+?)["\']')
+# Pages are mid-migration from st.title() to components.section.page_header(). Since the
+# 2026-09-06 masthead rebuild the two no longer paint the same heading level: st.title()
+# still paints Streamlit's native <h1>, but page_header() now paints <h2> -- "Kardamow" in
+# apps/dashboard/app.py is the document's only <h1>. The capture group on the call name
+# lets _page_title tell the two apart and check each page's title at its real level.
+_TITLE_RE = re.compile(r'(st\.title|page_header)\(\s*["\'](.+?)["\']')
+_TITLE_TAG = {"st.title": "h1", "page_header": "h2"}
 
 # Same shape as Streamlit's own PAGE_FILENAME_REGEX (streamlit/source_util.py) -- confirmed
 # live that Streamlit's sidebar nav order is NOT a lexical filename sort (it sorts by
@@ -51,10 +57,12 @@ _TITLE_RE = re.compile(r'(?:st\.title|page_header)\(\s*["\'](.+?)["\']')
 _SLUG_RE = re.compile(r"[0-9]*[_ -]*(.*)\.py")
 
 
-def _page_title(page_file: Path) -> str:
+def _page_title(page_file: Path) -> tuple[str, str]:
+    """The page's title text and the heading tag it actually renders at."""
     match = _TITLE_RE.search(page_file.read_text(encoding="utf-8"))
-    assert match, f"{page_file.name} has no st.title(...) call to check against"
-    return match.group(1)
+    assert match, f"{page_file.name} has no st.title(...)/page_header(...) call to check against"
+    call, title = match.groups()
+    return title, _TITLE_TAG[call]
 
 
 def _page_slug(page_file: Path) -> str:
@@ -88,9 +96,10 @@ def _nav_sections_by_slug() -> dict[str, str]:
 _SECTION_BY_SLUG = _nav_sections_by_slug()
 
 PAGE_NAV_CASES = [
-    (_SECTION_BY_SLUG[slug], slug, _page_title(path))
+    (_SECTION_BY_SLUG[slug], slug, title, tag)
     for path in sorted(PAGES_DIR.glob("*.py"))
     for slug in [_page_slug(path)]
+    for title, tag in [_page_title(path)]
     if slug in _SECTION_BY_SLUG
 ]
 
@@ -183,9 +192,12 @@ def browser_page() -> Iterator[tuple[Page, list[str]]]:
         browser.close()
 
 
-def _assert_page_rendered(page: Page, title: str, console_errors: list[str]) -> None:
+def _assert_page_rendered(page: Page, title: str, tag: str, console_errors: list[str]) -> None:
     page.wait_for_load_state("networkidle", timeout=45_000)
-    page.locator("h1", has_text=title).wait_for(state="visible", timeout=45_000)
+    # "Kardamow" is the document's only <h1> (apps/dashboard/app.py). Pages migrated to
+    # page_header() paint their own title one level down, as <h2>; pages still on plain
+    # st.title() paint Streamlit's native <h1> -- `tag` is which of the two this page uses.
+    page.locator(tag, has_text=title).wait_for(state="visible", timeout=45_000)
 
     assert not console_errors, f"{title}: browser console logged errors: {console_errors}"
     assert page.locator('[data-testid="stException"]').count() == 0, f"{title}: exception shown"
@@ -207,11 +219,11 @@ def _assert_page_rendered(page: Page, title: str, console_errors: list[str]) -> 
 def test_home_page_renders(streamlit_server: str, browser_page: tuple[Page, list[str]]) -> None:
     page, console_errors = browser_page
     page.goto(streamlit_server, timeout=30_000)
-    _assert_page_rendered(page, HOME_TITLE, console_errors)
+    _assert_page_rendered(page, HOME_TITLE, HOME_TAG, console_errors)
 
 
 @pytest.mark.parametrize(
-    "section,slug,title", PAGE_NAV_CASES, ids=[case[1] for case in PAGE_NAV_CASES]
+    "section,slug,title,tag", PAGE_NAV_CASES, ids=[case[1] for case in PAGE_NAV_CASES]
 )
 def test_page_renders_in_browser(
     streamlit_server: str,
@@ -219,6 +231,7 @@ def test_page_renders_in_browser(
     section: str,
     slug: str,
     title: str,
+    tag: str,
 ) -> None:
     page, console_errors = browser_page
 
@@ -243,4 +256,4 @@ def test_page_renders_in_browser(
     ).click()
     page.locator(f'[data-testid="stTopNavDropdownLink"][href$="/{slug}"]').click()
 
-    _assert_page_rendered(page, title, console_errors)
+    _assert_page_rendered(page, title, tag, console_errors)
