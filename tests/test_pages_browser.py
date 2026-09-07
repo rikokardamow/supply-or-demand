@@ -194,9 +194,10 @@ def browser_page() -> Iterator[tuple[Page, list[str]]]:
 
 def _assert_page_rendered(page: Page, title: str, tag: str, console_errors: list[str]) -> None:
     page.wait_for_load_state("networkidle", timeout=45_000)
-    # "Kardamow" is the document's only <h1> (apps/dashboard/app.py). Pages migrated to
-    # page_header() paint their own title one level down, as <h2>; pages still on plain
-    # st.title() paint Streamlit's native <h1> -- `tag` is which of the two this page uses.
+    # Once the migration finishes, "Kardamow" will be the document's only <h1>
+    # (apps/dashboard/app.py). Pages migrated to page_header() paint their own title one
+    # level down, as <h2>; pages still on plain st.title() paint Streamlit's native <h1>
+    # alongside the wordmark's -- `tag` is which of the two this page uses.
     page.locator(tag, has_text=title).wait_for(state="visible", timeout=45_000)
 
     assert not console_errors, f"{title}: browser console logged errors: {console_errors}"
@@ -220,6 +221,23 @@ def test_home_page_renders(streamlit_server: str, browser_page: tuple[Page, list
     page, console_errors = browser_page
     page.goto(streamlit_server, timeout=30_000)
     _assert_page_rendered(page, HOME_TITLE, HOME_TAG, console_errors)
+
+    # The "Kardamow" wordmark (apps/dashboard/app.py) is the masthead <h1> painted above
+    # every page's own title, and until now had no test of any kind. Checked here rather
+    # than on all sixteen page cases because the masthead itself doesn't vary by page --
+    # app.py's chrome renders once regardless of which page is showing. get_attribute
+    # reads the raw DOM attribute as this real browser actually parsed it (not a computed
+    # style), so it fails the same way the section()/page_header() unit tests do if the
+    # single-quote defect (HEADING_STACK's "'Times New Roman'" terminating the attribute
+    # early) ever comes back, and fails if the wordmark stops being a real <h1>.
+    wordmark = page.locator("h1", has_text="Kardamow")
+    wordmark.wait_for(state="visible", timeout=45_000)
+    style = wordmark.get_attribute("style")
+    assert style is not None, "masthead <h1> lost its style attribute"
+    assert "font-family" in style
+    assert "font-size" in style
+    assert wordmark.get_attribute("times") is None, "single-quote defect is back"
+    assert wordmark.get_attribute("new") is None, "single-quote defect is back"
 
 
 @pytest.mark.parametrize(
