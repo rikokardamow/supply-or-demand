@@ -699,3 +699,83 @@ in a git-ignored ledger, which vanishes. Recorded here instead, per the plan
 - Tests must assert the invariant (`0 < pct < 100`, L48 within a wide band) and must never
   bake in a measured percentage as an exact expected value — fill drifts with the
   injection season, so a hard-coded figure fails for the right reason at the wrong time.
+
+## Spec 31B — Grid Monitor facet values, confirmed live 2026-09-07
+
+Task 0 (discovery only, no pull code — Tasks 1–5 build the client method and pull scripts).
+Live queries against all three `electricity/rto/*` routes' `facet/<name>` endpoints (not
+`facet/series`, which 400s on all three, per plan 31A). The brief's own throwaway-script
+import line (`from core.config import settings`) does not exist in this repo — the real
+module is `core.settings` (confirmed: `pipelines/eia/client.py` already imports it that
+way); used `core.settings` for every script below, no other deviation.
+
+| Route | Facet | Values used | Total available |
+|---|---|---|---|
+| electricity/rto/region-data | respondent | `ERCO`, `PJM`, `MISO`, `SWPP`, `CISO`, `NYIS`, `ISNE`, `US48` — all 8 confirmed present | 83 |
+| electricity/rto/region-data | type | `D` (Demand), `DF` (Day-ahead demand forecast), `NG` (Net generation), `TI` (Total interchange) — all 4 declared codes used, matching the brief's expected demand/forecast/generation/interchange set exactly | 4 |
+| electricity/rto/fuel-type-data | fueltype | `NG` (Natural Gas) — the one gas-burning fuel type this plan needs; present and unique (not one of the duplicated ids, see below) | 20 raw facet rows / **16 unique codes** (4 ids listed twice — see finding below) |
+| electricity/rto/interchange-data | fromba/toba pairs | 10 directed pairs among the 8 chosen respondents (5 undirected corridors): `ERCO`↔`SWPP`, `ISNE`↔`NYIS`, `MISO`↔`PJM`, `MISO`↔`SWPP`, `NYIS`↔`PJM` | fromba: 83, toba: 92 |
+
+**Row field names on a real hourly response (region-data, `respondent=ERCO`, `type=D`):**
+`period`, `respondent`, `respondent-name`, `type`, `type-name`, `value`, `value-units`.
+**Value column:** `value`  **Unit column:** `value-units`  **Unit string:** `megawatthours`
+(confirmed on all three routes — `get_operational_series`'s "value column named after the
+data key, units column is `<key>-units`" pattern holds exactly here, where the key is
+literally `value`, giving `value`/`value-units` rather than a bare `units`).
+**Period format:** `2026-09-01T00` (`YYYY-MM-DDTHH`), confirmed.
+**start/end accepted as:** `YYYY-MM-DDTHH`, **inclusive on both ends** and genuinely
+narrowing — confirmed live with a 3-hour window (`start=2026-09-01T20`,
+`end=2026-09-01T22`) returning exactly 3 rows (`T20`, `T21`, `T22`). A consequence worth
+flagging for Task 6's backfill arithmetic: a "one calendar day" window expressed as
+`start=<day>T00`/`end=<day+1>T00` returns **25** hourly points, not 24, because both
+endpoints are inclusive — this is exactly why Step 3's 8-respondent/4-type count below is
+800, not 768.
+**Rows for one day x 8 respondents (region-data):** **800** (8 respondents × 4 types × 25
+inclusive hourly periods — `total` in the response matches exactly, confirmed live
+2026-09-07). Well under the 5,000-row page size — **no paging needed for one day at this
+scope**. Scaled to a 90-day backfill: 800 × 90 = 72,000 rows for `region-data` alone across
+the 8 respondents, i.e. 15 requests at `length=5000` (72,000 ÷ 5,000) — Task 6's backfill
+guidance should use this real number, not re-derive it.
+**Real interchange pairs among the chosen BAs:** only **5 undirected corridors** connect
+the 8 chosen BAs to each other (10 directed rows, both ends in the target set): `ERCO↔SWPP`,
+`ISNE↔NYIS`, `MISO↔PJM`, `MISO↔SWPP`, `NYIS↔PJM`. **`ERCO` and `PJM` — the two respondents
+Spec 31 item 2 exists specifically to reach — are not directly interconnected**; ERCO's only
+real corridors are `SWPP` and `CEN` (Mexico's Comisión Federal de Electricidad control
+area), and PJM's are `CPLE`, `CPLW`, `DUK`, `LGEE`, `MISO`, `NYIS`, `TVA`. This is not an
+empty-corridor failure (ERCO does have real interchange data, non-zero, confirmed:
+`ERCO→SWPP` values ranged -460 to 135 MWh over the sample hour), just a real topology fact
+Task 5 needs to know before assuming every pair of the 8 chosen BAs has its own series.
+`US48` (the Lower-48 aggregate) never appears as a `toba` value at all — confirmed missing
+from the full 92-value `toba` facet dump — but does appear as a `fromba`, exporting only to
+`CAN` and `MEX` (the two cross-border aggregate corridors), which is the expected shape for
+a whole-footprint aggregate rather than a real gap.
+**Respondent ids requested but NOT found:** none — all 8 (`ERCO`, `PJM`, `MISO`, `SWPP`,
+`CISO`, `NYIS`, `ISNE`, `US48`) are present under every facet checked (`region-data`
+respondent, `fuel-type-data` respondent, `interchange-data` fromba), **except** `US48`
+under `interchange-data`'s `toba` facet specifically (see finding above — expected given
+`US48`'s aggregate role, not a missing respondent).
+
+**Real finding: `fuel-type-data`'s `fueltype` facet carries 4 duplicate ids with differing
+display names — confirmed live, not a parsing bug.** `PS` ("Pumped Storage" / "Pumped
+storage"), `UES` ("Unknown Energy" / "Unknown energy storage"), `BAT` ("Battery" /
+"Battery storage"), `SNB` ("Solar Battery" / "Solar with integrated battery storage") each
+appear twice with the same id and a different name string — 20 raw rows resolve to 16
+unique ids. Consistent with an EIA-side naming-convention update where the old display
+string was never retired from the facet listing. Does not affect this plan: `NG` (the only
+code needed) appears exactly once, name `"Natural Gas"`, no duplicate.
+
+**Real finding: the descriptive name field for `fueltype` is `type-name`, not
+`fueltype-name`.** Confirmed on the `fuel-type-data` response row: the code field is
+`fueltype` (e.g. `"NG"`) but its paired human-readable field is named `type-name` (e.g.
+`"Natural Gas"`) — the same field name `region-data` uses for its own, semantically
+different `type` code. A field-name lookup keyed naively off the facet name (`fueltype` →
+`fueltype-name`) would silently return `KeyError` or `None`; Tasks 3/4 must read `type-name`
+for this route's fuel description, not a derived `f"{facet}-name"` string.
+
+**Confirmed clean, no surprises:** `respondent`/`type`/`fueltype`/`fromba`/`toba` all come
+back on every row of their respective route (never missing) alongside a matching
+`<field>-name` descriptive column; region-data's 4 `type` codes exactly match the brief's
+expected demand/forecast/generation/interchange set with no fifth or missing code;
+`fuel-type-data`'s rows carry both `respondent`/`respondent-name` and `fueltype`/`type-name`
+together, confirming the minted series-id scheme Tasks 3/4 will need can key off
+`respondent`+`fueltype` per row without a second lookup.
