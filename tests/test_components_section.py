@@ -9,6 +9,7 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
 DASHBOARD = Path(__file__).parent.parent / "apps" / "dashboard"
@@ -144,7 +145,24 @@ def test_source_note_renders_its_text() -> None:
     assert "WCESTUS1" in _text(at)
 
 
-def test_section_heading_style_attribute_survives_html_parsing() -> None:
+@pytest.mark.parametrize(
+    ("tag", "snippet"),
+    [
+        (
+            "h3",
+            "from components.section import section\n"
+            "with section('Cushing Crude Stocks'):\n"
+            "    pass\n",
+        ),
+        (
+            "h2",
+            "from components.section import page_header\n"
+            "page_header('Some Title')\n",
+        ),
+    ],
+    ids=["section-h3", "page_header-h2"],
+)
+def test_heading_style_attribute_survives_html_parsing(tag: str, snippet: str) -> None:
     """A single-quoted style attribute is silently discarded by a real browser.
 
     HEADING_STACK is "Lora, Georgia, 'Times New Roman', serif" -- it contains single
@@ -154,14 +172,15 @@ def test_section_heading_style_attribute_survives_html_parsing() -> None:
     attributes and throws away everything after them, including font-size. A test
     that merely greps the markdown string for "font-family" cannot see this -- it has
     to parse the markup as a browser does.
+
+    Parametrized over both headings that interpolate HEADING_STACK the same way --
+    section()'s <h3> and page_header()'s <h2> -- so a fix to only one of the two
+    still fails this test.
     """
-    at = _run(
-        "from components.section import section\n"
-        "with section('Cushing Crude Stocks'):\n"
-        "    pass\n"
-    )
+    at = _run(snippet)
+    assert not at.exception
     rendered = _text(at)
-    attrs = _find_heading_attrs(rendered, "h3")
+    attrs = _find_heading_attrs(rendered, tag)
     style = attrs.get("style")
     assert style is not None, f"style attribute was lost to HTML parsing; got {attrs}"
     assert "font-family" in style

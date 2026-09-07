@@ -8,9 +8,11 @@ Headings are painted here rather than with st.subheader so they carry the headin
 from core/design.py -- including its Georgia/serif fallback, which Streamlit's own
 generated font chain does not have. They are still real heading tags: the inline style
 carries the face, the tag carries the document outline that screen readers navigate by
-(and that tests/test_pages_browser.py locates each page with). The document's only <h1>
-is the "Kardamow" wordmark painted in apps/dashboard/app.py; page_header() paints <h2>
-and section() paints <h3>, so every page keeps a single, valid descending outline.
+(and that tests/test_pages_browser.py locates each page with). Once the migration finishes,
+the document's only <h1> will be the "Kardamow" wordmark painted in apps/dashboard/app.py;
+page_header() paints <h2> and section() paints <h3>, so every migrated page keeps a single,
+valid descending outline. Until then, pages still on plain st.title() paint their own
+native <h1> too.
 padding:0 is not decoration -- Streamlit's own heading rules add vertical padding these
 margins assume away.
 """
