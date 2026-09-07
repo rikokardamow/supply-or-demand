@@ -11,7 +11,7 @@ natural-gas/stor/cap and natural-gas/stor/wkly, which return the literal string 
 from __future__ import annotations
 
 import pandas as pd
-from core.failures import failure_scope
+from core.failures import failure_scope, record_failure
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -38,6 +38,13 @@ def pull_consumption(client: EIAClient) -> pd.DataFrame:
 def main() -> None:
     with failure_scope("eia.pull_gas_consumption"):
         df = pull_consumption(EIAClient())
+        # A sector that comes back with no rows at all (the whole pull failing, or one
+        # of four sectors silently missing) must not be reported as success -- record it
+        # so failure_scope's raise_if_any() fires on the way out. get_series always
+        # builds the series_id column, even on an empty frame, so this is safe when
+        # df is wholly empty too.
+        for code in sorted(set(CONSUMPTION) - set(df["series_id"])):
+            record_failure(code, RuntimeError("no rows returned"))
         if df.empty:
             print("no gas consumption rows pulled", flush=True)
             return

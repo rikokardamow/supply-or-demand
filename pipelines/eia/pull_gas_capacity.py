@@ -19,7 +19,7 @@ convention. Any conversion belongs in core/ or the page computing the fullness r
 from __future__ import annotations
 
 import pandas as pd
-from core.failures import failure_scope
+from core.failures import failure_scope, record_failure
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -36,6 +36,19 @@ CAPACITY_GEO_MAP: dict[str, str] = {
 CAPACITY_ROUTE = "natural-gas/stor/cap"
 CAPACITY_FREQUENCY = "monthly"
 
+# Capacity (natural-gas/stor/cap) is published in MMcf; the storage volumes it
+# denominates (natural-gas/stor/wkly, pull_gas_storage.py) are published in Bcf.
+# Deliberately not reconciled at ingest -- see this module's own docstring and this
+# project's ingest-time convention. This is the one place the x1000 lives.
+MMCF_PER_BCF = 1_000.0
+
+
+def fullness_pct(storage_bcf: float, capacity_mmcf: float) -> float:
+    """Percent full from the two series exactly as EIA publishes them: storage in Bcf
+    (natural-gas/stor/wkly), capacity in MMcf (natural-gas/stor/cap). Callers pass both
+    raw -- the x1000 lives here so no page has to remember it."""
+    return storage_bcf / (capacity_mmcf / MMCF_PER_BCF) * 100.0
+
 
 def pull_capacity(client: EIAClient) -> pd.DataFrame:
     """One route's rows. Separate from main so a cassette test can exercise it directly."""
@@ -50,6 +63,13 @@ def pull_capacity(client: EIAClient) -> pd.DataFrame:
 def main() -> None:
     with failure_scope("eia.pull_gas_capacity"):
         df = pull_capacity(EIAClient())
+        # A region that comes back with no rows at all (the whole pull failing, or one
+        # of six regions silently missing) must not be reported as success -- record it
+        # so failure_scope's raise_if_any() fires on the way out. get_series always
+        # builds the series_id column, even on an empty frame, so this is safe when
+        # df is wholly empty too.
+        for code in sorted(set(CAPACITY_GEO_MAP) - set(df["series_id"])):
+            record_failure(code, RuntimeError("no rows returned"))
         if df.empty:
             print("no gas capacity rows pulled", flush=True)
             return
