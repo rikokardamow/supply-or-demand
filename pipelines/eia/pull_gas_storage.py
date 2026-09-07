@@ -1,6 +1,9 @@
 """Pull weekly Lower-48 + regional natural gas working storage into ts_long. See
 pipelines/eia/CLAUDE.md for the confirmed series codes and the area-name="NA" quirk this
-route has (geo comes from an explicit map, not EIAClient's usual area-name normalisation)."""
+route has (geo comes from an explicit map, not EIAClient's usual area-name normalisation).
+
+These volumes are Bcf, while its sibling pull_gas_capacity.py publishes capacity in MMcf
+(a factor of 1,000) -- see that module's fullness_pct for the presentation-time conversion."""
 
 from __future__ import annotations
 
