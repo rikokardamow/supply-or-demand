@@ -933,8 +933,8 @@ every script below, no other deviation.
 |---|---|---|---|---|---|---|
 | `petroleum/pnp/wprode` | yes | 6 (unchanged from Spec 31A's count) | `W_EPOOXE_YOP_NUS_MBBLD` (US), `W_EPOOXE_YOP_R10_MBBLD`..`R50_MBBLD` (PADD1-5) | `weekly` | **no** — all six resolve cleanly to `US`/`PADD1`..`PADD5` via `_normalise_geo`'s existing `"PADD "` prefix rule; no `geo_map` needed | 6 |
 | `petroleum/pnp/capbio` | yes | 3 (unchanged) | `M_EPOORDB_8BDPC_NUS_MMGL` (biodiesel), `M_EPOOROO_8BDPC_NUS_MMGL` (renewable diesel & other), `M_EPOOXE_8BDPC_NUS_MMGL` (fuel ethanol) — all US national | `monthly` | no — all three `geo="US"` | 5 |
-| `petroleum/pnp/feedbiofuel` | yes | 26 (unchanged) | all 26 US national feedstock-input series (see `list_series()` dump below) | `monthly` | no — all 26 `geo="US"` | 5 |
-| `coal/consumption-and-quality` | **no** — 400 on `facet/series` (confirmed, matching Spec 31A's prior finding) | n/a | facets `location` (74 values) + `sector` (8 values); power-sector code `98` | `quarterly`/`annual` only (declared) | n/a (no series id) | 4 |
+| `petroleum/pnp/feedbiofuel` | yes | 26 (unchanged) | all 26 US national feedstock-input series (full id/name enumeration below) | `monthly` | no — all 26 `geo="US"` | 5 |
+| `coal/consumption-and-quality` | **no** — 400 on `facet/series` (fresh live call below, matching Spec 31A's prior finding) | n/a | facets `location` (74 values) + `sector` (8 values); power-sector code `98` | `quarterly`/`annual` only (declared) | n/a (no series id) | 4 |
 
 **wprode PADD geo resolution:** distinct `geo` set is exactly `{'US', 'PADD1', 'PADD2',
 'PADD3', 'PADD4', 'PADD5'}` — confirmed live across all six ids (not just the national
@@ -961,6 +961,38 @@ the brief warned about for this specific route — the real risk, if any, is sca
 feedstocks are two orders of magnitude smaller than soybean oil), not incompatible
 units. (Contrast with `capbio`, whose 3 series are `MMGL` — million gallons, a
 volume unit — do not plot `feedbiofuel` and `capbio` series on the same axis.)
+
+**`petroleum/pnp/feedbiofuel` — full 26-series id/name enumeration, from a fresh live
+`list_series()` call (fix round 1, 2026-09-08), sorted by id:**
+
+| Series ID | Name |
+|---|---|
+| `M_EPOOBDAFC_YIFBP_NUS_MMLB` | Corn Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFD_YIFBP_NUS_MMLB` | Dedicated energy crops Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFO_YIFBP_NUS_MMLB` | Other waste oil, fat, and grease inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDAFPO_YIFBP_NUS_MMLB` | Other-Agriculture and forestry products Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFR_YIFBP_NUS_MMLB` | Agriculture and forestry residues Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFS_YIFBP_NUS_MMLB` | Grain Sorghum Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAL_YIFBP_NUS_MMLB` | Oil from Algae inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDBG_YIFBP_NUS_MMLB` | Biogas Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDCNOD_YIFBP_NUS_MMLB` | Corn oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDCNOR_YIFBP_NUS_MMLB` | Corn oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDCNO_YIFBP_NUS_MMLB` | Total Corn Oil inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDCOD_YIFBP_NUS_MMLB` | Canola oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDCOR_YIFBP_NUS_MMLB` | Canola oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDCO_YIFBP_NUS_MMLB` | Total Canola Oil Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSPT_YIFBP_NUS_MMLB` | Poultry Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSTL_YIFBP_NUS_MMLB` | Tallow Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSWG_YIFBP_NUS_MMLB` | White Grease Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSYG_YIFBP_NUS_MMLB` | Yellow Grease Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDOB_YIFBP_NUS_MMLB` | Other biofuel feedstocks (NESOI) inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDRFWM_YIFBP_NUS_MMLB` | Municipal solid waste Inputs to Biofules Production (Million Pounds) [sic, EIA's own typo] |
+| `M_EPOOBDRFWO_YIFBP_NUS_MMLB` | Other recycled feed inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDRFWY_YIFBP_NUS_MMLB` | Yard and food waste Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDSOD_YIFBP_NUS_MMLB` | Soybean oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDSOR_YIFBP_NUS_MMLB` | Soybean oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDSO_YIFBP_NUS_MMLB` | Total Soybean Oil Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDVOO_YIFBP_NUS_MMLB` | Other vegetable oil inputs to biofuels production (Million Pounds) |
 
 **coal facets: location=74 values, US present? yes. sector=8 values.** `location`'s 74
 values mix 53 real geographies (50 states + DC + PR + `US`) with **21** census-region
@@ -1024,5 +1056,10 @@ non-null values (`47.09`, `45.61`, `45.18`, `45.43`, `47.22` dollars per short t
 
 **Routes that failed or returned nothing:** none. `coal/consumption-and-quality`'s
 `facet/series` still 400s as Spec 31A already found (expected — this route has no
-`series` facet at all, confirmed again here) but every facet/data call made with the
-route's real shape succeeded.
+`series` facet at all). **Re-confirmed with a fresh live call in fix round 1
+(2026-09-08, not re-checked in the original Task 0 run):** `GET
+/v2/coal/consumption-and-quality/facet/series` returns HTTP 400 with body `{"error":
+"Invalid facet 'series' provided. The only valid facets are 'location', and 'sector'.",
+"code": 400}` — same conclusion as Spec 31A, now independently verified rather than
+carried over. Every facet/data call made with the route's real shape (`location`,
+`sector`, the seven data keys) succeeded.
