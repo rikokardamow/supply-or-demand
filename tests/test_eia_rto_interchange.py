@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any
 
 import pandas as pd
@@ -45,12 +45,21 @@ def test_run_passes_a_replace_window_to_write_flows(
     # trailing window that does NOT replace its old rows keeps both the old and the
     # revised value -- they differ, so de-dup keeps both -- and every downstream sum
     # double-counts, with nothing raised anywhere. Assert the window is actually passed.
+    #
+    # The window is derived from the pulled frame's own `ts` column (df["ts"].min()/
+    # .max()), not a second `datetime.now(UTC)` call -- a second wall-clock read is
+    # always a little later than pull_interchange's internal one (the API call happens
+    # in between), which leaves the oldest pulled hour outside the window and unreplaced.
+    # With a single mocked row, min() == max(), so the invariant to check is that the
+    # window exactly brackets the pulled rows' timestamps -- not "at least 3 days wide",
+    # which was only ever true of the old now()-derived window.
     captured: dict[str, Any] = {}
 
     def _fake_write(df: pd.DataFrame, source: str, replace_window: Any = None) -> None:
         captured["source"] = source
         captured["replace_window"] = replace_window
 
+    ts = datetime.now(UTC).replace(tzinfo=None)
     monkeypatch.setattr(pull_rto_interchange, "write_flows", _fake_write)
     monkeypatch.setattr(
         pull_rto_interchange,
@@ -62,7 +71,7 @@ def test_run_passes_a_replace_window_to_write_flows(
                 "to_node": ["SWPP"],
                 "value": [120.0],
                 "unit": ["megawatthours"],
-                "ts": pd.to_datetime([datetime.now(UTC).replace(tzinfo=None)]),
+                "ts": pd.to_datetime([ts]),
                 "mode": ["grid_interchange"],
             }
         ),
@@ -74,4 +83,5 @@ def test_run_passes_a_replace_window_to_write_flows(
     window = captured["replace_window"]
     assert window is not None, "a flows re-pull without a replace_window double-counts"
     start, end = window
-    assert end - start >= timedelta(days=3)
+    assert start == ts
+    assert end == ts

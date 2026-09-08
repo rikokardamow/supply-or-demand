@@ -61,17 +61,19 @@ def run(days: int) -> None:
             return
         # REQUIRED, not optional. flows has no revision_date column, so write_flows
         # cannot tell a revised value from a new row -- it would keep both, and every
-        # downstream sum would double-count, silently. Pass the exact window re-pulled
-        # so its stale rows are replaced outright. write_flows scopes the replacement to
-        # this frame's own pairs, so a pair that failed this run keeps its prior data.
-        window_start, window_end = _window(days)
+        # downstream sum would double-count, silently. The window must be derived from
+        # the pulled frame's own `ts` column, not a second `datetime.now(UTC)` call --
+        # the API call happens between `pull_interchange`'s internal `_window(days)` and
+        # any later clock read here, so a second reading is always a little later and
+        # leaves the oldest pulled hour outside the window, unreplaced. `ts` is already
+        # tz-naive (built via pd.to_datetime on EIA's tz-naive period strings), matching
+        # what write_flows/_normalise_datetime_tz expect on disk.
+        window_start = df["ts"].min().to_pydatetime()
+        window_end = df["ts"].max().to_pydatetime()
         write_flows(
             df,
             source="eia",
-            replace_window=(
-                window_start.replace(tzinfo=None),
-                window_end.replace(tzinfo=None),
-            ),
+            replace_window=(window_start, window_end),
         )
         pairs = df[["from_node", "to_node"]].drop_duplicates()
         print(
