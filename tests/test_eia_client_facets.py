@@ -4,7 +4,6 @@ from typing import Any
 
 import pytest
 from core.schemas import validate_flows, validate_ts_long
-
 from pipelines.eia.client import EIAClient
 
 
