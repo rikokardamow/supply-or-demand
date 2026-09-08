@@ -779,3 +779,99 @@ expected demand/forecast/generation/interchange set with no fifth or missing cod
 `fuel-type-data`'s rows carry both `respondent`/`respondent-name` and `fueltype`/`type-name`
 together, confirming the minted series-id scheme Tasks 3/4 will need can key off
 `respondent`+`fueltype` per row without a second lookup.
+
+## Task 6 (31B) — scheduled, backfilled for real, and the final gate
+
+`infra/run_scheduled.py`'s `daily` group now calls all three pulls (`eia_rto_demand` →
+`pipelines.eia.pull_rto_demand`, `eia_rto_fuel_mix` → `pipelines.eia.pull_rto_fuel_mix`,
+`eia_rto_interchange` → `pipelines.eia.pull_rto_interchange`), appended after
+`derived_curve` — no ordering dependency among them or on anything earlier in the group.
+`git status` was clean immediately before this edit (no concurrent-session conflict);
+`tests/test_run_scheduled.py` passes (7/7) with the three new entries present.
+
+**Real 90-day backfill, run live against the EIA API, 2026-09-08 — not cassette-derived:**
+
+| Pull | Command | Rows written | Wall time |
+|---|---|---|---|
+| `pull_rto_demand` | `--days 90` | 68,075 (8 balancing authorities) | ~36s |
+| `pull_rto_fuel_mix` | `--days 90` | 118,072 (8 balancing authorities) | ~74s |
+| `pull_rto_interchange` | `--days 90` | 90,066 (45 corridors) | ~44s |
+
+All three exited 0, no `PartialFailureError`. Task 0's own baseline was 800 rows/day ×
+90 = 72,000 rows for `region-data` alone; the real `pull_rto_demand` count (68,075) lands
+under that estimate (some hours are dropped by EIA's own short reporting lag at the
+trailing edge of the window, not a pull defect), and neither `pull_rto_fuel_mix` nor
+`pull_rto_interchange` — which were never part of that specific estimate — came anywhere
+close to a volume or timing concern (each finished in well under a minute, not "a few
+minutes"). Decision A's proportionality goal holds in practice, not just in projection.
+
+**BA coverage actually ingested: 8 of EIA's 65 Lower-48 balancing authorities** —
+`ERCO`, `PJM`, `MISO`, `SWPP`, `CISO`, `NYIS`, `ISNE`, `US48` (`pipelines/eia/rto.py`'s
+`RTO_RESPONDENTS`). This is deliberate, not partial coverage awaiting a later widening:
+hourly data on these routes has no daily/monthly rollup, so all 65 BAs × 3 datasets would
+be load-research-scale volume the spec explicitly rules out. The 8 chosen are the large
+gas-burning markets `pipelines/gridstatus_iso/` cannot reach (ERCOT blocked by
+Incapsula/Imperva bot protection, PJM needs a Data Miner 2 key this project doesn't hold)
+plus the `US48` national aggregate.
+
+**Minted series-id schemes — permanent once written to the lake:**
+- `RTO.REGION.<respondent>.<type>.H` — e.g. `RTO.REGION.ERCO.D.H` (demand),
+  `RTO.REGION.PJM.NG.H` (net generation).
+- `RTO.FUEL.<respondent>.<fueltype>.H` — e.g. `RTO.FUEL.PJM.NG.H` (natural-gas-fired
+  generation).
+- **The `NG` collision, and how the REGION/FUEL segment prevents it:** `region-data`'s
+  `type=NG` ("Net Generation") and `fuel-type-data`'s `fueltype=NG` ("Natural Gas") are
+  the same two-letter code from two different facets on two different routes. Without a
+  route-identifying segment in the id, `RTO.ERCO.NG.H` would be ambiguous between "ERCOT's
+  total net generation" and "ERCOT's natural-gas-fired generation" — a fuel-mix value would
+  silently overwrite a net-generation value in the lake (or vice versa) on whichever pull
+  ran second. The literal `REGION`/`FUEL` segment (`region_series_id`/`fuel_series_id` in
+  `pipelines/eia/rto.py`) keeps the two id spaces disjoint by construction. Confirmed live:
+  after the backfill, `RTO.REGION.ERCO.NG.H` (8,471 region rows for ERCOT total, of which
+  net-generation is one `type`) and `RTO.FUEL.ERCO.NG.H` (2,147 gas-fired rows) both exist
+  as distinct, independently-readable series — no row from one was overwritten by the other.
+
+**Step 3 — the data answers the question this item exists for.** Read live from the lake,
+narrowed by `source="eia"` and `series_prefix=`/exact `series_ids=`, per the global
+constraints:
+
+| BA | Gas-fired rows (`RTO.FUEL.<ba>.NG.H`) | Region rows (`RTO.REGION.<ba>.*`) | Gas burn span | Unit |
+|---|---|---|---|---|
+| ERCO | 2,147 | 8,471 | 2026-06-10 18:00 → 2026-09-08 04:00 | megawatthours |
+| PJM | 2,146 | 8,613 | 2026-06-10 18:00 → 2026-09-08 03:00 | megawatthours |
+
+**Both non-empty, spanning the full backfill window.** This is the one outcome that would
+have made the whole plan pointless had it come back empty — it didn't. `flows` interchange
+rows: 90,066 across 45 corridors (`mode == "grid_interchange"`), matching the pull's own
+reported count exactly.
+
+**Real interchange corridor list (45, `(from_node, to_node)`, confirmed from the live
+lake):** `CISO↔{AZPS, BANC, BPAT, CEN, IID, LDWP, NEVP, PACW, SRP, TIDC, WALC}`,
+`ERCO↔{CEN, SWPP}`, `ISNE↔{HQT, NBSO, NYIS}`,
+`MISO↔{AECI, IESO, LGEE, MHEB, PJM, SIKE, SOCO, SPA, SWPP, TVA}`,
+`NYIS↔{HQT, IESO, ISNE, PJM}`, `PJM↔{CPLE, CPLW, DUK, LGEE, MISO, NYIS, TVA}`,
+`SWPP↔{AECI, EPE, ERCO, MISO, PNM, PSCO}`, `US48↔{CAN, MEX}`. Each row names its own
+counterparty in `toba`, so a corridor to a BA outside `RTO_RESPONDENTS` (e.g. `ERCO↔CEN`,
+Mexico's CFE) is captured too — confirming Task 0's finding that ERCOT and PJM are not
+directly interconnected (their only shared link is via `MISO`/`SWPP`), which is real grid
+topology, not a gap.
+
+**Step 4 — the double-count guard, proved live, not just by code inspection.** Total
+`flows` row count for `source="eia"` before any re-run: **100,092**. `pull_rto_interchange
+--days 3` was then run twice in immediate succession, each run logging `wrote 1381 RTO
+interchange rows across 44 corridors (3d window)`. Total row count after the first re-run:
+**100,092** (unchanged). Total row count after the second re-run: **100,092** (unchanged
+again). A full 3-day window's worth of corridors would have added on the order of
+thousands of rows had `replace_window` failed to delete-and-rewrite; instead the count held
+exactly flat both times, because the 3-day window was already fully covered by the earlier
+90-day backfill and `write_flows`'s `replace_window=(df["ts"].min(), df["ts"].max())` (the
+Task 5 fix — derived from the pulled frame's own timestamps, not a second clock read)
+deleted and rewrote the same rows rather than appending a second copy. **The guard holds
+under a real, live re-run, not only in the unit test.**
+
+**Step 5 — full gate, run after the real backfill above, 2026-09-08:** `pytest` — 759
+passed, 16 deselected, 0 failed (113s). `ruff check .` initially found one unsorted-import
+violation in `tests/test_eia_client_facets.py` (left over from Task 1's own commit, not a
+concurrent session's file) — fixed and committed separately (`6f60ca0`); re-run clean.
+`mypy core pipelines infra` — no issues found in 163 source files. No concurrent-session
+test failures encountered in any file this plan didn't touch.
