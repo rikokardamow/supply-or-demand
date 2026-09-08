@@ -8,16 +8,29 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
 
+from core import design
+from core.design import BODY_STACK, MUTED, TEXT
 from core.seasonal import REFERENCE_YEAR
 
-NAVY = "#0f2a4a"
-LIGHT_BLUE = "#5b9bd5"
-RED = "#c0392b"
-ORANGE = "#e67e22"
-GREY = "#95a5a6"
-BAND = "rgba(150,150,150,0.25)"
-GRID = "#e6e6e6"
-TRANSPARENT = "rgba(0,0,0,0)"
+# The series palette is BOUND here, not imported, and that is deliberate. Pages do
+# `from core.theme import NAVY, RED` (e.g. pages/01_us_padd.py:19) and must keep
+# working now that the values live in core/design.py -- but mypy runs strict, so
+# no_implicit_reexport applies and a plain `from core.design import NAVY` would make
+# every one of those pages fail with "does not explicitly export attribute". Binding
+# the names here makes them genuinely part of this module's surface. (The PEP 484
+# `NAVY as NAVY` form works too, but isort then splits each alias onto its own
+# statement unless combine-as-imports is set repo-wide, which reformats unrelated
+# files.) Same objects either way: core/design.py remains the one definition.
+NAVY = design.NAVY
+LIGHT_BLUE = design.LIGHT_BLUE
+RED = design.RED
+ORANGE = design.ORANGE
+GREY = design.GREY
+BAND = design.BAND
+GRID = design.GRID
+TRANSPARENT = design.TRANSPARENT
+PAPER = design.PAPER
+RULE = design.RULE
 
 _MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
 _DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]
@@ -28,16 +41,22 @@ def register_kardamow_template() -> None:
     template = go.layout.Template()
     template.layout.paper_bgcolor = TRANSPARENT
     template.layout.plot_bgcolor = TRANSPARENT
-    template.layout.font = {"family": "Inter, sans-serif", "color": "#1a2733"}
+    # Deliberately the body stack, never the heading stack: axis ticks, legends and
+    # data labels are numbers, and numbers never render in the serif.
+    template.layout.font = {"family": BODY_STACK, "color": TEXT}
     template.layout.colorway = [NAVY, LIGHT_BLUE, RED, ORANGE]
     template.layout.xaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
     template.layout.yaxis = {"gridcolor": GRID, "showgrid": True, "zeroline": False}
     template.layout.legend = {
         "orientation": "h",
         "yanchor": "bottom",
-        "y": 1.02,
+        # Was 1.02, which pushed the legend into the title row and made the two
+        # collide once a title was long enough to wrap. The section header owns the
+        # title now, so the legend can have that row to itself.
+        "y": 1.0,
         "xanchor": "left",
         "x": 0,
+        "font": {"family": BODY_STACK},  # legend labels are data, never the serif
     }
     pio.templates["kardamow"] = template
     pio.templates.default = "kardamow"
@@ -53,7 +72,6 @@ def _year_columns(stats_df: pd.DataFrame) -> list[str]:
 def seasonal_range_chart(
     stats_df: pd.DataFrame,
     current_year_series: pd.Series,
-    title: str,
     unit: str,
     extra_annotation_line: str | None = None,
 ) -> go.Figure:
@@ -126,11 +144,15 @@ def seasonal_range_chart(
         ax=40,
         ay=-40,
         align="left",
-        bgcolor="white",
-        bordercolor=NAVY,
+        # Opaque ground and a hairline border so the box reads as a label rather than
+        # sitting on top of the series, which is how it rendered before the restyle.
+        bgcolor=PAPER,
+        bordercolor=RULE,
+        borderwidth=1,
+        borderpad=4,
+        opacity=0.95,
     )
     fig.update_layout(
-        title=title,
         yaxis_title=unit,
         xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
     )
@@ -140,7 +162,6 @@ def seasonal_range_chart(
 def dual_axis_chart(
     left_series: pd.Series,
     right_series: pd.Series,
-    title: str,
     left_label: str,
     right_label: str,
 ) -> go.Figure:
@@ -163,30 +184,29 @@ def dual_axis_chart(
         )
     )
     fig.update_layout(
-        title=title,
         yaxis={"title": left_label, "color": NAVY},
         yaxis2={"title": right_label, "color": LIGHT_BLUE, "overlaying": "y", "side": "right"},
     )
     return fig
 
 
-def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def simple_time_series_chart(series: pd.Series, unit: str) -> go.Figure:
     fig = go.Figure(
         go.Scatter(x=series.index, y=series.values, line={"color": NAVY, "width": 2})
     )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
-def count_bar_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def count_bar_chart(series: pd.Series, unit: str) -> go.Figure:
     """A plain navy bar per period -- e.g. page 09's events-per-week volume chart,
     where the shape of interest is a simple count/volume over time, not a trend line."""
     fig = go.Figure(go.Bar(x=series.index, y=series.values, marker={"color": NAVY}))
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
-def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def multi_year_overlay_chart(stats_df: pd.DataFrame, unit: str) -> go.Figure:
     """One line per year (most recent 4 only), reusing the per-year columns
     core.seasonal.seasonal_stats() already computes — seasonal_range_chart only uses
     them for lo/hi/median, this shows each year's track directly instead."""
@@ -205,14 +225,14 @@ def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> g
                 line={"color": colour, "width": 3 if is_current else 2},
             )
         )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
 GREY_LINE = "rgba(120,120,120,0.8)"
 
 
-def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def current_vs_prior_year_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """Navy current-year line vs grey prior-year line, for series with too short a
     history for seasonal_range_chart's 5-year median/band (e.g. ENTSOG corridors, ~2
     years of data). `df` has columns ts, value. Since a short pull is a rolling window
@@ -246,12 +266,12 @@ def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.F
             name="Current year",
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, xaxis_title="Days since window start")
+    fig.update_layout(yaxis_title=unit, xaxis_title="Days since window start")
     return fig
 
 
 def sankey_chart(
-    node_labels: list[str], sources: list[int], targets: list[int], values: list[float], title: str
+    node_labels: list[str], sources: list[int], targets: list[int], values: list[float]
 ) -> go.Figure:
     fig = go.Figure(
         go.Sankey(
@@ -259,7 +279,6 @@ def sankey_chart(
             link={"source": sources, "target": targets, "value": values, "color": BAND},
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
@@ -269,7 +288,6 @@ GREY_LINE_THIN = "rgba(150,150,150,0.9)"
 def seasonal_minmaxmean_chart(
     stats_df: pd.DataFrame,
     current_year_series: pd.Series,
-    title: str,
     unit: str,
 ) -> go.Figure:
     """Same lo/hi/median inputs as seasonal_range_chart, drawn as explicit Min/Median/Max
@@ -312,7 +330,6 @@ def seasonal_minmaxmean_chart(
         )
     )
     fig.update_layout(
-        title=title,
         yaxis_title=unit,
         xaxis={"tickvals": _DOY_TICKVALS, "ticktext": _DOY_TICKTEXT},
     )
@@ -320,7 +337,7 @@ def seasonal_minmaxmean_chart(
 
 
 def fullness_comparison_bars(
-    rows: list[tuple[str, float, float]], unit_abs: str, date_label: str, title: str
+    rows: list[tuple[str, float, float]], unit_abs: str, date_label: str
 ) -> go.Figure:
     """Horizontal bar comparison — e.g. Current / M-1 / Y-1 — each row (label, pct,
     absolute_value), labelled "XX.X% (YYY unit)" per bar. `rows` is drawn top-to-bottom in
@@ -340,8 +357,21 @@ def fullness_comparison_bars(
             textposition="outside",
         )
     )
+    # date_label used to ride along inside layout.title as a small span. The section
+    # header owns the title now, and it has no way to reach this argument -- so the
+    # as-of date is rendered here as a muted caption rather than being dropped.
+    fig.add_annotation(
+        text=date_label,
+        xref="paper",
+        yref="paper",
+        x=0,
+        y=1.06,
+        showarrow=False,
+        align="left",
+        xanchor="left",
+        font={"family": BODY_STACK, "size": 11, "color": MUTED},
+    )
     fig.update_layout(
-        title=f"{title} <span style='font-size:0.7em'>{date_label}</span>",
         xaxis={"range": [0, 100], "ticksuffix": "%"},
     )
     return fig
@@ -393,7 +423,7 @@ PSR_COLOURS: dict[str, str] = {
 PSR_DEFAULT_COLOUR = "#bdc3c7"
 
 
-def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def generation_mix_chart(df_wide: pd.DataFrame, unit: str) -> go.Figure:
     """Stacked area chart, one trace per PSR-type column in `df_wide` (index=ts).
     Column order controls stacking order — pass renewables-then-thermal for a chart
     that reads bottom-up the way the spec intends."""
@@ -410,7 +440,7 @@ def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Fig
                 fillcolor=PSR_COLOURS.get(psr_type, PSR_DEFAULT_COLOUR),
             )
         )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -443,7 +473,7 @@ def gauge_chart(
     return fig
 
 
-def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def hour_day_heatmap(df: pd.DataFrame, unit: str) -> go.Figure:
     """Hour-of-day (x) x calendar day (y) heatmap -- `df` indexed by an hourly
     DatetimeIndex, single value column. Same navy-to-red diverging colourscale as
     `components/power_maps.py`'s price map, for the same reason (a price/cost
@@ -464,12 +494,12 @@ def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
             colorbar={"title": unit},
         )
     )
-    fig.update_layout(title=title, xaxis_title="Hour of day", yaxis_title="Date")
+    fig.update_layout(xaxis_title="Hour of day", yaxis_title="Date")
     return fig
 
 
 def category_time_heatmap(
-    wide_df: pd.DataFrame, title: str, unit: str, center: float = 100.0
+    wide_df: pd.DataFrame, unit: str, center: float = 100.0
 ) -> go.Figure:
     """Diverging heatmap: one row per category (e.g. country), one column per time
     period -- `wide_df` indexed by category with time-period columns (e.g. an ESI
@@ -488,11 +518,10 @@ def category_time_heatmap(
             colorbar={"title": unit},
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
-def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def production_vs_quota_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """Grouped bars, navy actual vs grey quota, one group per row -- `df` needs
     columns "country", "actual_kbd", "quota_kbd", "compliance_pct" (exact shape
     of pipelines/opec_momr/transforms.py::production_vs_quota's output). Each
@@ -512,11 +541,11 @@ def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Fig
     fig.add_trace(
         go.Bar(x=df["country"], y=df["quota_kbd"], name="Quota", marker_color=GREY)
     )
-    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    fig.update_layout(yaxis_title=unit, barmode="group")
     return fig
 
 
-def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def revision_waterfall_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """`df` needs columns "label", "value" (exact shape of
     pipelines/opec_momr/transforms.py::revision_waterfall's output) -- red for a
     downward revision, navy for an upward one, per the spec's own "red down,
@@ -531,11 +560,11 @@ def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figu
             connector={"line": {"color": GRID}},
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
-def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def time_series_area_chart(series: pd.Series, unit: str) -> go.Figure:
     """Single navy filled-area time series -- "Exhibit-1 style" per the OPEC
     supply spec's oil-on-water note (a plain filled line, not a seasonal band)."""
     fig = go.Figure(
@@ -547,7 +576,7 @@ def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figur
             fillcolor="rgba(15,42,74,0.15)",
         )
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
@@ -556,7 +585,7 @@ def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figur
 # convention as every primitive above.
 
 
-def grouped_agency_bars(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def grouped_agency_bars(df: pd.DataFrame, unit: str) -> go.Figure:
     """One grouped bar trace per column of `df` (index=period, columns=agency names,
     e.g. iea/eia/opec) -- generalises production_vs_quota_chart's own 2-way grouped-bar
     pattern to N agencies. A column literally named "call_on_opec", if present, is
@@ -578,7 +607,7 @@ def grouped_agency_bars(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
             )
         )
 
-    fig.update_layout(title=title, yaxis_title=unit, barmode="group")
+    fig.update_layout(yaxis_title=unit, barmode="group")
     return fig
 
 
@@ -616,7 +645,6 @@ def dual_axis_inverted_chart(
     price: pd.Series,
     vol: pd.Series,
     regime: pd.Series,
-    title: str,
     spare_label: str,
     price_label: str,
 ) -> go.Figure:
@@ -659,7 +687,6 @@ def dual_axis_inverted_chart(
     )
 
     fig.update_layout(
-        title=title,
         yaxis={"title": spare_label, "autorange": "reversed"},
         yaxis2={"title": price_label, "overlaying": "y", "side": "right"},
     )
@@ -667,7 +694,7 @@ def dual_axis_inverted_chart(
 
 
 def sign_agreement_scatter(
-    x: pd.Series, y: pd.Series, title: str, x_label: str, y_label: str
+    x: pd.Series, y: pd.Series, x_label: str, y_label: str
 ) -> go.Figure:
     """Scatter coloured by sign(x) == sign(y) -- RED ("violates the classical model",
     core.fundamentals.carollo_scatter's own "wrong sign" concept) vs NAVY ("agrees",
@@ -696,7 +723,7 @@ def sign_agreement_scatter(
             marker={"color": RED},
         )
     )
-    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label)
+    fig.update_layout(xaxis_title=x_label, yaxis_title=y_label)
     return fig
 
 
@@ -709,7 +736,7 @@ _CURVE_STRIP_COLOURS = [NAVY, LIGHT_BLUE, ORANGE, RED]
 
 
 def curve_strip_chart(
-    curves: dict[str, pd.Series], spread_bars: dict[str, float], title: str, unit: str
+    curves: dict[str, pd.Series], spread_bars: dict[str, float], unit: str
 ) -> go.Figure:
     """Row 1: one line per as-of label in `curves` (e.g. "Today"/"-5bd"/"-20bd"/"-252bd"),
     each a Series indexed by rank column (f01, f02, ...). Row 2: a navy bar per named
@@ -737,7 +764,7 @@ def curve_strip_chart(
         row=2,
         col=1,
     )
-    fig.update_layout(title=title, yaxis_title=unit)
+    fig.update_layout(yaxis_title=unit)
     return fig
 
 
@@ -745,7 +772,6 @@ def regime_ribbon_chart(
     price: pd.Series,
     state_codes: pd.Series,
     state_labels: dict[int, str],
-    title: str,
     unit: str,
 ) -> go.Figure:
     """Row 1: navy price line. Row 2: a single-row heatmap, one column per date, coloured
@@ -779,7 +805,7 @@ def regime_ribbon_chart(
         row=2,
         col=1,
     )
-    fig.update_layout(title=title, yaxis_title=unit, showlegend=False)
+    fig.update_layout(yaxis_title=unit, showlegend=False)
     return fig
 
 
@@ -788,7 +814,6 @@ def scatter_piecewise_fit_chart(
     y: pd.Series,
     year: pd.Series,
     bins: list[tuple[float, float]],
-    title: str,
     x_label: str,
     y_label: str,
     annotations: list[tuple[float, float, str]] | None = None,
@@ -836,11 +861,11 @@ def scatter_piecewise_fit_chart(
             x=ax, y=ay, text=label, showarrow=True, arrowhead=2, bgcolor="white", bordercolor=RED
         )
 
-    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label, showlegend=False)
+    fig.update_layout(xaxis_title=x_label, yaxis_title=y_label, showlegend=False)
     return fig
 
 
-def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def bday_heatmap(df: pd.DataFrame, unit: str) -> go.Figure:
     """Year (rows) x business-day offset from a roll window's own start (columns) --
     `df` indexed by year (int), one column per offset, values = mean Δs12 that offset,
     that year. Same navy-to-red diverging colourscale as hour_day_heatmap/
@@ -857,7 +882,7 @@ def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
         )
     )
     fig.update_layout(
-        title=title, xaxis_title="Business days from roll-window start", yaxis_title="Year"
+        xaxis_title="Business days from roll-window start", yaxis_title="Year"
     )
     return fig
 
@@ -865,7 +890,6 @@ def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
 def cointegration_residual_chart(
     ect: pd.Series,
     z: pd.Series,
-    title: str,
     unit: str,
     z_entry: float = 1.5,
     z_exit: float = 0.5,
@@ -906,11 +930,10 @@ def cointegration_residual_chart(
         )
     fig.update_yaxes(title_text=unit, row=1, col=1)
     fig.update_yaxes(title_text="z", row=2, col=1)
-    fig.update_layout(title=title)
     return fig
 
 
-def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go.Figure:
+def irf_chart(irf: pd.DataFrame, response_col: str, unit: str) -> go.Figure:
     """Impulse response over the forecast horizon. `irf` needs a `horizon` column plus
     `response_col`. A zero line is drawn because the sign of the response is the whole
     point of the chart."""
@@ -926,12 +949,12 @@ def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go
         )
     )
     fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
-    fig.update_layout(title=title, xaxis_title="Months after shock", yaxis_title=unit)
+    fig.update_layout(xaxis_title="Months after shock", yaxis_title=unit)
     return fig
 
 
 def model_monitor_chart(
-    rmse_ratio: pd.Series, trigger: float, title: str, break_date: pd.Timestamp | None = None
+    rmse_ratio: pd.Series, trigger: float, break_date: pd.Timestamp | None = None
 ) -> go.Figure:
     """Rolling out-of-sample RMSE ratio against the benchmark, with the refit trigger and
     the parity line.
@@ -986,14 +1009,14 @@ def model_monitor_chart(
             showarrow=False,
             font={"color": ORANGE, "size": 11},
         )
-    fig.update_layout(title=title, yaxis_title="model RMSE / benchmark RMSE")
+    fig.update_layout(yaxis_title="model RMSE / benchmark RMSE")
     return fig
 
 
 # --- Spec 21 systematic-engine primitives ------------------------------------------
 
 
-def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
+def signal_board_table(board: pd.DataFrame) -> go.Figure:
     """One row per strategy: z, position and guardrail state, coloured by position sign.
 
     A board you cannot read at a glance is not doing its job, so the position cell is
@@ -1001,7 +1024,7 @@ def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
     a minus sign.
     """
     if board.empty:
-        return go.Figure(layout={"title": title})
+        return go.Figure()
 
     positions = board["position"].fillna(0.0)
     position_fill = [NAVY if v > 0 else RED if v < 0 else GREY for v in positions]
@@ -1033,14 +1056,12 @@ def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
             },
         )
     )
-    fig.update_layout(title=title)
     return fig
 
 
 def equity_drawdown_chart(
     equity: pd.Series,
     drawdown: pd.Series,
-    title: str,
     unit: str,
     benchmark: pd.Series | None = None,
 ) -> go.Figure:
@@ -1085,11 +1106,10 @@ def equity_drawdown_chart(
     )
     fig.update_yaxes(title_text=unit, row=1, col=1)
     fig.update_yaxes(title_text="drawdown", row=2, col=1)
-    fig.update_layout(title=title)
     return fig
 
 
-def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
+def reaction_curve_chart(current_z: float) -> go.Figure:
     """Bouchouev's reaction function with today's z marked on it.
 
     Drawn from the same formula the sizing uses, so the chart cannot drift away from the
@@ -1116,12 +1136,12 @@ def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
                 marker={"color": RED, "size": 11},
             )
         )
-    fig.update_layout(title=title, xaxis_title="z-score", yaxis_title="position")
+    fig.update_layout(xaxis_title="z-score", yaxis_title="position")
     return fig
 
 
 def fractionation_heatmap(
-    table: pd.DataFrame, title: str, value: str = "sharpe"
+    table: pd.DataFrame, value: str = "sharpe"
 ) -> go.Figure:
     """Where the P&L came from: conditions down, bins across.
 
@@ -1129,7 +1149,7 @@ def fractionation_heatmap(
     the question is which buckets made money and which lost it, not which were largest.
     """
     if table.empty:
-        return go.Figure(layout={"title": title})
+        return go.Figure()
 
     wide = table.pivot_table(index="condition", columns="bin", values=value)
     limit = float(np.nanmax(np.abs(wide.to_numpy()))) or 1.0
@@ -1145,12 +1165,12 @@ def fractionation_heatmap(
             colorbar={"title": value},
         )
     )
-    fig.update_layout(title=title, xaxis_title="bin", yaxis_title="condition")
+    fig.update_layout(xaxis_title="bin", yaxis_title="condition")
     return fig
 
 
 def crowding_quadrant_scatter(
-    cot_pct: pd.Series, signal_z: pd.Series, title: str
+    cot_pct: pd.Series, signal_z: pd.Series
 ) -> go.Figure:
     """Positioning against signal, with the two inflection corners shaded.
 
@@ -1182,7 +1202,6 @@ def crowding_quadrant_scatter(
         )
     fig.add_hline(y=0.0, line={"color": GREY, "width": 1})
     fig.update_layout(
-        title=title,
         xaxis_title="managed-money percentile",
         yaxis_title="signal z",
     )

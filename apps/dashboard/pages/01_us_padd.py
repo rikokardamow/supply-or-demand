@@ -9,11 +9,11 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
 from components.lake import read_flows, read_ts_long
 from components.padd_map import render_padd_flow_map
+from components.section import empty_state, page_header, section, source_note
 from core.calendars import next_release
 from core.seasonal import seasonal_stats
 from core.theme import NAVY, RED, dual_axis_chart, seasonal_range_chart
@@ -95,10 +95,11 @@ _POSITIVE_COLOUR = "#2e7d32"
 _NEGATIVE_COLOUR = RED
 
 
-def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
+def _seasonal_section(series_id: str, unit: str, take: str | None = None) -> None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
-        st.info(f"No data yet for {series_id} — run `pipelines/eia/pull_wpsr.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate {series_id}.")
         return
 
     stats = seasonal_stats(df, value_col="value")
@@ -107,9 +108,10 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
+    fig = seasonal_range_chart(stats, current_year_series, unit=unit)
     add_event_markers(fig, commodity="crude", x_axis="doy")
     st.plotly_chart(fig)
+    source_note(f"Source: EIA WPSR — unit: {unit.strip()}")
     if take is not None:
         kardamow_take(take)
 
@@ -161,7 +163,12 @@ def _sign_colour(value: object) -> str:
     return f"color: {colour}; font-weight: 600"
 
 
-st.title("US PADD — Crude & Product Movements")
+next_wpsr = next_release("wpsr", datetime.now(UTC))
+
+page_header(
+    "US PADD — Crude & Product Movements",
+    as_of=f"NEXT WPSR {next_wpsr.strftime('%d %b %H:%M ET').upper()}",
+)
 
 tab_stocks, tab_refining, tab_flows, tab_wpsr = st.tabs(["Stocks", "Refining", "Flows", "WPSR"])
 
@@ -172,8 +179,8 @@ with tab_stocks:
     else:
         stock_cols = st.columns(2)
         for i, (series_id, label, unit, take) in enumerate(selected_stocks):
-            with stock_cols[i % 2], card(label):
-                _seasonal_section(series_id, f"{label} — Seasonal Range", unit, take=take)
+            with stock_cols[i % 2], section(f"{label} — Seasonal Range"):
+                _seasonal_section(series_id, unit, take=take)
 
 with tab_refining:
     geo = st.selectbox("Region", options=list(GROSS_INPUTS_BY_GEO), index=0)
@@ -182,7 +189,8 @@ with tab_refining:
     utilisation = _series_by_ts(UTILISATION_BY_GEO[geo])
 
     if gross_inputs.empty or utilisation.empty:
-        st.info(f"No refining data yet for {geo} — run `pipelines/eia/pull_wpsr.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate refining data for {geo}.")
     else:
         time_range = st.segmented_control(
             "Time range",
@@ -197,11 +205,10 @@ with tab_refining:
             gross_inputs = gross_inputs[gross_inputs.index >= cutoff]
             utilisation = utilisation[utilisation.index >= cutoff]
 
-        with card(f"{geo} Refinery Gross Inputs vs. Utilisation"):
+        with section(f"{geo} Refinery Gross Inputs vs. Utilisation"):
             fig = dual_axis_chart(
                 gross_inputs,
                 utilisation,
-                title=f"{geo} Refinery Gross Inputs vs. Utilisation",
                 left_label="Gross inputs (Mbbl/d)",
                 right_label="Utilisation (%)",
             )
@@ -215,7 +222,7 @@ with tab_refining:
                 )
 
 with tab_flows:
-    with card("Inter-PADD Crude Movements"):
+    with section("Inter-PADD Crude Movements"):
         render_padd_flow_map()
         kardamow_take(
             "Pipeline moved 120,542 Mbbl of the latest month's inter-PADD barrel against a "
@@ -226,7 +233,8 @@ with tab_flows:
 
     flows_df = read_flows(source="eia")
     if flows_df.empty:
-        st.info("No flow data yet — run `pipelines/eia/pull_padd_flows.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_padd_flows.py` to populate flow data.")
     else:
         balance = net_balance(flows_df)
         latest_month = balance["ts"].max()
@@ -240,10 +248,9 @@ with tab_flows:
             )
         )
         bar.update_layout(
-            title=f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month).strftime('%Y-%m')}",
             yaxis_title="Net receipts (Mbbl, +receiver / -sender)",
         )
-        with card(f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month):%Y-%m}"):
+        with section(f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month):%Y-%m}"):
             st.plotly_chart(bar)
             kardamow_take(
                 "The Gulf Coast pulled in a net 39,370 Mbbl in the latest month while the "
@@ -253,10 +260,9 @@ with tab_flows:
             )
 
 with tab_wpsr:
-    next_wpsr = next_release("wpsr", datetime.now(UTC))
     countdown = next_wpsr - datetime.now(UTC)
     hours_left = int(countdown.total_seconds() // 3600)
-    with card("Next WPSR release"):
+    with section("Next WPSR release"):
         st.metric(
             "Next WPSR release",
             next_wpsr.strftime("%a %Y-%m-%d %H:%M %Z"),
@@ -267,7 +273,8 @@ with tab_wpsr:
     wpsr_df = read_ts_long(series_ids=all_series)
 
     if wpsr_df.empty:
-        st.info("No data yet — run `pipelines/eia/pull_wpsr.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_wpsr.py` to populate this table.")
     else:
         summary = wpsr_summary(wpsr_df).sort_values("series_id").reset_index(drop=True)
         styled = summary.style.map(_sign_colour, subset=["delta", "vs_median"]).format(
@@ -278,15 +285,16 @@ with tab_wpsr:
                 "vs_median": "{:+,.1f}",
             }
         )
-        with card("WPSR Summary"):
+        with section("WPSR Summary"):
             st.dataframe(styled)
 
     stocks = _series_by_ts("WCESTUS1")
     product_supplied = _series_by_ts("WRPUPUS2")
     if stocks.empty or product_supplied.empty:
-        st.info("No data yet for days-of-cover — run `pipelines/eia/pull_wpsr.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_wpsr.py` to populate days-of-cover data.")
     else:
         cover = days_of_cover(stocks, product_supplied).dropna()
         if not cover.empty:
-            with card("US Crude Days of Cover"):
+            with section("US Crude Days of Cover"):
                 st.metric("US crude days of cover", f"{cover.iloc[-1]:.1f} days")

@@ -18,8 +18,8 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.lake import read_ts_long
+from components.section import page_header, section
 from core.calendars import next_roll_window, roll_calendar
 from core.curve import (
     REGIME_CODES,
@@ -47,7 +47,7 @@ from pipelines.futures.client import ROOTS
 from pipelines.futures.series_meta import read_series_meta
 from pipelines.manual_physical.reader import read_physical_csvs
 
-st.title("Curve & Market Structure")
+page_header("Curve & Market Structure")
 
 root = st.selectbox("Root", options=ROOTS)
 as_of = st.date_input("As of", value=date.today())
@@ -79,7 +79,7 @@ tab_curve, tab_spreads, tab_convexity, tab_storage, tab_roll_cal, tab_physical =
     ["Curve", "Spreads", "Convexity & Regime", "Storage", "Roll Calendar", "Physical"]
 )
 
-with tab_curve, card(f"{root.upper()} Curve Strip"):
+with tab_curve, section(f"{root.upper()} Curve Strip"):
     if not has_curve_data:
         _no_futures_data_message()
     else:
@@ -96,13 +96,11 @@ with tab_curve, card(f"{root.upper()} Curve Strip"):
             for k in ("s12", "s13", "s16", "s1_12")
             if pd.notna(spreads_today[k])
         }
-        fig = curve_strip_chart(
-            curves, spread_bars, title=f"{root.upper()} Curve Strip", unit="USD"
-        )
+        fig = curve_strip_chart(curves, spread_bars, unit="USD")
         st.plotly_chart(fig)
         st.caption(f"Source: fut.{root}.*.settle (pipelines/futures), unadjusted ranks.")
 
-with tab_spreads, card(f"{root.upper()} s12 Spread History"):
+with tab_spreads, section(f"{root.upper()} s12 (f01-f02)"):
     if not has_curve_data:
         _no_futures_data_message()
     else:
@@ -132,12 +130,12 @@ with tab_spreads, card(f"{root.upper()} s12 Spread History"):
             go.Scatter(x=s12.index, y=s12.values, line={"color": NAVY, "width": 2}, name="s12")
         )
         fig.add_hline(y=0, line_dash="dash", line_color=GREY)
-        fig.update_layout(title=f"{root.upper()} s12 (f01-f02)", yaxis_title="USD")
+        fig.update_layout(yaxis_title="USD")
         st.plotly_chart(fig)
         st.caption(f"Source: derived.spread.{root}.s12 (pipelines/derived/curve.py).")
 
 with tab_convexity:
-    with card(f"{root.upper()} Convexity"):
+    with section(f"{root.upper()} Convexity (cv123)"):
         if not has_curve_data:
             _no_futures_data_message()
         else:
@@ -159,11 +157,11 @@ with tab_convexity:
                 )
             )
             fig.add_hline(y=0, line_dash="dash", line_color=GREY)
-            fig.update_layout(title=f"{root.upper()} Convexity (cv123)", yaxis_title="USD")
+            fig.update_layout(yaxis_title="USD")
             st.plotly_chart(fig)
             st.caption(f"Source: derived.curve.{root}.cv123.")
 
-    with card(f"{root.upper()} Regime"):
+    with section(f"{root.upper()} Price & Regime"):
         if not has_curve_data:
             _no_futures_data_message()
         else:
@@ -173,8 +171,7 @@ with tab_convexity:
             state_labels = {code: name for name, code in REGIME_CODES.items()}
 
             fig = regime_ribbon_chart(
-                unadj["f01"], state_codes, state_labels,
-                title=f"{root.upper()} Price & Regime", unit="USD",
+                unadj["f01"], state_codes, state_labels, unit="USD",
             )
             st.plotly_chart(fig)
             st.caption(f"Source: derived.curve.{root}.regime (states: {', '.join(REGIME_CODES)}).")
@@ -184,7 +181,7 @@ with tab_convexity:
 with tab_storage:
     util_df = read_ts_long(series_ids=["derived.cushing.util", "derived.cushing.util_decile"])
 
-    with card("Cushing Utilisation"):
+    with section("Cushing Utilisation vs Decile Rank"):
         if util_df.empty:
             st.info("No data yet -- run `pipelines/derived/cushing.py`.")
         else:
@@ -197,7 +194,7 @@ with tab_storage:
                 .set_index("ts")["value"].sort_index()
             )
             fig = dual_axis_chart(
-                util, decile, title="Cushing Utilisation vs Decile Rank",
+                util, decile,
                 left_label="Utilisation", right_label="Decile (1-10)",
             )
             st.plotly_chart(fig)
@@ -206,7 +203,7 @@ with tab_storage:
                 "EIA's now-discontinued capacity report, forward-filled past 2024-03-01)."
             )
 
-    with card("Cushing Utilisation vs WTI s12"):
+    with section("Cushing Utilisation vs WTI s12"):
         cl_panel, cl_expiries = contract_panel_for("cl", meta)
         has_cl_data = not cl_panel.empty and len(cl_expiries) >= 2
         if util_df.empty or not has_cl_data:
@@ -234,14 +231,14 @@ with tab_storage:
             fig = scatter_piecewise_fit_chart(
                 merged["util"], merged["s12"], merged.index.to_series().dt.year,
                 bins=[(0.0, 0.35), (0.35, 0.75), (0.75, 1.01)],
-                title="Cushing Utilisation vs WTI s12", x_label="Utilisation", y_label="s12 (USD)",
+                x_label="Utilisation", y_label="s12 (USD)",
                 annotations=fit_annotations or None,
             )
             st.plotly_chart(fig)
             st.caption("Source: derived.cushing.util x derived.spread.cl.s12.")
 
 with tab_roll_cal:
-    with card("GSCI / BCOM Roll Calendar"):
+    with section("GSCI / BCOM Roll Calendar"):
         gsci_cal = roll_calendar(as_of.year, "gsci").assign(index="GSCI")
         bcom_cal = roll_calendar(as_of.year, "bcom").assign(index="BCOM")
         combined = pd.concat([gsci_cal, bcom_cal]).sort_values("date").reset_index(drop=True)
@@ -250,23 +247,21 @@ with tab_roll_cal:
             "Source: core.calendars.roll_calendar -- real calendar arithmetic, no lake dependency."
         )
 
-    with card(f"{root.upper()} Δs12 Around GSCI Roll Windows"):
+    with section(f"{root.upper()} Δs12 Around GSCI Roll Windows"):
         if not has_curve_data:
             _no_futures_data_message()
         else:
             unadj = nearby_panel(contract_panel, expiries)[1]
             delta_s12 = time_spreads(unadj)["s12"].diff().dropna()
             grid = roll_window_offset_grid(delta_s12, "gsci")
-            fig = bday_heatmap(
-                grid, title=f"{root.upper()} Δs12 around GSCI roll windows", unit="USD"
-            )
+            fig = bday_heatmap(grid, unit="USD")
             st.plotly_chart(fig)
             st.caption(
                 f"Source: derived.spread.{root}.s12 (day-over-day Δ), aligned to GSCI's own "
                 "roll-calendar windows (core.calendars.roll_calendar)."
             )
 
-with tab_physical, card("DFL / Midland Diff Bands"):
+with tab_physical, section("WTI Midland Differential"):
     physical_df = read_physical_csvs()
     if physical_df.empty:
         st.info(
@@ -298,6 +293,6 @@ with tab_physical, card("DFL / Midland Diff Bands"):
         )
         fig.add_hline(y=5, line_dash="dash", line_color=RED, annotation_text="Newman +$5")
         fig.add_hline(y=-5, line_dash="dash", line_color=RED, annotation_text="Newman -$5")
-        fig.update_layout(title="WTI Midland Differential", yaxis_title="USD/bbl")
+        fig.update_layout(yaxis_title="USD/bbl")
         st.plotly_chart(fig)
         st.caption("Source: manual.argus.wti_midland_diff (pipelines/manual_physical).")

@@ -6,7 +6,7 @@ didn't raise -- it says nothing about whether the browser actually painted anyth
 A chart that fails client-side (e.g. Plotly choking on a shape it was never built to
 handle) or a card that silently ends up empty renders as a blank pane with no Python
 exception at all. This test drives a real headless Chromium against a real
-`streamlit run` process and checks that each page's own `st.title()` text is visible,
+`streamlit run` process and checks that each page's own title text is visible,
 that more than just the title got rendered, and that the browser logged no console
 errors while painting it.
 
@@ -35,9 +35,17 @@ pytestmark = pytest.mark.browser
 REPO_ROOT = Path(__file__).parent.parent
 PAGES_DIR = REPO_ROOT / "apps" / "dashboard" / "pages"
 APP_ENTRYPOINT = "apps/dashboard/app.py"
-HOME_TITLE = "Kardamow Energy Dashboard"
+# The masthead in app.py paints "Kardamow" as the document's only <h1>; each page's own
+# title -- this one for the home page -- is an <h2> beneath it (components/section.py).
+HOME_TITLE = "Energy Dashboard"
+HOME_TAG = "h2"  # 00_home.py uses page_header(), not st.title()
 
-_TITLE_RE = re.compile(r'st\.title\(\s*["\'](.+?)["\']')
+# Every page uses components.section.page_header() for its own title, painted as <h2>
+# beneath "Kardamow" -- the document's only <h1> (apps/dashboard/app.py). A page that
+# regresses to plain st.title() has no page_header(...) call left for this regex to
+# match, so _page_title's assert below fails loudly instead of silently passing.
+_TITLE_RE = re.compile(r'(page_header)\(\s*["\'](.+?)["\']')
+_TITLE_TAG = {"page_header": "h2"}
 
 # Same shape as Streamlit's own PAGE_FILENAME_REGEX (streamlit/source_util.py) -- confirmed
 # live that Streamlit's sidebar nav order is NOT a lexical filename sort (it sorts by
@@ -48,10 +56,12 @@ _TITLE_RE = re.compile(r'st\.title\(\s*["\'](.+?)["\']')
 _SLUG_RE = re.compile(r"[0-9]*[_ -]*(.*)\.py")
 
 
-def _page_title(page_file: Path) -> str:
+def _page_title(page_file: Path) -> tuple[str, str]:
+    """The page's title text and the heading tag it actually renders at."""
     match = _TITLE_RE.search(page_file.read_text(encoding="utf-8"))
-    assert match, f"{page_file.name} has no st.title(...) call to check against"
-    return match.group(1)
+    assert match, f"{page_file.name} has no page_header(...) call to check against"
+    call, title = match.groups()
+    return title, _TITLE_TAG[call]
 
 
 def _page_slug(page_file: Path) -> str:
@@ -60,7 +70,46 @@ def _page_slug(page_file: Path) -> str:
     return re.sub(r"[_ ]+", "_", match.group(1)).strip("_")
 
 
-PAGE_SLUGS_AND_TITLES = [(_page_slug(p), _page_title(p)) for p in sorted(PAGES_DIR.glob("*.py"))]
+def _nav_sections_by_slug() -> dict[str, str]:
+    """slug -> the top-nav section holding it, read from the app's own registry.
+
+    Since the 2026-09-06 restyle the nav is grouped and declared in apps/dashboard/nav.py
+    rather than derived from filenames, and st.navigation(position="top") renders each
+    group as a dropdown button -- so a page cannot be reached without knowing its section.
+    Reading nav.PAGES keeps that mapping in one place rather than restating it here.
+
+    The default page is excluded: Streamlit serves it at the root URL and gives it no nav
+    link, so there is nothing to click. test_home_page_renders covers it directly.
+    """
+    sys.path.insert(0, str(REPO_ROOT / "apps" / "dashboard"))
+    import nav
+
+    return {
+        spec.url_path: section
+        for section, specs in nav.PAGES.items()
+        for spec in specs
+        if not spec.default
+    }
+
+
+_SECTION_BY_SLUG = _nav_sections_by_slug()
+
+PAGE_NAV_CASES = [
+    (_SECTION_BY_SLUG[slug], slug, title, tag)
+    for path in sorted(PAGES_DIR.glob("*.py"))
+    for slug in [_page_slug(path)]
+    for title, tag in [_page_title(path)]
+    if slug in _SECTION_BY_SLUG
+]
+
+# "home" is declared, just not clickable -- see _nav_sections_by_slug.
+_UNDECLARED = {
+    _page_slug(path) for path in PAGES_DIR.glob("*.py") if _page_slug(path) not in _SECTION_BY_SLUG
+} - {"home"}
+assert not _UNDECLARED, (
+    "pages exist but are not declared in apps/dashboard/nav.py, so nothing links to "
+    f"them: {sorted(_UNDECLARED)}"
+)
 
 
 def _free_port() -> int:
@@ -142,9 +191,11 @@ def browser_page() -> Iterator[tuple[Page, list[str]]]:
         browser.close()
 
 
-def _assert_page_rendered(page: Page, title: str, console_errors: list[str]) -> None:
+def _assert_page_rendered(page: Page, title: str, tag: str, console_errors: list[str]) -> None:
     page.wait_for_load_state("networkidle", timeout=45_000)
-    page.locator("h1", has_text=title).wait_for(state="visible", timeout=45_000)
+    # "Kardamow" is the document's only <h1> (apps/dashboard/app.py). Every page paints
+    # its own title one level down via page_header(), as <h2> -- `tag` is that level.
+    page.locator(tag, has_text=title).wait_for(state="visible", timeout=45_000)
 
     assert not console_errors, f"{title}: browser console logged errors: {console_errors}"
     assert page.locator('[data-testid="stException"]').count() == 0, f"{title}: exception shown"
@@ -166,17 +217,36 @@ def _assert_page_rendered(page: Page, title: str, console_errors: list[str]) -> 
 def test_home_page_renders(streamlit_server: str, browser_page: tuple[Page, list[str]]) -> None:
     page, console_errors = browser_page
     page.goto(streamlit_server, timeout=30_000)
-    _assert_page_rendered(page, HOME_TITLE, console_errors)
+    _assert_page_rendered(page, HOME_TITLE, HOME_TAG, console_errors)
+
+    # The "Kardamow" wordmark (apps/dashboard/app.py) is the masthead <h1> painted above
+    # every page's own title, and until now had no test of any kind. Checked here rather
+    # than on all sixteen page cases because the masthead itself doesn't vary by page --
+    # app.py's chrome renders once regardless of which page is showing. get_attribute
+    # reads the raw DOM attribute as this real browser actually parsed it (not a computed
+    # style), so it fails the same way the section()/page_header() unit tests do if the
+    # single-quote defect (HEADING_STACK's "'Times New Roman'" terminating the attribute
+    # early) ever comes back, and fails if the wordmark stops being a real <h1>.
+    wordmark = page.locator("h1", has_text="Kardamow")
+    wordmark.wait_for(state="visible", timeout=45_000)
+    style = wordmark.get_attribute("style")
+    assert style is not None, "masthead <h1> lost its style attribute"
+    assert "font-family" in style
+    assert "font-size" in style
+    assert wordmark.get_attribute("times") is None, "single-quote defect is back"
+    assert wordmark.get_attribute("new") is None, "single-quote defect is back"
 
 
 @pytest.mark.parametrize(
-    "slug,title", PAGE_SLUGS_AND_TITLES, ids=[p[0] for p in PAGE_SLUGS_AND_TITLES]
+    "section,slug,title,tag", PAGE_NAV_CASES, ids=[case[1] for case in PAGE_NAV_CASES]
 )
 def test_page_renders_in_browser(
     streamlit_server: str,
     browser_page: tuple[Page, list[str]],
+    section: str,
     slug: str,
     title: str,
+    tag: str,
 ) -> None:
     page, console_errors = browser_page
 
@@ -194,6 +264,11 @@ def test_page_renders_in_browser(
         page.wait_for_load_state("networkidle", timeout=45_000)
     console_errors.clear()
 
-    page.locator(f'[data-testid="stSidebarNav"] a[href$="/{slug}"]').click()
+    # Two clicks, not one: the top nav renders each section as a dropdown button and
+    # mounts its links only once opened, so the link does not exist until the section is.
+    page.locator(
+        '[data-testid="stTopNavSection"]', has_text=re.compile(rf"^{re.escape(section)}$")
+    ).click()
+    page.locator(f'[data-testid="stTopNavDropdownLink"][href$="/{slug}"]').click()
 
-    _assert_page_rendered(page, title, console_errors)
+    _assert_page_rendered(page, title, tag, console_errors)

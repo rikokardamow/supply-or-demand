@@ -21,7 +21,7 @@ import core.theme  # noqa: F401
 import numpy as np
 import pandas as pd
 import streamlit as st
-from components.card import card
+from components.section import empty_state, page_header, section, source_note
 from core.backtest import backtest, fractionate, inventory_predictability_test, spread_to_return
 from core.storage import read_ts_long
 from core.strategies import REGISTRY, missing_ranks
@@ -42,7 +42,7 @@ COST_BPS = 2.0
 # Published anchors live on `Strategy.benchmark` in the registry, not here -- a second
 # copy on the page would be a second source of truth and would drift.
 
-st.title("Systematic Strategies Engine")
+page_header("Systematic Strategies Engine")
 st.caption(
     "Bouchouev signals, reaction-function sizing and a vectorised backtester. "
     "Positions are lagged one day; costs are charged on trades, not holdings."
@@ -127,7 +127,7 @@ tab_board, tab_equity, tab_reaction, tab_fraction, tab_crowding = st.tabs(
 # --- signal board -----------------------------------------------------------------
 
 with tab_board:
-    with card(f"Signal board -- {root.upper()}"):
+    with section(f"Signal board -- {root.upper()}"):
         if positions.empty:
             st.info(
                 "No positions in the lake. Run `python -m pipelines.derived.systematic`."
@@ -142,14 +142,15 @@ with tab_board:
                 }
             ).sort_values("strategy")
             st.plotly_chart(
-                signal_board_table(board, f"Latest positions ({positions.index.max():%d %b %Y})"),
+                signal_board_table(board),
                 width="stretch",
             )
+            source_note(f"Latest positions: {latest.name:%d %b %Y}")
             disclosures = {n: REGISTRY[n].note for n in latest.index if REGISTRY[n].note}
             for name, note in disclosures.items():
                 st.caption(f"**{name}** — {note}")
 
-    with card("Strategies that cannot run on this data"):
+    with section("Strategies that cannot run on this data"):
         skipped = {
             name: missing_ranks(strategy, panel)
             for name, strategy in REGISTRY.items()
@@ -170,7 +171,7 @@ with tab_board:
 # --- equity curves and the published comparison -----------------------------------
 
 with tab_equity:
-    with card("Repo estimate vs published anchor"):
+    with section("Repo estimate vs published anchor"):
         rows = []
         for name in REGISTRY:
             run = _run(root, name)
@@ -232,7 +233,7 @@ with tab_equity:
                 "not one."
             )
 
-    with card("Equity and drawdown"):
+    with section("Equity and drawdown"):
         runs = {n: r for n in REGISTRY if (r := _run(root, n)) is not None}
         if not runs:
             st.info("Nothing to plot yet.")
@@ -249,7 +250,6 @@ with tab_equity:
                 equity_drawdown_chart(
                     pnl.cumsum(),
                     pnl.cumsum() - pnl.cumsum().cummax(),
-                    f"{choice} — cumulative log P&L",
                     "log return",
                     benchmark=benchmark[0].cumsum() if benchmark else None,
                 ),
@@ -262,7 +262,7 @@ with tab_equity:
 
 # --- reaction function ------------------------------------------------------------
 
-with tab_reaction, card("Reaction function with today's z"):
+with tab_reaction, section("Reaction function with today's z"):
     data = _root_data(root)
     s12 = data.get("s12")
     live_z = float("nan")
@@ -270,9 +270,7 @@ with tab_reaction, card("Reaction function with today's z"):
         rolled = s12.rolling(252)
         z = (s12 - rolled.mean()) / rolled.std()
         live_z = float(z.dropna().iloc[-1])
-    st.plotly_chart(
-        reaction_curve_chart(live_z, "R(z) = z*exp(0.5*(1-z^2))"), width="stretch"
-    )
+    st.plotly_chart(reaction_curve_chart(live_z), width="stretch")
     st.caption(
         "Conviction peaks at z=1 and *falls* beyond it: an unusually extreme reading "
         "is treated as a regime the model does not understand, not a bigger "
@@ -281,7 +279,7 @@ with tab_reaction, card("Reaction function with today's z"):
 
 # --- fractionation ----------------------------------------------------------------
 
-with tab_fraction, card("Where the P&L came from"):
+with tab_fraction, section("Where the P&L came from"):
     runs = {n: r for n in REGISTRY if (r := _run(root, n)) is not None}
     if not runs:
         st.info("Nothing to attribute yet.")
@@ -303,7 +301,7 @@ with tab_fraction, card("Where the P&L came from"):
             st.info("No conditioners available for this root.")
         else:
             st.plotly_chart(
-                fractionation_heatmap(table, f"{choice} — Sharpe by bucket", value="sharpe"),
+                fractionation_heatmap(table, value="sharpe"),
                 width="stretch",
             )
             st.dataframe(
@@ -318,7 +316,7 @@ with tab_fraction, card("Where the P&L came from"):
 # --- crowding ---------------------------------------------------------------------
 
 with tab_crowding:
-    with card("Crowding monitor"):
+    with section("Positioning vs signal"):
         data = _root_data(root)
         cot = data.get("mm_pct_3y")
         s12 = data.get("s12")
@@ -328,7 +326,7 @@ with tab_crowding:
             rolled = s12.rolling(252)
             z = (s12 - rolled.mean()) / rolled.std()
             st.plotly_chart(
-                crowding_quadrant_scatter(cot, z.reindex(cot.index), "Positioning vs signal"),
+                crowding_quadrant_scatter(cot, z.reindex(cot.index)),
                 width="stretch",
             )
             st.caption(
@@ -337,12 +335,15 @@ with tab_crowding:
                 "positions there."
             )
 
-    with card("Do spreads predict inventories, or the reverse?"):
+    with section("Do spreads predict inventories, or the reverse?"):
         stocks = read_ts_long(series_ids=[CUSHING_STOCKS])
         data = _root_data(root)
         s12 = data.get("s12")
-        if stocks.empty or s12 is None:
-            st.info("Cushing stocks or the front spread are unavailable.")
+        if stocks.empty:
+            st.caption("Run `pipelines/eia/pull_wpsr.py` to populate Cushing stocks.")
+            empty_state("eia", "weekly", None)
+        elif s12 is None:
+            st.info("The front spread is unavailable for this root.")
         else:
             series = stocks.set_index("ts")["value"].sort_index()
             try:

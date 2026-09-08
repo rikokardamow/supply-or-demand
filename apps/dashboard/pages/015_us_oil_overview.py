@@ -8,9 +8,9 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.macro import deflate
 from core.seasonal import seasonal_stats
 from core.theme import (
@@ -70,7 +70,8 @@ PRODUCTION_INFO = [
 def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
-        st.info(f"No data yet for {series_id} — run `pipelines/eia/pull_wpsr.py`.")
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate {series_id}.")
+        empty_state("eia", "weekly", None)
         return
 
     stats = seasonal_stats(df, value_col="value")
@@ -79,8 +80,8 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
-    with card(title):
+    fig = seasonal_range_chart(stats, current_year_series, unit=unit)
+    with section(title):
         st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
@@ -95,15 +96,16 @@ def _simple_section(
 ) -> None:
     df = read_ts_long(series_ids=[series_id]).sort_values("ts")
     if df.empty:
-        st.info(f"No data yet for {series_id} — run `pipelines/eia/pull_wpsr.py`.")
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate {series_id}.")
+        empty_state("eia", "weekly", None)
         return
 
     series = df.set_index("ts")["value"]
     if window_days is not None:
         cutoff = series.index.max() - pd.Timedelta(days=window_days)
         series = series[series.index >= cutoff]
-    fig = simple_time_series_chart(series, title=title, unit=unit)
-    with card(title):
+    fig = simple_time_series_chart(series, unit=unit)
+    with section(title):
         st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
@@ -139,7 +141,8 @@ def _four_week_avg_overlay(
 ) -> None:
     df = read_ts_long(series_ids=series_ids)
     if df.empty:
-        st.info(f"No data yet for {series_ids} — run `pipelines/eia/pull_wpsr.py`.")
+        st.caption(f"Run `pipelines/eia/pull_wpsr.py` to populate {series_ids}.")
+        empty_state("eia", "weekly", None)
         return
 
     wide = df.pivot_table(index="ts", columns="series_id", values="value")
@@ -152,8 +155,8 @@ def _four_week_avg_overlay(
     # comparing the current year's partial line against recent years is the point.
     current_year = int(combined_df["ts"].dt.year.max())
     stats = seasonal_stats(combined_df, value_col="value", years=range(2018, current_year + 1))
-    fig = multi_year_overlay_chart(stats, title=title, unit=unit)
-    with card(title):
+    fig = multi_year_overlay_chart(stats, unit=unit)
+    with section(title):
         st.plotly_chart(fig)
         if take is not None:
             kardamow_take(take)
@@ -170,7 +173,8 @@ def _wti_real_price_section() -> None:
     wti = read_ts_long(series_ids=["fred.dcoilwtico"]).sort_values("ts")
     cpi = read_ts_long(series_ids=["fred.cpiaucsl"]).sort_values("ts")
     if wti.empty or cpi.empty:
-        st.info("No data yet — run `pipelines/macro/pull_macro.py`.")
+        st.caption("Run `pipelines/macro/pull_macro.py` to populate this.")
+        empty_state("fred", "weekly", None)
         return
 
     wti_series = wti.set_index("ts")["value"]
@@ -181,8 +185,8 @@ def _wti_real_price_section() -> None:
     fig = go.Figure(
         go.Scatter(x=real_wti.index, y=real_wti.values, line={"color": LIGHT_BLUE, "width": 2})
     )
-    fig.update_layout(title=title, yaxis_title="$/bbl (2018 USD)")
-    with card(title):
+    fig.update_layout(yaxis_title="$/bbl (2018 USD)")
+    with section(title):
         st.plotly_chart(fig)
         kardamow_take(
             "This is the price refiners are actually responding to once inflation's "
@@ -191,7 +195,7 @@ def _wti_real_price_section() -> None:
         )
 
 
-st.title("US Oil Market Overview")
+page_header("US Oil Market Overview")
 
 st.subheader("Refining & stocks")
 _seasonal_section(

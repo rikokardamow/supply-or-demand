@@ -19,7 +19,17 @@ replaces the filename-derived sidebar.
 ## Global Constraints
 
 - Branch is `design/ui-restyle`, cut from `spec/29-social-sentiment`. Do not rebase onto `main`.
+- **A peer Claude session works this same clone.** Confirmed live on 2026-09-06: its commit landed on this branch and one of ours landed on its branch, because both sessions check out branches in one working tree. Before each task, run `ListAgents` and `git log --all --oneline -5`, and confirm the branch is still `design/ui-restyle` before committing. Stage files by name — never `git add -A`, which sweeps a peer's in-progress files into your commit. Never rewrite shared history (`rebase`, `amend`, `branch -f`) while a peer is live; fix mistakes with a follow-up commit.
+- Agreed file lanes: this plan owns `apps/dashboard/**`, `core/theme.py`, `core/design.py`, `.streamlit/config.toml`. It does not touch `pipelines/**` or other `core/*` modules.
 - `uv` is NOT on the Git Bash PATH on this machine. Run tools as `./.venv/Scripts/python.exe -m <tool>` or from PowerShell. `make dev` fails in Git Bash — this is environmental, not a bug to fix here.
+- **Running the app from the worktree needs `PYTHONPATH`, or you will verify the wrong code.** The worktree's `.venv` is a junction to the main clone's, and that venv contains `_editable_impl_energy_dashboard.pth` pointing at `C:\Users\<user>\Documents\energy-dashboard`. So `import core` resolves to the **main clone**. Confirmed live on 2026-09-06: a screenshot taken to verify Task 5 showed the old doubled titles, because Streamlit was reading `.streamlit/config.toml` from the worktree (cwd-relative, so the new theme appeared) while importing `core` from the main clone. Always start it as:
+
+  ```bash
+  PYTHONPATH="C:/Users/<user>/Documents/energy-dashboard.worktrees/ui-restyle" \
+    ./.venv/Scripts/streamlit.exe run apps/dashboard/app.py --server.port 8502 --server.headless true
+  ```
+
+  `pytest` is unaffected — it puts the rootdir first, which is why the suite tested the right code throughout. The tell-tale is a page that half-updates: new chrome, old behaviour.
 - `make check` = ruff, mypy (`core pipelines infra apps`), pytest. Must be green before every commit (golden rule 8).
 - Default pytest run excludes browser tests: `addopts = "-ra --strict-markers -m 'not browser'"`. Browser tests run explicitly with `-m browser` and need `playwright install chromium`.
 - Series colours (`NAVY #0f2a4a`, `LIGHT_BLUE #5b9bd5`, `RED #c0392b`, `ORANGE #e67e22`, `BAND`, `GRID`) keep their exact current values. They encode data, not brand.
@@ -1061,6 +1071,46 @@ without taking the others with it.
 `08_weather` holds the cartopy anomaly maps. Do not restyle those figures — they are
 matplotlib, out of scope, and explicitly excluded by the companion spec.
 
+**Sections handed over by the peer session (commit `fde6135`, Spec 30).** These landed
+in the old `card(...)` idiom by agreement, before this migration reached them. They are
+not on this branch yet — merge their branch before starting Task 9. The peer chose the
+better of each competing title; use these exact strings for `section()`:
+
+| File | Section title to use |
+|---|---|
+| `20_cracks.py` | `"Refiner acquisition cost vs WTI and Brent spot"` — settled by their commit `5a90098` |
+| `20_cracks.py` | `"Landed cost of imported crude by API gravity band"` — "imported crude" is load-bearing, do not shorten |
+| `20_cracks.py` | `"Retail-to-wholesale margin"` — the card string wins; the chart's "US retail gasoline vs NY Harbor wholesale, with the margin" is a mouthful as a heading. Changed by their commit `b9ccb0d`, which rebuilt this section: it now shows 2 series (retail vs wholesale, with the margin annotated) instead of 12 pump-price levels |
+| `05_us_gas_power.py` | `"State cost of natural gas delivered to generators vs Henry Hub"` |
+
+New functions to migrate alongside the existing ones: `_acquisition_cost_section`,
+`_landed_cost_section`, `_retail_margin_section` (cracks); `_generator_fuel_series_id`,
+`_delivered_fuel_cost_section` (gas power).
+
+**Do not drop either reference line from the acquisition-cost chart in the name of
+visual cleanliness.** Domestic refiner acquisition cost tracks WTI; imported tracks
+Brent. With only one benchmark drawn, the imported series reads as persistently
+mispriced when it is simply following the other one. Both references are what make the
+composite/domestic/imported split legible. (From the peer session, which built it.)
+
+**Findings from the peer's Spec 30 review, split by who owns them.** Their review found
+four things in these two files. The split follows the real seam: they own *what the
+chart shows* (they wrote the spec and know the series), this plan owns *how it looks*.
+
+Theirs to land before Task 10, in the old `card()` idiom:
+
+- `05_us_gas_power.py:268` — `GENERATOR_FUEL[0]` picks the cost series by list index. Reordering that list silently plots consumption in thousand Mcf against a `$/MMBtu` axis beside Henry Hub; nothing raises. Fixed by importing their new `GENERATOR_FUEL_COST_KEY`. Ships atomically with the constant, so there is never a window where the constant exists unused.
+- `05_us_gas_power.py:259-271` — the page re-derives the minted series ID, hardcoding `_GENERATOR_FUEL_FREQ_CODE = "M"`, duplicating `client.py`. If the route's frequency changes the page asks for `…​.M`, the client wrote `…​.Q`, and the chart says "no data" over a full lake. Fixed by calling their exported `generator_fuel_series_id()`.
+- Two spec gaps: the delivered-cost chart never computes or annotates the spread (spec line 124), and `_retail_margin_section` shows 12 pump-price levels with no wholesale leg and therefore no margin, despite its name and its own caption (spec lines 126-127). Composition, not styling — they hold the spec.
+
+Mine, in Task 9:
+
+- After they land the above, migrate their annotation to the house treatment: direct annotation near the last point, using the opaque-ground/hairline-border styling from Task 5, not an ad-hoc box.
+- `20_cracks.py:128` — `_PRICE_PALETTE` cycles four colours over 12 retail and 8 RAC series, so `R0000____3` (the US composite headline) renders identically to `R0040____3` (PADD4). **The fix is not more colours.** Cycling a categorical palette is the failure; a 9th series never gets a generated hue. Emphasise the composite (full-weight navy, direct-labelled) and drop the rest to a muted common grey, or facet into small multiples. Decide when the section is migrated and the real chart is in front of you.
+was expanded from single-line to parenthesised multi-line to add `GREY, LIGHT_BLUE,
+NAVY`. Nothing was removed. This plan rewrites that same import line, so resolve by
+keeping their colour names and switching the `card` import to `components.section`.
+
 - [ ] **Step 2: Full suite**
 
 Run: `./.venv/Scripts/python.exe -m pytest -q` then `./.venv/Scripts/python.exe -m pytest -m browser -q`
@@ -1123,7 +1173,11 @@ legible, with no clipped text, no boxes, and no serif numerals.
 - [ ] **Step 7: Commit and update the changelog**
 
 ```bash
-git add -A
+# Name every file. A peer session works this same clone, and `git add -A` sweeps their
+# in-progress files into your commit -- this has already happened once on this repo.
+git add core/theme.py CLAUDE.md CHANGELOG.md tests/test_components_section.py
+git add apps/dashboard/pages          # the call sites that dropped title=
+git rm apps/dashboard/components/card.py
 git commit -m "refactor(theme): drop the unused title parameter; update CLAUDE.md for the restyle"
 ```
 
