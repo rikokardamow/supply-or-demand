@@ -9,7 +9,7 @@ import plotly.io as pio
 from plotly.subplots import make_subplots
 
 from core import design
-from core.design import BODY_STACK, MUTED, PAPER, RULE, TEXT
+from core.design import BODY_STACK, MUTED, TEXT
 from core.seasonal import REFERENCE_YEAR
 
 # The series palette is BOUND here, not imported, and that is deliberate. Pages do
@@ -29,6 +29,8 @@ GREY = design.GREY
 BAND = design.BAND
 GRID = design.GRID
 TRANSPARENT = design.TRANSPARENT
+PAPER = design.PAPER
+RULE = design.RULE
 
 _MONTH_STARTS = pd.date_range(f"{REFERENCE_YEAR}-01-01", periods=12, freq="MS")
 _DOY_TICKVALS = [d.dayofyear for d in _MONTH_STARTS]
