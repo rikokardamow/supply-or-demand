@@ -79,8 +79,9 @@ only `<h1>`) over a hairline rule, with grouped top navigation (`st.navigation`,
 opens with `components.section.page_header(title, as_of=..., freshness=...)` (`<h2>`,
 Lora heading face, caps meta line) and wraps each chart or table in
 `components.section.section(title)` (`<h3>` + hairline rule) instead of the old bordered
-`card()`, which no longer exists — group multiple related charts under one
-`section(...)` per chart, matching the existing pages. `components.section` also has
+`card()`, which no longer exists — group multiple related charts under a plain
+`st.subheader` label with one `section(...)` per individual chart underneath, matching
+the existing pages. `components.section` also has
 `kpi_row`, `empty_state`, and `source_note` (provenance/units/caveats caption under a
 chart) for the same purpose card() used to serve piecemeal. Headings use the Lora stack
 (`core.design.HEADING_STACK`); axis ticks, legends, data labels and every other in-chart

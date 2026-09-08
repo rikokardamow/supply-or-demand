@@ -202,7 +202,7 @@ else:
     snsp = snsp_proxy(roi_wind, roi_net_import, roi_demand).dropna()
     latest_snsp_pct = float(snsp.iloc[-1] * 100) if not snsp.empty else 0.0
     gauge = gauge_chart(latest_snsp_pct, title="SNSP Proxy — latest (%)")
-    with section("SNSP Proxy — latest (%)"):
+    with section("SNSP Proxy"):
         st.plotly_chart(gauge)
 
     roi_ewic = _eirgrid_series("inter_ewic")

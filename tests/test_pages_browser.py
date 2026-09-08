@@ -40,13 +40,12 @@ APP_ENTRYPOINT = "apps/dashboard/app.py"
 HOME_TITLE = "Energy Dashboard"
 HOME_TAG = "h2"  # 00_home.py uses page_header(), not st.title()
 
-# Pages are mid-migration from st.title() to components.section.page_header(). Since the
-# 2026-09-06 masthead rebuild the two no longer paint the same heading level: st.title()
-# still paints Streamlit's native <h1>, but page_header() now paints <h2> -- "Kardamow" in
-# apps/dashboard/app.py is the document's only <h1>. The capture group on the call name
-# lets _page_title tell the two apart and check each page's title at its real level.
-_TITLE_RE = re.compile(r'(st\.title|page_header)\(\s*["\'](.+?)["\']')
-_TITLE_TAG = {"st.title": "h1", "page_header": "h2"}
+# Every page uses components.section.page_header() for its own title, painted as <h2>
+# beneath "Kardamow" -- the document's only <h1> (apps/dashboard/app.py). A page that
+# regresses to plain st.title() has no page_header(...) call left for this regex to
+# match, so _page_title's assert below fails loudly instead of silently passing.
+_TITLE_RE = re.compile(r'(page_header)\(\s*["\'](.+?)["\']')
+_TITLE_TAG = {"page_header": "h2"}
 
 # Same shape as Streamlit's own PAGE_FILENAME_REGEX (streamlit/source_util.py) -- confirmed
 # live that Streamlit's sidebar nav order is NOT a lexical filename sort (it sorts by
@@ -60,7 +59,7 @@ _SLUG_RE = re.compile(r"[0-9]*[_ -]*(.*)\.py")
 def _page_title(page_file: Path) -> tuple[str, str]:
     """The page's title text and the heading tag it actually renders at."""
     match = _TITLE_RE.search(page_file.read_text(encoding="utf-8"))
-    assert match, f"{page_file.name} has no st.title(...)/page_header(...) call to check against"
+    assert match, f"{page_file.name} has no page_header(...) call to check against"
     call, title = match.groups()
     return title, _TITLE_TAG[call]
 
@@ -194,10 +193,8 @@ def browser_page() -> Iterator[tuple[Page, list[str]]]:
 
 def _assert_page_rendered(page: Page, title: str, tag: str, console_errors: list[str]) -> None:
     page.wait_for_load_state("networkidle", timeout=45_000)
-    # Once the migration finishes, "Kardamow" will be the document's only <h1>
-    # (apps/dashboard/app.py). Pages migrated to page_header() paint their own title one
-    # level down, as <h2>; pages still on plain st.title() paint Streamlit's native <h1>
-    # alongside the wordmark's -- `tag` is which of the two this page uses.
+    # "Kardamow" is the document's only <h1> (apps/dashboard/app.py). Every page paints
+    # its own title one level down via page_header(), as <h2> -- `tag` is that level.
     page.locator(tag, has_text=title).wait_for(state="visible", timeout=45_000)
 
     assert not console_errors, f"{title}: browser console logged errors: {console_errors}"

@@ -882,6 +882,7 @@ def bday_heatmap(df: pd.DataFrame, unit: str) -> go.Figure:
         )
     )
     fig.update_layout(
+        xaxis_title="Business days from roll-window start", yaxis_title="Year"
     )
     return fig
 
