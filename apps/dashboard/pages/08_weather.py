@@ -11,9 +11,9 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.seasonal import seasonal_stats
 from core.theme import NAVY, dual_axis_chart, seasonal_range_chart
 from pipelines.gie.transforms import net_flow
@@ -132,7 +132,7 @@ def _climatology_section(region: str) -> None:
             )
         )
 
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
 
 
@@ -141,8 +141,12 @@ def _eu_hdd_vs_gas_section(window_days: int) -> None:
     injection = _trim_recent(_series_by_ts("agsi.EU.injection"), cutoff)
     withdrawal = _trim_recent(_series_by_ts("agsi.EU.withdrawal"), cutoff)
     hdd_anomaly = _anomaly_series("hdd.eu.popw", "hdd.eu.popw.forecast", window_days)
-    if injection.empty or withdrawal.empty or hdd_anomaly.empty:
-        st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 02's pulls.")
+    if injection.empty or withdrawal.empty:
+        st.caption("Run `pipelines/gie/pull_agsi.py` to populate EU injection/withdrawal.")
+        empty_state("gie", "daily", None)
+        return
+    if hdd_anomaly.empty:
+        st.info("No data yet — run `pipelines/weather/pull_weather.py`.")
         return
 
     eu_net_withdrawal = net_flow(withdrawal, injection)
@@ -154,7 +158,7 @@ def _eu_hdd_vs_gas_section(window_days: int) -> None:
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (GWh/d)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         kardamow_take(
             "Colder-than-normal EU weather shows up in storage draws within days, not "
@@ -166,8 +170,12 @@ def _eu_hdd_vs_gas_section(window_days: int) -> None:
 def _us_hdd_vs_gas_section(window_days: int) -> None:
     level = _series_by_ts(US_STORAGE_SERIES_ID)
     hdd_anomaly = _anomaly_series("hdd.us.popw", "hdd.us.popw.forecast", window_days)
-    if level.empty or hdd_anomaly.empty:
-        st.info("No data yet — run `pipelines/weather/pull_weather.py` and Spec 05's pulls.")
+    if level.empty:
+        st.caption("Run `pipelines/eia/pull_gas_storage.py` to populate US storage.")
+        empty_state("eia", "weekly", None)
+        return
+    if hdd_anomaly.empty:
+        st.info("No data yet — run `pipelines/weather/pull_weather.py`.")
         return
 
     # net_withdrawal needs the point before the trimmed window to diff against, so
@@ -182,7 +190,7 @@ def _us_hdd_vs_gas_section(window_days: int) -> None:
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (BCF/week)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "EIA's storage route publishes a weekly level, not a daily injection/"
@@ -213,11 +221,12 @@ def _city_filter_panel() -> list[tuple[str, str]]:
 def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
     cdd_anomaly = _anomaly_series(f"cdd.{city}.f65", f"cdd.{city}.f65.forecast", window_days)
     load = _series_by_ts(f"gridstatus.{iso}.load")
-    if cdd_anomaly.empty or load.empty:
-        st.info(
-            f"No data yet for {iso} — run `pipelines/weather/pull_weather.py` "
-            "and Spec 05's pulls."
-        )
+    if load.empty:
+        st.caption(f"Run `pipelines/gridstatus_iso/pull_iso.py` to populate {iso}.")
+        empty_state("gridstatus", "daily", None)
+        return
+    if cdd_anomaly.empty:
+        st.info(f"No data yet for {iso} — run `pipelines/weather/pull_weather.py`.")
         return
 
     title = f"{city.replace('_', ' ').title()} CDD Anomaly vs. {iso} Load"
@@ -228,7 +237,7 @@ def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
         left_label="CDD anomaly (degree-days)",
         right_label="Load (MW)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             f"{iso}'s load pull keeps a trailing 60-day window (see "
@@ -299,7 +308,7 @@ def _anomaly_maps_section() -> None:
         f"{ANOMALY_MAP_REGIONS[region]} 2m-Temp Anomaly — "
         f"{ANOMALY_MAP_MODELS[model]} — {step_label}"
     )
-    with card(card_title):
+    with section(card_title):
         st.image(latest["path"])
         if age_hours > STALE_MAP_THRESHOLD_HOURS:
             st.warning(
@@ -356,11 +365,13 @@ def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
         f"wind.{country.lower()}.10m_max_kmh.forecast", source="open_meteo_forecast"
     )
     entsoe_wind = _entsoe_wind_forecast(zone)
-    if wind_index.empty or entsoe_wind.empty:
-        st.info(
-            f"No data yet for {country} — run `pipelines/weather/pull_daily.py` and "
-            "Spec 04's ENTSO-E pulls."
-        )
+    if wind_index.empty:
+        st.caption(f"Run `pipelines/weather/pull_daily.py` to populate {country}.")
+        empty_state("open_meteo_forecast", "daily", None)
+        return
+    if entsoe_wind.empty:
+        st.caption(f"Run `pipelines/entsoe/pull_daily.py` to populate {zone}.")
+        empty_state("entsoe", "daily", None)
         return
 
     cutoff = wind_index.index.max() - pd.Timedelta(days=window_days)
@@ -375,7 +386,7 @@ def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
         left_label="10m wind speed, daily max (km/h)",
         right_label=f"ENTSO-E {zone} wind forecast, daily mean (MW)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "Two independent sources, not a unit conversion, and not a same-day "
@@ -388,7 +399,7 @@ def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
         )
 
 
-st.title("Weather Overlay")
+page_header("Weather Overlay")
 
 st.subheader("Population-weighted HDD vs. climatology")
 col_eu, col_us = st.columns(2)
