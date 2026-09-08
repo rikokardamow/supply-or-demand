@@ -122,7 +122,9 @@ with tab_inventory:
             )
 
 with tab_quality:
-    with section("US Crude Stock Changes vs Brent Price Changes (Quarterly)"):
+    with section(
+        "Carollo Diagnostic — US Crude Stock Changes vs Brent Price Changes (Quarterly)"
+    ):
         stocks = (
             read_ts_long(series_ids=[US_CRUDE_STOCKS_SERIES_ID])
             .set_index("ts")["value"].sort_index()
