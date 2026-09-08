@@ -9,6 +9,7 @@ core.failures.raise_sanitised."""
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 
@@ -180,6 +181,138 @@ class EIAClient:
                 )
             )
         return pd.concat(frames, ignore_index=True)
+
+    def _fetch_facet_rows(
+        self,
+        route: str,
+        data_key: str,
+        facets: dict[str, list[str]],
+        frequency: str,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Third sibling to `_fetch_rows` and `_fetch_operational_rows`, for routes with
+        no `series` facet whose facet NAMES vary by route. Confirmed live: the three
+        electricity/rto/* routes all 400 on facet/series, and each uses a different facet
+        pair -- respondent+type, respondent+fueltype, and fromba+toba -- so
+        `_fetch_operational_rows`'s hardcoded {fueltypeid, sectorid, location} cannot
+        express any of them. `facets` is {facet_name: [values]}; each becomes a repeated
+        `facets[<name>][]` parameter, the same repeated-value form `facets[series][]` and
+        `facets[location][]` already use.
+
+        `start`/`end` bound the window. The rto/* routes are hourly with no monthly
+        rollup to fall back on, so an unbounded pull is the whole row-volume problem --
+        see plan 31B's Decision A. Omitted, they return the route's full history."""
+        rows: list[dict[str, Any]] = []
+        offset = 0
+
+        while True:
+            params: dict[str, Any] = {
+                "api_key": self._api_key,
+                "frequency": frequency,
+                "data[0]": data_key,
+                "sort[0][column]": "period",
+                "sort[0][direction]": "desc",
+                "offset": offset,
+                "length": PAGE_SIZE,
+            }
+            for facet_name, values in facets.items():
+                params[f"facets[{facet_name}][]"] = values
+            if start is not None:
+                params["start"] = start
+            if end is not None:
+                params["end"] = end
+
+            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
+            try:
+                response.raise_for_status()
+            except requests.HTTPError as exc:
+                raise_sanitised(exc)
+            page = response.json()["response"]["data"]
+            rows.extend(page)
+
+            if len(page) < PAGE_SIZE:
+                break
+            offset += PAGE_SIZE
+
+        return rows
+
+    def _drop_null_values(
+        self, rows: list[dict[str, Any]], route: str, data_key: str
+    ) -> list[dict[str, Any]]:
+        """EIA publishes real null values; float(None) would crash the pull outright.
+        Dropped rows are named in the run log, never swallowed -- the same rule
+        core.storage._drop_rows_with_no_value applies on the write side."""
+        kept = [row for row in rows if row.get(data_key) is not None]
+        dropped = len(rows) - len(kept)
+        if dropped:
+            print(f"{route} ({data_key}): dropped {dropped} row(s) with no value", flush=True)
+        return kept
+
+    def get_facet_series(
+        self,
+        route: str,
+        data_key: str,
+        facets: dict[str, list[str]],
+        frequency: str,
+        series_id: Callable[[dict[str, Any]], str],
+        geo: Callable[[dict[str, Any]], str],
+        start: str | None = None,
+        end: str | None = None,
+    ) -> pd.DataFrame:
+        """`ts_long` rows from a facet-dict route. EIA supplies no series id for these
+        routes at all, and they mint theirs from different facet fields, so the caller
+        passes `series_id` and `geo` as small functions of the raw row rather than this
+        method hardcoding one scheme. See pipelines/eia/rto.py for the schemes actually
+        used, and pipelines/eia/NOTES.md for why a minted id is permanent."""
+        rows = self._drop_null_values(
+            self._fetch_facet_rows(route, data_key, facets, frequency, start, end),
+            route,
+            data_key,
+        )
+        pulled_at = datetime.now(UTC)
+        return pd.DataFrame(
+            {
+                "series_id": [series_id(row) for row in rows],
+                "source": "eia",
+                "ts": pd.to_datetime([row["period"] for row in rows]),
+                "value": [float(row[data_key]) for row in rows],
+                "unit": [row[f"{data_key}-units"] for row in rows],
+                "geo": [geo(row) for row in rows],
+                "freq": frequency,
+                "revision_date": pulled_at,
+            }
+        )
+
+    def get_facet_flows(
+        self,
+        route: str,
+        data_key: str,
+        facets: dict[str, list[str]],
+        frequency: str,
+        mode: str,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> pd.DataFrame:
+        """`flows` rows from a facet-dict route. Unlike `get_flows`, which maps a known
+        series id to a corridor, interchange-data carries `fromba`/`toba` on every row
+        already -- so the corridor is read off the row rather than looked up."""
+        rows = self._drop_null_values(
+            self._fetch_facet_rows(route, data_key, facets, frequency, start, end),
+            route,
+            data_key,
+        )
+        return pd.DataFrame(
+            {
+                "source": "eia",
+                "from_node": [row["fromba"] for row in rows],
+                "to_node": [row["toba"] for row in rows],
+                "value": [float(row[data_key]) for row in rows],
+                "unit": [row[f"{data_key}-units"] for row in rows],
+                "ts": pd.to_datetime([row["period"] for row in rows]),
+                "mode": mode,
+            }
+        )
 
     def list_series(self, route: str) -> list[dict[str, str]]:
         """List every series id/name available under a route, via its facet endpoint.
