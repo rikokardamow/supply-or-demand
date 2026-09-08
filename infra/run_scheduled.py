@@ -53,6 +53,7 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),
         # Must run after "eia_wpsr" above -- reads the Cushing stocks row it just wrote.
         ("derived_cushing", "pipelines.derived.cushing"),
+        ("eia_ethanol_weekly", "pipelines.eia.pull_ethanol_weekly"),
     ],
     "ng_storage": [
         ("eia_gas_storage", "pipelines.eia.pull_gas_storage"),
