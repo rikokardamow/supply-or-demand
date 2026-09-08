@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pandas as pd
 import pytest
 from core.schemas import validate_flows
 from pipelines.eia import pull_rto_interchange
-from pipelines.eia.rto import ERCOT
+from pipelines.eia.rto import ERCOT, RTO_RESPONDENTS
 
 
 @pytest.fixture(scope="module")
@@ -50,9 +50,13 @@ def test_run_passes_a_replace_window_to_write_flows(
     # .max()), not a second `datetime.now(UTC)` call -- a second wall-clock read is
     # always a little later than pull_interchange's internal one (the API call happens
     # in between), which leaves the oldest pulled hour outside the window and unreplaced.
-    # With a single mocked row, min() == max(), so the invariant to check is that the
-    # window exactly brackets the pulled rows' timestamps -- not "at least 3 days wide",
-    # which was only ever true of the old now()-derived window.
+    # Every RTO_RESPONDENTS BA appears once as from_node, all sharing one timestamp, so
+    # min() == max() still holds -- the invariant to check is that the window exactly
+    # brackets the pulled rows' timestamps, not "at least 3 days wide", which was only
+    # ever true of the old now()-derived window. Covering every respondent also keeps
+    # this fake frame clear of run()'s own silent-partial-pull guard (Finding I1) -- a
+    # frame missing a BA would otherwise fail this test with PartialFailureError for an
+    # unrelated reason.
     captured: dict[str, Any] = {}
 
     def _fake_write(df: pd.DataFrame, source: str, replace_window: Any = None) -> None:
@@ -66,13 +70,13 @@ def test_run_passes_a_replace_window_to_write_flows(
         "pull_interchange",
         lambda client, days: pd.DataFrame(
             {
-                "source": ["eia"],
-                "from_node": ["ERCO"],
-                "to_node": ["SWPP"],
-                "value": [120.0],
-                "unit": ["megawatthours"],
-                "ts": pd.to_datetime([ts]),
-                "mode": ["grid_interchange"],
+                "source": ["eia"] * len(RTO_RESPONDENTS),
+                "from_node": list(RTO_RESPONDENTS),
+                "to_node": ["NEIGHBOR"] * len(RTO_RESPONDENTS),
+                "value": [120.0] * len(RTO_RESPONDENTS),
+                "unit": ["megawatthours"] * len(RTO_RESPONDENTS),
+                "ts": pd.to_datetime([ts] * len(RTO_RESPONDENTS)),
+                "mode": ["grid_interchange"] * len(RTO_RESPONDENTS),
             }
         ),
     )
@@ -85,3 +89,35 @@ def test_run_passes_a_replace_window_to_write_flows(
     start, end = window
     assert start == ts
     assert end == ts
+
+
+def test_pull_interchange_requests_the_bounded_window_and_correct_facets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The VCR tests above relax match_on to method+path, so a cassette replays
+    # regardless of what was actually requested -- a bug that dropped start=/end=
+    # (an unbounded pull) or narrowed facets to the wrong values would still pass every
+    # one of them. This proves the request wiring itself, with no cassette involved.
+    captured: dict[str, Any] = {}
+
+    def _fake_get_facet_flows(self: object, **kwargs: Any) -> pd.DataFrame:
+        captured.update(kwargs)
+        return pd.DataFrame()
+
+    monkeypatch.setattr(
+        pull_rto_interchange.EIAClient, "get_facet_flows", _fake_get_facet_flows
+    )
+
+    pull_rto_interchange.pull_interchange(pull_rto_interchange.EIAClient(), days=3)
+
+    assert captured["facets"] == {"fromba": pull_rto_interchange.RTO_RESPONDENTS}
+    assert captured["frequency"] == pull_rto_interchange.HOURLY
+    assert captured["mode"] == pull_rto_interchange.INTERCHANGE_MODE
+    start, end = captured["start"], captured["end"]
+    assert start is not None and end is not None
+    span = datetime.strptime(end, "%Y-%m-%dT%H") - datetime.strptime(start, "%Y-%m-%dT%H")
+    # Not exact equality against a freshly-computed timedelta(days=3) -- wall-clock
+    # drift between window computation (inside pull_interchange) and this assertion is
+    # real, if tiny. A generous tolerance still catches an unbounded or wrongly-sized
+    # window.
+    assert abs(span - timedelta(days=3)) < timedelta(hours=1)

@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+from typing import Any
+
+import pandas as pd
 import pytest
 from core.schemas import validate_ts_long
 from pipelines.eia import pull_rto_demand
@@ -49,3 +53,36 @@ def test_trailing_window_is_bounded() -> None:
     # row-volume problem plan 31B's Decision A exists to prevent. main() must never
     # request full history.
     assert pull_rto_demand.TRAILING_DAYS <= 7
+
+
+def test_pull_demand_requests_the_bounded_window_and_correct_facets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The VCR tests above relax match_on to method+path, so a cassette replays
+    # regardless of what was actually requested -- a bug that dropped start=/end=
+    # (an unbounded pull) or narrowed facets to the wrong values would still pass every
+    # one of them. This proves the request wiring itself, with no cassette involved.
+    captured: dict[str, Any] = {}
+
+    def _fake_get_facet_series(self: object, **kwargs: Any) -> pd.DataFrame:
+        captured.update(kwargs)
+        return pd.DataFrame()
+
+    monkeypatch.setattr(
+        pull_rto_demand.EIAClient, "get_facet_series", _fake_get_facet_series
+    )
+
+    pull_rto_demand.pull_demand(pull_rto_demand.EIAClient(), days=3)
+
+    assert captured["facets"] == {
+        "respondent": pull_rto_demand.RTO_RESPONDENTS,
+        "type": pull_rto_demand.REGION_TYPES,
+    }
+    assert captured["frequency"] == pull_rto_demand.HOURLY
+    start, end = captured["start"], captured["end"]
+    assert start is not None and end is not None
+    span = datetime.strptime(end, "%Y-%m-%dT%H") - datetime.strptime(start, "%Y-%m-%dT%H")
+    # Not exact equality against a freshly-computed timedelta(days=3) -- wall-clock
+    # drift between window computation (inside pull_demand) and this assertion is real,
+    # if tiny. A generous tolerance still catches an unbounded or wrongly-sized window.
+    assert abs(span - timedelta(days=3)) < timedelta(hours=1)

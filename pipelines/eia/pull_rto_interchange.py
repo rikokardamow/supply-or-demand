@@ -15,7 +15,7 @@ import argparse
 from datetime import UTC, datetime, timedelta
 
 import pandas as pd
-from core.failures import failure_scope
+from core.failures import failure_scope, record_failure
 from core.storage import write_flows
 
 from pipelines.eia.client import EIAClient
@@ -56,6 +56,19 @@ def pull_interchange(client: EIAClient, days: int = TRAILING_DAYS) -> pd.DataFra
 def run(days: int) -> None:
     with failure_scope("eia.pull_rto_interchange"):
         df = pull_interchange(EIAClient(), days=days)
+        # A balancing authority that comes back with no rows at all -- the whole pull
+        # failing, or one of RTO_RESPONDENTS silently dropping out of the response --
+        # must not be reported as success. pull_interchange filters by `fromba` only, so
+        # every one of RTO_RESPONDENTS -- including US48 -- legitimately appears as a
+        # from_node on a healthy pull (unlike `toba`, where US48 is legitimately absent,
+        # per Task 0's discovery -- that asymmetry does not apply here). ERCOT and PJM
+        # are the entire justification for this pipeline, so a silently-dropped ERCOT or
+        # PJM is the worst-case outcome here specifically -- record it so failure_scope's
+        # raise_if_any() fires on the way out. get_facet_flows always builds the
+        # from_node column, even on an empty frame, so this is safe when df is wholly
+        # empty too.
+        for ba in sorted(set(RTO_RESPONDENTS) - set(df["from_node"])):
+            record_failure(ba, RuntimeError("no rows returned"))
         if df.empty:
             print("no RTO interchange rows pulled", flush=True)
             return
