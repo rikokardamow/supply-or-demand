@@ -16,9 +16,9 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.macro import deflate, index_to, to_currency
 from core.sentiment import (
     DEFAULT_CORRELATION_WINDOW,
@@ -68,7 +68,8 @@ def _dollar_vs_wti_section(days: int | None) -> None:
     dollar = _trim_recent(_series_by_ts("fred.dtwexbgs"), days)
     wti = _trim_recent(_series_by_ts("fred.dcoilwtico"), days)
     if dollar.empty or wti.empty:
-        st.info("No data yet — run `pipelines/macro/pull_macro.py`.")
+        st.caption("Run `pipelines/macro/pull_macro.py` to populate this.")
+        empty_state("fred", "weekly", None)
         return
 
     title = "Broad USD Index vs. WTI Crude"
@@ -79,7 +80,7 @@ def _dollar_vs_wti_section(days: int | None) -> None:
         left_label="Broad USD Index (Jan 2006=100)",
         right_label="WTI ($/bbl)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         kardamow_take(
             "A stronger dollar is a headwind for dollar-priced crude almost "
@@ -92,7 +93,8 @@ def _real_vs_nominal_section(days: int | None) -> None:
     wti = _series_by_ts("fred.dcoilwtico")
     cpi = _series_by_ts("fred.cpiaucsl")
     if wti.empty or cpi.empty:
-        st.info("No data yet — run `pipelines/macro/pull_macro.py`.")
+        st.caption("Run `pipelines/macro/pull_macro.py` to populate this.")
+        empty_state("fred", "weekly", None)
         return
 
     real_wti = deflate(wti, cpi, base_period=INDEX_BASE_PERIOD)
@@ -117,8 +119,8 @@ def _real_vs_nominal_section(days: int | None) -> None:
             line={"color": LIGHT_BLUE, "width": 2},
         )
     )
-    fig.update_layout(title=title, yaxis_title="Index (2018=100)")
-    with card(title):
+    fig.update_layout(yaxis_title="Index (2018=100)")
+    with section(title):
         st.plotly_chart(fig)
         kardamow_take(
             "The gap between these two lines is pure inflation — whatever's left "
@@ -129,7 +131,8 @@ def _real_vs_nominal_section(days: int | None) -> None:
 def _energy_small_multiples_section(days: int | None) -> None:
     fx_eur = _series_by_ts("fx.usd_eur")
     if fx_eur.empty:
-        st.info("No FX data yet — run `pipelines/macro/pull_macro.py`.")
+        st.caption("Run `pipelines/macro/pull_macro.py` to populate FX data.")
+        empty_state("frankfurter", "weekly", None)
         return
 
     cols = st.columns(len(ENERGY_SMALL_MULTIPLES))
@@ -137,7 +140,7 @@ def _energy_small_multiples_section(days: int | None) -> None:
         usd = _series_by_ts(series_id)
         if usd.empty:
             with cols[i]:
-                st.info(f"No data yet for {label}.")
+                empty_state("fred", "weekly", None)
             continue
 
         eur = to_currency(usd, fx_eur, target="EUR")
@@ -161,8 +164,8 @@ def _energy_small_multiples_section(days: int | None) -> None:
                 line={"color": LIGHT_BLUE, "width": 1.5},
             )
         )
-        fig.update_layout(title=f"{label} ({unit})", showlegend=True)
-        with cols[i], card(label):
+        fig.update_layout(showlegend=True)
+        with cols[i], section(f"{label} ({unit})"):
             st.plotly_chart(fig)
 
 
@@ -175,7 +178,8 @@ def _esi_heat_strip_section() -> None:
         frames.append(series.rename(geo))
 
     if not frames:
-        st.info("No ESI data yet — run `pipelines/macro/pull_macro.py`.")
+        st.caption("Run `pipelines/macro/pull_macro.py` to populate ESI data.")
+        empty_state("eurostat", "weekly", None)
         return
 
     wide = pd.concat(frames, axis=1).T
@@ -183,7 +187,7 @@ def _esi_heat_strip_section() -> None:
 
     title = "Economic Sentiment Indicator — Heat-Strip"
     fig = category_time_heatmap(wide, title=title, unit="ESI (100=long-run avg)")
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         kardamow_take(
             "Sentiment leads hard data by a quarter or two more often than not — a "
@@ -215,7 +219,8 @@ def _adanos_long_frame(metric: str) -> pd.DataFrame:
 def _adanos_buzz_by_platform_section() -> None:
     df = _adanos_long_frame("buzz_score")
     if df.empty:
-        st.info("No Adanos data yet — run `pipelines/adanos/pull_adanos.py`.")
+        st.caption("Run `pipelines/adanos/pull_adanos.py` to populate this.")
+        empty_state("adanos", "weekly", None)
         return
 
     fig = go.Figure()
@@ -233,15 +238,15 @@ def _adanos_buzz_by_platform_section() -> None:
                 line={"color": _PLATFORM_COLOURS.get(platform, GREY), "width": 2},
             )
         )
-    fig.update_layout(title="Ticker-basket mean buzz score by platform", yaxis_title="Buzz (0-100)")
-    with card("Buzz by platform"):
+    fig.update_layout(yaxis_title="Buzz (0-100)")
+    with section("Ticker-basket mean buzz score by platform"):
         st.plotly_chart(fig)
 
 
 def _adanos_sentiment_by_ticker_section() -> None:
     df = _adanos_long_frame("sentiment_score")
     if df.empty:
-        st.info("No Adanos sentiment data yet.")
+        empty_state("adanos", "weekly", None)
         return
 
     latest = df.sort_values("ts").groupby(["ticker", "platform"], as_index=False).last()
@@ -267,24 +272,25 @@ def _adanos_sentiment_by_ticker_section() -> None:
             )
         )
     fig.update_layout(
-        title=f"Latest sentiment, top {_TOP_N_TICKERS_FOR_SENTIMENT_BAR} tickers by attention",
         yaxis_title="Sentiment (-1 to +1)",
         barmode="group",
     )
-    with card("Latest sentiment by ticker"):
+    with section(
+        f"Latest sentiment, top {_TOP_N_TICKERS_FOR_SENTIMENT_BAR} tickers by attention"
+    ):
         st.plotly_chart(fig)
 
 
 def _adanos_sector_trend_section() -> None:
     series = _series_by_ts("adanos.reddit.sector_energy.buzz_score")
     if series.empty:
-        st.info("No Adanos sector-trend data yet.")
+        empty_state("adanos", "weekly", None)
         return
 
     fig = simple_time_series_chart(
         series, title="Reddit Energy-sector buzz trend", unit="Buzz (0-100)"
     )
-    with card("Sector buzz trend"):
+    with section("Reddit Energy-sector buzz trend"):
         st.plotly_chart(fig)
 
 
@@ -362,10 +368,9 @@ def _social_comparison_section(ticker: str, result: Overlap) -> None:
         xanchor="right",
     )
     fig.update_layout(
-        title=f"{ticker} sentiment — vendor vs self-hosted",
         yaxis_title="Sentiment (-1 to +1)",
     )
-    with card(f"{ticker}: Adanos vs self-hosted"):
+    with section(f"{ticker} sentiment — vendor vs self-hosted"):
         st.plotly_chart(fig)
         if result.overlap_days < 10:
             st.warning(
@@ -392,9 +397,7 @@ def _social_deviation_section(ticker: str, result: Overlap) -> None:
             marker={"color": [RED if d else NAVY for d in disagree]},
         )
     )
-    fig.update_layout(
-        title=f"{ticker} deviation (self-hosted - Adanos)", yaxis_title="Difference"
-    )
+    fig.update_layout(yaxis_title="Difference")
 
     window = DEFAULT_CORRELATION_WINDOW
     latest_corr = rolling_correlation(result.frame, window=window).dropna()
@@ -409,7 +412,7 @@ def _social_deviation_section(ticker: str, result: Overlap) -> None:
             f"{latest_corr.iloc[-1]:.2f}."
         )
 
-    with card(f"{ticker} deviation"):
+    with section(f"{ticker} deviation (self-hosted - Adanos)"):
         st.plotly_chart(fig)
         st.caption(
             f"Computed over {result.overlap_days} overlapping days "
@@ -467,10 +470,9 @@ def _social_topic_attention_section() -> None:
         )
     )
     fig.update_layout(
-        title="Topic attention — posts seen in each topic's most recent pull",
         yaxis_title="Posts",
     )
-    with card("Topic attention"):
+    with section("Topic attention — posts seen in each topic's most recent pull"):
         st.plotly_chart(fig)
         min_date, max_date = bar_dates.min(), bar_dates.max()
         if min_date == max_date:
@@ -506,7 +508,7 @@ def _social_polymarket_attention_section() -> None:
     fig = simple_time_series_chart(
         series, title="Polymarket 'energy' tag — post count", unit="Posts"
     )
-    with card("Polymarket attention (tag-level)"):
+    with section("Polymarket 'energy' tag — post count"):
         st.plotly_chart(fig)
         st.caption(
             "Polymarket has no keyword search, so this is attention on the whole "
@@ -532,7 +534,7 @@ def _social_sentiment_section() -> None:
     )
 
 
-st.title("Macro & FX")
+page_header("Macro & FX")
 
 range_label = st.segmented_control(
     "Time range", options=list(RANGE_DAYS), default="5Y", required=True, key="macro_range"
