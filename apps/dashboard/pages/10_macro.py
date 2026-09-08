@@ -76,7 +76,6 @@ def _dollar_vs_wti_section(days: int | None) -> None:
     fig = dual_axis_chart(
         dollar,
         wti,
-        title=title,
         left_label="Broad USD Index (Jan 2006=100)",
         right_label="WTI ($/bbl)",
     )
@@ -185,7 +184,7 @@ def _esi_heat_strip_section() -> None:
     wide.columns = [pd.Timestamp(c).strftime("%Y-%m") for c in wide.columns]
 
     title = "Economic Sentiment Indicator — Heat-Strip"
-    fig = category_time_heatmap(wide, title=title, unit="ESI (100=long-run avg)")
+    fig = category_time_heatmap(wide, unit="ESI (100=long-run avg)")
     with section(title):
         st.plotly_chart(fig)
         kardamow_take(
@@ -286,9 +285,7 @@ def _adanos_sector_trend_section() -> None:
         empty_state("adanos", "weekly", None)
         return
 
-    fig = simple_time_series_chart(
-        series, title="Reddit Energy-sector buzz trend", unit="Buzz (0-100)"
-    )
+    fig = simple_time_series_chart(series, unit="Buzz (0-100)")
     with section("Reddit Energy-sector buzz trend"):
         st.plotly_chart(fig)
 
@@ -504,9 +501,7 @@ def _social_polymarket_attention_section() -> None:
         )
         return
 
-    fig = simple_time_series_chart(
-        series, title="Polymarket 'energy' tag — post count", unit="Posts"
-    )
+    fig = simple_time_series_chart(series, unit="Posts")
     with section("Polymarket 'energy' tag — post count"):
         st.plotly_chart(fig)
         st.caption(

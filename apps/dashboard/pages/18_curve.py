@@ -96,9 +96,7 @@ with tab_curve, section(f"{root.upper()} Curve Strip"):
             for k in ("s12", "s13", "s16", "s1_12")
             if pd.notna(spreads_today[k])
         }
-        fig = curve_strip_chart(
-            curves, spread_bars, title=f"{root.upper()} Curve Strip", unit="USD"
-        )
+        fig = curve_strip_chart(curves, spread_bars, unit="USD")
         st.plotly_chart(fig)
         st.caption(f"Source: fut.{root}.*.settle (pipelines/futures), unadjusted ranks.")
 
@@ -173,8 +171,7 @@ with tab_convexity:
             state_labels = {code: name for name, code in REGIME_CODES.items()}
 
             fig = regime_ribbon_chart(
-                unadj["f01"], state_codes, state_labels,
-                title=f"{root.upper()} Price & Regime", unit="USD",
+                unadj["f01"], state_codes, state_labels, unit="USD",
             )
             st.plotly_chart(fig)
             st.caption(f"Source: derived.curve.{root}.regime (states: {', '.join(REGIME_CODES)}).")
@@ -197,7 +194,7 @@ with tab_storage:
                 .set_index("ts")["value"].sort_index()
             )
             fig = dual_axis_chart(
-                util, decile, title="Cushing Utilisation vs Decile Rank",
+                util, decile,
                 left_label="Utilisation", right_label="Decile (1-10)",
             )
             st.plotly_chart(fig)
@@ -234,7 +231,7 @@ with tab_storage:
             fig = scatter_piecewise_fit_chart(
                 merged["util"], merged["s12"], merged.index.to_series().dt.year,
                 bins=[(0.0, 0.35), (0.35, 0.75), (0.75, 1.01)],
-                title="Cushing Utilisation vs WTI s12", x_label="Utilisation", y_label="s12 (USD)",
+                x_label="Utilisation", y_label="s12 (USD)",
                 annotations=fit_annotations or None,
             )
             st.plotly_chart(fig)
@@ -257,9 +254,7 @@ with tab_roll_cal:
             unadj = nearby_panel(contract_panel, expiries)[1]
             delta_s12 = time_spreads(unadj)["s12"].diff().dropna()
             grid = roll_window_offset_grid(delta_s12, "gsci")
-            fig = bday_heatmap(
-                grid, title=f"{root.upper()} Δs12 around GSCI roll windows", unit="USD"
-            )
+            fig = bday_heatmap(grid, unit="USD")
             st.plotly_chart(fig)
             st.caption(
                 f"Source: derived.spread.{root}.s12 (day-over-day Δ), aligned to GSCI's own "

@@ -112,6 +112,7 @@ with section("News map"):
         selection_mode="points",
         key=f"news_map_select_{map_key_version}",
     )
+    st.caption("Click a country on the map to filter the feed below.")
     clicked_points = map_event.selection.points if map_event is not None else []
     if clicked_points:
         # customdata is a per-point [geo] list (see news_map.py) -- Plotly's own
@@ -147,7 +148,7 @@ with section("Events per week"):
         st.info("No events match the current filters.")
     else:
         weekly_counts = filtered.set_index("ts")["event_id"].resample("W").count()
-        fig = count_bar_chart(weekly_counts, title="Events per week", unit="count")
+        fig = count_bar_chart(weekly_counts, unit="count")
         st.plotly_chart(fig)
 
 with section(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} shown)"):

@@ -66,17 +66,6 @@ def test_section_renders_its_title_once() -> None:
     assert "Cushing Crude Stocks" in _text(at)
 
 
-def test_card_is_an_alias_so_unmigrated_pages_keep_working() -> None:
-    """card() delegates to section() during the migration, so the two cannot diverge."""
-    at = _run(
-        "from components.card import card\n"
-        "with card('Legacy Title'):\n"
-        "    pass\n"
-    )
-    assert not at.exception
-    assert "Legacy Title" in _text(at)
-
-
 def test_empty_state_names_the_source_and_its_cadence() -> None:
     at = _run(
         "from components.section import empty_state\n"

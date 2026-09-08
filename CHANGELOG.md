@@ -15,6 +15,30 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **UI restyle complete — masthead, section kit and Kardamow house type replace the
+  bordered `card()` layout across all 16 pages (`2026-09-06-ui-design-system`).** Every
+  page now opens with `page_header()` (a Lora `<h2>`, demoting the old bare `st.title()`)
+  and wraps each chart or table in `section()` (`<h3>` + hairline rule) instead of
+  `apps.dashboard.components.card.card()` — deleted here, along with its alias test.
+  `core/theme.py`'s chart builders lost the `title` parameter on 29 of the ~30 that took
+  one: painting a chart's own title had already been made visually inert once the section
+  header took over, but the dead parameter and its call-site argument were still threaded
+  through every signature. `gauge_chart` kept it — its `title` labels the `go.Indicator`
+  itself, real in-plot content, not a second `fig.update_layout` chart title.
+  - **The doubled-title defect closes its last five sites: the shared map components.**
+    `padd_map.py`, `news_map.py`, `power_maps.py` (two functions) and `entsog_map.py` each
+    painted a second, dynamic title inside the plot area under a static `section()`
+    heading that already said the same thing. None could be fixed mechanically — the
+    dynamic part (a selected month, a snapshot timestamp, an averaging window) has no path
+    back to the caller's static heading — so each got its own fix: the PADD month is
+    already visible in its own slider, the news map's text was never a timestamp at all
+    (an instructional caption, not provenance) and moved to `st.caption()`, and the three
+    genuine freshness notes (day-ahead price snapshot, 24h cross-border flow average,
+    7-day gas corridor average) moved to `source_note()` under the chart.
+  - A live visual pass across all 16 pages, against a fresh dev server, caught a sixth
+    stray title outside the map components: `01_us_padd.py`'s net inter-PADD balance bar
+    chart was calling `fig.update_layout(title=...)` directly with the same text as its
+    own `section()` heading. Removed.
 - **Spec 21 complete — systematic strategies engine (Sessions A–C).** `core/systematic.py`
   (15 signal/sizing functions), `core/backtest.py` (backtester, `spread_to_return`,
   fractionation, inventory-predictability test), `core/strategies.py` (eight-entry

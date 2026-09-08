@@ -115,5 +115,4 @@ def render_padd_flow_map() -> None:
             )
         )
 
-    fig.update_layout(title=f"Inter-PADD Crude Movements — {selected_label}")
     st.plotly_chart(fig)

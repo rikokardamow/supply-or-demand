@@ -85,9 +85,7 @@ with tab_inventory:
             reference_doy = current["ts"].map(lambda d: d.replace(year=REFERENCE_YEAR)).dt.dayofyear
             current_year_series = current.set_index(reference_doy)["value"]
 
-            fig = seasonal_range_chart(
-                stats, current_year_series, title="US Crude Stocks (ex-SPR)", unit=" mb"
-            )
+            fig = seasonal_range_chart(stats, current_year_series, unit=" mb")
             st.plotly_chart(fig)
 
             deviation = inventory_deviation(stocks_df[["ts", "value"]])
@@ -144,7 +142,6 @@ with tab_quality:
             fig = sign_agreement_scatter(
                 delta_stocks_q,
                 delta_brent_q,
-                title="US Crude Stock Changes vs Brent Price Changes (Quarterly)",
                 x_label="Δ US crude stocks (quarterly)",
                 y_label="Δ Brent (quarterly, USD)",
             )
@@ -164,7 +161,7 @@ with tab_quality:
             empty_state("eia", "weekly", None)
         else:
             series = util_df.set_index("ts")["value"].sort_index()
-            fig = simple_time_series_chart(series, title="US Refinery Utilisation", unit="%")
+            fig = simple_time_series_chart(series, unit="%")
             st.plotly_chart(fig)
             st.caption(f"Source: {US_REFINERY_UTILISATION_SERIES_ID} (Spec 01).")
 
@@ -204,7 +201,6 @@ with tab_shale_cot:
             series = cot_df.set_index("ts")["value"].sort_index()
             fig = simple_time_series_chart(
                 series,
-                title=f"{root.upper()} Managed-Money Net Length (% OI, 3y percentile rank)",
                 unit="percentile",
             )
             fig.add_hline(y=0.95, line_dash="dash", line_color=RED)

@@ -72,7 +72,6 @@ def _year_columns(stats_df: pd.DataFrame) -> list[str]:
 def seasonal_range_chart(
     stats_df: pd.DataFrame,
     current_year_series: pd.Series,
-    title: str,
     unit: str,
     extra_annotation_line: str | None = None,
 ) -> go.Figure:
@@ -163,7 +162,6 @@ def seasonal_range_chart(
 def dual_axis_chart(
     left_series: pd.Series,
     right_series: pd.Series,
-    title: str,
     left_label: str,
     right_label: str,
 ) -> go.Figure:
@@ -192,7 +190,7 @@ def dual_axis_chart(
     return fig
 
 
-def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def simple_time_series_chart(series: pd.Series, unit: str) -> go.Figure:
     fig = go.Figure(
         go.Scatter(x=series.index, y=series.values, line={"color": NAVY, "width": 2})
     )
@@ -200,7 +198,7 @@ def simple_time_series_chart(series: pd.Series, title: str, unit: str) -> go.Fig
     return fig
 
 
-def count_bar_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def count_bar_chart(series: pd.Series, unit: str) -> go.Figure:
     """A plain navy bar per period -- e.g. page 09's events-per-week volume chart,
     where the shape of interest is a simple count/volume over time, not a trend line."""
     fig = go.Figure(go.Bar(x=series.index, y=series.values, marker={"color": NAVY}))
@@ -208,7 +206,7 @@ def count_bar_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
     return fig
 
 
-def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def multi_year_overlay_chart(stats_df: pd.DataFrame, unit: str) -> go.Figure:
     """One line per year (most recent 4 only), reusing the per-year columns
     core.seasonal.seasonal_stats() already computes — seasonal_range_chart only uses
     them for lo/hi/median, this shows each year's track directly instead."""
@@ -234,7 +232,7 @@ def multi_year_overlay_chart(stats_df: pd.DataFrame, title: str, unit: str) -> g
 GREY_LINE = "rgba(120,120,120,0.8)"
 
 
-def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def current_vs_prior_year_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """Navy current-year line vs grey prior-year line, for series with too short a
     history for seasonal_range_chart's 5-year median/band (e.g. ENTSOG corridors, ~2
     years of data). `df` has columns ts, value. Since a short pull is a rolling window
@@ -273,7 +271,7 @@ def current_vs_prior_year_chart(df: pd.DataFrame, title: str, unit: str) -> go.F
 
 
 def sankey_chart(
-    node_labels: list[str], sources: list[int], targets: list[int], values: list[float], title: str
+    node_labels: list[str], sources: list[int], targets: list[int], values: list[float]
 ) -> go.Figure:
     fig = go.Figure(
         go.Sankey(
@@ -290,7 +288,6 @@ GREY_LINE_THIN = "rgba(150,150,150,0.9)"
 def seasonal_minmaxmean_chart(
     stats_df: pd.DataFrame,
     current_year_series: pd.Series,
-    title: str,
     unit: str,
 ) -> go.Figure:
     """Same lo/hi/median inputs as seasonal_range_chart, drawn as explicit Min/Median/Max
@@ -340,7 +337,7 @@ def seasonal_minmaxmean_chart(
 
 
 def fullness_comparison_bars(
-    rows: list[tuple[str, float, float]], unit_abs: str, date_label: str, title: str
+    rows: list[tuple[str, float, float]], unit_abs: str, date_label: str
 ) -> go.Figure:
     """Horizontal bar comparison — e.g. Current / M-1 / Y-1 — each row (label, pct,
     absolute_value), labelled "XX.X% (YYY unit)" per bar. `rows` is drawn top-to-bottom in
@@ -426,7 +423,7 @@ PSR_COLOURS: dict[str, str] = {
 PSR_DEFAULT_COLOUR = "#bdc3c7"
 
 
-def generation_mix_chart(df_wide: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def generation_mix_chart(df_wide: pd.DataFrame, unit: str) -> go.Figure:
     """Stacked area chart, one trace per PSR-type column in `df_wide` (index=ts).
     Column order controls stacking order — pass renewables-then-thermal for a chart
     that reads bottom-up the way the spec intends."""
@@ -476,7 +473,7 @@ def gauge_chart(
     return fig
 
 
-def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def hour_day_heatmap(df: pd.DataFrame, unit: str) -> go.Figure:
     """Hour-of-day (x) x calendar day (y) heatmap -- `df` indexed by an hourly
     DatetimeIndex, single value column. Same navy-to-red diverging colourscale as
     `components/power_maps.py`'s price map, for the same reason (a price/cost
@@ -502,7 +499,7 @@ def hour_day_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
 
 
 def category_time_heatmap(
-    wide_df: pd.DataFrame, title: str, unit: str, center: float = 100.0
+    wide_df: pd.DataFrame, unit: str, center: float = 100.0
 ) -> go.Figure:
     """Diverging heatmap: one row per category (e.g. country), one column per time
     period -- `wide_df` indexed by category with time-period columns (e.g. an ESI
@@ -524,7 +521,7 @@ def category_time_heatmap(
     return fig
 
 
-def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def production_vs_quota_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """Grouped bars, navy actual vs grey quota, one group per row -- `df` needs
     columns "country", "actual_kbd", "quota_kbd", "compliance_pct" (exact shape
     of pipelines/opec_momr/transforms.py::production_vs_quota's output). Each
@@ -548,7 +545,7 @@ def production_vs_quota_chart(df: pd.DataFrame, title: str, unit: str) -> go.Fig
     return fig
 
 
-def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def revision_waterfall_chart(df: pd.DataFrame, unit: str) -> go.Figure:
     """`df` needs columns "label", "value" (exact shape of
     pipelines/opec_momr/transforms.py::revision_waterfall's output) -- red for a
     downward revision, navy for an upward one, per the spec's own "red down,
@@ -567,7 +564,7 @@ def revision_waterfall_chart(df: pd.DataFrame, title: str, unit: str) -> go.Figu
     return fig
 
 
-def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figure:
+def time_series_area_chart(series: pd.Series, unit: str) -> go.Figure:
     """Single navy filled-area time series -- "Exhibit-1 style" per the OPEC
     supply spec's oil-on-water note (a plain filled line, not a seasonal band)."""
     fig = go.Figure(
@@ -588,7 +585,7 @@ def time_series_area_chart(series: pd.Series, title: str, unit: str) -> go.Figur
 # convention as every primitive above.
 
 
-def grouped_agency_bars(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def grouped_agency_bars(df: pd.DataFrame, unit: str) -> go.Figure:
     """One grouped bar trace per column of `df` (index=period, columns=agency names,
     e.g. iea/eia/opec) -- generalises production_vs_quota_chart's own 2-way grouped-bar
     pattern to N agencies. A column literally named "call_on_opec", if present, is
@@ -648,7 +645,6 @@ def dual_axis_inverted_chart(
     price: pd.Series,
     vol: pd.Series,
     regime: pd.Series,
-    title: str,
     spare_label: str,
     price_label: str,
 ) -> go.Figure:
@@ -698,7 +694,7 @@ def dual_axis_inverted_chart(
 
 
 def sign_agreement_scatter(
-    x: pd.Series, y: pd.Series, title: str, x_label: str, y_label: str
+    x: pd.Series, y: pd.Series, x_label: str, y_label: str
 ) -> go.Figure:
     """Scatter coloured by sign(x) == sign(y) -- RED ("violates the classical model",
     core.fundamentals.carollo_scatter's own "wrong sign" concept) vs NAVY ("agrees",
@@ -740,7 +736,7 @@ _CURVE_STRIP_COLOURS = [NAVY, LIGHT_BLUE, ORANGE, RED]
 
 
 def curve_strip_chart(
-    curves: dict[str, pd.Series], spread_bars: dict[str, float], title: str, unit: str
+    curves: dict[str, pd.Series], spread_bars: dict[str, float], unit: str
 ) -> go.Figure:
     """Row 1: one line per as-of label in `curves` (e.g. "Today"/"-5bd"/"-20bd"/"-252bd"),
     each a Series indexed by rank column (f01, f02, ...). Row 2: a navy bar per named
@@ -776,7 +772,6 @@ def regime_ribbon_chart(
     price: pd.Series,
     state_codes: pd.Series,
     state_labels: dict[int, str],
-    title: str,
     unit: str,
 ) -> go.Figure:
     """Row 1: navy price line. Row 2: a single-row heatmap, one column per date, coloured
@@ -819,7 +814,6 @@ def scatter_piecewise_fit_chart(
     y: pd.Series,
     year: pd.Series,
     bins: list[tuple[float, float]],
-    title: str,
     x_label: str,
     y_label: str,
     annotations: list[tuple[float, float, str]] | None = None,
@@ -871,7 +865,7 @@ def scatter_piecewise_fit_chart(
     return fig
 
 
-def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
+def bday_heatmap(df: pd.DataFrame, unit: str) -> go.Figure:
     """Year (rows) x business-day offset from a roll window's own start (columns) --
     `df` indexed by year (int), one column per offset, values = mean Δs12 that offset,
     that year. Same navy-to-red diverging colourscale as hour_day_heatmap/
@@ -895,7 +889,6 @@ def bday_heatmap(df: pd.DataFrame, title: str, unit: str) -> go.Figure:
 def cointegration_residual_chart(
     ect: pd.Series,
     z: pd.Series,
-    title: str,
     unit: str,
     z_entry: float = 1.5,
     z_exit: float = 0.5,
@@ -939,7 +932,7 @@ def cointegration_residual_chart(
     return fig
 
 
-def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go.Figure:
+def irf_chart(irf: pd.DataFrame, response_col: str, unit: str) -> go.Figure:
     """Impulse response over the forecast horizon. `irf` needs a `horizon` column plus
     `response_col`. A zero line is drawn because the sign of the response is the whole
     point of the chart."""
@@ -960,7 +953,7 @@ def irf_chart(irf: pd.DataFrame, response_col: str, title: str, unit: str) -> go
 
 
 def model_monitor_chart(
-    rmse_ratio: pd.Series, trigger: float, title: str, break_date: pd.Timestamp | None = None
+    rmse_ratio: pd.Series, trigger: float, break_date: pd.Timestamp | None = None
 ) -> go.Figure:
     """Rolling out-of-sample RMSE ratio against the benchmark, with the refit trigger and
     the parity line.
@@ -1022,7 +1015,7 @@ def model_monitor_chart(
 # --- Spec 21 systematic-engine primitives ------------------------------------------
 
 
-def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
+def signal_board_table(board: pd.DataFrame) -> go.Figure:
     """One row per strategy: z, position and guardrail state, coloured by position sign.
 
     A board you cannot read at a glance is not doing its job, so the position cell is
@@ -1030,7 +1023,7 @@ def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
     a minus sign.
     """
     if board.empty:
-        return go.Figure(layout={"title": title})
+        return go.Figure()
 
     positions = board["position"].fillna(0.0)
     position_fill = [NAVY if v > 0 else RED if v < 0 else GREY for v in positions]
@@ -1068,7 +1061,6 @@ def signal_board_table(board: pd.DataFrame, title: str) -> go.Figure:
 def equity_drawdown_chart(
     equity: pd.Series,
     drawdown: pd.Series,
-    title: str,
     unit: str,
     benchmark: pd.Series | None = None,
 ) -> go.Figure:
@@ -1116,7 +1108,7 @@ def equity_drawdown_chart(
     return fig
 
 
-def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
+def reaction_curve_chart(current_z: float) -> go.Figure:
     """Bouchouev's reaction function with today's z marked on it.
 
     Drawn from the same formula the sizing uses, so the chart cannot drift away from the
@@ -1148,7 +1140,7 @@ def reaction_curve_chart(current_z: float, title: str) -> go.Figure:
 
 
 def fractionation_heatmap(
-    table: pd.DataFrame, title: str, value: str = "sharpe"
+    table: pd.DataFrame, value: str = "sharpe"
 ) -> go.Figure:
     """Where the P&L came from: conditions down, bins across.
 
@@ -1156,7 +1148,7 @@ def fractionation_heatmap(
     the question is which buckets made money and which lost it, not which were largest.
     """
     if table.empty:
-        return go.Figure(layout={"title": title})
+        return go.Figure()
 
     wide = table.pivot_table(index="condition", columns="bin", values=value)
     limit = float(np.nanmax(np.abs(wide.to_numpy()))) or 1.0
@@ -1177,7 +1169,7 @@ def fractionation_heatmap(
 
 
 def crowding_quadrant_scatter(
-    cot_pct: pd.Series, signal_z: pd.Series, title: str
+    cot_pct: pd.Series, signal_z: pd.Series
 ) -> go.Figure:
     """Positioning against signal, with the two inflection corners shaded.
 
