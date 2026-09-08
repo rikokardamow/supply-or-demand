@@ -231,16 +231,15 @@ def _small_multiples_section() -> None:
     cols = st.columns(3)
     for i, country in enumerate(selected):
         fig = _worm_chart(f"agsi.{country}.full_pct", f"{country} Fill %")
-        with cols[i % 3]:
+        with cols[i % 3], section(f"{country} Fill %"):
             if fig is None:
                 empty_state("gie", "daily", None)
                 continue
             fig.update_layout(height=320, showlegend=False)
-            with section(f"{country} Fill %"):
-                st.plotly_chart(fig)
-                take = _COUNTRY_TAKES.get(country)
-                if take is not None:
-                    kardamow_take(take)
+            st.plotly_chart(fig)
+            take = _COUNTRY_TAKES.get(country)
+            if take is not None:
+                kardamow_take(take)
 
 
 def _net_injection_vs_sendout_section() -> None:

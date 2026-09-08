@@ -138,34 +138,33 @@ def _energy_small_multiples_section(days: int | None) -> None:
     cols = st.columns(len(ENERGY_SMALL_MULTIPLES))
     for i, (series_id, label, unit) in enumerate(ENERGY_SMALL_MULTIPLES):
         usd = _series_by_ts(series_id)
-        if usd.empty:
-            with cols[i]:
-                empty_state("fred", "weekly", None)
-            continue
-
-        eur = to_currency(usd, fx_eur, target="EUR")
-        usd_trimmed = _trim_recent(usd, days)
-        eur_trimmed = _trim_recent(eur, days)
-
-        fig = go.Figure()
-        fig.add_trace(
-            go.Scatter(
-                x=usd_trimmed.index,
-                y=usd_trimmed.values,
-                name="USD",
-                line={"color": NAVY, "width": 1.5},
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=eur_trimmed.index,
-                y=eur_trimmed.values,
-                name="EUR",
-                line={"color": LIGHT_BLUE, "width": 1.5},
-            )
-        )
-        fig.update_layout(showlegend=True)
         with cols[i], section(f"{label} ({unit})"):
+            if usd.empty:
+                empty_state("fred", "weekly", None)
+                continue
+
+            eur = to_currency(usd, fx_eur, target="EUR")
+            usd_trimmed = _trim_recent(usd, days)
+            eur_trimmed = _trim_recent(eur, days)
+
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=usd_trimmed.index,
+                    y=usd_trimmed.values,
+                    name="USD",
+                    line={"color": NAVY, "width": 1.5},
+                )
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=eur_trimmed.index,
+                    y=eur_trimmed.values,
+                    name="EUR",
+                    line={"color": LIGHT_BLUE, "width": 1.5},
+                )
+            )
+            fig.update_layout(showlegend=True)
             st.plotly_chart(fig)
 
 
