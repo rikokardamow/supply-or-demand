@@ -45,6 +45,9 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         # dict preserves insertion order in Python 3.7+, and run_cadence iterates this
         # list in order, so this ordering is load-bearing, not incidental.
         ("derived_curve", "pipelines.derived.curve"),
+        ("eia_rto_demand", "pipelines.eia.pull_rto_demand"),
+        ("eia_rto_fuel_mix", "pipelines.eia.pull_rto_fuel_mix"),
+        ("eia_rto_interchange", "pipelines.eia.pull_rto_interchange"),
     ],
     "wpsr": [
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),
