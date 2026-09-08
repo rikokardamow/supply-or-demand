@@ -34,14 +34,19 @@ LOWER_48 = "US48"
 # constant edit; record the change in CLAUDE.md so coverage stays legible.
 RTO_RESPONDENTS: list[str] = [ERCOT, PJM, MISO, SPP, CAISO, NYISO, ISNE, LOWER_48]
 
-# region-data `type` codes -- REPLACE WITH TASK 0's DUMP.
+# region-data `type` codes -- confirmed live by Task 0 (2026-09-07), all 4 declared codes.
 DEMAND = "D"
 DEMAND_FORECAST = "DF"
 NET_GENERATION = "NG"
 TOTAL_INTERCHANGE = "TI"
 REGION_TYPES: list[str] = [DEMAND, DEMAND_FORECAST, NET_GENERATION, TOTAL_INTERCHANGE]
 
-# fuel-type-data `fueltype` codes -- REPLACE WITH TASK 0's DUMP.
+# fuel-type-data `fueltype` codes -- 7 of the real 16 unique ids Task 0 confirmed live
+# (2026-09-07); the other 9 (PS, UES, OIL, UNK, BAT, SNB, OES, GEO, WNB) are deliberately
+# not named here -- NATURAL_GAS is the only one this plan's pulls actually need. Fuel-mix
+# rows summed across FUEL_TYPES therefore will NOT equal RTO.REGION.<ba>.NG.H net
+# generation; widen this list (with a live facet check per code, not a guess) if that
+# ever needs to change. See pipelines/eia/CLAUDE.md.
 NATURAL_GAS = "NG"
 COAL = "COL"
 NUCLEAR = "NUC"
