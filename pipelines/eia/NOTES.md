@@ -875,3 +875,48 @@ violation in `tests/test_eia_client_facets.py` (left over from Task 1's own comm
 concurrent session's file) — fixed and committed separately (`6f60ca0`); re-run clean.
 `mypy core pipelines infra` — no issues found in 163 source files. No concurrent-session
 test failures encountered in any file this plan didn't touch.
+
+## Final whole-branch review notes — recorded, not code changes
+
+The final review (opus) approved the branch with fixes (both Important findings — a
+silent-empty-pull gap and untested request wiring — were fixed and re-verified before
+merge). It also raised five Minor observations, judged individually and collectively
+non-blocking, recorded here rather than silently dropped:
+
+- **`freq="hourly"` overlaps `pipelines/gridstatus_iso/`'s `freq="H"` for the same kind of
+  data.** `gridstatus_iso/pull_iso.py` writes `freq="H"` for hourly CAISO/NYISO load and
+  fuel mix; this plan's pulls write `freq="hourly"` for hourly CISO/NYIS demand and fuel
+  mix. `core/NOTES.md` documents the English-words-vs-pandas-aliases split as a known,
+  deliberately-unfixed lake-wide inconsistency confined to `pipelines/eia` — following the
+  package convention here was the right local call, but the two conventions now cover
+  overlapping subject matter for the first time, so a query filtering on `freq='H'` alone
+  will miss this plan's rows for the same two markets.
+- **CAISO and NYISO are ingested twice, from two sources, under different units, with
+  nothing noting it.** `gridstatus.CAISO.load` (`source="gridstatus"`, unit `MW`, geo
+  `CAISO`) and `RTO.REGION.CISO.D.H` (`source="eia"`, unit `megawatthours`, geo `CISO`) are
+  the same real quantity under different labels. Not a collision (different series ids,
+  different sources) and the duplication is defensible — EIA gives a consistent
+  cross-market denominator gridstatus alone can't — but an analyst pulling both without
+  checking `source=` could double-count or mix units.
+- **`US48` (the Lower-48 aggregate) overlaps the other 7 `RTO_RESPONDENTS`.** Summing
+  `RTO.FUEL.*.NG.H` or `RTO.REGION.*.NG.H` across every `geo` in `RTO_RESPONDENTS`
+  double-counts `US48`'s own national total on top of its member BAs. `US48` is a national
+  benchmark/denominator, not one more BA to sum alongside the other 7.
+- **`FUEL_TYPES` is 7 of the real 16 `fueltype` codes** (see the comment in
+  `pipelines/eia/rto.py`) — fuel-mix rows will not sum to `RTO.REGION.<ba>.NG.H` net
+  generation, since petroleum/oil and several storage/other categories are not ingested.
+  Relevant for any future "gas's share of the stack" analysis: the denominator (total net
+  generation) and the numerator (gas-fired generation) come from different routes and are
+  not currently cross-checked against each other.
+- **`TRAILING_DAYS = 3` has no outage-recovery guidance recorded anywhere outside the
+  plan.** These routes have no daily/monthly rollup, so a scheduler outage longer than
+  ~2 days leaves a permanent gap in an hourly series unless someone re-runs the pull with a
+  wider window. Recovery mechanism: `.venv/Scripts/python.exe -m pipelines.eia.pull_rto_demand
+  --days N` (same `--days` flag on `pull_rto_fuel_mix`/`pull_rto_interchange`) with `N`
+  covering the outage — run this manually after any outage longer than 2 days for any of
+  the three RTO pulls.
+
+The Step 4 double-count check above reports 45 corridors for the full 90-day backfill but
+44 corridors for each 3-day re-pull — this is not a discrepancy in the guard itself (the
+check is row-count based, held flat at 100,092 both times), just one low-traffic corridor
+that reported no interchange activity in that specific 3-day window.
