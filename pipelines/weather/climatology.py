@@ -47,8 +47,14 @@ def build_climatology(
     if not _is_stale(cache_path, max_age_days):
         return pd.read_parquet(cache_path)
 
-    long_df = read_ts_long(series_ids=None)
-    long_df = long_df[long_df["source"] == "open_meteo"]
+    # source="open_meteo" narrows the parquet glob to that partition's own directory
+    # (core/storage.py::_dataset_glob) before a single row is read, rather than
+    # materialising the whole lake and filtering source in pandas afterward -- the
+    # 17x-over-read fix (101,280 open_meteo rows out of 1,764,030 lake-wide). The
+    # hdd./cdd. prefix filter stays in pandas: it selects *two* prefixes, and
+    # read_ts_long's series_prefix only takes one, so two round trips to save an
+    # in-memory filter over an already-narrowed ~100k-row frame would be a poor trade.
+    long_df = read_ts_long(series_ids=None, source="open_meteo")
     long_df = long_df[long_df["series_id"].str.startswith(("hdd.", "cdd."))]
 
     frames = []

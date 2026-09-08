@@ -187,3 +187,270 @@ counts identical both times (353 production / 353 LNG exports / 6,952 storage ro
 Page section: a production-vs-LNG-exports dual-axis chart (`core.theme.dual_axis_chart`,
 navy production / light-blue exports — the same primitive already used elsewhere, no new
 chart type needed), with the feedgas caveat as an `st.caption`.
+
+## Spec 30 price routes — confirmed live 2026-09-06
+
+Task 0 (discovery only, no pull code). All six of the spec's own candidate routes were
+walked via `list_series()`/`facet/series` for real; two genuine surprises turned up that
+change what Tasks 1 and 2 should build, recorded below rather than silently worked around.
+
+| Route | Series discovered | Codes used | Frequency | Notes |
+|---|---|---|---|---|
+| `petroleum/pri/rac2` | 18 | `R0000____3`, `R1200____3`, `R1300____3` (US composite/domestic/imported); `R0010____3`, `R0020____3`, `R0030____3`, `R0040____3`, `R0050____3` (PADD1-5 composite) | `monthly` | 631 rows confirmed on `R0000____3`; no nulls. `weekly`/`daily` both raise `400 Bad Request` (loud failure, not silent-empty) — annual also works (58 rows). |
+| `petroleum/pri/gnd` | 311 | Gasoline (All Grades, All Formulations): `EMM_EPM0_PTE_NUS_DPG`, `_R10_`, `_R20_`, `_R30_`, `_R40_`, `_R50_DPG` (US + PADD1-5); Diesel (No 2, unrestricted sulfur grade): `EMD_EPD2D_PTE_NUS_DPG`, `_R10_`, `_R20_`, `_R30_`, `_R40_`, `_R50_DPG` (US + PADD1-5) — 12 codes total | `weekly` | 1,744 rows confirmed on `EMM_EPM0_PTE_NUS_DPG`; no nulls. `daily` raises `400 Bad Request`; `monthly`/`annual` also declared and work. |
+| `natural-gas/pri/sum` | 423 | `N3050US3` (US citygate), `N3010US3` (US residential), `N3020US3` (US commercial), `N3035US3` (US industrial) | `monthly` | See null-value finding below. `weekly` raises `400 Bad Request`. |
+| `natural-gas/pri/rescom` | 20 | none used — see finding below | `monthly` | Confirmed live; declared frequencies `M`/`A` only. |
+| `petroleum/pri/land3` | 7 | `I000000208`, `I000000258`, `I000000308`, `I000000358`, `I000000408`, `I000000458`, `I000000998` (all 7 gravity bands) | `monthly` | Not one of the spec's six candidate routes — found by walking `GET /v2/petroleum/pri` for real, same "walk the category tree" discipline as Session C's `natural-gas/sum/lsum` find. Answers the gravity-band question below. 522 rows confirmed on `I000000208` (1983-01 to 2026-06), no nulls. `area-name` is the literal string `"NA"` for every row (same quirk as `natural-gas/stor/wkly`) — a future pull needs a `geo_map`, not `_normalise_geo`. |
+| `electricity/electric-power-operational-data` | not series-based — see finding below | `fueltypeid=NG` + `sectorid=98` + `location=<code>`, `data=cost-per-btu` and `data=consumption-for-eg`; locations confirmed with a real (non-null) latest value: `US`, `TX`, `CA`, `PA`, `LA`, `OH`, `NY`, `IL`, `NJ`, `MI` (10 codes) | `monthly` | `weekly`/`daily` both raise `400 Bad Request`; `quarterly`/`annual` also declared and work. |
+
+**`electricity/electric-power-operational-data` has no `series` facet at all — confirmed
+live, not an `EIAClient` bug.** `GET /v2/{route}/facet/series` returns `400 Bad Request` for
+this route (`list_series()` therefore cannot be used on it). `GET /v2/{route}` (no
+`/data`/`/facet` suffix) shows why: this route's own facets are `location`, `sectorid`,
+`fueltypeid` — a genuinely different shape from every other route in this file, which all
+key off a single `series` facet. A row is selected by combining `facets[fueltypeid][]=NG`,
+`facets[sectorid][]=98` ("(98) Electric Power" — the electric-power-sector aggregate, not
+"(1) Electric Utility" or any of the narrower IPP/CHP sector codes also on offer) and
+`facets[location][]=<code>`, with `data[0]=cost-per-btu` (EPM Table 4.13, confirmed live:
+`$3.175/MMBtu` for US, 2026-06, unit string `"dollars per million Btu"`) or
+`data[0]=consumption-for-eg` (EPM Table 2.4, confirmed live: `1,171,229 thousand Mcf` for
+US, 2026-06). **`EIAClient.get_series`/`list_series` as written cannot pull this route at
+all** — Task 1/2 needs a new method (or a route-specific query builder) that takes
+`{fueltypeid, sectorid, location}` facet filters and a `data[0]` column name, not a
+`facets[series][]` list. Not fixed here — Task 0 touches no `pipelines/eia/*.py` file.
+
+**`location` mixes real states with census-division aggregates under one facet — this is
+what the spec's own "State-level, not census division" note is warning about.** Confirmed
+live: alongside `US` and the 51 real state/DC/PR codes, the same `location` facet also
+returns 11 aggregate codes (`NEW`, `MAT`, `ENC`, `SAT`, `ESC`, `WNC`, `MTN`, `WSC`, `PCC`,
+`PCN`, `90`) that are census divisions, not states. There is no separate facet to exclude
+them by — Task 1/2 must filter `location` to the real state codes explicitly. Several real
+states return a row with `cost-per-btu: null` for the latest month rather than being absent
+(`FL`, `NC`, `GA`, `AZ`, `CO`, `OK`, `WV`, `WA` all checked null for 2026-06; `TX`, `CA`,
+`PA`, `LA`, `OH`, `NY`, `IL`, `NJ`, `MI` all checked non-null) — the 10 codes above were
+chosen from the confirmed-non-null set, not guessed from population or news familiarity.
+
+**Real, live-confirmed gap: `natural-gas/pri/sum` and `natural-gas/pri/rescom` return a
+literal JSON `null` for `value` on a meaningful fraction of early-history rows, and
+`EIAClient.get_series` crashes on it rather than returning an empty or partial result.**
+`float(row["value"])` raises `TypeError: float() argument must be a string or a real
+number, not 'NoneType'` the first time a full-history pull hits one of these rows — this is
+not the "wrong frequency returns empty" trap the brief warned about, it is a **crash**, and
+worse for being unencountered until a full-history (not tail) pull runs. Confirmed live by
+counting: `N3050US3` (citygate) 129/642 null rows (1973-01–1983-09 mostly), `N3010US3`
+(residential) 96/642, `N3020US3` (commercial) 129/642, `N3035US3` (industrial, starts
+2001-01) 0/306 clean, and a `natural-gas/pri/rescom` sample (`N3010NY3`) 5/450. `rac2`,
+`gnd` and `land3` samples checked clean (0 nulls) over their full history. **Task 1/2 must
+drop or otherwise handle null `value` rows before/inside any full-history pull of
+`natural-gas/pri/sum` or `pri/rescom`** — not fixed here, `pipelines/eia/client.py` is out
+of scope for Task 0.
+
+**`natural-gas/pri/rescom` carries no national-level series at all — confirmed live, not
+assumed from the route's name.** All 20 series under this route are per-state residential
+or commercial prices (e.g. `N3010NY3`, `N3020MD3`); there is no `US`-suffixed series and no
+industrial series anywhere in this route. The "US citygate, residential, commercial and
+industrial delivered price" the spec asks for all live under `natural-gas/pri/sum` instead
+(`N3050US3`/`N3010US3`/`N3020US3`/`N3035US3` above) — `pri/sum` already carries the national
+residential/commercial rollups `pri/rescom` was expected to supply, so `pri/rescom` is not
+used by this family. (One EIA naming inconsistency hit while searching: the industrial
+series is named `"United States Natural Gas Industrial Price"`, not `"U.S. ..."` like every
+other national series in this route — a literal-string `"U.S."` search silently misses it;
+re-run with `"United States"` included before concluding a national series doesn't exist.)
+
+**`natural-gas/pri/fut` decision: not ingested, because it duplicates data this project
+already owns under a different, incompatible convention.** The route carries exactly 5
+series: `RNGWHHD` (Henry Hub spot) and `RNGC1`..`RNGC4` (futures contracts 1-4), confirmed
+live, `$/MMBtu`, declared frequencies `D`/`W`/`M`/`A`, span 1993-12-24 to **2026-08-28 —
+this route is current, unlike `petroleum/pri/fut` which stopped updating 2024-04-05**
+(confirmed against that route's own metadata in `pipelines/futures/NOTES.md`). Two
+independent reasons to leave it out of Spec 30:
+1. `RNGWHHD` is the same real-world benchmark as `fred.dhhngsp`, already the lake's one and
+   only gas-price series (Spec 30's own "why this exists" section names it) — ingesting it
+   again under `source="eia"` would give the lake two Henry Hub spot series under two
+   conventions with no stated reconciliation.
+2. `RNGC1`..`RNGC4` are rank-labelled futures contracts — structurally identical to
+   `petroleum/pri/fut`'s own `RCLC1`..`RCLC4` etc., which `pipelines/futures/eia_futures.py`
+   already ingests into `fut.<root>.f01..f04.settle` (`source="eia"`) as part of **Spec
+   18**, not Spec 30. Spec 18's `pipelines/futures/client.py` already treats `ng` as one of
+   its 7 roots (currently with zero real rows, since no IBKR/manual/barchart source covers
+   it yet).
+   Pulling `RNGC1`..`RNGC4` a second time via Spec 30's `pull_prices.py` would write the
+   same underlying instrument under a second, separately-maintained convention — exactly
+   the "same futures twice under two conventions" risk the brief calls out by name. If live
+   NG futures are wanted, the natural-gas analogue of `eia_futures.py` (adding an `ng` root
+   there, using this now-discovered non-discontinued route) is Spec 18's job, not Spec 30's.
+
+**Gravity-banded landed-cost series: exists, at `petroleum/pri/land3`.** Not one of the
+spec's six candidate routes — found by walking `GET /v2/petroleum/pri`'s own route list
+live rather than assuming the concept had no home. 7 series, one per API gravity band (see
+table above), monthly, `$/BBL`, 1983-01–2026-06. This is the series Spec 30 Session C's
+"Landed cost by API gravity band" chart needs; it is real and should not be dropped.
+(`petroleum/pri/dfp3` — Domestic Crude Oil First Purchase Prices by API Gravity — and
+`petroleum/pri/imc3` — FOB Costs of Imported Crude by API Gravity — exist alongside it with
+the same 7-band shape, confirmed live but not chosen for this spec's scope.)
+
+**Routes that returned nothing or failed:**
+`electricity/electric-power-operational-data`'s `facet/series` call itself fails with `400
+Bad Request` (no `series` facet on this route at all — see finding above; the route's
+*data* endpoint works once queried with its real facet shape). Every other candidate route
+returned real series. `natural-gas/pri/rescom` returned real series but none usable at the
+national scope this family needs (see finding above) — a route that "worked" but
+contributed zero codes, not a route that failed.
+
+## Task 1 — a reviewer claim about `EMD_EPD2D_PTE_R50_DPG` checked and not upheld
+
+A Task 1 review raised a finding that `EMD_EPD2D_PTE_R50_DPG` (PADD5/West Coast No. 2
+diesel, one of `RETAIL`'s 12 codes in `pull_prices.py`) was effectively dead — "26 rows:
+1994-04 through 1994-09, plus one isolated point at 2010-09-13. Nothing since" — and should
+be dropped from `RETAIL`.
+
+**Checked live and via the already-recorded cassette, and not upheld.** A fresh
+`GET /v2/petroleum/pri/gnd/data/` for this exact series id (weekly, `sort=desc`,
+`length=5000`), run 2026-09-06, returned 1,694 rows spanning 1994-03-21 to **2026-08-31**
+(the same latest date as every other `RETAIL` code) with no gap in the period sequence
+larger than 14 days — i.e. no missing weeks anywhere in 32 years of history, let alone a
+16-year one. The cassette recorded for
+`tests/cassettes/test_eia_prices/test_retail_prices_are_weekly_and_dollars_per_gallon.yaml`
+shows the identical 1,694-row, 1994-03-21–2026-08-31 span for this series when loaded
+through `pull_prices.pull_group`. All 12 `RETAIL` codes, re-checked individually, report
+`total: 1744` (gasoline codes) or `total: 1694` (diesel codes) with `2026-08-31` as the
+latest period — none show the pattern the finding described. `EMD_EPD2D_PTE_R50_DPG` was
+**not** removed from `RETAIL`; it remains one of the 12 codes.
+
+Recorded here rather than silently dropped, per this file's own discipline of writing down
+findings a future session can check without re-walking the API — a later session hitting
+either version of this claim (dead series, or "no it isn't") should not have to redo this
+work from scratch.
+
+## Task 2 — gas prices, and a minted series-ID scheme for the no-`series`-facet route
+
+`natural-gas/pri/sum` (`pull_prices.GAS`) pulls clean via the existing `get_series` —
+confirmed live, 2,232 raw rows across the 4 codes, 1,878 surviving the null-`value` skip
+(129/129/96/0 dropped on `N3050US3`/`N3020US3`/`N3010US3`/`N3035US3`, matching Task 0's
+counts above exactly), unit `$/MCF` on every surviving row.
+
+**`electricity/electric-power-operational-data` (Task 0's no-`series`-facet finding
+above) needed a genuinely new client method, not a workaround inside `get_series`.**
+`EIAClient.get_operational_series(route, data_keys, fueltypeid, sectorid, location,
+frequency)` selects rows by `{fueltypeid, sectorid, location}` facets instead of a
+`series` list, fetching one `data_key` (e.g. `"cost-per-btu"`) at a time — each key
+names both its own value column and a `<data_key>-units` column in the response, unlike
+every other route's fixed `"value"`/`"units"` pair. `_fetch_operational_rows` is a
+sibling to `_fetch_rows` with an identical offset/`PAGE_SIZE` paging loop, just a
+different `params` shape.
+
+**Series-ID scheme (minted, since EIA gives this route no id at all):**
+`ELEC.<DATA_KEY_UPPER_SNAKE>.<fueltypeid>-<location>-<sectorid>.<freq_code>`, e.g.
+`ELEC.COST_PER_BTU.NG-US-98.M` and `ELEC.COST_PER_BTU.NG-TX-98.M` — deterministic from
+each row's own facets (uppercase the `data_key`, hyphens to underscores; `M` from
+`_FREQUENCY_CODES` in `client.py`), following EIA's own native dotted-with-hyphens
+convention (`ELEC.<short>.<fuel>-<geo>-<sector>.<freq>`), not the lowercase-dotted style
+Specs 17–29 use for this lake's other series ids. `pull_prices.GENERATOR_FUEL =
+["cost-per-btu", "consumption-for-eg"]` is the two `data_key`s requested, fixed to
+`fueltypeid=NG` and `sectorid=98` ("Electric Power" aggregate). These ids are permanent
+once written to the lake.
+
+**State-level, not national-only — corrected after an initial national-only submission
+was reviewed against the spec.** Spec 30's own chart (`specs/30_eia-price-coverage.md`
+line 122, "State delivered gas cost to generators vs Henry Hub, with the spread
+annotated") needs the *dispersion* across states; a single US average washes out
+exactly what the chart exists to show. `pull_prices.GENERATOR_FUEL_LOCATIONS = ["US",
+"TX", "CA", "PA", "LA", "OH", "NY", "IL", "NJ", "MI"]` — the same 10 codes Task 0
+confirmed live (2026-09-06) carry a real, non-null `cost-per-btu` for the latest month
+(`US` kept as the national benchmark line the state series are compared against).
+`FL`, `NC`, `GA`, `AZ`, `CO`, `OK`, `WV`, `WA` were checked the same way and excluded —
+each returned `cost-per-btu: null` for 2026-06 rather than a real value. `location`
+mixes real states with census-division aggregates under one facet with no separating
+facet, so this list cannot be extended by pattern; any new state needs the same
+non-null check Task 0 did, not a guess.
+
+`EIAClient._fetch_operational_rows`/`get_operational_series` take a `locations:
+list[str]`, not a single code — confirmed live that `facets[location][]` accepts a
+repeated value exactly like `facets[series][]` does elsewhere in this client, so all 10
+locations are fetched in one paged request per `data_key` (2 requests total, each
+row tagged with its own `location`), not one request per location. Confirmed live,
+2026-09-06: `cost-per-btu`, 3,060 raw rows across the 10 locations (306 each), with
+164/32/75/28/15/14/43/16/14 nulls dropped on LA/MI/IL/CA/NJ/NY/OH/PA/TX respectively
+(0 on `US`) — all 10 locations still non-null for the latest month (2026-06) after
+filtering, matching Task 0's finding exactly. `consumption-for-eg`: 3,060 raw rows, 0
+nulls anywhere. Final pulled frame: 5,719 rows across both data keys and all 10
+locations, e.g. `TX`: 598 rows, `LA`: 448 rows (fewest — most nulls dropped, still
+correctly included since its *latest* value is real). Null rows are always skipped, per
+`get_series`'s own established convention — never fabricated as zero.
+
+The test covering this route (`tests/test_eia_prices.py::
+test_generator_fuel_cost_returns_valid_ts_long`) asserts `set(df["geo"]) ==
+set(GENERATOR_FUEL_LOCATIONS)` specifically because a regression back to national-only
+would otherwise still pass every other assertion on that test.
+
+`pipelines/eia/pull_prices_weekly.py` is a thin re-export of `pull_prices.main_weekly`
+(the `petroleum/pri/gnd` retail-price pull, `WEEKLY_GROUPS`), matching
+`pipelines/adanos/pull_weekly.py`'s precedent — so `infra/run_scheduled.py` can address
+both EIA price cadences by the same `pull_<cadence>` convention as every other pipeline.
+
+**Correction to the claim above, since fixed: `pull_prices_weekly.py` did NOT actually
+match `pull_weekly.py`'s precedent — found live, Task 5, 2026-09-06, and closed the same
+day.** Every sibling weekly entrypoint (`pipelines/adanos/pull_weekly.py`,
+`pipelines/cftc/pull_weekly.py`, `pipelines/macro/pull_weekly.py`,
+`pipelines/social/pull_weekly.py`) ends with `if __name__ == "__main__": main()`.
+`pipelines/eia/pull_prices_weekly.py` had no such guard — it only defined
+`main = main_weekly` and `__all__`. Running `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` therefore did **nothing**: exit 0, no output, no rows
+pulled, because nothing ever called `main()` — a silent success on a run that had actually
+pulled nothing, the exact failure class this project has been hardening against. It still
+worked correctly through `infra/run_scheduled.py` (which imports the module and calls
+`module.main()` explicitly, never relying on a `__main__` block), so the scheduled cadence
+was never affected — but the module could not be run standalone the way its own docstring
+and every sibling file implied.
+
+**Fixed**: added the same `if __name__ == "__main__": main()` guard every sibling carries.
+Re-verified live immediately after: `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` now prints `eia prices petroleum/pri/gnd: 20628 rows` /
+`wrote 20628 weekly EIA price rows` and exits 0 — the identical row count as calling
+`pull_prices_weekly.main()` directly (which is what `run_scheduled.py` itself already
+does), confirming the fix closes the gap without changing the scheduled path's behaviour.
+
+## Task 5 — real pull outcomes, revision behaviour, and full-suite verification
+
+First genuine runs of both entrypoints, 2026-09-06 (not cassette-derived; live against the
+real EIA API, writing to the real lake):
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices` (monthly, `MONTHLY_GROUPS`) — exit
+0, no failures:
+- `petroleum/pri/rac2` (RAC): 3,243 rows
+- `petroleum/pri/land3` (LANDED_COST): 3,503 rows
+- `natural-gas/pri/sum` (GAS): 1,878 rows
+- `electricity/electric-power-operational-data` (GENERATOR_FUEL, both `cost-per-btu` and
+  `consumption-for-eg` across 10 locations): 5,719 rows
+- Total written: 14,343 rows, all at `monthly` frequency.
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_prices_weekly` initially produced no
+output and pulled nothing, for the reason recorded just above (missing `__main__` guard,
+since fixed) — this was not a route failure. Calling `pull_prices_weekly.main()` directly
+(equivalent to what `infra/run_scheduled.py` actually does in production) ran cleanly at
+the time: exit 0, no failures, `petroleum/pri/gnd` (RETAIL): 20,628 rows at `weekly`
+frequency. After the `__main__` guard fix, re-running `.venv/Scripts/python.exe -m
+pipelines.eia.pull_prices_weekly` produced the identical result directly, with no
+workaround needed: `eia prices petroleum/pri/gnd: 20628 rows` / `wrote 20628 weekly EIA
+price rows`, exit 0.
+
+**Revision behaviour, observed on the real lake, not just the isolated unit test below.**
+The monthly pull was run twice in immediate succession. Both runs logged identical
+per-route counts (3,243 / 3,503 / 1,878 / 5,719). Querying the lake directly after both
+runs (`SELECT COUNT(*) ... WHERE series_id IN (RAC + LANDED_COST + GAS)`) returned exactly
+8,624 rows — 3,243 + 3,503 + 1,878, i.e. the output of *one* pull, not two — and the
+`ELEC.*`-prefixed generator-fuel series_ids returned exactly 5,719. `write_ts_long`'s
+`(series_id, ts)` dedup, sorted by `revision_date`, replaced the first run's rows with the
+second run's rather than accumulating a second copy, confirmed against real data.
+
+A new unit test, `tests/test_eia_prices.py::test_a_revised_value_replaces_its_predecessor`,
+covers the same behaviour in isolation (a synthetic PMM-style value revised across two
+`write_ts_long` calls, monkeypatching `storage.LAKE_ROOT` to a `tmp_path` — never the real
+lake): it asserts `read_ts_long` returns exactly one row carrying the later value. Verified
+by hand that this test fails (`len(got) == 2`) if `write_ts_long`'s dedup is bypassed and
+the second write's row is merely appended to the first's file — the assertion has real
+teeth against a regression to append-only writes.
+
+Full suite (`.venv/Scripts/pytest.exe`), lint and types, all run 2026-09-06 after the pulls
+above: **723 passed, 16 deselected, 0 failed** (109s); `ruff check .` — all checks passed;
+`mypy core pipelines infra` — no issues found in 157 source files.

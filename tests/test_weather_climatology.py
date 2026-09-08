@@ -37,11 +37,45 @@ def _synthetic_long_df() -> pd.DataFrame:
     return pd.concat([rows, other_source, unrelated_series], ignore_index=True)
 
 
+class _ReadTsLongSpy:
+    """Stands in for `core.storage.read_ts_long`. Records the kwargs it was called
+    with (so a test can pin that `build_climatology` requests `source="open_meteo"`)
+    and narrows the synthetic frame the same way the real, source-partitioned
+    `read_ts_long` would -- so a test using this spy exercises the same post-narrowing
+    frame `build_climatology` would see for real, not the whole unfiltered lake."""
+
+    def __init__(self, df: pd.DataFrame) -> None:
+        self._df = df
+        self.calls: list[dict[str, object]] = []
+
+    def __call__(
+        self,
+        series_ids: list[str] | None = None,
+        start: object = None,
+        end: object = None,
+        source: str | None = None,
+        series_prefix: str | None = None,
+    ) -> pd.DataFrame:
+        self.calls.append(
+            {
+                "series_ids": series_ids,
+                "source": source,
+                "series_prefix": series_prefix,
+            }
+        )
+        result = self._df
+        if source is not None:
+            result = result[result["source"] == source]
+        if series_prefix is not None:
+            result = result[result["series_id"].str.startswith(series_prefix)]
+        return result
+
+
 def test_build_climatology_excludes_2020(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        climatology_module, "read_ts_long", lambda series_ids=None: _synthetic_long_df()
+        climatology_module, "read_ts_long", _ReadTsLongSpy(_synthetic_long_df())
     )
     monkeypatch.setattr(climatology_module, "CLIMATOLOGY_YEARS", range(2018, 2022))
     cache_path = tmp_path / "climatology.parquet"
@@ -58,18 +92,34 @@ def test_build_climatology_excludes_2020(
 def test_build_climatology_reuses_a_fresh_cache(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    call_count = 0
-
-    def _counting_read(series_ids: list[str] | None = None) -> pd.DataFrame:
-        nonlocal call_count
-        call_count += 1
-        return _synthetic_long_df()
-
-    monkeypatch.setattr(climatology_module, "read_ts_long", _counting_read)
+    spy = _ReadTsLongSpy(_synthetic_long_df())
+    monkeypatch.setattr(climatology_module, "read_ts_long", spy)
     monkeypatch.setattr(climatology_module, "CLIMATOLOGY_YEARS", range(2018, 2022))
     cache_path = tmp_path / "climatology.parquet"
 
     climatology_module.build_climatology(cache_path=cache_path)
     climatology_module.build_climatology(cache_path=cache_path)
 
-    assert call_count == 1
+    assert len(spy.calls) == 1
+
+
+def test_build_climatology_narrows_read_to_open_meteo_source(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`build_climatology` must ask `read_ts_long` for `source="open_meteo"` rather
+    than materialising the whole lake and filtering source in pandas afterward (the
+    17x over-read this module's docstring already claimed was fixed but wasn't). The
+    spy narrows the synthetic frame exactly as the real source-partitioned read would,
+    so this also proves the narrowing doesn't change build_climatology's own output
+    (still just hdd.dublin.c18, still median 8.0, 2020 still excluded)."""
+    spy = _ReadTsLongSpy(_synthetic_long_df())
+    monkeypatch.setattr(climatology_module, "read_ts_long", spy)
+    monkeypatch.setattr(climatology_module, "CLIMATOLOGY_YEARS", range(2018, 2022))
+    cache_path = tmp_path / "climatology.parquet"
+
+    result = climatology_module.build_climatology(cache_path=cache_path)
+
+    assert spy.calls, "read_ts_long was never called"
+    assert spy.calls[0]["source"] == "open_meteo"
+    assert set(result["series_id"]) == {"hdd.dublin.c18"}
+    assert (result["climatology"] == 8.0).all()

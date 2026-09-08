@@ -12,8 +12,23 @@ import streamlit as st
 from components.card import card
 from components.lake import read_ts_long
 from core.seasonal import seasonal_stats
-from core.theme import dual_axis_chart, generation_mix_chart, hour_day_heatmap, seasonal_range_chart
+from core.theme import (
+    GREY,
+    LIGHT_BLUE,
+    NAVY,
+    ORANGE,
+    RED,
+    dual_axis_chart,
+    generation_mix_chart,
+    hour_day_heatmap,
+    seasonal_range_chart,
+)
 from pipelines.eia.pull_gas_storage import STORAGE_GEO_MAP
+from pipelines.eia.pull_prices import (
+    GENERATOR_FUEL_COST_KEY,
+    GENERATOR_FUEL_LOCATIONS,
+    generator_fuel_series_id,
+)
 from pipelines.eia.pull_production_exports import LNG_EXPORTS_SERIES, PRODUCTION_SERIES
 from pipelines.gridstatus_iso.hubs import HUBS
 from pipelines.gridstatus_iso.transforms import net_load
@@ -234,6 +249,92 @@ def _production_exports_section() -> None:
         )
 
 
+# Excludes NAVY (reserved for the US national line) and GREY (reserved for the Henry Hub
+# benchmark) so every colour on the chart carries one meaning. Cycled by index modulo its
+# length rather than zipped against GENERATOR_FUEL_LOCATIONS, so a longer state list in
+# future doesn't silently drop a series.
+_STATE_PALETTE = (LIGHT_BLUE, RED, ORANGE)
+
+
+def _delivered_fuel_cost_section() -> None:
+    """The gas-to-power bridge: what generators pay above Henry Hub is where fuel
+    switching economics actually bite. Spec 30 supplies the cost leg state by state --
+    GENERATOR_FUEL_LOCATIONS holds US plus 9 states, and a single national average would
+    wash out exactly the dispersion this chart exists to show. fred.dhhngsp was already
+    in the lake as the benchmark."""
+    ids = [
+        generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, loc) for loc in GENERATOR_FUEL_LOCATIONS
+    ]
+    df = read_ts_long(series_ids=ids)
+    hh = read_ts_long(series_ids=["fred.dhhngsp"]).sort_values("ts")
+    if df.empty:
+        st.info("No generator fuel cost yet — run `pipelines/eia/pull_prices.py`.")
+        return
+
+    fig = go.Figure()
+    states = [loc for loc in GENERATOR_FUEL_LOCATIONS if loc != "US"]
+    for i, location in enumerate(states):
+        s = df[
+            df["series_id"] == generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, location)
+        ].sort_values("ts")
+        if s.empty:
+            continue
+        fig.add_trace(
+            go.Scatter(x=s["ts"], y=s["value"], name=location, mode="lines",
+                       line={"color": _STATE_PALETTE[i % len(_STATE_PALETTE)], "width": 1.5})
+        )
+    us = df[
+        df["series_id"] == generator_fuel_series_id(GENERATOR_FUEL_COST_KEY, "US")
+    ].sort_values("ts")
+    if not us.empty:
+        fig.add_trace(
+            go.Scatter(x=us["ts"], y=us["value"], name="US (national)", mode="lines",
+                       line={"color": NAVY, "width": 3})
+        )
+    if not hh.empty:
+        fig.add_trace(
+            go.Scatter(x=hh["ts"], y=hh["value"], name="Henry Hub spot", mode="lines",
+                       line={"color": GREY, "width": 2, "dash": "dot"})
+        )
+
+    # Spec 30 line 124: the state-vs-Henry-Hub spread must be annotated, not just
+    # described in a caption. Only the US national line's spread is annotated (one
+    # annotation, not one per state -- ten would be noise) at the latest period the two
+    # series actually share; skipped rather than raised if they never overlap.
+    if not us.empty and not hh.empty:
+        us_by_ts = us.set_index("ts")["value"]
+        hh_by_ts = hh.set_index("ts")["value"]
+        overlap = us_by_ts.index.intersection(hh_by_ts.index)
+        if len(overlap):
+            latest = overlap.max()
+            spread = us_by_ts.loc[latest] - hh_by_ts.loc[latest]
+            sign = "+" if spread >= 0 else "-"
+            fig.add_annotation(
+                x=latest,
+                y=us_by_ts.loc[latest],
+                text=f"US {sign}${abs(spread):.2f} vs Henry Hub",
+                showarrow=True,
+                arrowhead=2,
+                ax=40,
+                ay=-30,
+            )
+
+    fig.update_layout(
+        title="State cost of natural gas delivered to generators vs Henry Hub",
+        yaxis_title="$/MMBtu",
+    )
+    with card("Delivered fuel cost"):
+        st.plotly_chart(fig)
+        st.caption(
+            "Delivered cost sits above the benchmark by transport and contract terms; "
+            "the spread across states is the dispersion in what generators actually "
+            "pay, with the bold navy line the national average they are compared "
+            "against. Widening spread raises the gas price generators actually face, "
+            "which is what moves the coal-to-gas switching point — not the hub price "
+            "alone."
+        )
+
+
 def _iso_tab(iso: str) -> None:
     st.subheader(f"{iso} fuel mix")
     _iso_mix_section(iso)
@@ -250,6 +351,9 @@ _headline_section()
 
 st.subheader("Production vs. LNG exports")
 _production_exports_section()
+
+st.subheader("Delivered fuel cost")
+_delivered_fuel_cost_section()
 
 st.subheader("Regional small multiples")
 _small_multiples_section()

@@ -19,11 +19,16 @@ from __future__ import annotations
 import core.theme  # noqa: F401
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from components.card import card
 from core.cracks import crack_board, crack_seasonal_heatmap
 from core.storage import read_ts_long
 from core.theme import (
+    GREY,
+    LIGHT_BLUE,
+    NAVY,
+    RED,
     category_time_heatmap,
     cointegration_residual_chart,
     curve_strip_chart,
@@ -33,6 +38,7 @@ from core.theme import (
 )
 from core.vecm import backtest_positions, ect_signal, fit_vecm, forecast_eval, irf_table
 from pipelines.derived.vecm_refit import build_panel, read_legs, read_model_card
+from pipelines.eia.pull_prices import LANDED_COST, LANDED_COST_GEO_MAP, RAC
 
 SPOT_CRACKS = {
     "us321": "NYH 3:2:1",
@@ -113,6 +119,161 @@ def _rmse_ratio() -> pd.Series:
     vecm_rmse = pd.Series(evaluation["errors_vecm"] ** 2, index=origins).rolling(12).mean() ** 0.5
     rw_rmse = pd.Series(evaluation["errors_rw"] ** 2, index=origins).rolling(12).mean() ** 0.5
     return (vecm_rmse / rw_rmse).dropna()
+
+
+# Spec 30: Crude acquisition cost -- what refiners actually paid, against what the
+# benchmark printed, plus the retail-to-wholesale margin and the landed-cost sourcing mix.
+# A fixed 4-colour palette cycled by index (not zipped against the constants, which would
+# silently drop series past the palette length once RAC/RETAIL/LANDED_COST grow).
+_PRICE_PALETTE = (NAVY, LIGHT_BLUE, RED, GREY)
+
+
+def _acquisition_cost_section() -> None:
+    """What refiners actually paid, against what the benchmark printed. Spec 19's
+    quality-mismatch work and Spec 20's VECM both reason about crude grades; until
+    Spec 30 the lake held no grade-differentiated price at all."""
+    df = read_ts_long(series_ids=list(RAC))
+    if df.empty:
+        st.info("No refiner acquisition cost yet — run `pipelines/eia/pull_prices.py`.")
+        return
+
+    fig = go.Figure()
+    for i, series_id in enumerate(RAC):
+        s = df[df["series_id"] == series_id].sort_values("ts")
+        if s.empty:
+            continue
+        fig.add_trace(
+            go.Scatter(x=s["ts"], y=s["value"], name=series_id, mode="lines",
+                       line={"color": _PRICE_PALETTE[i % len(_PRICE_PALETTE)], "width": 2})
+        )
+    wti = read_ts_long(series_ids=["fred.dcoilwtico"]).sort_values("ts")
+    if not wti.empty:
+        fig.add_trace(
+            go.Scatter(x=wti["ts"], y=wti["value"], name="WTI spot", mode="lines",
+                       line={"color": GREY, "width": 1, "dash": "dot"})
+        )
+    # Domestic acquisition cost tracks WTI; imported tracks Brent -- both reference lines
+    # are needed, or the imported line reads as persistently mispriced against WTI when it
+    # is simply following a different benchmark (specs/30_eia-price-coverage.md line 116).
+    brent = read_ts_long(series_ids=["fred.dcoilbrenteu"]).sort_values("ts")
+    if not brent.empty:
+        fig.add_trace(
+            go.Scatter(x=brent["ts"], y=brent["value"], name="Brent spot", mode="lines",
+                       line={"color": GREY, "width": 1, "dash": "dash"})
+        )
+    fig.update_layout(
+        title="Refiner acquisition cost vs WTI and Brent spot", yaxis_title="$/bbl"
+    )
+    with card("Crude acquisition cost"):
+        st.plotly_chart(fig)
+        st.caption(
+            "Composite, domestic and imported acquisition cost is what refiners paid; "
+            "the dotted and dashed lines are the WTI and Brent benchmark prints. Domestic "
+            "cost tracks WTI, imported cost tracks Brent — the gap between either "
+            "acquisition line and its own benchmark is the part a spot-only crack cannot "
+            "see."
+        )
+
+
+def _landed_cost_section() -> None:
+    """Light versus heavy sourcing mix -- the series Spec 19's quality-mismatch work has
+    been reasoning about without. petroleum/pri/land3 returns area-name as the literal
+    string "NA" for every row, so series names come from LANDED_COST_GEO_MAP's own
+    gravity-band labels rather than the API's geo field."""
+    df = read_ts_long(series_ids=list(LANDED_COST))
+    if df.empty:
+        st.info("No landed cost data yet — run `pipelines/eia/pull_prices.py`.")
+        return
+
+    fig = go.Figure()
+    for i, series_id in enumerate(LANDED_COST):
+        s = df[df["series_id"] == series_id].sort_values("ts")
+        if s.empty:
+            continue
+        fig.add_trace(
+            go.Scatter(x=s["ts"], y=s["value"], name=LANDED_COST_GEO_MAP[series_id],
+                       mode="lines", line={"color": _PRICE_PALETTE[i % len(_PRICE_PALETTE)],
+                                            "width": 2})
+        )
+    fig.update_layout(
+        title="Landed cost of imported crude by API gravity band", yaxis_title="$/bbl"
+    )
+    with card("Landed cost by API gravity band"):
+        st.plotly_chart(fig)
+        st.caption(
+            "Lower API-gravity bands (US-API-LE20) are heavier crude; higher bands "
+            "(US-API-GT45) are lighter. The spread between them is a sourcing-mix "
+            "indicator, not just a price level."
+        )
+
+
+# US retail gasoline (all grades, all formulations) -- pipelines.eia.pull_prices.RETAIL[0],
+# referenced here by its own EIA series id rather than by list index, per the same lesson
+# Fix 1 (05_us_gas_power.py) drew: an index into a reorderable list is a silent-wrong-chart
+# risk, not a loud one.
+_US_RETAIL_GASOLINE = "EMM_EPM0_PTE_NUS_DPG"
+# NY Harbor conventional gasoline, $/gal -- one of the wholesale legs Spec 20 added to the
+# lake, and the benchmark the retail-to-wholesale margin below is measured against.
+_WHOLESALE_GASOLINE_NYH = "fred.dgasnyh"
+
+
+def _retail_margin_section() -> None:
+    """Spec 30 lines 126-127: retail belongs beside its wholesale leg, as a secondary line
+    beneath the wholesale crack -- the point is the retail-to-wholesale margin, not the
+    pump price alone. Plots US retail gasoline against the NY Harbor wholesale leg and the
+    margin between them on its own axis, so the margin is a visible quantity rather than
+    something implied by eyeballing two overlapping lines."""
+    retail = read_ts_long(series_ids=[_US_RETAIL_GASOLINE]).sort_values("ts")
+    wholesale = read_ts_long(series_ids=[_WHOLESALE_GASOLINE_NYH]).sort_values("ts")
+    if retail.empty or wholesale.empty:
+        st.info(
+            "No retail or wholesale gasoline data yet — run "
+            "`pipelines/eia/pull_prices_weekly.py` and `pipelines/eia/pull_prices.py`."
+        )
+        return
+
+    retail_by_ts = retail.set_index("ts")["value"]
+    wholesale_by_ts = wholesale.set_index("ts")["value"]
+    overlap = retail_by_ts.index.intersection(wholesale_by_ts.index)
+    margin = (retail_by_ts.loc[overlap] - wholesale_by_ts.loc[overlap]).sort_index()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(x=retail_by_ts.index, y=retail_by_ts.to_numpy(), name="US retail gasoline",
+                   mode="lines", line={"color": NAVY, "width": 2})
+    )
+    fig.add_trace(
+        go.Scatter(x=wholesale_by_ts.index, y=wholesale_by_ts.to_numpy(),
+                   name="NY Harbor wholesale gasoline", mode="lines",
+                   line={"color": LIGHT_BLUE, "width": 2})
+    )
+    if not margin.empty:
+        fig.add_trace(
+            go.Scatter(x=margin.index, y=margin.to_numpy(), name="Retail-wholesale margin",
+                       mode="lines", line={"color": RED, "width": 2}, yaxis="y2")
+        )
+        latest = margin.index.max()
+        fig.add_annotation(
+            x=latest,
+            y=margin.loc[latest],
+            yref="y2",
+            text=f"Margin ${margin.loc[latest]:.2f}/gal",
+            showarrow=True,
+            arrowhead=2,
+            ax=40,
+            ay=-30,
+        )
+    fig.update_layout(
+        title="US retail gasoline vs NY Harbor wholesale, with the margin",
+        yaxis_title="$/gal",
+        yaxis2={"title": "Margin ($/gal)", "overlaying": "y", "side": "right"},
+    )
+    with card("Retail-to-wholesale margin"):
+        st.plotly_chart(fig)
+        st.caption(
+            "The margin (red, right-hand axis) between the pump price and the NY Harbor "
+            "wholesale leg is the interesting quantity here, not the pump price alone."
+        )
 
 
 tab_board, tab_seasonal, tab_curve, tab_model, tab_signal = st.tabs(
@@ -370,3 +531,10 @@ with tab_signal:
                 "Positions are shifted one month before earning a return, so the signal "
                 "never trades on information it did not have."
             )
+
+# --- crude acquisition cost --------------------------------------------------------
+
+st.subheader("Crude acquisition cost")
+_acquisition_cost_section()
+_landed_cost_section()
+_retail_margin_section()

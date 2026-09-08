@@ -130,9 +130,21 @@ had the row.
 
 | Spec | Title | Status | New source? | Depends on |
 |---|---|---|---|---|
-| 30 | EIA price coverage (refiner acquisition cost by grade, retail pump prices, gas citygate/sectoral prices, generator delivered fuel cost) | not started | **no new vendor — four new routes on the existing EIA API client** | 01 |
+| 30 | EIA price coverage (refiner acquisition cost by grade, retail pump prices, gas citygate/sectoral prices, generator delivered fuel cost) | **Done. Live-verified 2026-09-06**: 14,343 monthly + 20,628 weekly rows written from the real EIA API — refiner acquisition cost (rac2, 3,243 rows), retail pump prices (gnd, 20,628 rows), gas citygate/sectoral prices (pri/sum, 1,878 rows) and generator delivered fuel cost (electric-power-operational-data, 5,719 rows across a new `EIAClient.get_operational_series` method, since that route has no `series` facet at all). A fifth route, `petroleum/pri/land3` (gravity-banded landed cost of imported crude, 3,503 rows), was **not in the original plan** — found live by walking `GET /v2/petroleum/pri`'s category tree — and shipped because it is the only route that answers the spec's "landed cost by API gravity band" chart. Two of the spec's named candidates were **deliberately not ingested**: `natural-gas/pri/fut` duplicates `fred.dhhngsp` (Henry Hub spot, the lake's existing gas price) and Spec 18's own NYMEX futures ingestion (`RNGC1`..`RNGC4`) under a second convention — a Spec 18 job, not Spec 30's; `natural-gas/pri/rescom` carries no national-level series at all, and `pri/sum` already supplies the national residential/commercial/industrial rollups it was expected to provide. Fixed a real crash in the shared `EIAClient.get_series` (a literal EIA `null` value blew up `float(None)` on early-history rows of `pri/sum`) — the fix now skips null-value rows, changing behaviour for all eleven routes already using `get_series`, not just Spec 30's new ones. Revision behaviour (PMM/EPM restating prior months must replace, not duplicate) verified both by a new isolated unit test and by re-running the real monthly pull twice against the live lake — row counts held steady both times. One gap found during the final verification gate and closed the same task: `pull_prices_weekly.py` was missing the `if __name__ == "__main__":` guard every sibling weekly entrypoint has, so `python -m pipelines.eia.pull_prices_weekly` silently exited 0 having pulled nothing — it always ran correctly through `infra/run_scheduled.py`, which calls `.main()` directly, so the scheduled cadence was never affected. Fixed by adding the guard; re-verified live, the module now writes 20,628 rows when run standalone. Full suite green (723 passed), `ruff`/`mypy` clean | **no new vendor — five routes on the existing EIA API client (one, `land3`, discovered live)** | 01 |
 
 The lake holds volumes almost everywhere and prices almost nowhere: one gas price
 (`fred.dhhngsp`), no retail pump prices at all, and no grade-differentiated crude price beneath
 Spec 19s quality-mismatch work or Spec 20s crack VECM. Spec 30 supplies those missing
 denominators. Extends `pipelines/eia/`, adds no schema and no new pipeline package.
+
+## Spec 31 — EIA coverage extensions
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 31 | EIA coverage extensions (gas storage capacity, Grid Monitor for ERCOT/PJM, gas consumption by sector, power-sector coal, biofuels capacity and feedstocks, weekly ethanol) | not started | **yes — new `pipelines/coal/`; the rest are new routes on the existing EIA client** | 01, 02, 30 |
+
+Six independent items, each buildable or droppable on its own — the reason they were split out
+of Spec 30 rather than bundled into it. The Grid Monitor item is not a duplicate of
+`pipelines/gridstatus_iso/`: that library reaches CAISO and NYISO only, because ERCOT is blocked
+by bot protection (confirmed live 403) and PJM needs a Data Miner 2 key. Those are the two
+markets where gas-fired generation most moves the gas book.
