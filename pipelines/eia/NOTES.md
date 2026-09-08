@@ -920,3 +920,109 @@ The Step 4 double-count check above reports 45 corridors for the full 90-day bac
 44 corridors for each 3-day re-pull — this is not a discrepancy in the guard itself (the
 check is row-count based, held flat at 100,092 both times), just one low-traffic corridor
 that reported no interchange activity in that specific 3-day window.
+
+## Spec 31C routes — confirmed live 2026-09-08
+
+Task 0 (discovery only, no pull code). The brief's own throwaway-script import line
+(`from core.config import settings`) does not exist in this repo — the real module is
+`core.settings` (confirmed: `pipelines/eia/client.py` already imports it that way, and
+Spec 31B's Task 0 made the same correction in this same file); used `core.settings` for
+every script below, no other deviation.
+
+| Route | Series facet? | Count | Codes used | Frequency | geo quirk | Item |
+|---|---|---|---|---|---|---|
+| `petroleum/pnp/wprode` | yes | 6 (unchanged from Spec 31A's count) | `W_EPOOXE_YOP_NUS_MBBLD` (US), `W_EPOOXE_YOP_R10_MBBLD`..`R50_MBBLD` (PADD1-5) | `weekly` | **no** — all six resolve cleanly to `US`/`PADD1`..`PADD5` via `_normalise_geo`'s existing `"PADD "` prefix rule; no `geo_map` needed | 6 |
+| `petroleum/pnp/capbio` | yes | 3 (unchanged) | `M_EPOORDB_8BDPC_NUS_MMGL` (biodiesel), `M_EPOOROO_8BDPC_NUS_MMGL` (renewable diesel & other), `M_EPOOXE_8BDPC_NUS_MMGL` (fuel ethanol) — all US national | `monthly` | no — all three `geo="US"` | 5 |
+| `petroleum/pnp/feedbiofuel` | yes | 26 (unchanged) | all 26 US national feedstock-input series (see `list_series()` dump below) | `monthly` | no — all 26 `geo="US"` | 5 |
+| `coal/consumption-and-quality` | **no** — 400 on `facet/series` (confirmed, matching Spec 31A's prior finding) | n/a | facets `location` (74 values) + `sector` (8 values); power-sector code `98` | `quarterly`/`annual` only (declared) | n/a (no series id) | 4 |
+
+**wprode PADD geo resolution:** distinct `geo` set is exactly `{'US', 'PADD1', 'PADD2',
+'PADD3', 'PADD4', 'PADD5'}` — confirmed live across all six ids (not just the national
+code, which is all Spec 31A checked). **No `geo_map` needed**; this route does not have
+the `natural-gas/stor/cap`/`petroleum/pri/land3` literal-`"NA"` quirk. Unit is `MBBL/D`
+(thousand barrels per day) on every row. Row counts are uneven by design, not a data gap:
+`W_EPOOXE_YOP_NUS_MBBLD` (US) and `W_EPOOXE_YOP_R20_MBBLD` (PADD2/Midwest) both have 848
+rows (full history back to 2010-06-04), while PADD1/3/4/5 have 473 rows each (shorter
+history) — consistent with PADD2 being the dominant real-world corn-ethanol production
+region and the other four PADDs' production only having been tracked as a separate
+series since later. 1,500 null-value rows were dropped across the six series by
+`get_series`'s existing null-skip (visible, not silent, per its own logged message).
+
+**feedbiofuel distinct units across all 26 series: `{'MMLB'}` only — one unit, not the
+diverse per-feedstock set the brief's Step 3 flagged as a risk to check for.** Every one
+of the 26 series names ends `(Million Pounds)` and every row's `unit` field is `MMLB`,
+confirmed by grouping units per `series_id` across the full 26-series pull (873 rows
+after 855 nulls dropped, span 2019-01 to 2026-06) — soybean oil, corn oil, canola oil,
+tallow, used cooking oil (recorded here as `M_EPOOBDRFWO_YIFBP_NUS_MMLB` /
+`M_EPOOBDAFO_YIFBP_NUS_MMLB`, "other recycled"/"other waste oil, fat, and grease"),
+biogas, municipal solid waste and every other feedstock are all denominated in million
+pounds. A chart plotting all 26 on one axis is therefore **not** the unit-mismatch risk
+the brief warned about for this specific route — the real risk, if any, is scale (some
+feedstocks are two orders of magnitude smaller than soybean oil), not incompatible
+units. (Contrast with `capbio`, whose 3 series are `MMGL` — million gallons, a
+volume unit — do not plot `feedbiofuel` and `capbio` series on the same axis.)
+
+**coal facets: location=74 values, US present? yes. sector=8 values.** `location`'s 74
+values mix 53 real geographies (50 states + DC + PR + `US`) with **21** census-region
+aggregate codes — a bigger and differently-shaped mixing problem than Spec 30's
+`electricity/electric-power-operational-data` (11 aggregate codes, one code per region).
+Here each of 10 named regions (`NEW`, `MAT`, `ENC`, `WNC`, `SAT`, `ESC`, `WSC`, `MTN`,
+`PCC`, `PCN`) is **duplicated** under a second, purely numeric code (`80`-`89`
+respectively — confirmed live, e.g. `ESC`/"East South Central" and `85`/"East South
+Central" are the same region under two ids), plus one solo aggregate, `90`/"Pacific",
+with no letter-mnemonic counterpart (the combined total of `PCC`+`PCN`). Any future pull
+scoped to `location=US` only is unaffected by this, but a future state-level pull must
+filter both the numeric and the letter aggregate codes out explicitly, same discipline
+as Spec 30's `GENERATOR_FUEL_LOCATIONS`.
+
+**coal power-sector code: `98`, name `"Electric Power"`.** Confirmed live from the
+8-value `sector` facet dump: `98` ("Electric Power") is the aggregate this project needs
+(matching the same code EIA uses for `electricity/electric-power-operational-data`'s
+`sectorid=98` in Spec 30) — distinct from `1` ("Electric Utility"), `94` ("Independent
+Power Producers"), `2`/`3` ("IPP Non-CHP"/"IPP CHP"), `9` ("Coke Plants"), `8`
+("Commercial and Institutional") and `10` ("Other Industrial"), none of which is the
+power-sector aggregate the spec's item 4 scopes to.
+
+**coal data keys and their unit strings (all seven, verbatim, from a live
+`facets[location][]=US`/`facets[sector][]=98` quarterly call):**
+- `receipts` → `"short tons"`
+- `consumption` → `"short tons"`
+- `stocks` → `"short tons"`
+- `price` → `"dollars per short ton"`
+- `heat-content` → `"average sulfur percent by weight"`
+- `sulfur-content` → `"average sulfur percent by weight"`
+- `ash-content` → `"average ash percent by weight"`
+
+**Real EIA-side bug, confirmed live, not a client parsing error: `heat-content-units`
+carries the wrong string.** `heat-content`'s unit label is the **literal same string** as
+`sulfur-content`'s (`"average sulfur percent by weight"`), even though the two keys carry
+unrelated real-world quantities — `heat-content`'s own values (`18.94`, `19.03`, `18.72`
+for the three most recent quarters) are in the right numeric range for MMBtu/short ton
+(the standard coal heat-content unit), not for a sulfur percentage (which would be a much
+smaller, single-digit number — compare `sulfur-content`'s own real values, `1.24`-`1.37`,
+for the same quarters). This is EIA mislabelling its own response field, not a
+mis-mapped column in this project's code — Task 3, if it surfaces `heat-content` on a
+chart, must hardcode the correct real-world unit (MMBtu per short ton) rather than
+trusting `heat-content-units` verbatim.
+
+**coal row field names (verbatim, one data key requested at a time):** `period`,
+`location`, `stateDescription`, `sector`, `sectorDescription`, `<data_key>` (e.g.
+`"price"`), `<data_key>-units` (e.g. `"price-units"`). **Value column:** the requested
+`data_key` itself, not a fixed `"value"` field — this route follows the same
+key-named-value-column shape as `get_operational_series`'s
+`electricity/electric-power-operational-data`, not `get_series`'s fixed `value`/`units`
+pair. **Unit column:** `<data_key>-units`. **Both `location` and `sector` are present on
+every row, confirmed** (plus the bonus `stateDescription`/`sectorDescription` human-
+readable fields) — not a blocker for Task 3's plan to mint series ids from them.
+
+**coal period format:** `"2026-Q2"` (`YYYY-Qn`), confirmed on live quarterly data.
+
+**`US` confirmed as a real, non-null `location` value — this route is not state-only.**
+Five most recent quarters of `price` for `location=US`/`sector=98` all returned real,
+non-null values (`47.09`, `45.61`, `45.18`, `45.43`, `47.22` dollars per short ton,
+2025-Q2 through 2026-Q2) — Task 3's national-scope plan is unaffected.
+
+**Routes that failed or returned nothing:** none. `coal/consumption-and-quality`'s
+`facet/series` still 400s as Spec 31A already found (expected — this route has no
+`series` facet at all, confirmed again here) but every facet/data call made with the
+route's real shape succeeded.
