@@ -3,10 +3,9 @@
 Page content lives in pages/ -- this file owns only the chrome. The masthead mirrors
 kardamow.substack.com: a centred wordmark over a hairline, with grouped navigation
 beneath it (st.navigation, position="top") in place of the filename-derived sidebar.
-Once the migration finishes, the wordmark will be the document's only <h1> -- page_header()
-paints each page's own title as <h2> and section() paints <h3>, giving every page one valid
-descending outline with "Kardamow" at its top. Until then, the ten pages still on plain
-st.title() paint their own native <h1> alongside the wordmark's.
+The wordmark is the document's only <h1> -- page_header() paints each page's own title as
+<h2> and section() paints <h3>, giving every page one valid descending outline with
+"Kardamow" at its top.
 
 Two ordering constraints: st.set_page_config must be the first Streamlit call, and
 nav.build().run() must be the last -- it is what executes the selected page.

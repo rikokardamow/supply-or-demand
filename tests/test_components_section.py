@@ -78,14 +78,14 @@ def test_empty_state_names_the_source_and_its_cadence() -> None:
     assert "2026-08-30" in rendered
 
 
-def test_empty_state_says_never_rather_than_none_when_a_source_has_no_data() -> None:
+def test_empty_state_says_not_tracked_rather_than_none_when_a_source_has_no_data() -> None:
     at = _run(
         "from components.section import empty_state\n"
         "empty_state('aisstream', 'hourly', None)\n"
     )
     assert not at.exception
     rendered = _text(at)
-    assert "never" in rendered
+    assert "not tracked" in rendered
     assert "None" not in rendered
 
 

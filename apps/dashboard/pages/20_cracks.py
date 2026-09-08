@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.section import empty_state, page_header, section
+from components.section import empty_state, page_header, section, source_note
 from core.cracks import crack_board, crack_seasonal_heatmap
 from core.storage import read_ts_long
 from core.theme import (
@@ -524,6 +524,7 @@ with tab_signal:
                 simple_time_series_chart(result["equity"], "$/bbl"),
                 width="stretch",
             )
+            source_note("Cumulative P&L, $/bbl per unit position.")
 
             turn, non_turn = summary["turnaround"], summary["non_turnaround"]
             st.dataframe(

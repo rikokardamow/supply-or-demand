@@ -8,17 +8,16 @@ Headings are painted here rather than with st.subheader so they carry the headin
 from core/design.py -- including its Georgia/serif fallback, which Streamlit's own
 generated font chain does not have. They are still real heading tags: the inline style
 carries the face, the tag carries the document outline that screen readers navigate by
-(and that tests/test_pages_browser.py locates each page with). Once the migration finishes,
-the document's only <h1> will be the "Kardamow" wordmark painted in apps/dashboard/app.py;
-page_header() paints <h2> and section() paints <h3>, so every migrated page keeps a single,
-valid descending outline. Until then, pages still on plain st.title() paint their own
-native <h1> too.
+(and that tests/test_pages_browser.py locates each page with). The document's only <h1>
+is the "Kardamow" wordmark painted in apps/dashboard/app.py; page_header() paints <h2>
+and section() paints <h3>, so every page keeps a single, valid descending outline.
 padding:0 is not decoration -- Streamlit's own heading rules add vertical padding these
 margins assume away.
 """
 
 from __future__ import annotations
 
+import html
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 
@@ -39,8 +38,8 @@ def section(title: str) -> Iterator[None]:
     """
     st.markdown(
         f'<h3 style="font-family:{HEADING_STACK};font-size:1.05rem;font-weight:600;'
-        f'color:{TEXT};text-align:center;margin:1.6rem 0 0.15rem;padding:0">{title}</h3>'
-        + _RULE.format(margin="0 0 0.9rem"),
+        f'color:{TEXT};text-align:center;margin:1.6rem 0 0.15rem;padding:0">'
+        f"{html.escape(title)}</h3>" + _RULE.format(margin="0 0 0.9rem"),
         unsafe_allow_html=True,
     )
     yield
@@ -52,10 +51,11 @@ def page_header(
     """Page title in the heading face, with the Substack's caps meta line beneath."""
     st.markdown(
         f'<h2 style="font-family:{HEADING_STACK};font-size:2.1rem;font-weight:600;'
-        f'color:{TEXT};text-align:center;margin:0.2rem 0 0.35rem;padding:0">{title}</h2>',
+        f'color:{TEXT};text-align:center;margin:0.2rem 0 0.35rem;padding:0">'
+        f"{html.escape(title)}</h2>",
         unsafe_allow_html=True,
     )
-    meta = " · ".join(part for part in (as_of, freshness) if part)
+    meta = " · ".join(html.escape(part) for part in (as_of, freshness) if part)
     if meta:
         st.markdown(f'<div style="{_META}">{meta}</div>', unsafe_allow_html=True)
     st.markdown(_RULE.format(margin="0.8rem 0 1.4rem"), unsafe_allow_html=True)
@@ -72,7 +72,7 @@ def kpi_row(items: Sequence[tuple[str, str, str | None]]) -> None:
 
 def empty_state(source: str, cadence: str, last_seen: str | None) -> None:
     """Deliberate NO-DATA rendering. Pages show absence rather than hiding it."""
-    seen = last_seen or "never"
+    seen = last_seen or "not tracked"
     st.markdown(
         f'<div style="{_META}padding:1.6rem 0">No data · {source} · '
         f"expected {cadence} · last seen {seen}</div>",
@@ -83,5 +83,6 @@ def empty_state(source: str, cadence: str, last_seen: str | None) -> None:
 def source_note(text: str) -> None:
     """Grey caps footnote under a chart -- provenance, units, caveats."""
     st.markdown(
-        f'<div style="{_META}margin-top:-0.4rem">{text}</div>', unsafe_allow_html=True
+        f'<div style="{_META}margin-top:-0.4rem">{html.escape(text)}</div>',
+        unsafe_allow_html=True,
     )

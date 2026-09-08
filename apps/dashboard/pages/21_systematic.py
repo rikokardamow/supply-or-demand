@@ -21,7 +21,7 @@ import core.theme  # noqa: F401
 import numpy as np
 import pandas as pd
 import streamlit as st
-from components.section import empty_state, page_header, section
+from components.section import empty_state, page_header, section, source_note
 from core.backtest import backtest, fractionate, inventory_predictability_test, spread_to_return
 from core.storage import read_ts_long
 from core.strategies import REGISTRY, missing_ranks
@@ -145,6 +145,7 @@ with tab_board:
                 signal_board_table(board),
                 width="stretch",
             )
+            source_note(f"Latest positions: {latest.name:%d %b %Y}")
             disclosures = {n: REGISTRY[n].note for n in latest.index if REGISTRY[n].note}
             for name, note in disclosures.items():
                 st.caption(f"**{name}** — {note}")

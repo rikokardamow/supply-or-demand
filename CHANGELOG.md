@@ -20,7 +20,7 @@ along the way.
   page now opens with `page_header()` (a Lora `<h2>`, demoting the old bare `st.title()`)
   and wraps each chart or table in `section()` (`<h3>` + hairline rule) instead of
   `apps.dashboard.components.card.card()` — deleted here, along with its alias test.
-  `core/theme.py`'s chart builders lost the `title` parameter on 29 of the ~30 that took
+  `core/theme.py`'s chart builders lost the `title` parameter on 30 of the 31 that took
   one: painting a chart's own title had already been made visually inert once the section
   header took over, but the dead parameter and its call-site argument were still threaded
   through every signature. `gauge_chart` kept it — its `title` labels the `go.Indicator`
