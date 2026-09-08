@@ -9,19 +9,25 @@ benchmark-health counts are all manual-drop-only (pipelines/manual_physical, no 
 CSV exists yet); shale_response needs a real futures curve (Spec 18 has none yet) and
 no Spec 06 Drilling Productivity Report pipeline exists either. Every such card renders
 a real st.info(...) no-data message instead of a chart, per
-specs/TRADING_LAYER_RUNBOOK.md's own "render NO-DATA, never fabricate" rule. Real
-cards: inventory deviation + days-of-cover (WCESTUS1/WGIRIUS2, Spec 01), the Carollo
-scatter (WCESTUS1 vs fred.dcoilbrenteu, verified live in Session B), refinery
-utilisation (WPULEUS3, Spec 01), and CFTC managed-money positioning
-(derived.cot.<root>.mm_pct_3y, this spec's own Session A)."""
+specs/TRADING_LAYER_RUNBOOK.md's own "render NO-DATA, never fabricate" rule -- their
+manual/nonexistent-pipeline sources (`source="manual"`, or no pipeline at all) have no
+key in core.freshness.EXPECTED_CADENCE_DAYS, so they cannot honestly back an
+empty_state(...) call and stay plain st.info(...). Real cards: inventory deviation +
+days-of-cover (WCESTUS1/WGIRIUS2, Spec 01), the Carollo scatter (WCESTUS1 vs
+fred.dcoilbrenteu, verified live in Session B), and refinery utilisation (WPULEUS3,
+Spec 01) render empty_state("eia"/"fred", "weekly", None) for their own no-data state,
+since those series' `source=` is real and tracked. CFTC managed-money positioning
+(derived.cot.<root>.mm_pct_3y, this spec's own Session A) is real data too, but its
+pipeline writes `source="derived"`, also untracked in EXPECTED_CADENCE_DAYS, so its
+no-data state stays plain st.info(...) as well."""
 
 from __future__ import annotations
 
 import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
-from components.card import card
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.fundamentals import (
     carollo_scatter,
     days_of_cover,
@@ -38,13 +44,13 @@ US_REFINERY_INPUTS_SERIES_ID = "WGIRIUS2"
 US_REFINERY_UTILISATION_SERIES_ID = "WPULEUS3"
 BRENT_SERIES_ID = "fred.dcoilbrenteu"
 
-st.title("Fundamentals & Physical Market")
+page_header("Fundamentals & Physical Market")
 
 tab_sd, tab_inventory, tab_quality, tab_shale_cot, tab_benchmark = st.tabs(
     ["S&D & Spare Capacity", "Inventory", "Quality & Refining", "Shale & COT", "Benchmark & OSP"]
 )
 
-with tab_sd, card("Supply & Demand Balance (IEA / EIA / OPEC)"):
+with tab_sd, section("Supply & Demand Balance (IEA / EIA / OPEC)"):
     st.info(
         "No real IEA/EIA supply-demand balance data exists yet -- OPEC's own MOMR "
         "demand_balance series are real (Spec 06), but a 3-way agency comparison with "
@@ -56,7 +62,7 @@ with tab_sd, card("Supply & Demand Balance (IEA / EIA / OPEC)"):
         "balance (missing -- distinct from their spare-capacity series below)."
     )
 
-with tab_sd, card("Spare Capacity (inverted) vs Brent"):
+with tab_sd, section("Spare Capacity (inverted) vs Brent"):
     st.info(
         "No manual EIA STEO / IEA OMR spare-capacity drop yet -- add "
         "data/manual/physical/*.csv and run `pipelines/manual_physical/reader.py` "
@@ -68,11 +74,10 @@ with tab_sd, card("Spare Capacity (inverted) vs Brent"):
 
 with tab_inventory:
     stocks_df = read_ts_long(series_ids=[US_CRUDE_STOCKS_SERIES_ID])
-    with card("US Crude Stocks -- Seasonal Range"):
+    with section("US Crude Stocks (ex-SPR)"):
         if stocks_df.empty:
-            st.info(
-                f"No data yet for {US_CRUDE_STOCKS_SERIES_ID} -- run pipelines/eia/pull_wpsr.py."
-            )
+            st.caption(f"Run pipelines/eia/pull_wpsr.py to populate {US_CRUDE_STOCKS_SERIES_ID}.")
+            empty_state("eia", "weekly", None)
         else:
             stats = seasonal_stats(stocks_df[["ts", "value"]], value_col="value")
             current_year = stocks_df["ts"].dt.year.max()
@@ -94,13 +99,14 @@ with tab_inventory:
                 "2020 excluded from the seasonal band."
             )
 
-    with card("Days of Cover"):
+    with section("Days of Cover"):
         inputs_df = read_ts_long(series_ids=[US_REFINERY_INPUTS_SERIES_ID])
         if stocks_df.empty or inputs_df.empty:
-            st.info(
-                f"No data yet for {US_CRUDE_STOCKS_SERIES_ID} or "
-                f"{US_REFINERY_INPUTS_SERIES_ID} -- run pipelines/eia/pull_wpsr.py."
+            st.caption(
+                f"Run pipelines/eia/pull_wpsr.py to populate {US_CRUDE_STOCKS_SERIES_ID} or "
+                f"{US_REFINERY_INPUTS_SERIES_ID}."
             )
+            empty_state("eia", "weekly", None)
         else:
             merged = pd.merge(
                 stocks_df[["ts", "value"]],
@@ -116,16 +122,18 @@ with tab_inventory:
             )
 
 with tab_quality:
-    with card("Carollo Stock-Change vs Price-Change Diagnostic"):
+    with section("US Crude Stock Changes vs Brent Price Changes (Quarterly)"):
         stocks = (
             read_ts_long(series_ids=[US_CRUDE_STOCKS_SERIES_ID])
             .set_index("ts")["value"].sort_index()
         )
         brent = read_ts_long(series_ids=[BRENT_SERIES_ID]).set_index("ts")["value"].sort_index()
-        if stocks.empty or brent.empty:
-            st.info(
-                "No data yet -- run pipelines/eia/pull_wpsr.py and pipelines/macro (FRED Brent)."
-            )
+        if stocks.empty:
+            st.caption(f"Run pipelines/eia/pull_wpsr.py to populate {US_CRUDE_STOCKS_SERIES_ID}.")
+            empty_state("eia", "weekly", None)
+        elif brent.empty:
+            st.caption(f"Run pipelines/macro (FRED Brent) to populate {BRENT_SERIES_ID}.")
+            empty_state("fred", "weekly", None)
         else:
             delta_stocks_q = stocks.resample("QE").last().diff()
             delta_brent_q = brent.resample("QE").last().diff()
@@ -145,20 +153,20 @@ with tab_quality:
                 f"violate the classical model (n={int(result['n'])})."
             )
 
-    with card("Refinery Utilisation"):
+    with section("US Refinery Utilisation"):
         util_df = read_ts_long(series_ids=[US_REFINERY_UTILISATION_SERIES_ID])
         if util_df.empty:
-            st.info(
-                f"No data yet for {US_REFINERY_UTILISATION_SERIES_ID} -- "
-                "run pipelines/eia/pull_wpsr.py."
+            st.caption(
+                f"Run pipelines/eia/pull_wpsr.py to populate {US_REFINERY_UTILISATION_SERIES_ID}."
             )
+            empty_state("eia", "weekly", None)
         else:
             series = util_df.set_index("ts")["value"].sort_index()
             fig = simple_time_series_chart(series, title="US Refinery Utilisation", unit="%")
             st.plotly_chart(fig)
             st.caption(f"Source: {US_REFINERY_UTILISATION_SERIES_ID} (Spec 01).")
 
-    with card("Refining Constraint Index"):
+    with section("Refining Constraint Index"):
         st.info(
             "No manual complex-simple margin spread / light-heavy differential data yet -- "
             "both are required alongside utilisation for this index (see "
@@ -171,7 +179,7 @@ with tab_quality:
         )
 
 with tab_shale_cot:
-    with card("Shale Rig Response to Forward WTI"):
+    with section("Shale Rig Response to Forward WTI"):
         st.info(
             "No real 12-month-forward WTI price exists yet (Spec 18's futures pipeline has "
             "no real settlement data) and no Spec 06 Drilling Productivity Report pipeline "
@@ -182,7 +190,7 @@ with tab_shale_cot:
             "a Drilling Productivity Report pipeline (missing)."
         )
 
-    with card("CFTC Managed-Money Positioning"):
+    with section("CFTC Managed-Money Positioning"):
         root = st.selectbox("Root", options=list(CONTRACT_CODES), key="fundamentals_cot_root")
         cot_df = read_ts_long(series_ids=[f"derived.cot.{root}.mm_pct_3y"])
         if cot_df.empty:
@@ -208,7 +216,7 @@ with tab_shale_cot:
 with tab_benchmark:
     physical_df = read_physical_csvs()
 
-    with card("Benchmark Health (Window Trades / Partials / Midland Share)"):
+    with section("Benchmark Health (Window Trades / Partials / Midland Share)"):
         required = {
             "manual.platts.dated_brent_window_trades",
             "manual.platts.dubai_partials",
@@ -231,7 +239,7 @@ with tab_benchmark:
                 "manual.argus.wti_midland_share_bfoet (pipelines/manual_physical)."
             )
 
-    with card("OSP vs Dubai M1-M3 Structure"):
+    with section("OSP vs Dubai M1-M3 Structure"):
         required = {
             "manual.saudi_aramco.osp_arab_light_asia",
             "manual.platts.dubai_m1",
