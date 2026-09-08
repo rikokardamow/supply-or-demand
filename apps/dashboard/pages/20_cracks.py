@@ -147,6 +147,7 @@ def _acquisition_cost_section() -> None:
     df = read_ts_long(series_ids=list(RAC))
     if df.empty:
         empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_prices.py` to populate refiner acquisition cost.")
         return
 
     fig = go.Figure()
@@ -207,6 +208,10 @@ def _landed_cost_section() -> None:
     df = read_ts_long(series_ids=list(LANDED_COST))
     if df.empty:
         empty_state("eia", "weekly", None)
+        st.caption(
+            "Run `pipelines/eia/pull_prices.py` to populate landed cost by API "
+            "gravity band."
+        )
         return
 
     fig = go.Figure()
