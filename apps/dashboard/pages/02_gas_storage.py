@@ -8,10 +8,10 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.seasonal import seasonal_stats
 from core.theme import (
     NAVY,
@@ -114,7 +114,8 @@ def _fullness_bars_section(geo: str) -> None:
     fill_series = _series_by_ts(f"agsi.{geo}.full_pct")
     twh_series = _series_by_ts(f"agsi.{geo}.gas_in_storage")
     if fill_series.empty or twh_series.empty:
-        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
+        st.caption(f"Run `pipelines/gie/pull_agsi.py` to populate {geo}.")
+        empty_state("gie", "daily", None)
         return
 
     latest_ts = fill_series.index.max()
@@ -132,7 +133,7 @@ def _fullness_bars_section(geo: str) -> None:
         date_label=latest_ts.strftime("%d-%b-%Y"),
         title=f"{geo} Storage Fullness",
     )
-    with card(f"{geo} Storage Fullness"):
+    with section(f"{geo} Storage Fullness"):
         st.plotly_chart(fig)
 
         injection = _series_by_ts(f"agsi.{geo}.injection")
@@ -152,9 +153,10 @@ def _fullness_seasonal_section(geo: str) -> None:
     title = f"{geo} Storage Fullness — Seasonal"
     fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", title, "%")
     if fig is None:
-        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
+        st.caption(f"Run `pipelines/gie/pull_agsi.py` to populate {geo}.")
+        empty_state("gie", "daily", None)
         return
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         if geo == "EU":
             kardamow_take(
@@ -167,7 +169,8 @@ def _fullness_seasonal_section(geo: str) -> None:
 def _net_flow_seasonal_section(geo: str) -> None:
     net_df = _net_flow_df(geo)
     if net_df.empty:
-        st.info(f"No data yet for {geo} — run `pipelines/gie/pull_agsi.py`.")
+        st.caption(f"Run `pipelines/gie/pull_agsi.py` to populate {geo}.")
+        empty_state("gie", "daily", None)
         return
 
     stats = seasonal_stats(net_df, value_col="value")
@@ -178,7 +181,7 @@ def _net_flow_seasonal_section(geo: str) -> None:
 
     title = f"{geo} Net Daily Injection/Withdrawal — Seasonal"
     fig = seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit="GWh/d")
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
 
 
@@ -230,10 +233,10 @@ def _small_multiples_section() -> None:
         fig = _worm_chart(f"agsi.{country}.full_pct", f"{country} Fill %")
         with cols[i % 3]:
             if fig is None:
-                st.info(f"No data yet for {country}.")
+                empty_state("gie", "daily", None)
                 continue
             fig.update_layout(height=320, showlegend=False)
-            with card(f"{country} Fill %"):
+            with section(f"{country} Fill %"):
                 st.plotly_chart(fig)
                 take = _COUNTRY_TAKES.get(country)
                 if take is not None:
@@ -246,7 +249,8 @@ def _net_injection_vs_sendout_section() -> None:
     send_out = _series_by_ts("alsi.EU.send_out")
 
     if injection.empty or withdrawal.empty or send_out.empty:
-        st.info("No data yet — run `pipelines/gie/pull_agsi.py` and `pull_alsi.py`.")
+        st.caption("Run `pipelines/gie/pull_agsi.py` and `pull_alsi.py` to populate this.")
+        empty_state("gie", "daily", None)
         return
 
     time_range = st.segmented_control(
@@ -272,7 +276,7 @@ def _net_injection_vs_sendout_section() -> None:
         right_label="LNG send-out (GWh/d)",
     )
     add_event_markers(fig, commodity="gas")
-    with card("EU Net Injection vs. ALSI Send-Out"):
+    with section("EU Net Injection vs. ALSI Send-Out"):
         st.plotly_chart(fig)
         kardamow_take(
             "LNG send-out is running slightly ahead of net storage injection — the import "
@@ -289,7 +293,8 @@ def _country_deviation_section() -> None:
             fill_by_country[country] = df
 
     if not fill_by_country:
-        st.info("No data yet — run `pipelines/gie/pull_agsi.py`.")
+        st.caption("Run `pipelines/gie/pull_agsi.py` to populate this.")
+        empty_state("gie", "daily", None)
         return
 
     deviation_df = country_deviation(fill_by_country)
@@ -301,10 +306,9 @@ def _country_deviation_section() -> None:
         )
     )
     bar.update_layout(
-        title="Country Fill % vs. Seasonal Median (ranked)",
         yaxis_title="Deviation (percentage points)",
     )
-    with card("Country Fill % vs. Seasonal Median (ranked)"):
+    with section("Country Fill % vs. Seasonal Median (ranked)"):
         st.plotly_chart(bar)
         kardamow_take(
             "Rank the six by deviation from median and the split is geographic, not "
@@ -314,7 +318,7 @@ def _country_deviation_section() -> None:
         )
 
 
-st.title("EU Gas Storage & LNG (GIE AGSI+/ALSI+)")
+page_header("EU Gas Storage & LNG (GIE AGSI+/ALSI+)")
 
 st.subheader("Storage headline")
 selected_geo = st.selectbox("Country", options=GEO_OPTIONS, index=0)
