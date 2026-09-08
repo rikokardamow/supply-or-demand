@@ -82,7 +82,7 @@ _SMALL_MULTIPLE_SERIES = [
 PRODUCTION_EXPORTS_RANGE_DAYS = {"1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
 
 
-def _worm_chart(series_id: str, title: str) -> go.Figure | None:
+def _worm_chart(series_id: str) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
         return None
@@ -93,12 +93,12 @@ def _worm_chart(series_id: str, title: str) -> go.Figure | None:
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    return seasonal_range_chart(stats, current_year_series, title=title, unit="BCF")
+    return seasonal_range_chart(stats, current_year_series, unit="BCF")
 
 
 def _headline_section() -> None:
     title = "Lower 48 Working Gas Storage — Seasonal"
-    fig = _worm_chart(L48_SERIES_ID, title)
+    fig = _worm_chart(L48_SERIES_ID)
     if fig is None:
         empty_state("eia", "weekly", None)
         st.caption("Run `pipelines/eia/pull_gas_storage.py` to populate storage data.")
@@ -143,7 +143,7 @@ def _small_multiples_section() -> None:
     cols = st.columns(3)
     for i, (series_id, label) in enumerate(selected):
         title = f"{label} — Seasonal"
-        fig = _worm_chart(series_id, title)
+        fig = _worm_chart(series_id)
         with cols[i % 3], section(title):
             if fig is None:
                 empty_state("eia", "weekly", None)
@@ -176,7 +176,7 @@ def _iso_mix_section(iso: str) -> None:
     wide = long_df.pivot_table(index="ts", columns="fuel", values="value").fillna(0.0)
     ordered_cols = [f for f in fuels if f in wide.columns]
     title = f"{iso} Fuel Mix"
-    fig = generation_mix_chart(wide[ordered_cols], title=title, unit="MW")
+    fig = generation_mix_chart(wide[ordered_cols], unit="MW")
     with section(title):
         st.plotly_chart(fig)
 
@@ -198,7 +198,7 @@ def _iso_load_section(iso: str) -> None:
     net = net_load(load, wind, solar)
     title = f"{iso} Load vs. Net Load"
     fig = dual_axis_chart(
-        load, net, title=title, left_label="Load (MW)", right_label="Net load (MW)"
+        load, net, left_label="Load (MW)", right_label="Net load (MW)"
     )
     with section(title):
         st.plotly_chart(fig)
@@ -213,7 +213,7 @@ def _iso_lmp_section(iso: str) -> None:
         st.caption(f"Run `pipelines/gridstatus_iso/pull_iso.py` to populate {iso} {hub} LMP.")
         return
     title = f"{iso} {hub} LMP"
-    fig = hour_day_heatmap(series.to_frame("value"), title=title, unit="USD/MWh")
+    fig = hour_day_heatmap(series.to_frame("value"), unit="USD/MWh")
     with section(title):
         st.plotly_chart(fig)
 
@@ -243,7 +243,6 @@ def _production_exports_section() -> None:
     fig = dual_axis_chart(
         production,
         lng_exports,
-        title=title,
         left_label="Dry production (MMcf)",
         right_label="LNG exports (MMcf)",
     )

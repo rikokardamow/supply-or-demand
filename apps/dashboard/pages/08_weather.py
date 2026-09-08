@@ -117,7 +117,7 @@ def _climatology_section(region: str) -> None:
     current_year_series = current.set_index(reference_doy)["value"]
 
     title = f"{region.upper()} Population-Weighted HDD — Seasonal"
-    fig = seasonal_range_chart(stats, current_year_series, title=title, unit="degree-days")
+    fig = seasonal_range_chart(stats, current_year_series, unit="degree-days")
 
     forecast = _series_by_ts(f"{series_id}.forecast", source="open_meteo_forecast")
     if not forecast.empty:
@@ -154,7 +154,6 @@ def _eu_hdd_vs_gas_section(window_days: int) -> None:
     fig = dual_axis_chart(
         hdd_anomaly,
         eu_net_withdrawal,
-        title=title,
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (GWh/d)",
     )
@@ -186,7 +185,6 @@ def _us_hdd_vs_gas_section(window_days: int) -> None:
     fig = dual_axis_chart(
         hdd_anomaly,
         us_net_withdrawal,
-        title=title,
         left_label="HDD anomaly (degree-days)",
         right_label="Net withdrawal (BCF/week)",
     )
@@ -233,7 +231,6 @@ def _cdd_vs_load_section(city: str, iso: str, window_days: int) -> None:
     fig = dual_axis_chart(
         cdd_anomaly,
         load,
-        title=title,
         left_label="CDD anomaly (degree-days)",
         right_label="Load (MW)",
     )
@@ -382,7 +379,6 @@ def _wind_vs_entsoe_section(country: str, zone: str, window_days: int) -> None:
     fig = dual_axis_chart(
         wind_index,
         entsoe_wind,
-        title=title,
         left_label="10m wind speed, daily max (km/h)",
         right_label=f"ENTSO-E {zone} wind forecast, daily mean (MW)",
     )

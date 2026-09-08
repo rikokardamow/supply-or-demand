@@ -142,7 +142,7 @@ with tab_board:
                 }
             ).sort_values("strategy")
             st.plotly_chart(
-                signal_board_table(board, f"Latest positions ({positions.index.max():%d %b %Y})"),
+                signal_board_table(board),
                 width="stretch",
             )
             disclosures = {n: REGISTRY[n].note for n in latest.index if REGISTRY[n].note}
@@ -249,7 +249,6 @@ with tab_equity:
                 equity_drawdown_chart(
                     pnl.cumsum(),
                     pnl.cumsum() - pnl.cumsum().cummax(),
-                    f"{choice} — cumulative log P&L",
                     "log return",
                     benchmark=benchmark[0].cumsum() if benchmark else None,
                 ),
@@ -270,9 +269,7 @@ with tab_reaction, section("Reaction function with today's z"):
         rolled = s12.rolling(252)
         z = (s12 - rolled.mean()) / rolled.std()
         live_z = float(z.dropna().iloc[-1])
-    st.plotly_chart(
-        reaction_curve_chart(live_z, "R(z) = z*exp(0.5*(1-z^2))"), width="stretch"
-    )
+    st.plotly_chart(reaction_curve_chart(live_z), width="stretch")
     st.caption(
         "Conviction peaks at z=1 and *falls* beyond it: an unusually extreme reading "
         "is treated as a regime the model does not understand, not a bigger "
@@ -303,7 +300,7 @@ with tab_fraction, section("Where the P&L came from"):
             st.info("No conditioners available for this root.")
         else:
             st.plotly_chart(
-                fractionation_heatmap(table, f"{choice} — Sharpe by bucket", value="sharpe"),
+                fractionation_heatmap(table, value="sharpe"),
                 width="stretch",
             )
             st.dataframe(
@@ -328,7 +325,7 @@ with tab_crowding:
             rolled = s12.rolling(252)
             z = (s12 - rolled.mean()) / rolled.std()
             st.plotly_chart(
-                crowding_quadrant_scatter(cot, z.reindex(cot.index), "Positioning vs signal"),
+                crowding_quadrant_scatter(cot, z.reindex(cot.index)),
                 width="stretch",
             )
             st.caption(

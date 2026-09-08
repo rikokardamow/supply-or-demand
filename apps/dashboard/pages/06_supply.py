@@ -64,7 +64,7 @@ def _production_vs_quota_section() -> None:
     result = production_vs_quota(latest, quotas)
     result = result[result["country"].isin(selected_countries)]
     title = f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}"
-    fig = production_vs_quota_chart(result, title=title, unit="tb/d")
+    fig = production_vs_quota_chart(result, unit="tb/d")
     with section(title):
         st.plotly_chart(fig)
         st.caption(
@@ -95,7 +95,7 @@ def _revision_waterfall_section() -> None:
         st.info(f"No non-zero revisions for {period:%B %Y}.")
         return
     title = f"MOMR Revision Waterfall — {period:%B %Y}"
-    fig = revision_waterfall_chart(result, title=title, unit="mb/d")
+    fig = revision_waterfall_chart(result, unit="mb/d")
     with section(title):
         st.plotly_chart(fig)
         st.caption(
@@ -115,7 +115,7 @@ def _oil_on_water_section() -> None:
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
     title = "Oil-on-Water (OECD)"
-    fig = time_series_area_chart(series, title=title, unit="mb")
+    fig = time_series_area_chart(series, unit="mb")
     add_event_markers(fig, commodity="crude")
     with section(title):
         st.plotly_chart(fig)
@@ -148,7 +148,7 @@ def _rig_count_section() -> None:
         series = series[series.index >= cutoff]
 
     title = "US Oil Rig Count"
-    fig = simple_time_series_chart(series, title=title, unit="rigs")
+    fig = simple_time_series_chart(series, unit="rigs")
     with section(title):
         st.plotly_chart(fig)
         st.caption(

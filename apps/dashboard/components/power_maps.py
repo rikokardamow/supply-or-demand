@@ -13,6 +13,7 @@ from core.theme import NAVY, RED
 from pipelines.entsoe.zones import ZONES
 
 from components.lake import read_flows, read_ts_long
+from components.section import source_note
 
 _ARROWHEAD_FRACTION = 0.85
 
@@ -83,8 +84,8 @@ def render_price_map() -> None:
         mapbox={"style": "open-street-map", "center": {"lat": 50, "lon": 10}, "zoom": 3.3}
     )
     latest_ts = latest["ts"].max()
-    fig.update_layout(title=f"Day-Ahead Price by Zone — {pd.Timestamp(latest_ts)}")
     st.plotly_chart(fig)
+    source_note(f"As of {pd.Timestamp(latest_ts):%d %b %Y %H:%M}")
 
 
 def render_flow_map() -> None:
@@ -145,5 +146,5 @@ def render_flow_map() -> None:
             )
         )
 
-    fig.update_layout(title=f"Cross-Border Power Flows — 24h avg to {latest_ts}")
     st.plotly_chart(fig)
+    source_note(f"24h average to {pd.Timestamp(latest_ts):%d %b %Y %H:%M}")

@@ -22,6 +22,7 @@ from core.theme import LIGHT_BLUE, NAVY
 from pipelines.entsog.transforms import latest_complete_date, pair_daily_totals
 
 from components.lake import read_flows
+from components.section import source_note
 
 _ARROWHEAD_FRACTION = 0.85
 _WINDOW_DAYS = 7
@@ -138,5 +139,5 @@ def render_entsog_flow_map() -> None:
                 )
             )
 
-    fig.update_layout(title=f"EU Gas Corridor Map — 7-day avg to {latest_ts.date()}")
     st.plotly_chart(fig)
+    source_note(f"7-day average to {latest_ts.date()}")

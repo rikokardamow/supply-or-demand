@@ -80,7 +80,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
+    fig = seasonal_range_chart(stats, current_year_series, unit=unit)
     with section(title):
         st.plotly_chart(fig)
         if take is not None:
@@ -104,7 +104,7 @@ def _simple_section(
     if window_days is not None:
         cutoff = series.index.max() - pd.Timedelta(days=window_days)
         series = series[series.index >= cutoff]
-    fig = simple_time_series_chart(series, title=title, unit=unit)
+    fig = simple_time_series_chart(series, unit=unit)
     with section(title):
         st.plotly_chart(fig)
         if take is not None:
@@ -155,7 +155,7 @@ def _four_week_avg_overlay(
     # comparing the current year's partial line against recent years is the point.
     current_year = int(combined_df["ts"].dt.year.max())
     stats = seasonal_stats(combined_df, value_col="value", years=range(2018, current_year + 1))
-    fig = multi_year_overlay_chart(stats, title=title, unit=unit)
+    fig = multi_year_overlay_chart(stats, unit=unit)
     with section(title):
         st.plotly_chart(fig)
         if take is not None:

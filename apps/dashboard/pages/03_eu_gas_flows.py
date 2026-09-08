@@ -72,7 +72,7 @@ else:
     values = link_totals["value"].tolist()
 
     sankey_title = f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)"
-    fig = sankey_chart(node_labels, sources, targets, values, title=sankey_title)
+    fig = sankey_chart(node_labels, sources, targets, values)
     with section(sankey_title):
         st.plotly_chart(fig)
 
@@ -96,7 +96,7 @@ else:
                     st.caption(f"Run `pipelines/entsog/pull_flows.py` to populate {corridor_name}.")
                     continue
                 corridor_title = corridor_name.replace("_", " ")
-                fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
+                fig = current_vs_prior_year_chart(corridor_df, unit="GWh/d")
                 with section(corridor_title):
                     st.plotly_chart(fig)
 

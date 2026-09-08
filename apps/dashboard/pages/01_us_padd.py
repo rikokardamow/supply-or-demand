@@ -95,7 +95,7 @@ _POSITIVE_COLOUR = "#2e7d32"
 _NEGATIVE_COLOUR = RED
 
 
-def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = None) -> None:
+def _seasonal_section(series_id: str, unit: str, take: str | None = None) -> None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
         empty_state("eia", "weekly", None)
@@ -108,7 +108,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    fig = seasonal_range_chart(stats, current_year_series, title=title, unit=unit)
+    fig = seasonal_range_chart(stats, current_year_series, unit=unit)
     add_event_markers(fig, commodity="crude", x_axis="doy")
     st.plotly_chart(fig)
     source_note(f"Source: EIA WPSR — unit: {unit.strip()}")
@@ -180,7 +180,7 @@ with tab_stocks:
         stock_cols = st.columns(2)
         for i, (series_id, label, unit, take) in enumerate(selected_stocks):
             with stock_cols[i % 2], section(f"{label} — Seasonal Range"):
-                _seasonal_section(series_id, f"{label} — Seasonal Range", unit, take=take)
+                _seasonal_section(series_id, unit, take=take)
 
 with tab_refining:
     geo = st.selectbox("Region", options=list(GROSS_INPUTS_BY_GEO), index=0)
@@ -209,7 +209,6 @@ with tab_refining:
             fig = dual_axis_chart(
                 gross_inputs,
                 utilisation,
-                title=f"{geo} Refinery Gross Inputs vs. Utilisation",
                 left_label="Gross inputs (Mbbl/d)",
                 right_label="Utilisation (%)",
             )
@@ -249,7 +248,6 @@ with tab_flows:
             )
         )
         bar.update_layout(
-            title=f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month).strftime('%Y-%m')}",
             yaxis_title="Net receipts (Mbbl, +receiver / -sender)",
         )
         with section(f"Net Inter-PADD Crude Balance — {pd.Timestamp(latest_month):%Y-%m}"):

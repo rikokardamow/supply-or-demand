@@ -81,7 +81,7 @@ def _latest_value(series_id: str) -> float | None:
 
 
 def _worm_chart(
-    series_id: str, title: str, extra_annotation_line: str | None = None
+    series_id: str, extra_annotation_line: str | None = None
 ) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
@@ -96,7 +96,6 @@ def _worm_chart(
     return seasonal_range_chart(
         stats,
         current_year_series,
-        title=title,
         unit="%",
         extra_annotation_line=extra_annotation_line,
     )
@@ -131,7 +130,6 @@ def _fullness_bars_section(geo: str) -> None:
         rows,
         unit_abs="TWh",
         date_label=latest_ts.strftime("%d-%b-%Y"),
-        title=f"{geo} Storage Fullness",
     )
     with section(f"{geo} Storage Fullness"):
         st.plotly_chart(fig)
@@ -151,7 +149,7 @@ def _fullness_bars_section(geo: str) -> None:
 
 def _fullness_seasonal_section(geo: str) -> None:
     title = f"{geo} Storage Fullness — Seasonal"
-    fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", title, "%")
+    fig = _worm_chart_minmaxmean(f"agsi.{geo}.full_pct", "%")
     if fig is None:
         st.caption(f"Run `pipelines/gie/pull_agsi.py` to populate {geo}.")
         empty_state("gie", "daily", None)
@@ -180,12 +178,12 @@ def _net_flow_seasonal_section(geo: str) -> None:
     current_year_series = current.set_index(reference_doy)["value"]
 
     title = f"{geo} Net Daily Injection/Withdrawal — Seasonal"
-    fig = seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit="GWh/d")
+    fig = seasonal_minmaxmean_chart(stats, current_year_series, unit="GWh/d")
     with section(title):
         st.plotly_chart(fig)
 
 
-def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure | None:
+def _worm_chart_minmaxmean(series_id: str, unit: str) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
         return None
@@ -196,7 +194,7 @@ def _worm_chart_minmaxmean(series_id: str, title: str, unit: str) -> go.Figure |
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    return seasonal_minmaxmean_chart(stats, current_year_series, title=title, unit=unit)
+    return seasonal_minmaxmean_chart(stats, current_year_series, unit=unit)
 
 
 def _country_filter_panel() -> list[str]:
@@ -230,7 +228,7 @@ def _small_multiples_section() -> None:
 
     cols = st.columns(3)
     for i, country in enumerate(selected):
-        fig = _worm_chart(f"agsi.{country}.full_pct", f"{country} Fill %")
+        fig = _worm_chart(f"agsi.{country}.full_pct")
         with cols[i % 3], section(f"{country} Fill %"):
             if fig is None:
                 empty_state("gie", "daily", None)
@@ -270,7 +268,6 @@ def _net_injection_vs_sendout_section() -> None:
     fig = dual_axis_chart(
         net_injection,
         send_out,
-        title="EU Net Injection vs. ALSI Send-Out",
         left_label="Net injection (GWh/d)",
         right_label="LNG send-out (GWh/d)",
     )

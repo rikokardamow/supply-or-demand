@@ -10,7 +10,8 @@ Specs for each sub-project live in `specs/`. Always read the relevant spec befor
 2. Pipelines write to `data/` in canonical schemas. Dashboard pages READ the lake, never call APIs.
 3. All scalar time series conform to `ts_long`; directional data to `flows`. See `core/schemas.py`.
 4. Seasonal maths (median/range/corridor) ALWAYS exclude 2020. Use `core.seasonal` — never reimplement.
-5. Charts use `core.theme` (Kardamow house style). No ad-hoc colours or styling.
+5. Charts use `core.theme` (Kardamow house style), whose colours and fonts are bound
+   from `core.design` (the token source). No ad-hoc colours or styling.
 6. British English in all prose, labels, and docstrings.
 7. Small, typed, tested functions. Ask before adding a dependency or changing a schema.
 8. End every session green: `pytest` passes, `ruff check .` clean, work committed.
@@ -70,17 +71,32 @@ light grid `#e6e6e6`; horizontal legend top-left; direct annotations near last p
 Charts use the Inter font (`template.layout.font`) to match the app's own typography.
 
 ## Dashboard layout — institutional look
-Explicit light theme locked via `.streamlit/config.toml` (white canvas, dark-navy sidebar,
-Inter font) — never rely on the viewer's OS/browser dark-mode preference. Every chart
-section is wrapped in `apps.dashboard.components.card.card(title)` (a bordered
-`st.container`) instead of a bare `st.subheader` — group multiple related charts under a
-plain `st.subheader` label with one `card(...)` per individual chart underneath, matching
-the existing pages. Maps use `go.Scattermapbox` with the free `"open-street-map"` style
-(no Mapbox token) — never `go.Scattergeo`, which only renders a flat continent outline.
-Never pass `use_container_width` to `st.plotly_chart`/`st.dataframe`: Streamlit deprecated
-it (removal was scheduled for after 2025-12-31) in favour of `width`, whose default is
-already `"stretch"` — so the argument is now pure noise. Pass nothing for a full-width
-element, or `width="content"` to size to content.
+Explicit light theme locked via `.streamlit/config.toml` (white canvas, Inter font) —
+never rely on the viewer's OS/browser dark-mode preference. The navy sidebar is gone:
+`apps/dashboard/app.py` paints a centred "Kardamow" wordmark masthead (the document's
+only `<h1>`) over a hairline rule, with grouped top navigation (`st.navigation`,
+`position="top"`) beneath it in place of the old filename-derived sidebar. Every page
+opens with `components.section.page_header(title, as_of=..., freshness=...)` (`<h2>`,
+Lora heading face, caps meta line) and wraps each chart or table in
+`components.section.section(title)` (`<h3>` + hairline rule) instead of the old bordered
+`card()`, which no longer exists — group multiple related charts under one
+`section(...)` per chart, matching the existing pages. `components.section` also has
+`kpi_row`, `empty_state`, and `source_note` (provenance/units/caveats caption under a
+chart) for the same purpose card() used to serve piecemeal. Headings use the Lora stack
+(`core.design.HEADING_STACK`); axis ticks, legends, data labels and every other in-chart
+string stay on the Inter body stack (`core.design.BODY_STACK`) — numbers never render in
+the serif. No chart paints its own title: `section()`/`page_header()` own the heading,
+so `core/theme.py` builders no longer take a `title` parameter (except where a title
+string is genuine in-plot content, e.g. `gauge_chart`'s `go.Indicator` label) and no page
+should call `fig.update_layout(title=...)` directly — where a chart's own title carried
+real information the static section heading can't (a date, a selected value, an
+averaging window), surface it via a visible widget, `st.caption`, or `source_note`
+instead of repainting it inside the plot. Maps use `go.Scattermapbox` with the free
+`"open-street-map"` style (no Mapbox token) — never `go.Scattergeo`, which only renders a
+flat continent outline. Never pass `use_container_width` to `st.plotly_chart`/
+`st.dataframe`: Streamlit deprecated it (removal was scheduled for after 2025-12-31) in
+favour of `width`, whose default is already `"stretch"` — so the argument is now pure
+noise. Pass nothing for a full-width element, or `width="content"` to size to content.
 
 ## When unsure
 Prefer the smallest change that satisfies the spec's acceptance criteria. If an API responds

@@ -357,9 +357,7 @@ with tab_board:
                 "Crack", list(SPOT_CRACKS), format_func=lambda k: SPOT_CRACKS[k]
             )
             st.plotly_chart(
-                simple_time_series_chart(
-                    spot[choice].dropna(), f"{SPOT_CRACKS[choice]} (spot)", "$/bbl"
-                ),
+                simple_time_series_chart(spot[choice].dropna(), "$/bbl"),
                 width="stretch",
             )
 
@@ -377,7 +375,7 @@ with tab_seasonal:
                 for m in heat.columns
             ]
             st.plotly_chart(
-                category_time_heatmap(heat.T, "NYH 3:2:1 monthly mean by year", "$/bbl",
+                category_time_heatmap(heat.T, "$/bbl",
                                       center=float(np.nanmedian(heat.to_numpy()))),
                 width="stretch",
             )
@@ -408,7 +406,7 @@ with tab_curve:
                 "m1-m4": float(strip.loc[as_of, "m1"] - strip.loc[as_of, "m4"]),
             }
             st.plotly_chart(
-                curve_strip_chart(curves, spreads, "NYH 3:2:1 crack futures strip", "$/bbl"),
+                curve_strip_chart(curves, spreads, "$/bbl"),
                 width="stretch",
             )
             st.warning(
@@ -465,7 +463,6 @@ with tab_model:
                 cointegration_residual_chart(
                     signal["ect"].dropna(),
                     signal["z"].dropna(),
-                    "log(WTI spot) - beta*crack: fitted relation and z-score",
                     "log $/bbl",
                     z_entry=Z_ENTRY,
                     z_exit=Z_EXIT,
@@ -482,7 +479,6 @@ with tab_model:
                 irf_chart(
                     irf,
                     "crude_to_crack_shock",
-                    "Response of log(WTI spot) to a 1 s.d. crack shock",
                     "log $/bbl",
                 ),
                 width="stretch",
@@ -497,7 +493,6 @@ with tab_model:
                 model_monitor_chart(
                     ratio,
                     REFIT_TRIGGER,
-                    "Rolling 12-month OOS RMSE ratio vs the random walk",
                     break_date=None if card_df.empty else card_df.iloc[-1]["break_date"],
                 ),
                 width="stretch",
@@ -526,9 +521,7 @@ with tab_signal:
             c4.metric("Trades", summary["n_trades"])
 
             st.plotly_chart(
-                simple_time_series_chart(
-                    result["equity"], "Cumulative P&L ($/bbl per unit position)", "$/bbl"
-                ),
+                simple_time_series_chart(result["equity"], "$/bbl"),
                 width="stretch",
             )
 

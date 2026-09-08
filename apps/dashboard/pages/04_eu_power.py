@@ -109,7 +109,7 @@ else:
     wide = generation_long.pivot_table(index="ts", columns="psr_type", values="value").fillna(0.0)
     ordered_cols = [c for c in _GENERATION_ORDER if c in wide.columns]
     mix_title = f"{selected_zone} Generation Mix"
-    fig = generation_mix_chart(wide[ordered_cols], title=mix_title, unit="MW")
+    fig = generation_mix_chart(wide[ordered_cols], unit="MW")
     with section(mix_title):
         st.plotly_chart(fig)
 
@@ -125,7 +125,7 @@ else:
     wind_total = wind_onshore.add(wind_offshore, fill_value=0.0)
     residual = residual_load(load, wind_total, solar)
     residual_title = f"{selected_zone} Residual Load"
-    fig = simple_time_series_chart(residual, title=residual_title, unit="MW")
+    fig = simple_time_series_chart(residual, unit="MW")
     with section(residual_title):
         st.plotly_chart(fig)
 
@@ -192,7 +192,6 @@ else:
     fig = dual_axis_chart(
         roi_demand,
         roi_wind,
-        title="ROI Demand vs. Wind",
         left_label="Demand (MW)",
         right_label="Wind (MW)",
     )
