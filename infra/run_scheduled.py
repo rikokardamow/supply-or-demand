@@ -73,12 +73,14 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("cftc", "pipelines.cftc.pull_weekly"),
         # Must run after "cftc" above -- reads the COT data that pull just wrote.
         ("derived_fundamentals", "pipelines.derived.fundamentals"),
+        ("eia_prices_weekly", "pipelines.eia.pull_prices_weekly"),
     ],
     "monthly": [
         ("opec_momr", "pipelines.opec_momr.pull_momr"),
         ("jodi", "pipelines.jodi.pull_jodi"),
         ("eia_padd_flows", "pipelines.eia.pull_padd_flows"),
         ("eia_production_exports", "pipelines.eia.pull_production_exports"),
+        ("eia_prices", "pipelines.eia.pull_prices"),
         # Spec 20's "refit monthly". Reads the crack series pipelines.derived.cracks
         # writes on the weekly cadence, so it needs no ordering constraint inside this
         # group -- but it must not run before that pipeline has ever run at all.

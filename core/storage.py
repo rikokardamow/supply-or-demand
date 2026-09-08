@@ -87,11 +87,19 @@ def _partition_dir(dataset: str, source: str, year: int) -> Path:
     return LAKE_ROOT / dataset / f"source={source}" / f"year={year}"
 
 
-def _dataset_glob(dataset: str) -> str:
+def _dataset_glob(dataset: str, source: str | None = None) -> str:
+    """`source`, when given, narrows the glob to that partition's own directory
+    (`data/lake/<dataset>/source=<source>/**/*.parquet`) rather than every source's
+    files -- cheaper than any WHERE-clause filter, since it prunes at the filesystem
+    level which files DuckDB even opens, before a single row is scanned."""
+    if source is not None:
+        return str(LAKE_ROOT / dataset / f"source={source}" / "**" / "*.parquet")
     return str(LAKE_ROOT / dataset / "**" / "*.parquet")
 
 
-def _has_any_files(dataset: str) -> bool:
+def _has_any_files(dataset: str, source: str | None = None) -> bool:
+    if source is not None:
+        return any((LAKE_ROOT / dataset / f"source={source}").glob("**/*.parquet"))
     return any((LAKE_ROOT / dataset).glob("**/*.parquet"))
 
 
@@ -321,13 +329,18 @@ def _read(
     schema: pa.Schema,
     extra_clauses: list[str],
     params: list[object],
+    source: str | None = None,
 ) -> pd.DataFrame:
-    if not _has_any_files(dataset):
+    """`source`, when given, narrows the glob itself (see `_dataset_glob`) rather than
+    adding a WHERE clause -- it prunes which files DuckDB opens at all, so it is
+    strictly cheaper than any row-level filter for callers that only need one source's
+    partition."""
+    if not _has_any_files(dataset, source):
         empty: pd.DataFrame = schema.empty_table().to_pandas()
         return empty
 
     con = duckdb.connect()
-    glob = _dataset_glob(dataset)
+    glob = _dataset_glob(dataset, source)
     available = _available_columns(con, glob)
     query = (
         f"SELECT {_typed_select(schema, available)} "
@@ -342,7 +355,18 @@ def read_ts_long(
     series_ids: list[str] | None = None,
     start: datetime | None = None,
     end: datetime | None = None,
+    source: str | None = None,
+    series_prefix: str | None = None,
 ) -> pd.DataFrame:
+    """`source` narrows the glob itself to that partition's directory (see `_read`/
+    `_dataset_glob`) -- cheaper than any row filter, since files outside it are never
+    opened. `series_prefix` is pushed into the WHERE clause as `starts_with(series_id,
+    ?)` (an exact prefix match, unlike `LIKE`, which would need `_`/`%` in the prefix
+    escaped) -- for a caller that only knows a dynamic prefix, not the finite list of
+    exact series ids `series_ids` requires, this still filters at the SQL level before
+    a single row reaches pandas, rather than reading everything and filtering after.
+    Both default to `None` and change nothing when omitted, for backward
+    compatibility with existing callers."""
     clauses: list[str] = []
     params: list[object] = []
 
@@ -350,6 +374,9 @@ def read_ts_long(
         placeholders = ", ".join("?" for _ in series_ids)
         clauses.append(f"series_id IN ({placeholders})")
         params.extend(series_ids)
+    if series_prefix is not None:
+        clauses.append("starts_with(series_id, ?)")
+        params.append(series_prefix)
     if start is not None:
         clauses.append("ts >= ?")
         params.append(start)
@@ -357,7 +384,7 @@ def read_ts_long(
         clauses.append("ts <= ?")
         params.append(end)
 
-    return _read("ts_long", TS_LONG_SCHEMA, clauses, params)
+    return _read("ts_long", TS_LONG_SCHEMA, clauses, params, source=source)
 
 
 def read_flows(
