@@ -1,0 +1,1261 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/electricity/rto/interchange-data/data/?data%5B0%5D=value&end=2026-09-08T18&facets%5Bfromba%5D%5B%5D=CISO&facets%5Bfromba%5D%5B%5D=ERCO&facets%5Bfromba%5D%5B%5D=ISNE&facets%5Bfromba%5D%5B%5D=MISO&facets%5Bfromba%5D%5B%5D=NYIS&facets%5Bfromba%5D%5B%5D=PJM&facets%5Bfromba%5D%5B%5D=SWPP&facets%5Bfromba%5D%5B%5D=US48&frequency=hourly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc&start=2026-09-06T18
+  response:
+    body:
+      string: '{"response": {"total": "436", "dateFormat": "YYYY-MM-DD\"T\"HH24",
+        "frequency": "hourly", "data": [{"period": "2026-09-07T07", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "AZPS", "toba-name":
+        "Arizona Public Service Company", "value": "-1537", "value-units": "megawatthours"},
+        {"period": "2026-09-07T07", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BANC", "toba-name": "Balancing Authority of Northern
+        California", "value": "-1247", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T07", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BPAT", "toba-name": "Bonneville Power Administration",
+        "value": "-1728", "value-units": "megawatthours"}, {"period": "2026-09-07T07",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "0", "value-units": "megawatthours"}, {"period": "2026-09-07T07", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "IID",
+        "toba-name": "Imperial Irrigation District", "value": "-163", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T07", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "LDWP", "toba-name": "Los
+        Angeles Department of Water and Power", "value": "-1699", "value-units": "megawatthours"},
+        {"period": "2026-09-07T07", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "NEVP", "toba-name": "Nevada Power Company", "value":
+        "-1411", "value-units": "megawatthours"}, {"period": "2026-09-07T07", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "PACW",
+        "toba-name": "PacifiCorp West", "value": "-30", "value-units": "megawatthours"},
+        {"period": "2026-09-07T07", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "SRP", "toba-name": "Salt River Project Agricultural
+        Improvement and Power District", "value": "-1639", "value-units": "megawatthours"},
+        {"period": "2026-09-07T07", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "-119", "value-units": "megawatthours"}, {"period": "2026-09-07T07",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-269", "value-units": "megawatthours"}, {"period": "2026-09-07T07",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "CAN",
+        "toba-name": "Canada", "value": "-1870", "value-units": "megawatthours"},
+        {"period": "2026-09-07T07", "fromba": "US48", "fromba-name": "United States
+        Lower 48", "toba": "MEX", "toba-name": "Mexico", "value": "0", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "AZPS", "toba-name": "Arizona
+        Public Service Company", "value": "-1768", "value-units": "megawatthours"},
+        {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BANC", "toba-name": "Balancing Authority of Northern
+        California", "value": "-1117", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T06", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BPAT", "toba-name": "Bonneville Power Administration",
+        "value": "-1593", "value-units": "megawatthours"}, {"period": "2026-09-07T06",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-5", "value-units": "megawatthours"}, {"period": "2026-09-07T06", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "IID",
+        "toba-name": "Imperial Irrigation District", "value": "-150", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "LDWP", "toba-name": "Los
+        Angeles Department of Water and Power", "value": "-1662", "value-units": "megawatthours"},
+        {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "NEVP", "toba-name": "Nevada Power Company", "value":
+        "-1407", "value-units": "megawatthours"}, {"period": "2026-09-07T06", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "PACW",
+        "toba-name": "PacifiCorp West", "value": "-28", "value-units": "megawatthours"},
+        {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "SRP", "toba-name": "Salt River Project Agricultural
+        Improvement and Power District", "value": "-1763", "value-units": "megawatthours"},
+        {"period": "2026-09-07T06", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "-51", "value-units": "megawatthours"}, {"period": "2026-09-07T06",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-286", "value-units": "megawatthours"}, {"period": "2026-09-07T06",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "CAN",
+        "toba-name": "Canada", "value": "-1940", "value-units": "megawatthours"},
+        {"period": "2026-09-07T06", "fromba": "US48", "fromba-name": "United States
+        Lower 48", "toba": "MEX", "toba-name": "Mexico", "value": "-5", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "AZPS", "toba-name": "Arizona
+        Public Service Company", "value": "-1783", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BANC", "toba-name": "Balancing Authority of Northern
+        California", "value": "-736", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T05", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BPAT", "toba-name": "Bonneville Power Administration",
+        "value": "-1080", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "37", "value-units": "megawatthours"}, {"period": "2026-09-07T05", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "IID",
+        "toba-name": "Imperial Irrigation District", "value": "-109", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "LDWP", "toba-name": "Los
+        Angeles Department of Water and Power", "value": "-1430", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "NEVP", "toba-name": "Nevada Power Company", "value":
+        "-1363", "value-units": "megawatthours"}, {"period": "2026-09-07T05", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "PACW",
+        "toba-name": "PacifiCorp West", "value": "-22", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "SRP", "toba-name": "Salt River Project Agricultural
+        Improvement and Power District", "value": "-1647", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "115", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-322", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "95", "value-units": "megawatthours"}, {"period": "2026-09-07T05", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-619", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T05", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "212", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-345", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "252", "value-units": "megawatthours"}, {"period": "2026-09-07T05", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1666", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-4107", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-22", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-685", "value-units": "megawatthours"}, {"period": "2026-09-07T05",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-54", "value-units": "megawatthours"}, {"period": "2026-09-07T05", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-359", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T05", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "1849", "value-units": "megawatthours"},
+        {"period": "2026-09-07T05", "fromba": "US48", "fromba-name": "United States
+        Lower 48", "toba": "CAN", "toba-name": "Canada", "value": "-4048", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T05", "fromba": "US48", "fromba-name":
+        "United States Lower 48", "toba": "MEX", "toba-name": "Mexico", "value": "132",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "AZPS", "toba-name":
+        "Arizona Public Service Company", "value": "-1814", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BANC", "toba-name": "Balancing Authority of Northern
+        California", "value": "-876", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T04", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "BPAT", "toba-name": "Bonneville Power Administration",
+        "value": "-1097", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "97", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "IID",
+        "toba-name": "Imperial Irrigation District", "value": "-54", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T04", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "LDWP", "toba-name": "Los
+        Angeles Department of Water and Power", "value": "-1641", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "NEVP", "toba-name": "Nevada Power Company", "value":
+        "-1353", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "CISO", "fromba-name": "California Independent System Operator", "toba": "PACW",
+        "toba-name": "PacifiCorp West", "value": "-21", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "SRP", "toba-name": "Salt River Project Agricultural
+        Improvement and Power District", "value": "-1634", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "60", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-307", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "94", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-806", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T04", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "307", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-672", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "214", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1451", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3848", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-16", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-724", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-60", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-255", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T04", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "1811", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "985", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-469", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "491", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3482", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T04", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "170", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-07T04", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-135", "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-919", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T04", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1849", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T04", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-135",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T04", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-3861", "value-units": "megawatthours"}, {"period": "2026-09-07T04",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "191", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T03", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1546", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-817", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-1085",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "85", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-23", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-1671", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1446", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T03", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-20", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-1379", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T03", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "84", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-311", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "88", "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-767", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T03", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "341", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-840", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "104", "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1413", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3900", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-33", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-671", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-61", "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-88", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T03", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "1663", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "990", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-398", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "367", "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3176", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T03", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "103", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-07T03", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-27", "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-757", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T03", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1559", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T03", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-140",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T03", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-4002", "value-units": "megawatthours"}, {"period": "2026-09-07T03",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "173", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T02", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1605", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-812", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-1097",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "66", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-24", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-1349", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1461", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T02", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-21", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-1523", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T02", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "114", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-329", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "134", "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-803", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T02", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "399", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-1073", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-75", "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1798", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3758", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-52", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-704", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-194", "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "53", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T02", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "1739", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "993", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-192", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "357", "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3133", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T02", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "316", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-07T02", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-63", "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-560", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T02", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1485", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T02", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-91",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T02", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-4466", "value-units": "megawatthours"}, {"period": "2026-09-07T02",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "200", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T01", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1301", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-294", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-982",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "79", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-86", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-869", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1250", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T01", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-22", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-1294", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T01", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "333", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-215", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "2", "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-611", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T01", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "569", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-1241", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-238", "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1797", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-4195", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-48", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-935", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-248", "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "165", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T01", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "1935", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "890", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-235", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "285", "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3009", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T01", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "690", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-07T01", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-135", "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-574", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T01", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "2084", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T01", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-74",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T01", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-4705", "value-units": "megawatthours"}, {"period": "2026-09-07T01",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "81", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T00", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1298", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-354", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-623",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "61", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-148", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-621", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1139", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T00", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-16", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-999", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T00", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "479", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-133", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-79", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T00", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "594", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-1216", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-206", "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1579", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3966", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-42", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1059", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-316", "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "175", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T00", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2081", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "264", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-341", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "236", "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-2741", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T00", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "842", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-07T00", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-191", "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-484", "value-units":
+        "megawatthours"}, {"period": "2026-09-07T00", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1798", "value-units": "megawatthours"}, {"period":
+        "2026-09-07T00", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-79",
+        "value-units": "megawatthours"}, {"period": "2026-09-07T00", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-5151", "value-units": "megawatthours"}, {"period": "2026-09-07T00",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "60", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T23", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1407", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-150", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-228",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "-2", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-160", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-823", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1115", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T23", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-10", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-955", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T23", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "481", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-110", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-49", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T23", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1182", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-680", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "53", "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1380", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3717", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "0", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1277", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-382", "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "725", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T23", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2417", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "272", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-563", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "96", "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-2388", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T23", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "764", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T23", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-196", "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-393", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T23", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1810", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T23", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-63",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T23", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-4083", "value-units": "megawatthours"}, {"period": "2026-09-06T23",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "-3", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T22", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1611", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-9", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "-38",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "3", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-191", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-749", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1201", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T22", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-6", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-883", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T22", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "379", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-97", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-48", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T22", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1367", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-100", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "169", "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1373", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-2818", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "11", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1353", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-313", "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "1279", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T22", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2804", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "943", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-304", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "2", "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3027", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T22", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "597", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T22", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-193", "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-422", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T22", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1923", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T22", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-76",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T22", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-2648", "value-units": "megawatthours"}, {"period": "2026-09-06T22",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "2", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T21", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1261", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "104", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "206",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "1", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-194", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-1196", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1436", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T21", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-3", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-810", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T21", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "347", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-88", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-1", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T21", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1322", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-277", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "267", "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1354", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3038", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "19", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1521", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-219", "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "1335", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T21", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2857", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "997", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-371", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "183", "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-2713", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T21", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "488", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T21", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-190", "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-425", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T21", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "2039", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T21", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-87",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T21", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-2835", "value-units": "megawatthours"}, {"period": "2026-09-06T21",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "0", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T20", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-994", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "85", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "267",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "12", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-245", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-1036", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1509", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T20", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-3", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-652", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T20", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "394", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-109", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-74", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T20", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1381", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-354", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "374", "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1372", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3555", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "21", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1573", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-145", "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "1222", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T20", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2970", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "997", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-484", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "206", "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-2739", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T20", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "428", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T20", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-201", "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-108", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T20", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "2074", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T20", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-103",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T20", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-2980", "value-units": "megawatthours"}, {"period": "2026-09-06T20",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "11", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T19", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-915", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "-65", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "220",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "4", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-223", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-933", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1609", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T19", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-4", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-561", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T19", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "417", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-110", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "-73", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T19", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1390", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-429", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "363", "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1430", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3438", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "10", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1464", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "-73", "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "1189", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T19", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2708", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "998", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-408", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "100", "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-2769", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T19", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "159", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T19", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-176", "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-40", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T19", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "2035", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T19", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-108",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T19", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-3121", "value-units": "megawatthours"}, {"period": "2026-09-06T19",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "3", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T18", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "AZPS", "toba-name": "Arizona Public Service Company",
+        "value": "-1219", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BANC", "toba-name": "Balancing Authority of Northern California",
+        "value": "178", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "BPAT", "toba-name": "Bonneville Power Administration", "value": "304",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba": "CISO",
+        "fromba-name": "California Independent System Operator", "toba": "CEN", "toba-name":
+        "Centro Nacional de Control de Energia", "value": "5", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "IID", "toba-name": "Imperial Irrigation District",
+        "value": "-216", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "LDWP", "toba-name": "Los Angeles Department of Water and Power",
+        "value": "-1161", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "NEVP", "toba-name": "Nevada Power Company", "value": "-1637", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T18", "fromba": "CISO", "fromba-name":
+        "California Independent System Operator", "toba": "PACW", "toba-name": "PacifiCorp
+        West", "value": "-3", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "SRP", "toba-name": "Salt River Project Agricultural Improvement and
+        Power District", "value": "-638", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T18", "fromba": "CISO", "fromba-name": "California Independent
+        System Operator", "toba": "TIDC", "toba-name": "Turlock Irrigation District",
+        "value": "453", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "CISO", "fromba-name": "California Independent System Operator",
+        "toba": "WALC", "toba-name": "Western Area Power Administration - Desert Southwest
+        Region", "value": "-145", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.",
+        "toba": "CEN", "toba-name": "Centro Nacional de Control de Energia", "value":
+        "-1", "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba":
+        "ERCO", "fromba-name": "Electric Reliability Council of Texas, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "0", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T18", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "AECI", "toba-name":
+        "Associated Electric Cooperative, Inc.", "value": "1331", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "IESO", "toba-name": "Ontario
+        IESO", "value": "-470", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "418", "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "MHEB", "toba-name": "Manitoba Hydro", "value": "-1272", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "MISO", "fromba-name": "Midcontinent
+        Independent System Operator, Inc.", "toba": "PJM", "toba-name": "PJM Interconnection,
+        LLC", "value": "-3295", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SIKE", "toba-name": "Sikeston Board of Municipal Utilities",
+        "value": "-4", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SOCO", "toba-name": "Southern Company Services, Inc. - Trans",
+        "value": "-1382", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "MISO", "fromba-name": "Midcontinent Independent System Operator,
+        Inc.", "toba": "SPA", "toba-name": "Southwestern Power Administration", "value":
+        "39", "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba":
+        "MISO", "fromba-name": "Midcontinent Independent System Operator, Inc.", "toba":
+        "SWPP", "toba-name": "Southwest Power Pool", "value": "738", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T18", "fromba": "MISO", "fromba-name":
+        "Midcontinent Independent System Operator, Inc.", "toba": "TVA", "toba-name":
+        "Tennessee Valley Authority", "value": "2865", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "HQT", "toba-name": "Hydro-Quebec TransEnergie",
+        "value": "1001", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "NYIS", "fromba-name": "New York Independent System Operator", "toba":
+        "IESO", "toba-name": "Ontario IESO", "value": "-406", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "NYIS", "fromba-name": "New York Independent
+        System Operator", "toba": "ISNE", "toba-name": "ISO New England", "value":
+        "264", "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba":
+        "NYIS", "fromba-name": "New York Independent System Operator", "toba": "PJM",
+        "toba-name": "PJM Interconnection, LLC", "value": "-3022", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T18", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "CPLE", "toba-name": "Duke Energy Progress
+        East", "value": "-135", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "DUK",
+        "toba-name": "Duke Energy Carolinas", "value": "0", "value-units": "megawatthours"},
+        {"period": "2026-09-06T18", "fromba": "PJM", "fromba-name": "PJM Interconnection,
+        LLC", "toba": "LGEE", "toba-name": "LG&E and KU Services Company as agent
+        for Louisville Gas and Electric Company and Kentucky Utilities Company", "value":
+        "-220", "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba":
+        "PJM", "fromba-name": "PJM Interconnection, LLC", "toba": "MISO", "toba-name":
+        "Midcontinent Independent System Operator, Inc.", "value": "-217", "value-units":
+        "megawatthours"}, {"period": "2026-09-06T18", "fromba": "PJM", "fromba-name":
+        "PJM Interconnection, LLC", "toba": "NYIS", "toba-name": "New York Independent
+        System Operator", "value": "1937", "value-units": "megawatthours"}, {"period":
+        "2026-09-06T18", "fromba": "PJM", "fromba-name": "PJM Interconnection, LLC",
+        "toba": "TVA", "toba-name": "Tennessee Valley Authority", "value": "-131",
+        "value-units": "megawatthours"}, {"period": "2026-09-06T18", "fromba": "US48",
+        "fromba-name": "United States Lower 48", "toba": "CAN", "toba-name": "Canada",
+        "value": "-3009", "value-units": "megawatthours"}, {"period": "2026-09-06T18",
+        "fromba": "US48", "fromba-name": "United States Lower 48", "toba": "MEX",
+        "toba-name": "Mexico", "value": "4", "value-units": "megawatthours"}], "description":
+        "Daily interchange between neighboring balancing authorities.  \n    Source:
+        Form EIA-930\n    Product: Hourly Electric Grid Monitor"}, "request": {"command":
+        "/v2/electricity/rto/interchange-data/data/", "params": {"api_key": "FILTERED",
+        "frequency": "hourly", "data": ["value"], "sort": [{"column": "period", "direction":
+        "desc"}], "offset": "0", "length": "5000", "facets": {"fromba": ["ERCO", "PJM",
+        "MISO", "SWPP", "CISO", "NYIS", "ISNE", "US48"]}, "start": "2026-09-06T18",
+        "end": "2026-09-08T18"}}, "apiVersion": "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '4476'
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 08 Sep 2026 18:20:29 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0g900fi9np4dlg6kcm0
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - a63b3d09-5d30-4e09-557e-d6c46fc76d96
+    status:
+      code: 200
+      message: OK
+version: 1
