@@ -9,15 +9,17 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.seasonal import seasonal_stats
 from core.theme import (
     GREY,
     LIGHT_BLUE,
     NAVY,
     ORANGE,
+    PAPER,
     RED,
+    RULE,
     dual_axis_chart,
     generation_mix_chart,
     hour_day_heatmap,
@@ -80,7 +82,7 @@ _SMALL_MULTIPLE_SERIES = [
 PRODUCTION_EXPORTS_RANGE_DAYS = {"1Y": 365, "2Y": 730, "5Y": 1825, "All": None}
 
 
-def _worm_chart(series_id: str, title: str) -> go.Figure | None:
+def _worm_chart(series_id: str) -> go.Figure | None:
     df = read_ts_long(series_ids=[series_id])
     if df.empty:
         return None
@@ -91,16 +93,17 @@ def _worm_chart(series_id: str, title: str) -> go.Figure | None:
     reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
     current_year_series = current.set_index(reference_doy)["value"]
 
-    return seasonal_range_chart(stats, current_year_series, title=title, unit="BCF")
+    return seasonal_range_chart(stats, current_year_series, unit="BCF")
 
 
 def _headline_section() -> None:
     title = "Lower 48 Working Gas Storage — Seasonal"
-    fig = _worm_chart(L48_SERIES_ID, title)
+    fig = _worm_chart(L48_SERIES_ID)
     if fig is None:
-        st.info("No data yet — run `pipelines/eia/pull_gas_storage.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_gas_storage.py` to populate storage data.")
         return
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
 
 
@@ -140,14 +143,13 @@ def _small_multiples_section() -> None:
     cols = st.columns(3)
     for i, (series_id, label) in enumerate(selected):
         title = f"{label} — Seasonal"
-        fig = _worm_chart(series_id, title)
-        with cols[i % 3]:
+        fig = _worm_chart(series_id)
+        with cols[i % 3], section(title):
             if fig is None:
-                st.info(f"No data yet for {label}.")
+                empty_state("eia", "weekly", None)
                 continue
             fig.update_layout(height=320, showlegend=False)
-            with card(title):
-                st.plotly_chart(fig)
+            st.plotly_chart(fig)
 
 
 def _series_by_ts(series_id: str) -> pd.Series:
@@ -164,7 +166,8 @@ def _iso_mix_section(iso: str) -> None:
     series_ids = [f"gridstatus.{iso}.fuel_mix.{_slug(fuel)}" for fuel in fuels]
     long_df = read_ts_long(series_ids=series_ids)
     if long_df.empty:
-        st.info(f"No fuel-mix data yet for {iso} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        empty_state("gridstatus", "daily", None)
+        st.caption(f"Run `pipelines/gridstatus_iso/pull_iso.py` to populate {iso} fuel mix.")
         return
 
     slug_to_fuel = {_slug(f): f for f in fuels}
@@ -173,15 +176,16 @@ def _iso_mix_section(iso: str) -> None:
     wide = long_df.pivot_table(index="ts", columns="fuel", values="value").fillna(0.0)
     ordered_cols = [f for f in fuels if f in wide.columns]
     title = f"{iso} Fuel Mix"
-    fig = generation_mix_chart(wide[ordered_cols], title=title, unit="MW")
-    with card(title):
+    fig = generation_mix_chart(wide[ordered_cols], unit="MW")
+    with section(title):
         st.plotly_chart(fig)
 
 
 def _iso_load_section(iso: str) -> None:
     load = _series_by_ts(f"gridstatus.{iso}.load")
     if load.empty:
-        st.info(f"No load data yet for {iso} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        empty_state("gridstatus", "daily", None)
+        st.caption(f"Run `pipelines/gridstatus_iso/pull_iso.py` to populate {iso} load.")
         return
 
     fuels = _ISO_FUEL_ORDER[iso]
@@ -194,9 +198,9 @@ def _iso_load_section(iso: str) -> None:
     net = net_load(load, wind, solar)
     title = f"{iso} Load vs. Net Load"
     fig = dual_axis_chart(
-        load, net, title=title, left_label="Load (MW)", right_label="Net load (MW)"
+        load, net, left_label="Load (MW)", right_label="Net load (MW)"
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
 
 
@@ -205,11 +209,12 @@ def _iso_lmp_section(iso: str) -> None:
     hub = st.selectbox("Hub / zone", options=hubs, key=f"{iso}_hub")
     series = _series_by_ts(f"gridstatus.{iso}.lmp.{_slug(hub)}")
     if series.empty:
-        st.info(f"No LMP data yet for {iso} {hub} — run `pipelines/gridstatus_iso/pull_iso.py`.")
+        empty_state("gridstatus", "daily", None)
+        st.caption(f"Run `pipelines/gridstatus_iso/pull_iso.py` to populate {iso} {hub} LMP.")
         return
     title = f"{iso} {hub} LMP"
-    fig = hour_day_heatmap(series.to_frame("value"), title=title, unit="USD/MWh")
-    with card(title):
+    fig = hour_day_heatmap(series.to_frame("value"), unit="USD/MWh")
+    with section(title):
         st.plotly_chart(fig)
 
 
@@ -217,7 +222,8 @@ def _production_exports_section() -> None:
     production = _series_by_ts(PRODUCTION_SERIES[0])
     lng_exports = _series_by_ts(LNG_EXPORTS_SERIES[0])
     if production.empty or lng_exports.empty:
-        st.info("No data yet — run `pipelines/eia/pull_production_exports.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_production_exports.py` to populate this chart.")
         return
 
     time_range = st.segmented_control(
@@ -237,11 +243,10 @@ def _production_exports_section() -> None:
     fig = dual_axis_chart(
         production,
         lng_exports,
-        title=title,
         left_label="Dry production (MMcf)",
         right_label="LNG exports (MMcf)",
     )
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "LNG feedgas (gas consumed at liquefaction facilities before export) has no "
@@ -268,7 +273,8 @@ def _delivered_fuel_cost_section() -> None:
     df = read_ts_long(series_ids=ids)
     hh = read_ts_long(series_ids=["fred.dhhngsp"]).sort_values("ts")
     if df.empty:
-        st.info("No generator fuel cost yet — run `pipelines/eia/pull_prices.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_prices.py` to populate generator fuel cost.")
         return
 
     fig = go.Figure()
@@ -317,13 +323,19 @@ def _delivered_fuel_cost_section() -> None:
                 arrowhead=2,
                 ax=40,
                 ay=-30,
+                align="left",
+                # House treatment (core/theme.py's seasonal_range_chart): opaque ground
+                # and a hairline border so the box reads as a label rather than sitting
+                # on top of the series.
+                bgcolor=PAPER,
+                bordercolor=RULE,
+                borderwidth=1,
+                borderpad=4,
+                opacity=0.95,
             )
 
-    fig.update_layout(
-        title="State cost of natural gas delivered to generators vs Henry Hub",
-        yaxis_title="$/MMBtu",
-    )
-    with card("Delivered fuel cost"):
+    fig.update_layout(yaxis_title="$/MMBtu")
+    with section("State cost of natural gas delivered to generators vs Henry Hub"):
         st.plotly_chart(fig)
         st.caption(
             "Delivered cost sits above the benchmark by transport and contract terms; "
@@ -344,7 +356,7 @@ def _iso_tab(iso: str) -> None:
     _iso_lmp_section(iso)
 
 
-st.title("US Natural Gas & Power (EIA + gridstatus)")
+page_header("US Natural Gas & Power (EIA + gridstatus)")
 
 st.subheader("Storage headline")
 _headline_section()

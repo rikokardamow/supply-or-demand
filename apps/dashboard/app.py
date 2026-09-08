@@ -1,43 +1,30 @@
-"""Kardamow Energy Dashboard — home page. Reads the lake, never calls APIs directly."""
+"""Kardamow Energy Dashboard entrypoint: masthead, then the selected page.
+
+Page content lives in pages/ -- this file owns only the chrome. The masthead mirrors
+kardamow.substack.com: a centred wordmark over a hairline, with grouped navigation
+beneath it (st.navigation, position="top") in place of the filename-derived sidebar.
+The wordmark is the document's only <h1> -- page_header() paints each page's own title as
+<h2> and section() paints <h3>, giving every page one valid descending outline with
+"Kardamow" at its top.
+
+Two ordering constraints: st.set_page_config must be the first Streamlit call, and
+nav.build().run() must be the last -- it is what executes the selected page.
+"""
 
 from __future__ import annotations
 
-import core.theme  # noqa: F401
-import pandas as pd
 import streamlit as st
-from components.card import card
-from core.freshness import staleness_report
 
 st.set_page_config(page_title="Kardamow Energy Dashboard", layout="wide")
-st.title("Kardamow Energy Dashboard")
 
-_STATUS_ORDER = {"red": 0, "amber": 1, "green": 2}
-_STATUS_ICON = {"red": "🔴", "amber": "🟡", "green": "🟢"}
+import nav  # noqa: E402  -- must follow set_page_config
+from core.design import HEADING_STACK, RULE, TEXT  # noqa: E402
 
-# Shorter than the ttl=3600 the analytics pages use. Those cache expensive model fits over
-# data that only changes on a pull; this is a *status* panel, and one that keeps insisting
-# a source is stale for an hour after the pull that fixed it is worse than useless. Five
-# minutes still collapses the many reruns of a single browsing session into one query.
-_STATUS_TTL_SECONDS = 300
+st.markdown(
+    f'<h1 style="text-align:center;font-family:{HEADING_STACK};font-size:3.25rem;'
+    f'font-weight:600;color:{TEXT};margin:0;padding:0.4rem 0 0.7rem">Kardamow</h1>'
+    f'<hr style="border:0;border-top:1px solid {RULE};margin:0 0 0.4rem">',
+    unsafe_allow_html=True,
+)
 
-
-@st.cache_data(ttl=_STATUS_TTL_SECONDS)
-def _lake_status() -> pd.DataFrame:
-    """Cached because Streamlit reruns this whole script on every interaction, and an
-    uncached staleness_report() meant re-querying the lake each time."""
-    return staleness_report()
-
-
-report = _lake_status()
-report = report.sort_values(
-    by="status", key=lambda col: col.map(_STATUS_ORDER)
-).reset_index(drop=True)
-report["status"] = [f"{_STATUS_ICON[s]} {s}" for s in report["status"]]
-
-with card("Lake status"):
-    st.caption(
-        "Every source across ts_long, flows, events and sanctions, checked against its "
-        "own expected pull cadence (see core/freshness.py) — 🟢 within cadence, "
-        "🟡 up to 2x cadence, 🔴 beyond that."
-    )
-    st.dataframe(report, hide_index=True)
+nav.build().run()

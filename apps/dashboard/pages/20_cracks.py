@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
+from components.section import empty_state, page_header, section, source_note
 from core.cracks import crack_board, crack_seasonal_heatmap
 from core.storage import read_ts_long
 from core.theme import (
@@ -51,7 +51,7 @@ FUT_TENORS = ("m1", "m2", "m3", "m4")
 Z_ENTRY, Z_EXIT = 1.5, 0.5
 REFIT_TRIGGER = 1.05
 
-st.title("Refining Economics & Crack Spreads")
+page_header("Refining Economics & Crack Spreads")
 st.caption(
     "Crack boards, the Murat & Tokat (2009) crack VECM, and its error-correction signal. "
     "Spot cracks are current; crack futures end 2024-04-05 (EIA's futures route is "
@@ -123,9 +123,21 @@ def _rmse_ratio() -> pd.Series:
 
 # Spec 30: Crude acquisition cost -- what refiners actually paid, against what the
 # benchmark printed, plus the retail-to-wholesale margin and the landed-cost sourcing mix.
-# A fixed 4-colour palette cycled by index (not zipped against the constants, which would
-# silently drop series past the palette length once RAC/RETAIL/LANDED_COST grow).
-_PRICE_PALETTE = (NAVY, LIGHT_BLUE, RED, GREY)
+#
+# Fixed, non-cycled categorical hues (dataviz house rule): each headline series gets its
+# own colour and the rest fold into one muted-grey group, rather than being handed a
+# palette colour by index -- the old `_PRICE_PALETTE[i % len(_PRICE_PALETTE)]` cycling
+# collided two series onto the same colour once either loop ran past the palette's 4
+# entries (8 RAC series, 7 LANDED_COST series).
+_ACQUISITION_HEADLINE = {
+    "R0000____3": (NAVY, 2.5),  # US composite -- the headline series
+    "R1200____3": (LIGHT_BLUE, 2.0),  # US domestic -- tracks WTI
+    "R1300____3": (RED, 2.0),  # US imported -- tracks Brent
+}
+_LANDED_COST_HEADLINE = {
+    "I000000208": NAVY,  # US-API-LE20, heaviest -- one end of the sourcing-mix spread
+    "I000000998": RED,  # US-API-GT45, lightest -- the other end
+}
 
 
 def _acquisition_cost_section() -> None:
@@ -134,18 +146,33 @@ def _acquisition_cost_section() -> None:
     Spec 30 the lake held no grade-differentiated price at all."""
     df = read_ts_long(series_ids=list(RAC))
     if df.empty:
-        st.info("No refiner acquisition cost yet — run `pipelines/eia/pull_prices.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption("Run `pipelines/eia/pull_prices.py` to populate refiner acquisition cost.")
         return
 
     fig = go.Figure()
-    for i, series_id in enumerate(RAC):
+    padd_legend_shown = False
+    for series_id in RAC:
         s = df[df["series_id"] == series_id].sort_values("ts")
         if s.empty:
             continue
-        fig.add_trace(
-            go.Scatter(x=s["ts"], y=s["value"], name=series_id, mode="lines",
-                       line={"color": _PRICE_PALETTE[i % len(_PRICE_PALETTE)], "width": 2})
-        )
+        if series_id in _ACQUISITION_HEADLINE:
+            colour, width = _ACQUISITION_HEADLINE[series_id]
+            fig.add_trace(
+                go.Scatter(x=s["ts"], y=s["value"], name=series_id, mode="lines",
+                           line={"color": colour, "width": width})
+            )
+        else:
+            # The 5 PADD composites -- regional detail, not identity the reader needs
+            # to pick apart line-by-line. One undifferentiated muted-grey group, solid
+            # (distinct from the dotted/dashed WTI/Brent reference lines below), one
+            # shared legend entry rather than 5 rows all saying "PADD composite".
+            fig.add_trace(
+                go.Scatter(x=s["ts"], y=s["value"], name="PADD composite", mode="lines",
+                           legendgroup="padd_composite", showlegend=not padd_legend_shown,
+                           line={"color": GREY, "width": 1})
+            )
+            padd_legend_shown = True
     wti = read_ts_long(series_ids=["fred.dcoilwtico"]).sort_values("ts")
     if not wti.empty:
         fig.add_trace(
@@ -161,10 +188,8 @@ def _acquisition_cost_section() -> None:
             go.Scatter(x=brent["ts"], y=brent["value"], name="Brent spot", mode="lines",
                        line={"color": GREY, "width": 1, "dash": "dash"})
         )
-    fig.update_layout(
-        title="Refiner acquisition cost vs WTI and Brent spot", yaxis_title="$/bbl"
-    )
-    with card("Crude acquisition cost"):
+    fig.update_layout(yaxis_title="$/bbl")
+    with section("Refiner acquisition cost vs WTI and Brent spot"):
         st.plotly_chart(fig)
         st.caption(
             "Composite, domestic and imported acquisition cost is what refiners paid; "
@@ -182,23 +207,37 @@ def _landed_cost_section() -> None:
     gravity-band labels rather than the API's geo field."""
     df = read_ts_long(series_ids=list(LANDED_COST))
     if df.empty:
-        st.info("No landed cost data yet — run `pipelines/eia/pull_prices.py`.")
+        empty_state("eia", "weekly", None)
+        st.caption(
+            "Run `pipelines/eia/pull_prices.py` to populate landed cost by API "
+            "gravity band."
+        )
         return
 
     fig = go.Figure()
-    for i, series_id in enumerate(LANDED_COST):
+    middle_legend_shown = False
+    for series_id in LANDED_COST:
         s = df[df["series_id"] == series_id].sort_values("ts")
         if s.empty:
             continue
-        fig.add_trace(
-            go.Scatter(x=s["ts"], y=s["value"], name=LANDED_COST_GEO_MAP[series_id],
-                       mode="lines", line={"color": _PRICE_PALETTE[i % len(_PRICE_PALETTE)],
-                                            "width": 2})
-        )
-    fig.update_layout(
-        title="Landed cost of imported crude by API gravity band", yaxis_title="$/bbl"
-    )
-    with card("Landed cost by API gravity band"):
+        if series_id in _LANDED_COST_HEADLINE:
+            fig.add_trace(
+                go.Scatter(x=s["ts"], y=s["value"], name=LANDED_COST_GEO_MAP[series_id],
+                           mode="lines",
+                           line={"color": _LANDED_COST_HEADLINE[series_id], "width": 2})
+            )
+        else:
+            # The middle 5 API-gravity bands -- the caption's contrast is between the
+            # two extremes above; muted so the middle bands don't compete for attention.
+            fig.add_trace(
+                go.Scatter(x=s["ts"], y=s["value"], name="Middle API-gravity bands",
+                           mode="lines", legendgroup="landed_cost_middle",
+                           showlegend=not middle_legend_shown,
+                           line={"color": GREY, "width": 1})
+            )
+            middle_legend_shown = True
+    fig.update_layout(yaxis_title="$/bbl")
+    with section("Landed cost of imported crude by API gravity band"):
         st.plotly_chart(fig)
         st.caption(
             "Lower API-gravity bands (US-API-LE20) are heavier crude; higher bands "
@@ -226,9 +265,10 @@ def _retail_margin_section() -> None:
     retail = read_ts_long(series_ids=[_US_RETAIL_GASOLINE]).sort_values("ts")
     wholesale = read_ts_long(series_ids=[_WHOLESALE_GASOLINE_NYH]).sort_values("ts")
     if retail.empty or wholesale.empty:
-        st.info(
-            "No retail or wholesale gasoline data yet — run "
-            "`pipelines/eia/pull_prices_weekly.py` and `pipelines/eia/pull_prices.py`."
+        empty_state("eia", "weekly", None)
+        st.caption(
+            "Run `pipelines/eia/pull_prices_weekly.py` and `pipelines/eia/pull_prices.py` "
+            "to populate retail and wholesale gasoline prices."
         )
         return
 
@@ -264,11 +304,10 @@ def _retail_margin_section() -> None:
             ay=-30,
         )
     fig.update_layout(
-        title="US retail gasoline vs NY Harbor wholesale, with the margin",
         yaxis_title="$/gal",
         yaxis2={"title": "Margin ($/gal)", "overlaying": "y", "side": "right"},
     )
-    with card("Retail-to-wholesale margin"):
+    with section("Retail-to-wholesale margin"):
         st.plotly_chart(fig)
         st.caption(
             "The margin (red, right-hand axis) between the pump price and the NY Harbor "
@@ -284,7 +323,7 @@ tab_board, tab_seasonal, tab_curve, tab_model, tab_signal = st.tabs(
 
 with tab_board:
     spot = _spot_panel()
-    with card("Crack board"):
+    with section("Crack board"):
         if spot.empty:
             st.info("No crack series in the lake. Run `python -m pipelines.derived.cracks`.")
         else:
@@ -313,14 +352,12 @@ with tab_board:
             )
 
     if not spot.empty:
-        with card("Crack history"):
+        with section("Crack history"):
             choice = st.selectbox(
                 "Crack", list(SPOT_CRACKS), format_func=lambda k: SPOT_CRACKS[k]
             )
             st.plotly_chart(
-                simple_time_series_chart(
-                    spot[choice].dropna(), f"{SPOT_CRACKS[choice]} (spot)", "$/bbl"
-                ),
+                simple_time_series_chart(spot[choice].dropna(), "$/bbl"),
                 width="stretch",
             )
 
@@ -328,7 +365,7 @@ with tab_board:
 
 with tab_seasonal:
     spot = _spot_panel()
-    with card("Crack seasonality (monthly mean by year)"):
+    with section("NYH 3:2:1 monthly mean by year"):
         if spot.empty:
             st.info("No crack series in the lake.")
         else:
@@ -338,7 +375,7 @@ with tab_seasonal:
                 for m in heat.columns
             ]
             st.plotly_chart(
-                category_time_heatmap(heat.T, "NYH 3:2:1 monthly mean by year", "$/bbl",
+                category_time_heatmap(heat.T, "$/bbl",
                                       center=float(np.nanmedian(heat.to_numpy()))),
                 width="stretch",
             )
@@ -351,7 +388,7 @@ with tab_seasonal:
 
 with tab_curve:
     strip = _futures_strip()
-    with card("Crack forward strip vs a year earlier"):
+    with section("NYH 3:2:1 crack futures strip"):
         if strip.empty:
             st.info(
                 "No crack futures in the lake. Run "
@@ -369,7 +406,7 @@ with tab_curve:
                 "m1-m4": float(strip.loc[as_of, "m1"] - strip.loc[as_of, "m4"]),
             }
             st.plotly_chart(
-                curve_strip_chart(curves, spreads, "NYH 3:2:1 crack futures strip", "$/bbl"),
+                curve_strip_chart(curves, spreads, "$/bbl"),
                 width="stretch",
             )
             st.warning(
@@ -385,7 +422,7 @@ with tab_model:
     panel = _model_panel()
     card_df = read_model_card()
 
-    with card("Model card"):
+    with section("Model card"):
         if card_df.empty:
             st.info("No model card yet. Run `python -m pipelines.derived.vecm_refit`.")
         else:
@@ -417,7 +454,7 @@ with tab_model:
                 "does not reproduce."
             )
 
-    with card("Cointegrating relation and error-correction term"):
+    with section("Cointegrating relation and error-correction term"):
         signal = _signal_frame()
         if signal.empty:
             st.info("Not enough monthly observations to fit the VECM.")
@@ -426,7 +463,6 @@ with tab_model:
                 cointegration_residual_chart(
                     signal["ect"].dropna(),
                     signal["z"].dropna(),
-                    "log(WTI spot) - beta*crack: fitted relation and z-score",
                     "log $/bbl",
                     z_entry=Z_ENTRY,
                     z_exit=Z_EXIT,
@@ -434,7 +470,7 @@ with tab_model:
                 width="stretch",
             )
 
-    with card("Impulse response — crude's reaction to a crack shock"):
+    with section("Response of log(WTI spot) to a 1 s.d. crack shock"):
         irf = _irf_frame()
         if irf.empty:
             st.info("Not enough monthly observations to fit the VECM.")
@@ -443,13 +479,12 @@ with tab_model:
                 irf_chart(
                     irf,
                     "crude_to_crack_shock",
-                    "Response of log(WTI spot) to a 1 s.d. crack shock",
                     "log $/bbl",
                 ),
                 width="stretch",
             )
 
-    with card("Model monitor — rolling out-of-sample RMSE ratio"):
+    with section("Rolling 12-month OOS RMSE ratio vs the random walk"):
         ratio = _rmse_ratio()
         if ratio.empty:
             st.info("Not enough history for a rolling out-of-sample evaluation.")
@@ -458,7 +493,6 @@ with tab_model:
                 model_monitor_chart(
                     ratio,
                     REFIT_TRIGGER,
-                    "Rolling 12-month OOS RMSE ratio vs the random walk",
                     break_date=None if card_df.empty else card_df.iloc[-1]["break_date"],
                 ),
                 width="stretch",
@@ -472,7 +506,7 @@ with tab_model:
 
 with tab_signal:
     panel = _model_panel()
-    with card("Error-correction signal"):
+    with section("Error-correction signal"):
         signal = _signal_frame()
         if signal.empty:
             st.info("Not enough monthly observations to fit the VECM.")
@@ -487,11 +521,10 @@ with tab_signal:
             c4.metric("Trades", summary["n_trades"])
 
             st.plotly_chart(
-                simple_time_series_chart(
-                    result["equity"], "Cumulative P&L ($/bbl per unit position)", "$/bbl"
-                ),
+                simple_time_series_chart(result["equity"], "$/bbl"),
                 width="stretch",
             )
+            source_note("Cumulative P&L, $/bbl per unit position.")
 
             turn, non_turn = summary["turnaround"], summary["non_turnaround"]
             st.dataframe(

@@ -8,9 +8,9 @@ import core.theme  # noqa: F401
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from components.card import card
 from components.entsog_map import render_entsog_flow_map
 from components.lake import read_flows
+from components.section import empty_state, page_header, section
 from core.theme import LIGHT_BLUE, NAVY, RED, current_vs_prior_year_chart, sankey_chart
 from pipelines.entsog.corridors import CORRIDORS
 from pipelines.entsog.transforms import (
@@ -47,13 +47,14 @@ def _corridor_filter_panel(corridor_totals: pd.DataFrame) -> list[str]:
 
     return [c for c in CORRIDORS if st.session_state[f"eu_gas_flows_filter_{c}"]]
 
-st.title("EU Gas Flows (ENTSOG)")
+page_header("EU Gas Flows (ENTSOG)")
 
 flows_df = read_flows(source="entsog")
 pipeline_df = flows_df[flows_df["mode"] == "pipeline"]
 
 if pipeline_df.empty:
-    st.info("No flow data yet — run `pipelines/entsog/pull_flows.py`.")
+    empty_state("entsog", "daily", None)
+    st.caption("Run `pipelines/entsog/pull_flows.py` to populate flow data.")
 else:
     st.subheader("Sankey — latest 7-day average")
     daily_pairs = pair_daily_totals(pipeline_df)
@@ -71,12 +72,12 @@ else:
     values = link_totals["value"].tolist()
 
     sankey_title = f"EU Gas Pipeline Flows — 7-day avg to {latest_ts.date()} (GWh/d)"
-    fig = sankey_chart(node_labels, sources, targets, values, title=sankey_title)
-    with card(sankey_title):
+    fig = sankey_chart(node_labels, sources, targets, values)
+    with section(sankey_title):
         st.plotly_chart(fig)
 
     st.subheader("Corridor map")
-    with card("EU Gas Corridor Map"):
+    with section("EU Gas Corridor Map"):
         render_entsog_flow_map()
 
     st.subheader("Corridor time series — current vs. prior year")
@@ -91,11 +92,12 @@ else:
             corridor_df = corridor_totals[corridor_totals["corridor"] == corridor_name]
             with cols[i % 2]:
                 if corridor_df.empty:
-                    st.info(f"No data yet for {corridor_name}.")
+                    empty_state("entsog", "daily", None)
+                    st.caption(f"Run `pipelines/entsog/pull_flows.py` to populate {corridor_name}.")
                     continue
                 corridor_title = corridor_name.replace("_", " ")
-                fig = current_vs_prior_year_chart(corridor_df, title=corridor_title, unit="GWh/d")
-                with card(corridor_title):
+                fig = current_vs_prior_year_chart(corridor_df, unit="GWh/d")
+                with section(corridor_title):
                     st.plotly_chart(fig)
 
     st.subheader("Physical vs. nomination gap")
@@ -103,7 +105,8 @@ else:
     gap_df = physical_vs_nomination_gap(flows_df, CORRIDORS, gap_corridor).sort_values("ts")
 
     if gap_df.empty:
-        st.info(f"No overlapping physical/nomination data yet for {gap_corridor}.")
+        empty_state("entsog", "daily", None)
+        st.caption(f"Run `pipelines/entsog/pull_flows.py` to populate {gap_corridor}.")
     else:
         corridor_label = gap_corridor.replace("_", " ")
 
@@ -137,8 +140,8 @@ else:
             )
         )
         lines_title = f"{corridor_label} — Physical vs. Nomination"
-        lines.update_layout(title=lines_title, yaxis_title="GWh/d")
-        with card(lines_title):
+        lines.update_layout(yaxis_title="GWh/d")
+        with section(lines_title):
             st.plotly_chart(lines)
 
         # A line, not a bar: with ~2 years of daily points, go.Bar's per-bar width
@@ -156,6 +159,6 @@ else:
         )
         gap_line.add_hline(y=0, line_color=NAVY, line_width=1)
         gap_title = f"{corridor_label} — Nomination minus Physical (under-delivery when positive)"
-        gap_line.update_layout(title=gap_title, yaxis_title="GWh/d")
-        with card(gap_title):
+        gap_line.update_layout(yaxis_title="GWh/d")
+        with section(gap_title):
             st.plotly_chart(gap_line)

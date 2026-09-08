@@ -94,5 +94,4 @@ def render_news_map(events_df: pd.DataFrame) -> go.Figure:
         )
     )
 
-    fig.update_layout(title="News map — click a country to filter the feed below")
     return fig

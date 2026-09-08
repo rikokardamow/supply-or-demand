@@ -8,9 +8,9 @@ from __future__ import annotations
 import core.theme  # noqa: F401
 import pandas as pd
 import streamlit as st
-from components.card import card
 from components.event_overlay import add_event_markers
 from components.lake import read_ts_long
+from components.section import empty_state, page_header, section
 from core.theme import (
     production_vs_quota_chart,
     revision_waterfall_chart,
@@ -46,7 +46,8 @@ def _production_vs_quota_section() -> None:
     series_ids = [f"momr.doc_crude_secondary.{_slug(c)}.monthly" for c in countries]
     long_df = read_ts_long(series_ids=series_ids)
     if long_df.empty:
-        st.info("No data yet — run `pipelines/opec_momr/pull_doc_crude.py <pdf path>`.")
+        empty_state("opec_momr", "monthly", None)
+        st.caption("Run `pipelines/opec_momr/pull_doc_crude.py <pdf path>` to populate this table.")
         return
 
     slug_to_country = {_slug(c): c for c in countries}
@@ -63,8 +64,8 @@ def _production_vs_quota_section() -> None:
     result = production_vs_quota(latest, quotas)
     result = result[result["country"].isin(selected_countries)]
     title = f"DoC Crude Production vs. Quota — {latest_ts:%B %Y}"
-    fig = production_vs_quota_chart(result, title=title, unit="tb/d")
-    with card(title):
+    fig = production_vs_quota_chart(result, unit="tb/d")
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "Quota is each country's most recently announced voluntary-adjustment target "
@@ -77,7 +78,8 @@ def _revision_waterfall_section() -> None:
     rev = read_ts_long(series_ids=None)
     rev = rev[rev["series_id"].str.startswith("momr.demand_balance_revision")]
     if rev.empty:
-        st.info("No data yet — run `pipelines/opec_momr/pull_momr.py`.")
+        empty_state("opec_momr", "monthly", None)
+        st.caption("Run `pipelines/opec_momr/pull_momr.py` to populate this chart.")
         return
 
     periods = sorted(rev["ts"].unique(), reverse=True)
@@ -93,8 +95,8 @@ def _revision_waterfall_section() -> None:
         st.info(f"No non-zero revisions for {period:%B %Y}.")
         return
     title = f"MOMR Revision Waterfall — {period:%B %Y}"
-    fig = revision_waterfall_chart(result, title=title, unit="mb/d")
-    with card(title):
+    fig = revision_waterfall_chart(result, unit="mb/d")
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "OPEC's own precomputed change-vs-last-month figures (Table 11-2) — not "
@@ -107,14 +109,15 @@ def _oil_on_water_section() -> None:
         series_ids=["momr.oecd_stocks.closing_stock_levels_mb.oilonwater.quarterly"]
     )
     if long_df.empty:
-        st.info("No data yet — run `pipelines/opec_momr/pull_momr.py`.")
+        empty_state("opec_momr", "monthly", None)
+        st.caption("Run `pipelines/opec_momr/pull_momr.py` to populate this chart.")
         return
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
     title = "Oil-on-Water (OECD)"
-    fig = time_series_area_chart(series, title=title, unit="mb")
+    fig = time_series_area_chart(series, unit="mb")
     add_event_markers(fig, commodity="crude")
-    with card(title):
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "OPEC's own MOMR appendix (Table 11-3) trailing-quarters view, combined "
@@ -126,7 +129,8 @@ def _oil_on_water_section() -> None:
 def _rig_count_section() -> None:
     long_df = read_ts_long(series_ids=["bh.rigs.united_states.oil"])
     if long_df.empty:
-        st.info("No data yet — run `pipelines/baker_hughes/pull_rigs.py`.")
+        empty_state("baker_hughes", "weekly", None)
+        st.caption("Run `pipelines/baker_hughes/pull_rigs.py` to populate this chart.")
         return
 
     series = long_df.sort_values("ts").set_index("ts")["value"]
@@ -144,8 +148,8 @@ def _rig_count_section() -> None:
         series = series[series.index >= cutoff]
 
     title = "US Oil Rig Count"
-    fig = simple_time_series_chart(series, title=title, unit="rigs")
-    with card(title):
+    fig = simple_time_series_chart(series, unit="rigs")
+    with section(title):
         st.plotly_chart(fig)
         st.caption(
             "Rig count vs. WTI stays a single series (navy) until Spec 07 (Henry "
@@ -164,7 +168,7 @@ def _format_period(period: pd.Timestamp) -> str:
     return f"{quarter}Q{period.year % 100}"
 
 
-st.title("OPEC / Global Supply Monitoring")
+page_header("OPEC / Global Supply Monitoring")
 
 st.subheader("DoC production vs. quota")
 _production_vs_quota_section()

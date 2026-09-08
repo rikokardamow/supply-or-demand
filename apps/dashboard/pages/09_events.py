@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
-from components.card import card
 from components.kardamow_take import kardamow_take
 from components.lake import read_events
 from components.news_map import render_news_map
+from components.section import empty_state, page_header, section
 from core.storage import write_events
 from core.theme import count_bar_chart
 from pipelines.news.kardamow_caption import generate_kardamow_caption
@@ -40,11 +40,12 @@ def _load_events() -> pd.DataFrame:
     return df
 
 
-st.title("News & Events")
+page_header("News & Events")
 
 events = _load_events()
 if events.empty:
-    st.info("No events yet — run `pipelines/news/pull_news.py`.")
+    empty_state("gdelt", "daily", None)
+    st.caption("Run `pipelines/news/pull_news.py` to populate events.")
     st.stop()
 
 range_label = st.segmented_control(
@@ -103,7 +104,7 @@ with st.expander("Search NewsAPI (manual — not a scheduled source)"):
             st.success(f"Wrote {len(result)} event rows from NewsAPI.")
             st.rerun()
 
-with card("News map"):
+with section("News map"):
     map_key_version = st.session_state.get("news_map_key_version", 0)
     map_event = st.plotly_chart(
         render_news_map(filtered),
@@ -111,6 +112,7 @@ with card("News map"):
         selection_mode="points",
         key=f"news_map_select_{map_key_version}",
     )
+    st.caption("Click a country on the map to filter the feed below.")
     clicked_points = map_event.selection.points if map_event is not None else []
     if clicked_points:
         # customdata is a per-point [geo] list (see news_map.py) -- Plotly's own
@@ -141,15 +143,15 @@ selected_geo = st.session_state.get("events_selected_geo")
 if selected_geo:
     filtered = filtered[filtered["geo"] == selected_geo]
 
-with card("Events per week"):
+with section("Events per week"):
     if filtered.empty:
         st.info("No events match the current filters.")
     else:
         weekly_counts = filtered.set_index("ts")["event_id"].resample("W").count()
-        fig = count_bar_chart(weekly_counts, title="Events per week", unit="count")
+        fig = count_bar_chart(weekly_counts, unit="count")
         st.plotly_chart(fig)
 
-with card(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} shown)"):
+with section(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} shown)"):
     if filtered.empty:
         st.info("No events match the current filters.")
     else:
@@ -179,7 +181,7 @@ with card(f"News feed ({min(len(filtered), FEED_ROW_LIMIT)} of {len(filtered)} s
                     except RuntimeError as exc:
                         st.info(str(exc))
 
-with card(f"Event table ({len(filtered)} of {len(events)} shown)"):
+with section(f"Event table ({len(filtered)} of {len(events)} shown)"):
     st.dataframe(
         filtered[
             ["ts", "commodity", "tags", "severity", "geo", "headline", "source", "url"]
