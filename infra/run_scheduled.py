@@ -41,6 +41,11 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("news", "pipelines.news.pull_daily"),
         ("ofac", "pipelines.ofac.pull_daily"),
         ("futures", "pipelines.futures.pull_daily"),
+        # Front-month closes from Yahoo -- the only current futures price this project
+        # has, since EIA's route was discontinued in 2024 and IBKR is not connected.
+        # Independent of "futures" above: different series ids (.close, not .settle),
+        # different source partition, no shared state.
+        ("futures_yfinance", "pipelines.futures.pull_yfinance"),
         # Must run after "futures" above -- reads settle data that entry just wrote. A
         # dict preserves insertion order in Python 3.7+, and run_cadence iterates this
         # list in order, so this ordering is load-bearing, not incidental.
