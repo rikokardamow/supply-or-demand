@@ -259,12 +259,20 @@ class EIAClient:
         geo: Callable[[dict[str, Any]], str],
         start: str | None = None,
         end: str | None = None,
+        source: str = "eia",
     ) -> pd.DataFrame:
         """`ts_long` rows from a facet-dict route. EIA supplies no series id for these
         routes at all, and they mint theirs from different facet fields, so the caller
         passes `series_id` and `geo` as small functions of the raw row rather than this
         method hardcoding one scheme. See pipelines/eia/rto.py for the schemes actually
-        used, and pipelines/eia/NOTES.md for why a minted id is permanent."""
+        used, and pipelines/eia/NOTES.md for why a minted id is permanent.
+
+        `source` defaults to `"eia"` so every existing caller is unchanged.
+        coal/consumption-and-quality (pipelines/coal/pull_coal.py) is the first route on
+        this client whose rows are not an `eia`-sourced dataset -- `core.storage.
+        write_ts_long`'s `source` argument picks the partition directory but does not
+        rewrite this column, so the two must agree or rows land under one source
+        claiming to be another."""
         rows = self._drop_null_values(
             self._fetch_facet_rows(route, data_key, facets, frequency, start, end),
             route,
@@ -274,7 +282,7 @@ class EIAClient:
         return pd.DataFrame(
             {
                 "series_id": [series_id(row) for row in rows],
-                "source": "eia",
+                "source": source,
                 "ts": pd.to_datetime([row["period"] for row in rows]),
                 "value": [float(row[data_key]) for row in rows],
                 "unit": [row[f"{data_key}-units"] for row in rows],
