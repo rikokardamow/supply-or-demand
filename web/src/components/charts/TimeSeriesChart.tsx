@@ -33,11 +33,18 @@ export function TimeSeriesChart({
   secondaryUnit,
   height = 320,
   xTickEvery,
+  showLegend = true,
 }: {
   lines: SeriesLine[];
   unit?: string | null;
   secondaryUnit?: string | null;
   height?: number;
+  /**
+   * Off when the caller already names the series above the plot. `ChartControls` draws a
+   * labelled swatch per line as its toggle row, and Plotly's own legend underneath it
+   * says the same thing a second time in a different case and a different order.
+   */
+  showLegend?: boolean;
   /**
    * Label only every nth category on a categorical x-axis. A forward curve has ~89
    * contract codes, and Plotly draws every one -- they overlap into an unreadable band.
@@ -69,8 +76,16 @@ export function TimeSeriesChart({
 
     const layout: Record<string, unknown> = {
       ...baseLayout(unit),
+      ...(showLegend ? {} : { showlegend: false }),
       ...(xTickEvery
-        ? { xaxis: { showgrid: false, type: "category", dtick: xTickEvery, tickangle: 0 } }
+        ? {
+            xaxis: {
+              showgrid: false,
+              type: "category",
+              dtick: xTickEvery,
+              tickangle: 0,
+            },
+          }
         : {}),
       ...(secondaryUnit
         ? {
@@ -97,7 +112,7 @@ export function TimeSeriesChart({
         Plotly.purge(el);
       });
     };
-  }, [lines, unit, secondaryUnit, xTickEvery]);
+  }, [lines, unit, secondaryUnit, xTickEvery, showLegend]);
 
   return <div ref={node} style={{ width: "100%", height }} />;
 }

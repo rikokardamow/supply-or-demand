@@ -1,5 +1,5 @@
 import { VesselMap } from "@/components/map/VesselMap";
-import { Masthead } from "@/components/chrome/Masthead";
+import { PageHeader } from "@/components/chrome/PageHeader";
 import { Panel } from "@/components/chrome/Panel";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
 import { fetchVessels } from "@/data/queries/vessels";
@@ -31,30 +31,36 @@ export default async function VesselsPage() {
   }, {});
 
   return (
-    <main>
-      <Masthead active="/vessels" />
-      <h2 style={{ fontFamily: "var(--heading-stack)", fontSize: "1.6rem", margin: "0.5rem 0 0.35rem" }}>
-        Vessels
-      </h2>
-      <p style={{ color: "var(--muted)", fontSize: "0.82rem", margin: "0 0 1.6rem" }}>
-        {formatNumber(vessels.length, 0)} vessels seen in the monitored chokepoints and
-        anchorages, of which {formatNumber(byClass.crude ?? 0, 0)} report as tankers
-      </p>
+    <>
+      <PageHeader
+        active="/vessels"
+        title="Vessels"
+        dek={
+          <>
+            {formatNumber(vessels.length, 0)} vessels seen in the monitored
+            chokepoints and anchorages, of which{" "}
+            {formatNumber(byClass.crude ?? 0, 0)} report as tankers
+          </>
+        }
+      />
 
-      <Panel
-        title="Latest positions"
-        asOf={publish?.as_of ?? null}
-        stale={isStale("ais", publish?.as_of)}
-        sourceNote="aisstream.io terrestrial AIS. Coverage is good at coasts and chokepoints and patchy in open ocean, so an empty stretch of sea means no receiver rather than no ships. Ship class is the type code the vessel reports, not a verified classification."
-      >
-        {vessels.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>
-            No vessel positions published. Run the ingester, then the compactor.
-          </p>
-        ) : (
-          <VesselMap vessels={vessels} />
-        )}
-      </Panel>
-    </main>
+      <main>
+        <Panel
+          title="Latest positions"
+          asOf={publish?.as_of ?? null}
+          stale={isStale("ais", publish?.as_of)}
+          sourceNote="aisstream.io terrestrial AIS. Coverage is good at coasts and chokepoints and patchy in open ocean, so an empty stretch of sea means no receiver rather than no ships. Ship class is the type code the vessel reports, not a verified classification."
+        >
+          {vessels.length === 0 ? (
+            <p style={{ color: "var(--muted)" }}>
+              No vessel positions published. Run the ingester, then the
+              compactor.
+            </p>
+          ) : (
+            <VesselMap vessels={vessels} />
+          )}
+        </Panel>
+      </main>
+    </>
   );
 }

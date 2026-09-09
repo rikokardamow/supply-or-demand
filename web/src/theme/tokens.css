@@ -22,6 +22,13 @@
   /* The one tinted ground in the system: section wells and hover states. */
   --wash: #fafafa;
 
+  /* The shell: masthead, ticker and footer. A newspaper tints its shell and leaves the
+     article on white -- the FT's pink surrounds white columns, the Economist's red
+     masthead sits above a white page. The reading ground stays --paper so charts, and
+     the Streamlit app they are shared with, still agree on their background. */
+  --shell: #f7f5f1;
+  --shell-rule: #e4e0d8;
+
   /* Status: the red/amber/green of core/freshness.py's report */
   --status-green: #1bc47d;
   --status-amber: #e67e22;
@@ -42,7 +49,8 @@
      literal name and the rest of the stack stay as real fallbacks, matching
      core/design.py's HEADING_STACK / BODY_STACK exactly. */
   --heading-stack: var(--font-lora), Lora, Georgia, "Times New Roman", serif;
-  --body-stack: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
+  --body-stack:
+    var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   --base-font-px: 15px;
 
@@ -151,14 +159,16 @@ a {
   }
 }
 
-/* A stat reads as a destination, not decoration: the whole tile lifts on hover rather
-   than only its text, so the click target is obvious without a button. */
-.stat {
-  transition: background var(--duration) var(--ease);
+/* A stat is a destination, and its hover has to say so without drawing a box. An earlier
+   version washed the tile's background, which -- with no padding to breathe into -- put a
+   hard grey rectangle around the text that read as a selection artefact rather than a
+   hover. The label going to ink says the same thing and disturbs nothing. */
+.stat .stat-label {
+  transition: color var(--duration) var(--ease);
 }
 
-.stat:hover {
-  background: var(--wash) !important;
+.stat:hover .stat-label {
+  color: var(--ink);
 }
 
 /* The rule above a screen card darkens on hover -- the only affordance a text link in a
@@ -169,4 +179,105 @@ a {
 
 .screen-card:hover {
   border-top-color: var(--ink) !important;
+}
+
+/* -- The shell --------------------------------------------------------------------- */
+
+/* The masthead bleeds to the window edge while its contents stay on the page measure.
+   A tinted band that stopped at 1200px would read as a box rather than as the paper. */
+.bleed {
+  background: var(--shell);
+  border-bottom: 1px solid var(--shell-rule);
+}
+
+.bleed-inner {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* Navigation stays with the reader down a page of charts. The wordmark above it scrolls
+   away and a compact mark takes its place -- the newspaper's own behaviour, where the
+   masthead is printed once at the top and the section name runs in the header after it. */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--shell);
+  border-bottom: 1px solid var(--shell-rule);
+  transition: box-shadow var(--duration) var(--ease);
+}
+
+/* Only once the page has actually scrolled: a shadow under a bar that is still at the
+   top of an unscrolled document is a shadow cast by nothing. */
+.nav-bar[data-stuck="true"] {
+  box-shadow: 0 1px 12px rgba(2, 6, 23, 0.06);
+}
+
+.nav-mark {
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+  pointer-events: none;
+}
+
+.nav-bar[data-stuck="true"] .nav-mark {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* A nav item's underline grows from the centre rather than switching on, so moving
+   between sections reads as one continuous rule rather than six separate ones. */
+.nav-link {
+  position: relative;
+  padding-bottom: 0.3rem;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transition: transform var(--duration) var(--ease);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* A figure that has just changed flashes its own ground for a beat. This is the only
+   place colour arrives unasked, and it says one thing: this number is not the one you
+   were looking at a moment ago. */
+@keyframes flash {
+  from {
+    background: color-mix(in srgb, var(--flash-tone) 22%, transparent);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+.flash {
+  animation: flash 900ms var(--ease) both;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash {
+    animation: none;
+  }
+  .nav-mark {
+    transition: none;
+  }
 }

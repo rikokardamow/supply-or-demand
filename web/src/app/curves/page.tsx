@@ -1,6 +1,6 @@
 import { ChartControls } from "@/components/charts/ChartControls";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
-import { Masthead } from "@/components/chrome/Masthead";
+import { PageHeader } from "@/components/chrome/PageHeader";
 import { Panel } from "@/components/chrome/Panel";
 import { fetchCurve, fetchSpreads } from "@/data/queries/curve";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
@@ -59,90 +59,84 @@ export default async function CurvesPage() {
   const tradeDate = curve.find((c) => c.trade_date)?.trade_date ?? null;
 
   return (
-    <main>
-      <Masthead active="/curves" />
+    <>
+      <PageHeader
+        active="/curves"
+        title="Curves"
+        dek="Front-month closes, the forward curve and calendar spreads"
+      />
 
-      <h2
-        style={{
-          fontFamily: "var(--heading-stack)",
-          fontSize: "1.6rem",
-          margin: "0.5rem 0 0.35rem",
-        }}
-      >
-        Curves
-      </h2>
-      <p
-        style={{ color: "var(--muted)", fontSize: "0.82rem", margin: "0 0 1.6rem" }}
-      >
-        Front-month closes, the forward curve and calendar spreads
-      </p>
-
-      <Panel
-        title="Crude front month"
-        asOf={pricePublish?.as_of ?? null}
-        stale={isStale("yfinance", pricePublish?.as_of)}
-        sourceNote="Yahoo Finance continuous front-month daily closes — a last trade, not an exchange settlement. See pipelines/futures/yfinance_front.py for the measured difference."
-      >
-        <ChartControls lines={toLines(crude, CRUDE)} unit={commonUnit(crude)} />
-      </Panel>
-
-      <Panel
-        title="Refined products front month"
-        asOf={pricePublish?.as_of ?? null}
-        stale={isStale("yfinance", pricePublish?.as_of)}
-        sourceNote="NY Harbor heating oil and RBOB gasoline, both in USD per gallon."
-      >
-        <ChartControls
-          lines={toLines(products, PRODUCTS)}
-          unit={commonUnit(products)}
-        />
-      </Panel>
-
-      <Panel
-        title="Henry Hub front month"
-        asOf={pricePublish?.as_of ?? null}
-        stale={isStale("yfinance", pricePublish?.as_of)}
-        sourceNote="US natural gas, USD per million British thermal units."
-      >
-        <ChartControls lines={toLines(gas, GAS)} unit={commonUnit(gas)} />
-      </Panel>
-
-      <Panel
-        title={`Brent forward curve${tradeDate ? ` — ${formatDate(tradeDate)}` : ""}`}
-        asOf={curvePublish?.as_of ?? null}
-        stale={isStale("curve", curvePublish?.as_of)}
-        sourceNote="A single snapshot reconstructed from a Barchart spreads export, not a live board. The as-of stamp is the trade date, so this panel greys until a new export lands."
-      >
-        {curve.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>No curve published.</p>
-        ) : (
-          <TimeSeriesChart
-            lines={[
-              {
-                name: "Settle",
-                x: curve.map((c) => c.contract),
-                y: curve.map((c) => c.settle),
-                color: SERIES.navy,
-              },
-            ]}
-            unit="USD/bbl"
-            xTickEvery={6}
+      <main>
+        <Panel
+          title="Crude front month"
+          asOf={pricePublish?.as_of ?? null}
+          stale={isStale("yfinance", pricePublish?.as_of)}
+          sourceNote="Yahoo Finance continuous front-month daily closes — a last trade, not an exchange settlement. See pipelines/futures/yfinance_front.py for the measured difference."
+        >
+          <ChartControls
+            lines={toLines(crude, CRUDE)}
+            unit={commonUnit(crude)}
           />
-        )}
-      </Panel>
+        </Panel>
 
-      <Panel
-        title="WTI calendar spreads"
-        asOf={curvePublish?.as_of ?? null}
-        stale={isStale("curve", curvePublish?.as_of)}
-        sourceNote="Front minus back, so positive is backwardation. EIA discontinued this route in April 2024 — the series genuinely ends there, which is why this panel reads stale."
-      >
-        {spreadLines.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>No spreads published.</p>
-        ) : (
-          <ChartControls lines={spreadLines} unit="USD/bbl" />
-        )}
-      </Panel>
-    </main>
+        <Panel
+          title="Refined products front month"
+          asOf={pricePublish?.as_of ?? null}
+          stale={isStale("yfinance", pricePublish?.as_of)}
+          sourceNote="NY Harbor heating oil and RBOB gasoline, both in USD per gallon."
+        >
+          <ChartControls
+            lines={toLines(products, PRODUCTS)}
+            unit={commonUnit(products)}
+          />
+        </Panel>
+
+        <Panel
+          title="Henry Hub front month"
+          asOf={pricePublish?.as_of ?? null}
+          stale={isStale("yfinance", pricePublish?.as_of)}
+          sourceNote="US natural gas, USD per million British thermal units."
+        >
+          <ChartControls lines={toLines(gas, GAS)} unit={commonUnit(gas)} />
+        </Panel>
+
+        <Panel
+          title={`Brent forward curve${tradeDate ? ` — ${formatDate(tradeDate)}` : ""}`}
+          asOf={curvePublish?.as_of ?? null}
+          stale={isStale("curve", curvePublish?.as_of)}
+          sourceNote="A single snapshot reconstructed from a Barchart spreads export, not a live board. The as-of stamp is the trade date, so this panel greys until a new export lands."
+        >
+          {curve.length === 0 ? (
+            <p style={{ color: "var(--muted)" }}>No curve published.</p>
+          ) : (
+            <TimeSeriesChart
+              lines={[
+                {
+                  name: "Settle",
+                  x: curve.map((c) => c.contract),
+                  y: curve.map((c) => c.settle),
+                  color: SERIES.navy,
+                },
+              ]}
+              unit="USD/bbl"
+              xTickEvery={6}
+            />
+          )}
+        </Panel>
+
+        <Panel
+          title="WTI calendar spreads"
+          asOf={curvePublish?.as_of ?? null}
+          stale={isStale("curve", curvePublish?.as_of)}
+          sourceNote="Front minus back, so positive is backwardation. EIA discontinued this route in April 2024 — the series genuinely ends there, which is why this panel reads stale."
+        >
+          {spreadLines.length === 0 ? (
+            <p style={{ color: "var(--muted)" }}>No spreads published.</p>
+          ) : (
+            <ChartControls lines={spreadLines} unit="USD/bbl" />
+          )}
+        </Panel>
+      </main>
+    </>
   );
 }

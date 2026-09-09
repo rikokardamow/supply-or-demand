@@ -1,20 +1,39 @@
 import Link from "next/link";
 
+import { ChartControls } from "@/components/charts/ChartControls";
 import { Masthead } from "@/components/chrome/Masthead";
 import { StatStrip } from "@/components/chrome/StatStrip";
 import { fetchHeadlines } from "@/data/queries/overview";
-import { fetchLatestPublishes } from "@/data/queries/publishLog";
+import {
+  fetchLatestPublishBy,
+  fetchLatestPublishes,
+} from "@/data/queries/publishLog";
+import { fetchSeries } from "@/data/queries/series";
+import { commonUnit, toLines } from "@/data/toLines";
 import { formatDate, formatNumber } from "@/lib/format";
 
 /**
- * The front page: the numbers first, then a way in.
+ * The front page.
  *
- * A research site that opens on a chart makes a reader work before it has told them
- * anything. This opens with the six figures worth knowing, each linking to the screen
- * that explains it, and closes with what the pipelines last published — which doubles as
- * the site's own honesty page: every source, when it last delivered, and how much.
+ * It has one job: say what this is, prove it in a single screen, and get the reader to
+ * the section they came for. So it is built the way a product's landing page is built --
+ * a claim, the thing itself, then the way in -- rather than as a dashboard index.
+ *
+ * The claim is stated once, at size. Under it sit the six figures the site exists to
+ * publish and one full-width exhibit: a data publication's own product shot is a chart
+ * with real numbers in it, not an illustration of one. Everything below that is
+ * navigation and provenance.
+ *
+ * The provenance table at the foot is not filler. It is the site's honesty page -- every
+ * table, the data's own as-of, and when the pipeline last ran -- and putting it on the
+ * front page rather than behind an "About" link is the point.
  */
 export const revalidate = 3600;
+
+const LEAD_SERIES = {
+  "fut.lco.f01.close": "Brent",
+  "fut.cl.f01.close": "WTI",
+};
 
 const SCREENS = [
   {
@@ -68,153 +87,279 @@ const SCREENS = [
 ];
 
 export default async function Home() {
-  const [headlines, publishes] = await Promise.all([
+  const [headlines, publishes, lead, leadPublish] = await Promise.all([
     fetchHeadlines(),
     fetchLatestPublishes(),
+    fetchSeries(Object.keys(LEAD_SERIES), 5),
+    fetchLatestPublishBy("series_long", "yfinance"),
   ]);
 
   return (
-    <main>
-      <Masthead active="/" />
+    <>
+      <Masthead active="/" full />
 
-      <p
-        style={{
-          textAlign: "center",
-          color: "var(--muted)",
-          fontSize: "var(--size-small)",
-          maxWidth: "34rem",
-          margin: "0 auto var(--space-8)",
-        }}
-      >
-        Energy and macro research. Every figure is computed from a local data lake and
-        published as rows — nothing on this site is calculated in your browser.
-      </p>
-
-      <StatStrip headlines={headlines} />
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "var(--space-8) var(--space-8)",
-          marginBottom: "var(--space-12)",
-        }}
-      >
-        {SCREENS.map((screen, i) => (
-          <Link
-            key={screen.href}
-            href={screen.href}
-            className="rise screen-card"
-            style={{
-              textDecoration: "none",
-              display: "block",
-              paddingTop: "var(--space-3)",
-              borderTop: "1px solid var(--rule)",
-              animationDelay: `${120 + i * 40}ms`,
-            }}
-          >
-            <h3
+      <main>
+        {/* Claim on the left, the thing itself on the right. A landing page that states a
+            claim across the full width and leaves half the fold empty has spent its best
+            space on nothing; a data publication's product shot is a real chart with real
+            numbers in it, and putting it here means the claim is answered in the same
+            glance it is made. It is interactive for the same reason -- a reader can ask
+            their own next question without leaving the front page. */}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 30rem), 1fr))",
+            alignItems: "center",
+            gap: "var(--space-12)",
+            padding: "var(--space-12) 0",
+          }}
+        >
+          <div>
+            {/* Sized against the window rather than pinned: a headline fixed at 4.4rem is
+                a headline that breaks a phone. */}
+            <h2
               style={{
-                fontSize: "var(--size-lead)",
-                marginBottom: "var(--space-2)",
+                fontFamily: "var(--heading-stack)",
+                fontSize: "clamp(2.4rem, 4.6vw, 4rem)",
+                lineHeight: 1.02,
+                letterSpacing: "-0.03em",
                 color: "var(--ink)",
+                margin: "0 0 var(--space-6)",
               }}
             >
-              {screen.title}
-            </h3>
-            <p style={{ fontSize: "var(--size-small)", color: "var(--muted)" }}>
-              {screen.blurb}
+              Energy fundamentals, counted.
+            </h2>
+            <p
+              style={{
+                fontSize: "var(--size-lead)",
+                lineHeight: 1.55,
+                color: "var(--text)",
+                maxWidth: "44ch",
+                margin: "0 0 var(--space-6)",
+              }}
+            >
+              Prices, stocks, storage, cargoes and sanctions — pulled from
+              primary sources into a local data lake and published here as rows.
+              Every figure on this site was computed before it was served; none
+              of it is estimated in your browser.
             </p>
-          </Link>
-        ))}
-      </div>
+            <Link
+              href="/balances"
+              style={{
+                fontSize: "var(--size-small)",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--ink)",
+                fontWeight: 600,
+                textDecoration: "none",
+                borderBottom: "2px solid var(--ink)",
+                paddingBottom: "0.2rem",
+              }}
+            >
+              Start with this week&rsquo;s balances →
+            </Link>
+          </div>
 
-      <section>
-        <h2
-          style={{
-            fontSize: "var(--size-panel)",
-            marginBottom: "var(--space-2)",
-          }}
-        >
-          What was last published
-        </h2>
-        <p
-          style={{
-            fontSize: "var(--size-small)",
-            color: "var(--muted)",
-            marginBottom: "var(--space-4)",
-            maxWidth: "44rem",
-          }}
-        >
-          The as-of column is the data&rsquo;s own date, not the time the pipeline ran. A
-          source that has stopped updating shows an old as-of however recently it was
-          republished — which is the point of recording both.
-        </p>
-        <div style={{ overflowX: "auto" }}>
-          <table
+          <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                justifyContent: "space-between",
+                gap: "var(--space-4)",
+                borderBottom: "1px solid var(--rule)",
+                paddingBottom: "var(--space-2)",
+                marginBottom: "var(--space-4)",
+              }}
+            >
+              <h3 style={{ fontSize: "var(--size-panel)" }}>
+                Brent and WTI, front-month close
+              </h3>
+              <span
+                className="tabular"
+                style={{
+                  fontSize: "var(--size-micro)",
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                As of {formatDate(leadPublish?.as_of ?? null)}
+              </span>
+            </div>
+            <ChartControls
+              lines={toLines(lead, LEAD_SERIES)}
+              unit={commonUnit(lead)}
+              height={320}
+            />
+          </div>
+        </section>
+
+        <StatStrip headlines={headlines} />
+
+        <section style={{ marginBottom: "var(--space-12)" }}>
+          <h3
             style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              fontSize: "var(--size-small)",
+              fontSize: "var(--size-micro)",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--muted)",
+              fontFamily: "var(--body-stack)",
+              fontWeight: 600,
+              marginBottom: "var(--space-6)",
             }}
           >
-            <thead>
-              <tr>
-                {["Table", "Data as of", "Published", "Note"].map((h) => (
-                  <th
-                    key={h}
-                    style={{
-                      textAlign: "left",
-                      padding: "var(--space-2) var(--space-3)",
-                      borderBottom: "1px solid var(--rule)",
-                      fontSize: "var(--size-micro)",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      color: "var(--muted)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {publishes
-                .slice()
-                .sort((a, b) => (a.table_name ?? "").localeCompare(b.table_name ?? ""))
-                .map((p) => (
-                  <tr key={p.table_name ?? ""}>
-                    <td style={cell}>{p.table_name}</td>
-                    <td style={{ ...cell, fontVariantNumeric: "tabular-nums" }}>
-                      {formatDate(p.as_of)}
-                    </td>
-                    <td
+            Eight screens
+          </h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "var(--space-8)",
+            }}
+          >
+            {SCREENS.map((screen, i) => (
+              <Link
+                key={screen.href}
+                href={screen.href}
+                className="rise screen-card"
+                style={{
+                  textDecoration: "none",
+                  display: "block",
+                  paddingTop: "var(--space-3)",
+                  borderTop: "1px solid var(--rule)",
+                  animationDelay: `${120 + i * 40}ms`,
+                }}
+              >
+                <h4
+                  style={{
+                    fontFamily: "var(--heading-stack)",
+                    fontSize: "var(--size-lead)",
+                    fontWeight: 600,
+                    marginBottom: "var(--space-2)",
+                    color: "var(--ink)",
+                  }}
+                >
+                  {screen.title}
+                </h4>
+                <p
+                  style={{
+                    fontSize: "var(--size-small)",
+                    color: "var(--muted)",
+                  }}
+                >
+                  {screen.blurb}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h3
+            style={{
+              fontSize: "var(--size-panel)",
+              marginBottom: "var(--space-2)",
+            }}
+          >
+            What was last published
+          </h3>
+          <p
+            style={{
+              fontSize: "var(--size-small)",
+              color: "var(--muted)",
+              marginBottom: "var(--space-4)",
+              maxWidth: "44rem",
+            }}
+          >
+            The as-of column is the data&rsquo;s own date, not the time the
+            pipeline ran. A source that has stopped updating shows an old as-of
+            however recently it was republished — which is the point of
+            recording both.
+          </p>
+          <div style={{ overflowX: "auto" }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "var(--size-small)",
+              }}
+            >
+              <thead>
+                <tr>
+                  {["Table", "Data as of", "Published", "Note"].map((h) => (
+                    <th
+                      key={h}
                       style={{
-                        ...cell,
+                        textAlign: "left",
+                        padding: "var(--space-2) var(--space-3)",
+                        borderBottom: "1px solid var(--rule)",
+                        fontSize: "var(--size-micro)",
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
                         color: "var(--muted)",
-                        fontVariantNumeric: "tabular-nums",
+                        fontWeight: 600,
+                        // Three of these four headings are shorter than their column but
+                        // "Data as of" wraps onto two lines at some widths, which drags
+                        // the whole header row taller for no reason.
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {formatDate(p.published_at)}
-                    </td>
-                    <td style={{ ...cell, color: "var(--muted)" }}>{p.source_note}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-        <p
-          style={{
-            fontSize: "var(--size-micro)",
-            color: "var(--muted)",
-            marginTop: "var(--space-4)",
-          }}
-        >
-          {formatNumber(publishes.length, 0)} tables published from the lake.
-        </p>
-      </section>
-    </main>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {publishes
+                  .slice()
+                  .sort((a, b) =>
+                    (a.table_name ?? "").localeCompare(b.table_name ?? ""),
+                  )
+                  .map((p) => (
+                    <tr key={p.table_name ?? ""}>
+                      <td style={cell}>{p.table_name}</td>
+                      <td
+                        style={{
+                          ...cell,
+                          fontVariantNumeric: "tabular-nums",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatDate(p.as_of)}
+                      </td>
+                      <td
+                        style={{
+                          ...cell,
+                          color: "var(--muted)",
+                          fontVariantNumeric: "tabular-nums",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatDate(p.published_at)}
+                      </td>
+                      <td style={{ ...cell, color: "var(--muted)" }}>
+                        {p.source_note}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+          <p
+            style={{
+              fontSize: "var(--size-micro)",
+              color: "var(--muted)",
+              marginTop: "var(--space-4)",
+            }}
+          >
+            {formatNumber(publishes.length, 0)} tables published from the lake.
+          </p>
+        </section>
+      </main>
+    </>
   );
 }
 

@@ -30,12 +30,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // No measure wrapper here: the masthead and ticker rail tint the full window width
+    // while their contents stay on the page measure, and a container around everything
+    // would stop the tint at 1200px and turn the shell into a box. `main` carries the
+    // measure instead -- see globals.css.
     <html lang="en-GB" className={`${inter.variable} ${lora.variable}`}>
-      <body>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.25rem 3rem" }}>
-          {children}
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
