@@ -69,6 +69,7 @@ export default async function SanctionsPage() {
           title="Sanctioned vessels"
           asOf={asOf}
           stale={stale}
+          pipeline={"ofac"}
           sourceNote="A register, not a tracker. OFAC identifies a listed ship by name, IMO, flag and owner; it carries no position, and this project has no AIS feed, so nothing here says where a vessel is."
         >
           <div style={{ overflowX: "auto" }}>
@@ -120,6 +121,7 @@ export default async function SanctionsPage() {
           title="Vessel flags most represented"
           asOf={asOf}
           stale={stale}
+          pipeline={"ofac"}
           sourceNote="Flags of convenience dominate by construction: a flag appearing often here reflects where sanctioned tonnage registers, not any judgement about the registry itself."
         >
           <FrequencyTable rows={flags} label="Flag" />
@@ -129,6 +131,7 @@ export default async function SanctionsPage() {
           title="Sanctions programmes"
           asOf={asOf}
           stale={stale}
+          pipeline={"ofac"}
           sourceNote="An entry can sit under several programmes at once; these are the programme strings exactly as OFAC publishes them, uncombined."
         >
           <FrequencyTable rows={programmes} label="Programme" />

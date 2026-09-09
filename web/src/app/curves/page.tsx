@@ -71,6 +71,7 @@ export default async function CurvesPage() {
           title="Crude front month"
           asOf={pricePublish?.as_of ?? null}
           stale={isStale("yfinance", pricePublish?.as_of)}
+          pipeline={"yfinance"}
           sourceNote="Yahoo Finance continuous front-month daily closes — a last trade, not an exchange settlement. See pipelines/futures/yfinance_front.py for the measured difference."
         >
           <ChartControls
@@ -83,6 +84,7 @@ export default async function CurvesPage() {
           title="Refined products front month"
           asOf={pricePublish?.as_of ?? null}
           stale={isStale("yfinance", pricePublish?.as_of)}
+          pipeline={"yfinance"}
           sourceNote="NY Harbor heating oil and RBOB gasoline, both in USD per gallon."
         >
           <ChartControls
@@ -95,6 +97,7 @@ export default async function CurvesPage() {
           title="Henry Hub front month"
           asOf={pricePublish?.as_of ?? null}
           stale={isStale("yfinance", pricePublish?.as_of)}
+          pipeline={"yfinance"}
           sourceNote="US natural gas, USD per million British thermal units."
         >
           <ChartControls lines={toLines(gas, GAS)} unit={commonUnit(gas)} />
@@ -104,6 +107,7 @@ export default async function CurvesPage() {
           title={`Brent forward curve${tradeDate ? ` — ${formatDate(tradeDate)}` : ""}`}
           asOf={curvePublish?.as_of ?? null}
           stale={isStale("curve", curvePublish?.as_of)}
+          pipeline={"curve"}
           sourceNote="A single snapshot reconstructed from a Barchart spreads export, not a live board. The as-of stamp is the trade date, so this panel greys until a new export lands."
         >
           {curve.length === 0 ? (
@@ -128,6 +132,7 @@ export default async function CurvesPage() {
           title="WTI calendar spreads"
           asOf={curvePublish?.as_of ?? null}
           stale={isStale("curve", curvePublish?.as_of)}
+          pipeline={"curve"}
           sourceNote="Front minus back, so positive is backwardation. EIA discontinued this route in April 2024 — the series genuinely ends there, which is why this panel reads stale."
         >
           {spreadLines.length === 0 ? (

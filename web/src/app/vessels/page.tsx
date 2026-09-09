@@ -49,6 +49,7 @@ export default async function VesselsPage() {
           title="Latest positions"
           asOf={publish?.as_of ?? null}
           stale={isStale("ais", publish?.as_of)}
+          pipeline={"ais"}
           sourceNote="aisstream.io terrestrial AIS. Coverage is good at coasts and chokepoints and patchy in open ocean, so an empty stretch of sea means no receiver rather than no ships. Ship class is the type code the vessel reports, not a verified classification."
         >
           {vessels.length === 0 ? (

@@ -67,6 +67,7 @@ export default async function GasPage() {
           title="EU storage fullness against its seasonal range"
           asOf={asOf}
           stale={stale}
+          pipeline={PIPELINE}
           sourceNote="Seven-year range and median, 2020 excluded. This year stops at the last reported gas day rather than running to year end."
         >
           <SeasonalChart
@@ -80,6 +81,7 @@ export default async function GasPage() {
           title="Germany storage fullness against its seasonal range"
           asOf={asOf}
           stale={stale}
+          pipeline={PIPELINE}
           sourceNote="The largest single EU storage system, and the one the TTF curve trades against."
         >
           <SeasonalChart
@@ -93,6 +95,7 @@ export default async function GasPage() {
           title="Storage fullness by country"
           asOf={asOf}
           stale={stale}
+          pipeline={PIPELINE}
           sourceNote="The five largest EU storage systems by working gas volume."
         >
           <ChartControls
@@ -105,6 +108,7 @@ export default async function GasPage() {
           title="EU injection and withdrawal"
           asOf={asOf}
           stale={stale}
+          pipeline={PIPELINE}
           sourceNote="Gross flows, not netted: both run simultaneously across a system this size, and netting them would hide the turnover."
         >
           <ChartControls
@@ -117,6 +121,7 @@ export default async function GasPage() {
           title="EU LNG send-out and terminal inventory"
           asOf={asOf}
           stale={stale}
+          pipeline={PIPELINE}
           sourceNote="Send-out is a daily rate (GWh/d); inventory is a stock (1000 m³), so the two sit on separate axes."
         >
           <ChartControls

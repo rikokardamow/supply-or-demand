@@ -42,6 +42,11 @@ export const STALE_AFTER_MS: Record<string, number> = {
   yfinance: 4 * DAYS,
   // Weekly on a Friday; 10 days covers a public holiday without a false alarm.
   baker_hughes: 10 * DAYS,
+  // The Petroleum Supply Monthly, published about two months behind the month it
+  // reports. `/supply` was already calling isStale("eia", ...) with no entry here, so
+  // those panels could never grey however far behind the release fell -- a staleness
+  // check that cannot fire is worse than none, because it looks like one that passed.
+  eia: 100 * DAYS,
   // Both are parsed from monthly publications, and OPEC's MOMR lands around the 11th-14th
   // -- so a month-old figure is normal and only two months is genuinely late.
   opec_momr: 60 * DAYS,
@@ -56,6 +61,36 @@ export const STALE_AFTER_MS: Record<string, number> = {
   // Spec 32 §5 sets 30 minutes: a position fix that old is no longer where the ship is.
   ais: 30 * 60 * 1000,
   grp: 26 * HOURS,
+};
+
+/**
+ * When each source next publishes, in its own words.
+ *
+ * A figure dated 28 August on a page loaded on 9 September looks neglected, and there is
+ * nothing on the page to say otherwise. It is not neglected: that *is* the newest week
+ * EIA has released, and the next one is delayed to Thursday 10 September because Labor
+ * Day fell on the 7th (confirmed against EIA's own release schedule on 2026-09-09).
+ *
+ * So each source states its cadence rather than a predicted date. A predicted date would
+ * mean modelling US federal holidays, Ramadan-shifted OPEC publication and JODI's rolling
+ * submission window — and the first time the model was wrong it would be a false claim
+ * printed next to a real figure. A cadence is always true.
+ */
+export const RELEASE_CADENCE: Record<string, string> = {
+  wpsr: "Weekly · Wed 10:30 ET, a day later after a Monday holiday",
+  gie: "Daily · ~19:30 CET, for the previous gas day",
+  flows: "Hourly to monthly, by source",
+  curve: "Daily settles",
+  yfinance: "Every trading day",
+  baker_hughes: "Weekly · Fri ~noon CT",
+  eia: "Monthly · about two months behind the reported month",
+  opec_momr: "Monthly · around the 11th–14th",
+  jodi: "Monthly · around the 20th",
+  derived: "Recomputed whenever its source publishes",
+  events: "Daily",
+  ofac: "Daily, when OFAC republishes the SDN file",
+  ais: "Continuous",
+  grp: "Daily",
 };
 
 /**
