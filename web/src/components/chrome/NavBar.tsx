@@ -32,14 +32,17 @@ export function NavBar({ active }: { active?: string }) {
     >
       <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", flexShrink: 0 }}>
         {/* A square, not a rounded tile. The terminal has no radius anywhere else and
-            one rounded corner in the top-left reads as an oversight. */}
+            one rounded corner in the top-left reads as an oversight. Outlined, not
+            filled: a solid amber block is reserved for "you are here" and "this data
+            is stale", so the identity mark takes a border instead and never competes
+            with either. */}
         <span
           aria-hidden
           style={{
             width: 16,
             height: 16,
-            background: "var(--accent)",
-            color: "var(--bg)",
+            border: "1px solid var(--accent)",
+            color: "var(--accent)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
