@@ -32,7 +32,14 @@ create table serving.series_long (
   revision_date date,
   primary key (series_id, ts)
 );
-create index on serving.series_long (series_id, ts desc);
+-- NOTE: this draft also declared `create index on serving.series_long (series_id, ts
+-- desc)`. It was created, then dropped again in migration
+-- 20260909140000_drop_redundant_series_long_index.sql: the primary key above already
+-- covers it, since a btree is scanned backwards at effectively the same cost. Measured
+-- on the real populated table (463,818 rows) the duplicate cost 38 MB against 41 MB of
+-- heap -- ~30% of the whole serving footprint on a 500 MB free tier -- and `explain
+-- (analyze)` before/after showed the same plan (Index Scan Backward using
+-- series_long_pkey, cost 426.88 vs 426.71). Do not recreate it.
 
 -- Seasonal exhibit rows, one per series per day-of-year, computed by core.seasonal (2020 excluded)
 create table serving.seasonal (

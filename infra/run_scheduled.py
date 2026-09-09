@@ -48,6 +48,13 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("eia_rto_demand", "pipelines.eia.pull_rto_demand"),
         ("eia_rto_fuel_mix", "pipelines.eia.pull_rto_fuel_mix"),
         ("eia_rto_interchange", "pipelines.eia.pull_rto_interchange"),
+        # Spec 32 serving-layer publishes. Both read the lake rather than a pulled
+        # frame, so they must run after the pulls that feed them -- "gie" above for the
+        # storage history, "futures"/"derived_curve" for the settles. Publishing is a
+        # no-op when SUPABASE_DB_URL is unset, so a machine that hasn't opted into the
+        # serving layer still runs this cadence green.
+        ("publish_gie", "pipelines.gie.publish_gie"),
+        ("publish_curve", "pipelines.futures.publish_curve"),
     ],
     "wpsr": [
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),

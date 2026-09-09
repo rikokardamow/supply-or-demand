@@ -216,3 +216,52 @@ de-dup, whereas a gap would silently lose a settlement.
 
 Still open on the IBKR path, unchanged and still unverifiable without a live Gateway: two
 connections per root, and the unsanitised exception print.
+
+## Serving-layer publish: `publish_curve.py` (Spec 32 Session 3, live 2026-09-09)
+
+`python -m pipelines.futures.publish_curve` reads the lake's `fut.*` series and publishes
+them into Supabase's `serving.curve_settles` and `serving.spreads`. It is **not** wired
+into `infra/run_scheduled.py` — the repo owner is handling scheduler wiring separately.
+
+### The two lake shapes feed one table each — deliberately
+
+`serving.curve_settles.contract` wants a real contract code (the spec's own example is
+`'BRNX6'`). A *rank* is not a contract, so the two shapes documented above are not
+interchangeable here:
+
+| Lake shape | Source | Serving table | Why |
+|---|---|---|---|
+| `fut.lco.<monthcode><year>.settle` | `manual` | `curve_settles` | genuine contract codes |
+| `fut.<root>.f01..f04.settle` | `eia` | `spreads` | ranks, and where the real history is |
+
+`root` and `contract` are the lake's own values uppercased (`lco` → `LCO`,
+`x2026` → `X2026`) — no re-mapping to an exchange ticker, because nothing in the lake
+records one. `expiry` and `oi` are published as NULL: the Barchart reconstruction carries
+neither, and a guessed expiry would be fabricated market data.
+
+### Only five spread legs are computable
+
+Ranks 1–4 are all that exist, so `spreads` holds `M1-M2`, `M1-M3`, `M1-M4`, `M2-M3` and
+`M3-M4` only. **`M1-M12` appears in Spec 32's own `legs` example and is not published** —
+it needs an `f12` this lake has never held. It is omitted loudly (here and in the
+`source_note` on every `publish_log` row), never filled with a guess.
+
+Sign convention is `core.curve.time_spreads`' own — front minus back (`M1-M2` = `f01` −
+`f02`), so positive is backwardation. `tests/test_publish_curve.py` asserts the equality
+against `time_spreads` directly rather than restating the rule, so the two cannot drift.
+
+### Rank coverage is uneven, and the inner join is what handles it
+
+Only dates where **both** legs have a real value produce a row — an inner join, never a
+fill. This is not theoretical: EIA's own `cl` history starts `f03` on 1983-03-30 but
+`f02`/`f04` only on 1985-01-02, so 443 CL dates carry `f01`+`f03` and nothing else. That
+is why `M1-M3` has ~6,200 more rows project-wide than any other leg — a real gap in the
+source, not a bug in the pivot.
+
+### Live result (2026-09-09)
+
+89 `curve_settles` rows (LCO, 89 contracts, the single 2026-09-04 snapshot date) and
+132,546 `spreads` rows (CL 49,745 · HO 41,370 · HU 18,200 · RB 23,231, spanning
+1980-01-02 → 2024-04-05). Running it twice left both table counts identical while adding
+a second `publish_log` row per table — Spec 32 §8's idempotency criterion, verified
+against the real database rather than assumed.

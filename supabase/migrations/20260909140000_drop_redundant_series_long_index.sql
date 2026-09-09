@@ -1,0 +1,13 @@
+-- Spec 32 Session 3: drop serving.series_long's redundant (series_id, ts DESC) index.
+--
+-- The migration that created this schema declared both a primary key on
+-- (series_id, ts) and a separate index on (series_id, ts DESC). A btree is scanned
+-- backwards at effectively the same cost as forwards, so the primary key already
+-- serves `where series_id = ? order by ts desc` -- the exact access pattern Spec 33's
+-- UI uses. Measured on the real, populated table (463,818 rows): the two indexes were
+-- 38 MB each against 41 MB of heap, so the duplicate was ~30% of the entire serving
+-- footprint on a 500 MB free tier.
+--
+-- Reversible: recreate with
+--   create index on serving.series_long (series_id, ts desc);
+drop index serving.series_long_series_id_ts_idx;
