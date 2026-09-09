@@ -54,7 +54,7 @@ const LANDED_BY_GRAVITY = {
   I000000408: "40–44.9° API",
 };
 
-// Gas delivered to end users, monthly since 1973 -- the longest run in this lake.
+// Gas delivered to end users, monthly since 1973 -- the longest run published here.
 const GAS_CONSUMPTION = {
   N3010US2: "Residential",
   N3020US2: "Commercial",
@@ -206,7 +206,7 @@ export default async function SupplyPage() {
           asOf={eiaAsOf}
           stale={eiaStale}
           pipeline={"eia"}
-          sourceNote="EIA monthly, since 1973 — the longest continuous run in this lake. The seasonal amplitude is heating demand, and its year-on-year change is a cleaner weather signal than temperature itself."
+          sourceNote="EIA monthly, since 1973 — the longest continuous run on this site. The seasonal amplitude is heating demand, and its year-on-year change is a cleaner weather signal than temperature itself."
         >
           <ChartControls
             lines={toLines(gasConsumption, GAS_CONSUMPTION)}
