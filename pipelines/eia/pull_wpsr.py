@@ -4,7 +4,10 @@ codes and how they were discovered."""
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 import pandas as pd
+from core.publish import publish
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -37,6 +40,20 @@ def main() -> None:
     df = pd.concat(frames, ignore_index=True)
     write_ts_long(df, source="eia")
     print(f"wrote {len(df)} rows across {len(groups)} route groups")
+
+    # Spec 32 Session 2: first real serving-layer publish. Runs after the lake write
+    # above already succeeded and committed, so a publish failure here loses no data --
+    # but per core/failures.py's own convention, a failure must still surface as a
+    # non-zero exit (never silently swallowed), so infra/run_scheduled.py and Task
+    # Scheduler's "Last Run Result" reflect it truthfully.
+    publish(
+        "series_long",
+        df,
+        as_of=datetime.now(UTC),
+        source_note="EIA WPSR, weekly petroleum stocks/supply routes",
+        key=["series_id", "ts"],
+        pipeline="wpsr",
+    )
 
 
 if __name__ == "__main__":
