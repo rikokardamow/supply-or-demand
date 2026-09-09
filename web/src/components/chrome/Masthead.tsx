@@ -12,6 +12,8 @@ import Link from "next/link";
 
 const SCREENS = [
   { href: "/balances", label: "Balances" },
+  { href: "/prices", label: "Prices" },
+  { href: "/supply", label: "Supply" },
   { href: "/hormuz", label: "Hormuz" },
   { href: "/gas", label: "Gas" },
   { href: "/curves", label: "Curves" },
