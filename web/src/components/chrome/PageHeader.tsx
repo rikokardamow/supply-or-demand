@@ -31,25 +31,26 @@ export async function PageHeader({
 
       <div
         style={{
-          padding: "var(--space-8) var(--space-6) 0",
+          display: "flex",
+          alignItems: "baseline",
+          gap: "var(--space-4)",
+          padding: "var(--space-3) var(--space-4)",
+          borderBottom: "1px solid var(--border)",
         }}
       >
         <h2
           style={{
             fontSize: "var(--size-page)",
-            fontWeight: 650,
-            letterSpacing: "-0.025em",
-            marginBottom: "var(--space-2)",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
           }}
         >
           {title}
         </h2>
         <p
-          style={{
-            fontSize: "var(--size-body)",
-            color: "var(--muted)",
-            maxWidth: "60ch",
-          }}
+          className="prose"
+          style={{ fontSize: "var(--size-micro)", color: "var(--faint)" }}
         >
           {dek}
         </p>
