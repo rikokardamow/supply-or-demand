@@ -42,6 +42,23 @@ COST_BPS = 2.0
 # Published anchors live on `Strategy.benchmark` in the registry, not here -- a second
 # copy on the page would be a second source of truth and would drift.
 
+# `fut.*` settle series come from whichever of these actually wrote them
+# (pipelines/futures/pull_eia_history.py -> "eia", pull_barchart_curve.py -> "manual",
+# pull.py -> settings.futures_source, a Literal["ibkr", "manual"]) -- no single `source`
+# narrows every fut.* row, so read_ts_long's `source` glob-narrowing (see its own
+# docstring) can't be used for these ids directly. Querying each known source and
+# concatenating is still bounded to 3 file-glob lookups instead of one across every
+# source ever written to the lake -- unlike the derived.* ids elsewhere on this page,
+# which always come from source="derived" and can use the fast path directly.
+FUT_SOURCES = ("eia", "manual", "ibkr")
+
+
+def _read_fut(series_ids: list[str]) -> pd.DataFrame:
+    return pd.concat(
+        [read_ts_long(series_ids=series_ids, source=s) for s in FUT_SOURCES],
+        ignore_index=True,
+    )
+
 page_header("Systematic Strategies Engine")
 st.caption(
     "Bouchouev signals, reaction-function sizing and a vectorised backtester. "
@@ -51,15 +68,18 @@ st.caption(
 
 @st.cache_data(ttl=3600)
 def _root_data(root: str) -> dict[str, pd.Series]:
-    ids = [
+    fut_id = f"fut.{root}.f01.settle"
+    derived_ids = [
         f"derived.curve.{root}.{ADJUSTED_SUFFIX}",
-        f"fut.{root}.f01.settle",
         f"derived.spread.{root}.s12",
         f"derived.curve.{root}.regime",
         f"derived.cot.{root}.mm_pct_3y",
         "derived.cushing.util_decile",
     ]
-    df = read_ts_long(series_ids=ids)
+    df = pd.concat(
+        [read_ts_long(series_ids=derived_ids, source="derived"), _read_fut([fut_id])],
+        ignore_index=True,
+    )
     if df.empty:
         return {}
     wide = df.pivot_table(index="ts", columns="series_id", values="value").sort_index()
@@ -69,7 +89,7 @@ def _root_data(root: str) -> dict[str, pd.Series]:
 @st.cache_data(ttl=3600)
 def _positions(root: str) -> pd.DataFrame:
     ids = [f"derived.pos.{name}.{root}" for name in REGISTRY]
-    df = read_ts_long(series_ids=ids)
+    df = read_ts_long(series_ids=ids, source="derived")
     if df.empty:
         return pd.DataFrame()
     wide = df.pivot_table(index="ts", columns="series_id", values="value").sort_index()
@@ -80,7 +100,7 @@ def _positions(root: str) -> pd.DataFrame:
 @st.cache_data(ttl=3600)
 def _panel(root: str) -> pd.DataFrame:
     ids = [f"fut.{root}.f{r:02d}.settle" for r in (1, 2, 3, 4)]
-    df = read_ts_long(series_ids=ids)
+    df = _read_fut(ids)
     if df.empty:
         return pd.DataFrame()
     wide = df.pivot_table(index="ts", columns="series_id", values="value").sort_index()
@@ -90,12 +110,14 @@ def _panel(root: str) -> pd.DataFrame:
 
 def _run(root: str, name: str) -> tuple[pd.Series, dict[str, float]] | None:
     positions = _positions(root)
-    raw = read_ts_long(
-        series_ids=[
-            f"derived.curve.{root}.{ADJUSTED_SUFFIX}",
-            f"fut.{root}.f01.settle",
-            f"derived.spread.{root}.s12",
-        ]
+    fut_id = f"fut.{root}.f01.settle"
+    derived_ids = [
+        f"derived.curve.{root}.{ADJUSTED_SUFFIX}",
+        f"derived.spread.{root}.s12",
+    ]
+    raw = pd.concat(
+        [read_ts_long(series_ids=derived_ids, source="derived"), _read_fut([fut_id])],
+        ignore_index=True,
     )
     if positions.empty or name not in positions.columns or raw.empty:
         return None
@@ -336,7 +358,7 @@ with tab_crowding:
             )
 
     with section("Do spreads predict inventories, or the reverse?"):
-        stocks = read_ts_long(series_ids=[CUSHING_STOCKS])
+        stocks = read_ts_long(series_ids=[CUSHING_STOCKS], source="eia")
         data = _root_data(root)
         s12 = data.get("s12")
         if stocks.empty:
