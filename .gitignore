@@ -56,3 +56,6 @@ data/lake/maps/
 # Logs
 *.log
 logs/
+
+# Superpowers brainstorming companion (mockups, server state)
+.superpowers/
