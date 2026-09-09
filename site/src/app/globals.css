@@ -1,46 +1,51 @@
 /**
  * kardamow.com — the portfolio and brand page.
  *
- * **A deliberately different surface from data.kardamow.com.** That one is a light product
- * interface for reading figures; this one is a landing page whose job is to make a first
- * impression in about two seconds. Sharing a palette between them would compromise both,
- * so this app carries its own and there is no import between the two.
+ * Minimalist, on white, in the idiom of the fintech and SaaS marketing sites the author
+ * pointed at (Amplitude, Mercury): a white ground, everything left-aligned to one column
+ * edge, a small eyebrow pill, one very large near-black headline, a single muted subline,
+ * two pill buttons, then a large bordered visual. Colour is almost absent — black type,
+ * one blue accent, and whatever the data itself brings.
  *
- * The direction is taken from references the author supplied: a dark cinematic ground, a
- * single oversized display line, cards floating over a centrepiece, and pill buttons. The
- * centrepiece is a canvas globe carrying real vessel positions rather than a rendered
- * object — no 3D library, no texture, nothing to download.
+ * This replaces two earlier attempts. The first leaned on a blurred purple gradient, which
+ * is the 2021 SaaS look and read as dated; the second went dark and cinematic. Both were
+ * doing more than the content needed. A research publication's landing page earns
+ * attention with the writing and the figures on it, so the design's job is to get out of
+ * their way and be unmistakably current while doing it.
+ *
+ * data.kardamow.com is a separate app with its own palette; nothing is imported either way.
  */
 
 :root {
-  /* True black. The globe is the light source in this composition, so the ground's job is
-     to disappear behind it rather than to glow on its own. */
-  --void: #000000;
-  --ground: #060608;
-  --raised: rgba(255, 255, 255, 0.025);
-  --edge: rgba(255, 255, 255, 0.09);
-  --edge-bright: rgba(255, 255, 255, 0.2);
+  --paper: #ffffff;
+  --ground: #fafafa;
+  --sunken: #f5f5f7;
 
-  --text: #f4f4f7;
-  --muted: #a1a1b5;
-  --faint: #6b6b80;
+  --text: #08080b;
+  --muted: #55555f;
+  --faint: #8a8a94;
 
-  /* One accent, used sparingly. Cyan, matching the tanker points on the globe -- the accent is taken from the data
-     rather than chosen beside it. */
-  --accent: #6ee7ff;
-  --accent-soft: rgba(110, 231, 255, 0.12);
-  --up: #34d399;
-  --down: #fb7185;
+  --border: #e6e6ea;
+  --border-strong: #d3d3da;
+
+  /* One accent. Used for the eyebrow, links and the tanker points on the globe -- the same
+     blue in all three, so the colour means "this is the live data" wherever it appears. */
+  --accent: #1d4ed8;
+  --accent-soft: #eef2ff;
+
+  --up: #047857;
+  --down: #b91c1c;
 
   --font:
     var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
 
-  --r-md: 10px;
-  --r-lg: 14px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
   --r-pill: 999px;
 
-  --measure: 1180px;
+  --measure: 1140px;
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
 }
 
@@ -55,7 +60,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--void);
+  background: var(--paper);
   color: var(--text);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -64,16 +69,18 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   margin: 0;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  /* Display type wants its tracking pulled in; at 4rem the default spacing reads loose. */
+  letter-spacing: -0.035em;
   line-height: 1.05;
 }
 
 p {
   margin: 0;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 a {
@@ -91,67 +98,19 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
-/* -- Ground ------------------------------------------------------------------------ */
+/* -- Eyebrow ------------------------------------------------------------------------ */
 
-/**
- * No blurred gradient. An earlier version drifted three large blurred orbs behind the type,
- * which is the 2021 SaaS treatment and reads as dated now — and it substituted a cheap
- * effect for the expensive thing the references actually have, which is a sharp rendered
- * object. The globe is that object, and it is drawn from real vessel positions.
- *
- * What remains is a single very faint vignette, so the corners of a large screen do not
- * read as flat void, and the grain below.
- */
-.vignette {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 90% 70% at 50% 30%,
-    rgba(110, 231, 255, 0.05),
-    transparent 70%
-  );
-}
-
-/* A fine grain over the whole page. Large flat gradients band on 8-bit displays; a faint
-   noise layer breaks the banding up and is the single cheapest thing that stops a dark
-   gradient looking like a cheap dark gradient. */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Everything readable sits above the lighting. */
-.layer {
-  position: relative;
-  z-index: 2;
-}
-
-/* -- Glass -------------------------------------------------------------------------- */
-
-.glass {
-  background: var(--raised);
-  border: 1px solid var(--edge);
-  border-radius: var(--r-lg);
-  backdrop-filter: blur(6px);
-}
-
-.glass-link {
-  transition:
-    border-color 200ms var(--ease),
-    transform 200ms var(--ease),
-    background 200ms var(--ease);
-}
-
-.glass-link:hover {
-  border-color: var(--edge-bright);
-  background: rgba(255, 255, 255, 0.07);
-  transform: translateY(-2px);
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* -- Buttons ------------------------------------------------------------------------ */
@@ -159,45 +118,84 @@ a {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.35rem;
+  gap: 0.45rem;
+  padding: 0.72rem 1.4rem;
   border-radius: var(--r-pill);
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   font-weight: 600;
   transition:
-    transform 200ms var(--ease),
-    opacity 200ms var(--ease),
-    background 200ms var(--ease);
-}
-
-.btn:hover {
-  transform: translateY(-1px);
+    background 160ms var(--ease),
+    border-color 160ms var(--ease),
+    opacity 160ms var(--ease);
 }
 
 .btn-solid {
-  background: #fff;
-  color: #0b0b14;
+  background: var(--text);
+  color: #fff;
 }
 
 .btn-solid:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .btn-ghost {
-  border: 1px solid var(--edge-bright);
+  border: 1px solid var(--border-strong);
   color: var(--text);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--sunken);
+  border-color: var(--text);
 }
 
-/* -- Entrance ----------------------------------------------------------------------- */
+/* -- Surfaces ----------------------------------------------------------------------- */
+
+/* The large bordered container the reference sites put their product shot in. */
+.frame {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--ground);
+  overflow: hidden;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--paper);
+}
+
+.card-link {
+  transition:
+    border-color 160ms var(--ease),
+    background 160ms var(--ease);
+}
+
+.card-link:hover {
+  border-color: var(--border-strong);
+  background: var(--ground);
+}
+
+/* A list that separates by rule rather than by box — for the writing, where five bordered
+   cards stacked would read heavier than the five headlines inside them. */
+.row {
+  border-top: 1px solid var(--border);
+  transition: background 160ms var(--ease);
+}
+
+.row:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.row:hover {
+  background: var(--ground);
+}
+
+/* -- Motion ------------------------------------------------------------------------- */
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -206,21 +204,17 @@ a {
 }
 
 .rise {
-  animation: rise 700ms var(--ease) both;
+  animation: rise 600ms var(--ease) both;
 }
 
-/* A reader who has asked for less motion gets a still page: nothing slides in, and the
-   globe draws once at a composed angle rather than rotating (handled in Globe.tsx, since
-   that animation is arithmetic rather than a transition). */
 @media (prefers-reduced-motion: reduce) {
   .rise {
     animation: none;
   }
-  .glass-link:hover,
-  .btn:hover {
-    transform: none;
-  }
   html {
     scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.01ms !important;
   }
 }
