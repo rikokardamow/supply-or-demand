@@ -1,3 +1,4 @@
+import { ChartControls } from "@/components/charts/ChartControls";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
 import { Masthead } from "@/components/chrome/Masthead";
 import { Panel } from "@/components/chrome/Panel";
@@ -82,7 +83,7 @@ export default async function CurvesPage() {
         stale={isStale("yfinance", pricePublish?.as_of)}
         sourceNote="Yahoo Finance continuous front-month daily closes — a last trade, not an exchange settlement. See pipelines/futures/yfinance_front.py for the measured difference."
       >
-        <TimeSeriesChart lines={toLines(crude, CRUDE)} unit={commonUnit(crude)} />
+        <ChartControls lines={toLines(crude, CRUDE)} unit={commonUnit(crude)} />
       </Panel>
 
       <Panel
@@ -91,7 +92,7 @@ export default async function CurvesPage() {
         stale={isStale("yfinance", pricePublish?.as_of)}
         sourceNote="NY Harbor heating oil and RBOB gasoline, both in USD per gallon."
       >
-        <TimeSeriesChart
+        <ChartControls
           lines={toLines(products, PRODUCTS)}
           unit={commonUnit(products)}
         />
@@ -103,7 +104,7 @@ export default async function CurvesPage() {
         stale={isStale("yfinance", pricePublish?.as_of)}
         sourceNote="US natural gas, USD per million British thermal units."
       >
-        <TimeSeriesChart lines={toLines(gas, GAS)} unit={commonUnit(gas)} />
+        <ChartControls lines={toLines(gas, GAS)} unit={commonUnit(gas)} />
       </Panel>
 
       <Panel
@@ -139,7 +140,7 @@ export default async function CurvesPage() {
         {spreadLines.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No spreads published.</p>
         ) : (
-          <TimeSeriesChart lines={spreadLines} unit="USD/bbl" />
+          <ChartControls lines={spreadLines} unit="USD/bbl" />
         )}
       </Panel>
     </main>

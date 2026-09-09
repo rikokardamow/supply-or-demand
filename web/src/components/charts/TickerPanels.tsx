@@ -1,5 +1,5 @@
 import { SeasonalChart } from "@/components/charts/SeasonalChart";
-import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ChartControls } from "@/components/charts/ChartControls";
 import { Panel } from "@/components/chrome/Panel";
 import { toLines } from "@/data/toLines";
 import { formatNumber } from "@/lib/format";
@@ -76,7 +76,7 @@ export function TickerPanels({
           (latest !== null ? ` Latest close ${formatNumber(latest, 2)} ${unit ?? ""}.` : "")
         }
       >
-        <TimeSeriesChart lines={lines} unit={unit} height={340} />
+        <ChartControls lines={lines} unit={unit} height={340} />
       </Panel>
 
       <Panel
