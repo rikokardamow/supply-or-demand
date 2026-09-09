@@ -26,7 +26,7 @@ with injected CSS. The Streamlit app keeps the Substack identity it was restyled
 
 `web/` reads unmistakably as a terminal — black ground, monospace, amber accent, zero
 radius, 1px rules, high information density, edge-to-edge — while staying readable for an
-hour at a stretch. All 13 routes inherit it from one token file plus a small primitive
+hour at a stretch. All 14 routes inherit it from one token file plus a small primitive
 layer; no route is restyled individually.
 
 ## Decisions taken (with the user, 2026-09-09)
@@ -68,10 +68,10 @@ Chrome tokens:
 | `--hairline` | `#16191f` | between table rows |
 | `--text` | `#e6e8eb` | body and figures |
 | `--muted` | `#9aa2ad` | labels, secondary |
-| `--faint` | `#6b7280` | cadence lines, source notes |
+| `--faint` | `#7d8590` | cadence lines, source notes |
 | `--accent` | `#ff9e1b` | amber: panel labels, active nav, wordmark |
 | `--up` | `#16c784` | positive change |
-| `--down` | `#ea3943` | negative change |
+| `--down` | `#ee4a56` | negative change |
 
 Type: one mono stack (`"JetBrains Mono", "IBM Plex Mono", ui-monospace,
 SFMono-Regular, Menlo, Consolas, monospace`) for every label, figure, heading and table
@@ -199,7 +199,7 @@ and are unaffected.
 
 ## Definition of done
 
-1. All 13 routes render in the terminal identity with no light-UI remnant (no radius, no
+1. All 14 routes render in the terminal identity with no light-UI remnant (no radius, no
    shadow, no white ground, no pill).
 2. `tokens.css` is the only place chrome values are defined; no component hardcodes a hex.
 3. `web/src/theme/tokens.test.ts` passes, including the contrast assertions.

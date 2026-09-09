@@ -151,7 +151,7 @@ describe("chrome tokens", () => {
     expect(token("faint")).toBe("#7d8590");
     expect(token("accent")).toBe("#ff9e1b");
     expect(token("up")).toBe("#16c784");
-    expect(token("down")).toBe("#ea3943");
+    expect(token("down")).toBe("#ee4a56");
   });
 
   it("carries the series roles at values that survive a black ground", () => {
@@ -253,7 +253,7 @@ Replace the `:root` block and everything after it. Keep the file's habit of expl
 
   /* Direction. Never the only carrier of meaning: a figure always shows its sign too. */
   --up: #16c784;
-  --down: #ea3943;
+  --down: #ee4a56;
   --up-soft: #06251a;
   --down-soft: #2a0f11;
 
