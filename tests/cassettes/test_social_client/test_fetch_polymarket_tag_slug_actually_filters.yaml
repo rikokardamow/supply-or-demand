@@ -387,10 +387,6 @@ interactions:
       - Sun, 06 Sep 2026 09:32:30 GMT
       last-modified:
       - Sun, 06 Sep 2026 09:23:19 GMT
-      set-cookie:
-      - __cf_bm=OdquBHs_fDVna9HJcwhl92oZF6fY_6104uJLrBOQVBw-1788686850.739197-1.0.1.1-Nq1qeTTvXLn2rAgDy_yQ3_SC5BtspQujWX5zXyPG6yiBNDdn2kVKBYSt0EoVmyUH6L8pXEgZbhksO3BI_1KV.FGGA7z6UIBictx1NaoYMQ7FGoTbcvoEGjCVVerqL7PM;
-        HttpOnly; SameSite=None; Secure; Path=/; Domain=polymarket.com; Expires=Sun,
-        06 Sep 2026 09:57:30 GMT
       sunset:
       - Fri, 01 May 2026 00:00:00 GMT
       vary:
@@ -558,10 +554,6 @@ interactions:
       - Sun, 06 Sep 2026 09:32:30 GMT
       last-modified:
       - Sun, 06 Sep 2026 09:23:19 GMT
-      set-cookie:
-      - __cf_bm=Jac7Ugysn7pfATsim9wnG5_mX5BoyTT7_xhtPsbj6P0-1788686850.790773-1.0.1.1-43w9oCmhWbAP.JZ8NMU1SaK1b83ocBZdumYULGiqBom8PkX7thKdCY7bIov7VIWmjRTcVRNQlY5NTRj6CtGkaI1pXBJJ8kUmXnEcrmAPfDrkCJ2txauUWFurkMKkL4bw;
-        HttpOnly; SameSite=None; Secure; Path=/; Domain=polymarket.com; Expires=Sun,
-        06 Sep 2026 09:57:30 GMT
       sunset:
       - Fri, 01 May 2026 00:00:00 GMT
       vary:

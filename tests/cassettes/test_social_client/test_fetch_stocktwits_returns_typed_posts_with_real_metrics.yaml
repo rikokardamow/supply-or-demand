@@ -498,12 +498,6 @@ interactions:
       - DYNAMIC
       etag:
       - W/"a81dfe3edb0a842e7bfb0a2d0f8b060e"
-      set-cookie:
-      - __cf_bm=S_WXkHjFVP4RmTgW2BYJjmVdV72efJAzhbY6ahzzHRs-1788686850.8335478-1.0.1.1-qrUuh9Eb.BXVNQmYA5j2NNKYoHZksF_saJP.0JCnW1gNCsMyZjRWKaqZ7t8wZTQVFubfXDBEXTxPkI4qan7.U88yy_4J0qhxl5SpAIhsPVOiVDchNWU3wzlTj6mUDvep;
-        HttpOnly; SameSite=None; Secure; Path=/; Domain=stocktwits.com; Expires=Sun,
-        06 Sep 2026 09:57:30 GMT
-      - _cfuvid=wMRr4fpeeT3hol7WV752w3jxCJaY.rzLpZg9sWY9LIY-1788686850.8335478-1.0.1.1-0M.eRRcgJ6e_n_riGBJGoBiSCFDHrU2LCrm3OIGGOTk;
-        HttpOnly; SameSite=None; Secure; Path=/; Domain=stocktwits.com
       strict-transport-security:
       - max-age=31536000
       x-content-type-options:

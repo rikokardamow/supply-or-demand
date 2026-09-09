@@ -1019,10 +1019,6 @@ interactions:
       - Mon, 31 Aug 2026 13:30:43 GMT
       Keep-Alive:
       - timeout=60
-      Set-Cookie:
-      - BIGipServerprod-oasisapi-int=3214218668.15438.0000; path=/; Httponly; Secure
-      - TS01bbae0b=019d5a8e0c87792ccefb0581609389cf13d254277596006e244f906f8ad685ccd5fe811082baf78dbb67607dd80bb0d311fb5833f33d377759e9d8583b69077c0f2194a6dc;
-        Path=/; Domain=.oasis.caiso.com
       Transfer-Encoding:
       - chunked
     status:

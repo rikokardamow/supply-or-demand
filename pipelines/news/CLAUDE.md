@@ -51,7 +51,7 @@ Re-running `pull_news.py` picks up whatever failed last time; `write_events`' de
 ## GDELT also rate-limits via a 200 response, not just 429 — confirmed live in the cassette
 Recording `tests/cassettes/test_news_client/...yaml` live, the *first* request came back
 as a genuine HTTP 200 whose body was plain text, not JSON: `"Please limit requests to one
-every 5 seconds or contact kalev.leetaru5@gmail.com for larger queries..."`. This is
+every 5 seconds or contact <redacted-see-gdelt-docs> for larger queries..."`. This is
 GDELT's own request-pacing rate limit, returned as a 200 rather than a 429 — a different
 failure mode from the connect-timeout/reset flakiness above, and one that would silently
 slip past any retry logic that only checks HTTP status codes.
