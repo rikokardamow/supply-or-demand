@@ -1,16 +1,20 @@
 # Terminal UI Implementation Plan
 
-> **SUPERSEDED 2026-09-09 — DO NOT EXECUTE.** The user ruled to keep the light product
-> UI (`078efa2`), which is live on data.kardamow.com. No task below was ever dispatched
-> and no code was written. This is kept as a documented road not taken: if a terminal
-> look is wanted later, the design decisions and the two defects found while planning are
-> already worked out rather than needing rediscovery. See the spec for the same note.
+> **REINSTATED 2026-09-09.** Briefly superseded when the user chose to keep the light
+> product UI, then reinstated the same day — "blog page as magazine, data as Terminal",
+> confirmed directly. **The direction has moved four times; production is live.** So this
+> builds on branch `design/terminal-ui` in a separate worktree, and **the merge to `main`
+> is the user's call, not the executor's** — merging is what switches a public site.
+>
+> Base: `cbea90f`. Revised against the live tree on reinstatement — see "Revisions on
+> reinstatement" at the foot of this plan before starting Task 1. Three things changed
+> under this plan while it was shelved and the tasks below already account for them.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Restyle `web/` (Next.js, data.kardamow.com) into a Bloomberg-style terminal — black ground, monospace, amber accent, zero radius, full-bleed, 11px density — without touching the Streamlit app or `core/design.py`.
 
-**Architecture:** One rewritten token file (`web/src/theme/tokens.css`) plus a small primitive class layer carries the identity; eight chrome/table/chart components move onto it; `theme/plotly.ts` and `VesselMap` get dark treatments. All 13 routes inherit — no route is restyled individually.
+**Architecture:** One rewritten token file (`web/src/theme/tokens.css`) plus a small primitive class layer carries the identity; eight chrome/table/chart components move onto it; `theme/plotly.ts` and `VesselMap` get dark treatments. All 14 routes inherit — no route is restyled individually.
 
 **Tech Stack:** Next.js (App Router, React server components), TypeScript, plain CSS custom properties (Tailwind v4 is imported but the design system is hand-rolled CSS), Plotly + MapLibre for charts/maps, Vitest for tests, pnpm.
 
@@ -33,7 +37,8 @@
 
 **Created:**
 - `web/src/theme/contrast.ts` — WCAG relative-luminance and contrast-ratio helpers. Exists so the contrast floor is a test assertion rather than a claim in a comment.
-- `web/src/theme/tokens.test.ts` — pins the literal token values and asserts the contrast floor.
+- `web/src/theme/tokens.pins.test.ts` — pins the literal token values and asserts the contrast
+  floor. A NEW file: `tokens.test.ts` already exists and is a different, load-bearing test.
 
 **Modified:**
 - `web/src/theme/tokens.css` — rewritten (palette, type, density, shape, primitives).
@@ -46,7 +51,7 @@
 - `web/src/app/page.tsx`, `web/src/app/sanctions/page.tsx` — the two routes with hardcoded colour.
 - `web/CLAUDE.md`, `CHANGELOG.md`
 
-**Deliberately untouched:** all 13 route files except the two named above; every `src/data/**` query; `src/lib/format.ts`.
+**Deliberately untouched:** all 14 route files except the two named above; every `src/data/**` query; `src/lib/format.ts`.
 
 ---
 
@@ -56,8 +61,17 @@ The whole identity lands here. Everything after this is components consuming the
 
 **Files:**
 - Create: `web/src/theme/contrast.ts`
-- Create: `web/src/theme/tokens.test.ts`
+- Create: `web/src/theme/tokens.pins.test.ts`
 - Modify: `web/src/theme/tokens.css` (full rewrite)
+
+> **Do not touch `web/src/theme/tokens.test.ts`.** It did not exist when this plan was
+> written and now does (`7a6ad3e`, `a2ce7ee`): it walks every `.ts/.tsx/.css` under `src/`
+> and asserts each `var(--x)` resolves against `tokens.css`, with a two-entry documented
+> allowlist. It is the guard that caught five dead tokens, and this restyle renames tokens
+> wholesale, so **it is the single most valuable test in the repo for this task.** Expect it
+> to go red the moment you rename a token without updating its callers — that is the test
+> working, not a problem to route around. The new pinning/contrast assertions go in a
+> **separate** file so the two concerns stay separate and neither clobbers the other.
 
 **Interfaces:**
 - Consumes: nothing.
@@ -105,7 +119,8 @@ export function contrastRatio(a: string, b: string): number {
 
 - [ ] **Step 2: Write the failing token test**
 
-Create `web/src/theme/tokens.test.ts`. It reads `tokens.css` as text and pins values literally — deliberately, in the same style as `tests/test_design_tokens.py`: a test that recomputed the values from the file would assert nothing.
+Create `web/src/theme/tokens.pins.test.ts` — a **new file**, leaving the existing
+`tokens.test.ts` untouched. It reads `tokens.css` as text and pins values literally — deliberately, in the same style as `tests/test_design_tokens.py`: a test that recomputed the values from the file would assert nothing.
 
 ```ts
 import { readFileSync } from "node:fs";
@@ -185,7 +200,7 @@ describe("contrast floor", () => {
 - [ ] **Step 3: Run it and watch it fail**
 
 ```bash
-cd web && pnpm test src/theme/tokens.test.ts
+cd web && pnpm test src/theme/tokens.pins.test.ts
 ```
 
 Expected: FAIL — `tokens.css` still holds the light palette, so `--bg` is `#f4f6f8`, not `#000000`.
@@ -529,7 +544,7 @@ a {
 - [ ] **Step 5: Run the test to verify it passes**
 
 ```bash
-cd web && pnpm test src/theme/tokens.test.ts
+cd web && pnpm test src/theme/tokens.pins.test.ts
 ```
 
 Expected: PASS, all suites. If a contrast assertion fails, **change the token, not the threshold.**
@@ -537,7 +552,7 @@ Expected: PASS, all suites. If a contrast assertion fails, **change the token, n
 - [ ] **Step 6: Commit**
 
 ```bash
-cd web && cd .. && git add web/src/theme/tokens.css web/src/theme/contrast.ts web/src/theme/tokens.test.ts && git commit -m "Rewrite the web tokens as a terminal palette
+cd web && cd .. && git add web/src/theme/tokens.css web/src/theme/contrast.ts web/src/theme/tokens.pins.test.ts && git commit -m "Rewrite the web tokens as a terminal palette
 
 Black ground, one monospace family, amber rationed to type on dark strips, zero radius,
 zero shadow, 11px root with the whole rem scale re-derived against it rather than
@@ -834,11 +849,17 @@ cd .. && git add web/src/components/chrome/StatStrip.tsx web/src/components/chro
 
 ---
 
-## Task 6: Tables, dead tokens, and the two hardcoded routes
+## Task 6: Tables and the two hardcoded routes
 
-Two tokens referenced in components have never existed in `tokens.css`, so those rules
-have been silently doing nothing. Fixing them belongs here because this is the task that
-touches the type and border of a table.
+**The dead-token half of this task is already done.** When this plan was written,
+`HeatTable` referenced `var(--rule)` and `NotBuiltYet` `var(--heading-stack)`, neither
+defined. A peer session fixed those and three more in `7a6ad3e`, and added the
+`tokens.test.ts` guard. Do not redo it; do not reintroduce `--hairline` as
+`HeatTable`'s border token without also defining it, or `tokens.test.ts` will fail —
+correctly.
+
+What remains here is the table's own treatment on a black ground, and two routes that
+still hardcode colour.
 
 **Files:**
 - Modify: `web/src/components/tables/HeatTable.tsx`
@@ -848,35 +869,59 @@ touches the type and border of a table.
 
 **Interfaces:**
 - Consumes: `.term-table`, token set from Task 1.
-- Produces: no `var(--rule)` or `var(--heading-stack)` anywhere in `src/`; no hex literal in either route file.
+- Produces: no hex literal in either route file; `HeatTable` and `NotBuiltYet` on the
+  terminal primitives with every token they name defined in `tokens.css`.
 
-- [ ] **Step 1: Prove the dead tokens are dead**
+- [ ] **Step 1: Confirm the dead tokens are already gone**
 
 ```bash
-cd web && grep -rn "var(--rule)\|var(--heading-stack)" src/ && grep -n "\--rule\|--heading-stack" src/theme/tokens.css
+cd web && grep -rn "var(--rule)\|var(--heading-stack)\|var(--ink)\|var(--body-stack)" src/ --include=*.tsx ; pnpm test src/theme/tokens.test.ts
 ```
 
-Expected: the first grep finds `HeatTable.tsx` (`--rule`) and `NotBuiltYet.tsx`
-(`--heading-stack`); the second finds nothing. They resolve to nothing and always have —
-`--rule` and `HEADING_STACK` are `core/design.py` names that were never ported.
+Expected: grep prints nothing, and the token-resolution test passes. If either fails, the
+rebase lost `7a6ad3e` — stop and re-check the branch base before doing anything else.
 
-- [ ] **Step 2: Fix them**
+- [ ] **Step 2: Move the two components onto the primitives**
 
-In `HeatTable.tsx`'s `cell` object: `borderBottom: "1px solid var(--hairline)"`.
-In `NotBuiltYet.tsx`: `fontFamily: "var(--font)"`, and give its `<main>` the panel
-treatment so an unbuilt screen reads as an empty panel rather than a hole.
+`HeatTable`'s `cell` and `headCell` currently use `var(--border)`. Point them at
+`var(--hairline)` for row rules (kept lighter than panel edges so a table does not read
+as stacked panels) and leave `var(--border)` on `headCell`. Both tokens are defined in
+Task 1.
 
-- [ ] **Step 3: Re-tune the heat wash for a black ground**
+In `NotBuiltYet.tsx`, give its `<main>` the `.term-panel` treatment so an unbuilt screen
+reads as an empty panel rather than a hole. Its `fontFamily: "var(--font)"` is already
+correct and needs no change.
 
-The current alphas (`0.08` → `0.30`) were built for white and disappear on black. Raise
-the floor and pull the colours from the lifted series values:
+- [ ] **Step 3: Re-tune the heat wash, and fix its asymmetry**
+
+Two separate problems.
+
+*It vanishes on black.* The current alphas (`0.08` → `0.30`) were built for white.
+
+*It is already lopsided on white, and will stay lopsided unless fixed.* Measured off the
+live render, the deficit tints carry chroma 18–41 while the surplus tints carry only
+5–9 — navy at low alpha desaturates into a grey the eye reads as unstyled, while red
+stays a distinct hue. Contrast is comparable (1.39 vs 1.52 at the extremes); the
+asymmetry is colourfulness, not lightness. A reader scanning for outliers finds the draws
+and misses the builds, though `heatStyle` gives both directions one symmetric ramp.
+
+Fix both: raise the floor for the black ground, and give the two directions ramps tuned
+to look equal rather than to *be* equal. Lifted blue `#4d9fff` is far more chromatic than
+`#0f2a4a` was, which does most of the work by itself.
 
 ```ts
-  const alpha = 0.18 + scaled * 0.34;
+  // Tuned by eye, not symmetric by arithmetic: at equal alpha the blue reads weaker
+  // than the red, so a symmetric ramp makes builds easier to miss than draws.
+  const alpha = (pct > 0 ? 0.22 : 0.18) + scaled * (pct > 0 ? 0.38 : 0.34);
   // Blue for a surplus, red for a deficit -- the house series palette, not a
   // traffic-light scheme: a stock build is not "good" and a draw is not "bad".
   const rgb = pct > 0 ? "77, 159, 255" : "255, 90, 77";
 ```
+
+**Verify by measuring, not by eye** — the whole point of this step is that eyes got it
+wrong twice. Screenshot the table and sample the tinted cells; the strongest surplus and
+the strongest deficit should land within roughly 20% of each other on both contrast and
+chroma.
 
 - [ ] **Step 4: De-hardcode the two routes**
 
@@ -1067,7 +1112,7 @@ drifted, which is the argument for not having it."
 - Consumes: everything above.
 - Produces: a branch ready to merge.
 
-- [ ] **Step 1: Walk all 13 routes**
+- [ ] **Step 1: Walk all 14 routes**
 
 ```bash
 cd web && pnpm dev
@@ -1107,7 +1152,8 @@ Expected: the full Python suite green and unchanged.
 In `web/CLAUDE.md`, replace the design-system section with the terminal rules: the token
 file is the only place chrome values live; amber is rationed to type, with the solid bar
 reserved for the active nav item and stale data; direction is carried by sign and colour;
-the contrast floor is 4.5:1 and enforced by `tokens.test.ts`; the series share roles with
+the contrast floor is 4.5:1 and enforced by `tokens.pins.test.ts`, while `tokens.test.ts`
+enforces that every referenced token resolves; the series share roles with
 `core/design.py` but not values, and why.
 
 In `CHANGELOG.md`, add an entry in the existing house style recording the restyle and the
@@ -1150,8 +1196,8 @@ Checked against the spec, section by section:
 - All eight components in the spec's table → Tasks 3, 4, 5, 6, 7.
 - Charts and map → Task 8.
 - The broken `plotly.ts` contract → Task 8 Step 1, and documented in Task 9 Step 4.
-- `tokens.test.ts` and the contrast floor → Task 1.
-- Manual pass over 13 routes → Task 9 Step 1.
+- `tokens.pins.test.ts` and the contrast floor → Task 1.
+- Manual pass over 14 routes → Task 9 Step 1.
 - Definition of done items 1-8 → Task 9 Steps 1-7.
 
 **Two corrections to the spec, found while planning:**
@@ -1166,3 +1212,46 @@ touches the type and borders they affect: `HeatTable` references `var(--rule)` a
 `NotBuiltYet` references `var(--heading-stack)`, neither of which is defined in
 `tokens.css` — both are `core/design.py` names that were never ported, so those rules
 have silently done nothing since this surface was built.
+
+
+---
+
+## Revisions on reinstatement (2026-09-09)
+
+This plan was written, shelved, and reinstated the same day. Five things changed under it
+while it was shelved; each is already folded into the task it affects, and they are listed
+here so an executor reading a task does not have to reconstruct why it differs from the
+spec.
+
+1. **`web/src/theme/tokens.test.ts` now exists** (`7a6ad3e`, `a2ce7ee`) and asserts every
+   `var(--x)` in the tree resolves against `tokens.css`. Task 1 originally *created* a file
+   at that path and would have destroyed it. The pinning and contrast assertions now go in
+   `tokens.pins.test.ts` instead, and the existing file is explicitly off limits. It will
+   fail during this restyle whenever a token is renamed without its callers — that is the
+   test doing its job.
+
+2. **The dead tokens are already fixed.** `--rule`, `--heading-stack`, `--ink` and
+   `--body-stack` were live defects when Task 6 was written; a peer session fixed all five
+   instances. Task 6 no longer fixes them and now only confirms they are gone — a failure
+   there means the branch base is wrong.
+
+3. **The heat wash is lopsided on white, not just invisible on black.** Measured off the
+   live render: deficit tints carry chroma 18–41, surplus tints only 5–9, at comparable
+   contrast. Navy at low alpha greys out; red stays a hue. Task 6 Step 3 now fixes both
+   problems and requires the result to be *measured*, because eyes got this wrong twice —
+   once calling the tints balanced, once diagnosing the imbalance as lightness.
+
+4. **The front page hero now has three text blocks, not two** (`fe83d31`): a badge reading
+   "{n} datasets · primary sources only", a rewritten lead, and "The working evidence
+   behind Kardamow — independent research on energy, macro and geopolitics." Task 4's
+   compact `PageHeader` and Task 9's route walk must expect three. The vocabulary rule that
+   came with it is binding: **no user-facing copy mentions "the lake."**
+
+5. **A sibling dark surface now exists.** `kardamow.com` (a separate app in `site/`, its own
+   Vercel project) is going dark with an indigo-on-black palette and a vessel globe. This
+   terminal is amber-on-black. Keep them visibly distinct; do not converge on a shared dark
+   treatment by accident.
+
+**Merge is not the executor's call.** The direction here has changed four times and
+data.kardamow.com is live serving the light UI. Task 9 ends with the branch ready and the
+user deciding.
