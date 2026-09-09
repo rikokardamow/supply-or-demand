@@ -60,6 +60,14 @@ dependencies = [
     # (matching every existing pipeline), not the polars this spec's own draft notes
     # originally called for.
     "psycopg[binary]>=3.2",
+    # Front-month futures closes (pipelines/futures/pull_yfinance.py). Every other real
+    # futures source in this project has stopped: EIA's route was discontinued
+    # 2024-04-05, the Barchart curve is one reconstructed snapshot, and IBKR needs a
+    # Gateway nobody runs -- so the lake had no current futures price at all. yfinance is
+    # an unofficial client for an undocumented Yahoo endpoint: no SLA, and it breaks when
+    # Yahoo changes shape, which is why nothing downstream may depend on it for a curve.
+    # Confirmed with the user before adding (root CLAUDE.md rule 7).
+    "yfinance>=1.7",
 ]
 
 [project.optional-dependencies]
@@ -148,6 +156,8 @@ module = [
     "opensky_api.*",
     # Spec 29's VADER scorer -- ships no py.typed marker or stubs.
     "vaderSentiment.*",
+    # Unofficial Yahoo client; ships no stubs.
+    "yfinance.*",
 ]
 ignore_missing_imports = true
 

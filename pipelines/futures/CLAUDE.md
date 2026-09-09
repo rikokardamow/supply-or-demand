@@ -265,3 +265,70 @@ source, not a bug in the pivot.
 1980-01-02 → 2024-04-05). Running it twice left both table counts identical while adding
 a second `publish_log` row per table — Spec 32 §8's idempotency criterion, verified
 against the real database rather than assumed.
+
+## yfinance front month — the only current futures price this project has (2026-09-09)
+
+`pipelines/futures/pull_yfinance.py` + `yfinance_front.py`. Added because every other
+real futures source here had stopped: EIA's `petroleum/pri/fut` was discontinued
+**2024-04-05**, the Barchart curve is a single reconstructed 2026-09-04 snapshot, and
+IBKR needs a Gateway nobody runs. The lake therefore held **no current futures price at
+all** — a gap that only became visible when Spec 32's `as_of` fix made
+`serving.spreads` report itself as 17 months stale.
+
+### `.close`, not `.settle` — measured, not assumed
+
+Yahoo publishes a daily bar whose close is the **last trade**, which is nearly but not
+actually the exchange **settlement**. Measured live 2026-09-09 against the 5,915
+overlapping days of this lake's own `fut.cl.f01.settle` (EIA, 2000-08-23 → 2024-04-05):
+
+| Agreement | Result |
+|---|---|
+| Exactly equal | 215 days, **3.6%** |
+| Within 1 cent | **96.4%** |
+| Differ by > 10 cents | 29 days, 0.49% |
+| Mean absolute difference | **0.27 cents** |
+| Worst day | **$1.50**, 2001-09-14 |
+
+That worst day is the week the market reopened after 11 September — precisely the kind of
+disorderly session where a last trade and a settlement part company. So these are two
+different quantities. Series ids are **`fut.<root>.f01.close`** with `source="yfinance"`;
+writing them as `.settle` would have put two conflicting values under the same
+`(series_id, ts)` across 24 overlapping years, and any reader concatenating sources would
+have silently picked between them. Verified after the backfill: **0 `(series_id, ts)`
+pairs carry more than one row** across `eia` + `manual` + `yfinance`.
+
+This is the same "different things get different ids" rule that keeps `hu` and `rb`
+separate roots rather than splicing them at ingestion.
+
+### Coverage
+
+Front month only, five roots, `--period max` backfill live-verified 2026-09-09:
+
+| Series | Symbol | Rows | Span |
+|---|---|---|---|
+| `fut.cl.f01.close` | `CL=F` | 6,539 | 2000-08-23 → current |
+| `fut.ng.f01.close` | `NG=F` | 6,536 | 2000-08-30 → current |
+| `fut.ho.f01.close` | `HO=F` | 6,533 | 2000-09-01 → current |
+| `fut.rb.f01.close` | `RB=F` | 6,494 | 2000-11-01 → current |
+| `fut.lco.f01.close` | `BZ=F` | 4,757 | 2007-07-30 → current |
+
+30,859 rows total. **Not a curve source**: Yahoo's individual contract symbols
+(`CLZ26.NYM`) are patchy and unreliable, so `serving.curve_settles`, Dec-Dec spreads, the
+roll calendar and anything beyond rank 1 still need IBKR or a Barchart drop. Nothing
+downstream may treat this as a curve.
+
+Scheduled in `infra/run_scheduled.py`'s `daily` group with the default `--period 1mo`
+(comfortable margin over a long weekend); `--period max` is the one-off backfill.
+Idempotent — re-running the 1-month window over the existing backfill left the lake at
+30,859 rows, unchanged, and the publish reads the **whole lake** rather than the pulled
+window so `serving.series_long` keeps its full history.
+
+### Caveats that matter
+
+`yfinance` is an unofficial client for an undocumented Yahoo endpoint: no SLA, and it
+breaks whenever Yahoo changes shape. Treat a failure as expected maintenance, not an
+incident, and never fall back to stale numbers to paper over one. Yahoo's terms also
+restrict redistribution, which is a live question for `data.kardamow.com` — these rows
+are published into an anon-readable `serving.series_long`. The per-symbol pull is wrapped
+in `core.failures`, so one broken symbol does not cost the other four, but a run where
+every symbol failed still exits non-zero rather than reporting success.
