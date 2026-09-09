@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { servingClient } from "@/data/supabase/server";
 import type { SeasonalRow } from "@/types/database";
 
@@ -12,7 +14,7 @@ import type { SeasonalRow } from "@/types/database";
  * curve rather than paginating. Supabase's own default cap is 1,000 rows, comfortably
  * above that, but the limit is explicit so a future caller widening the query notices it.
  */
-export async function fetchSeasonalBand(seriesId: string): Promise<SeasonalRow[]> {
+async function querySeasonalBand(seriesId: string): Promise<SeasonalRow[]> {
   const { data, error } = await servingClient()
     .from("seasonal_v")
     .select("series_id, doy, band_min, band_max, median, current, prior, years, unit")
@@ -28,3 +30,17 @@ export async function fetchSeasonalBand(seriesId: string): Promise<SeasonalRow[]
 
   return (data ?? []) as SeasonalRow[];
 }
+
+/**
+ * Tagged `seasonal`, so `POST /api/revalidate?tag=seasonal` refreshes it the moment a
+ * pipeline publishes rather than at the end of the page's own ISR window.
+ *
+ * `unstable_cache` is deprecated in Next 16 in favour of the `use cache` directive, but
+ * `use cache` requires Cache Components, and enabling that removes the `revalidate`
+ * route segment config this app relies on. Revisit together, not piecemeal.
+ */
+export const fetchSeasonalBand = unstable_cache(
+  querySeasonalBand,
+  ["seasonal-band"],
+  { tags: ["seasonal"] },
+);

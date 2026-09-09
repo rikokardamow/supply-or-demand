@@ -277,3 +277,79 @@ def test_publish_rejects_a_column_name_that_is_not_a_plain_identifier(
             "series_long", df, as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
         )
     assert fake_conn.cur.executed == []
+
+
+def test_publish_calls_the_revalidate_hook_after_a_successful_publish(
+    fake_conn: _FakeConnection, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[tuple[str, dict[str, Any]]] = []
+
+    def _fake_post(url: str, **kwargs: Any) -> Any:
+        calls.append((url, kwargs))
+
+        class _Resp:
+            status_code = 200
+
+            def raise_for_status(self) -> None:
+                pass
+
+        return _Resp()
+
+    monkeypatch.setattr("core.publish.requests.post", _fake_post)
+    monkeypatch.setattr("core.publish.settings.vercel_url", "https://data.example.com")
+    monkeypatch.setattr("core.publish.settings.revalidate_secret", "s3cret")
+
+    publish(
+        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+    )
+
+    assert len(calls) == 1
+    url, kwargs = calls[0]
+    assert url == "https://data.example.com/api/revalidate"
+    assert kwargs["params"] == {"tag": "series_long"}
+    # The secret travels in a header, never in the query string: a URL is logged by
+    # proxies and CDNs, a header is not.
+    assert kwargs["headers"] == {"x-revalidate-secret": "s3cret"}
+
+
+def test_publish_does_not_fail_when_the_revalidate_hook_is_unreachable(
+    fake_conn: _FakeConnection, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # Spec 32 §3: "Failure to revalidate is logged, not raised -- ISR fallback covers it."
+    # The rows are already committed at this point; failing the pipeline over a stale
+    # cache would turn a cosmetic delay into a red scheduled task.
+    def _boom(*_a: Any, **_k: Any) -> Any:
+        raise OSError("connection refused")
+
+    monkeypatch.setattr("core.publish.requests.post", _boom)
+    monkeypatch.setattr("core.publish.settings.vercel_url", "https://data.example.com")
+    monkeypatch.setattr("core.publish.settings.revalidate_secret", "s3cret")
+
+    written = publish(
+        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+    )
+
+    assert written == 2  # the publish itself still succeeded
+    assert "revalidate" in capsys.readouterr().out
+
+
+def test_publish_skips_the_revalidate_hook_when_it_is_not_configured(
+    fake_conn: _FakeConnection, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # No Vercel deployment exists yet, which is the normal state today -- it must not
+    # produce a warning on every publish.
+    called = False
+
+    def _fake_post(*_a: Any, **_k: Any) -> Any:
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr("core.publish.requests.post", _fake_post)
+    monkeypatch.setattr("core.publish.settings.vercel_url", None)
+    monkeypatch.setattr("core.publish.settings.revalidate_secret", None)
+
+    publish(
+        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+    )
+
+    assert called is False

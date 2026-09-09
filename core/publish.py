@@ -17,7 +17,9 @@ from typing import Any, Final
 
 import pandas as pd
 import psycopg
+import requests
 
+from core.failures import describe_exception
 from core.seasonal import (
     FIRST_SEASONAL_YEAR,
     REFERENCE_YEAR,
@@ -125,7 +127,48 @@ def publish(
                 (table, as_of, source_note, len(df), pipeline),
             )
         conn.commit()
+
+    _revalidate(table)
     return len(df)
+
+
+# The UI's ISR window (Spec 33's pages use `revalidate = 3600`) is the fallback; this
+# hook is what makes a publish visible immediately.
+REVALIDATE_TIMEOUT_SECONDS: Final = 10
+
+
+def _revalidate(table: str) -> None:
+    """Ask the web app to drop its cached copy of `table` (Spec 32 §3).
+
+    Best-effort by design: the rows are already committed by the time this runs, and
+    Spec 32 §3 is explicit that "failure to revalidate is logged, not raised -- ISR
+    fallback covers it". Failing the pipeline here would turn a cosmetic cache delay into
+    a red scheduled task. This is the one place in this module where swallowing an
+    exception is right, and it still prints.
+
+    Not configured is the normal state until a Vercel deployment exists, and is silent:
+    warning on every publish about a deployment nobody has made yet is noise.
+    """
+    base = settings.vercel_url
+    secret = settings.revalidate_secret
+    if not base or not secret:
+        return
+
+    try:
+        response = requests.post(
+            f"{base.rstrip('/')}/api/revalidate",
+            params={"tag": table},
+            # The secret goes in a header, never the query string: URLs get logged by
+            # proxies, CDNs and access logs; headers generally do not.
+            headers={"x-revalidate-secret": secret},
+            timeout=REVALIDATE_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+    except Exception as exc:
+        # describe_exception, not str(exc): a requests error embeds the full URL, and
+        # this one carries no credential today but the habit is what keeps it that way.
+        print(f"revalidate hook failed for {table} (publish itself succeeded): "
+              f"{describe_exception(exc)}")
 
 
 # A plain lowercase SQL identifier. Anything else -- mixed case, a quote, whitespace, a
