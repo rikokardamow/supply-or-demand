@@ -139,6 +139,7 @@ export default async function SupplyPage() {
           title="United States rig count"
           asOf={rigPublish?.as_of ?? null}
           stale={isStale("baker_hughes", rigPublish?.as_of)}
+          pipeline={"baker_hughes"}
           sourceNote="Baker Hughes, weekly. Rigs lead production by roughly six months, which is why the count is read as a forward indicator rather than a current one."
         >
           <ChartControls
@@ -151,6 +152,7 @@ export default async function SupplyPage() {
           title="Canada rig count"
           asOf={rigPublish?.as_of ?? null}
           stale={isStale("baker_hughes", rigPublish?.as_of)}
+          pipeline={"baker_hughes"}
           sourceNote="Baker Hughes, weekly. Canadian activity swings hard with spring break-up, when thawing ground halts rig movement — the annual collapse is seasonal, not a signal."
         >
           <ChartControls
@@ -163,6 +165,7 @@ export default async function SupplyPage() {
           title="US dry gas production and LNG exports"
           asOf={eiaAsOf}
           stale={eiaStale}
+          pipeline={"eia"}
           sourceNote="EIA monthly, since 1997. Separate axes: production runs several times the export volume, and on one scale the export line would sit flat against the floor. Feedgas has no distinct EIA series, so exports are the only published measure of the LNG pull."
         >
           <ChartControls
@@ -176,6 +179,7 @@ export default async function SupplyPage() {
           title="Refiner acquisition cost of crude oil"
           asOf={eiaAsOf}
           stale={eiaStale}
+          pipeline={"eia"}
           sourceNote="EIA monthly, since 1974 — what US refiners actually paid, rather than a marker price. The gap between domestic and imported carries the quality and freight story that a single benchmark hides."
         >
           <ChartControls
@@ -188,6 +192,7 @@ export default async function SupplyPage() {
           title="Landed cost of imported crude by API gravity"
           asOf={eiaAsOf}
           stale={eiaStale}
+          pipeline={"eia"}
           sourceNote="EIA monthly, since 1983. The spread between bands is the light/heavy differential in its rawest published form: heavier barrels land cheaper, and the width of that gap is a refining-margin signal in itself."
         >
           <ChartControls
@@ -200,6 +205,7 @@ export default async function SupplyPage() {
           title="US gas delivered to residential and commercial users"
           asOf={eiaAsOf}
           stale={eiaStale}
+          pipeline={"eia"}
           sourceNote="EIA monthly, since 1973 — the longest continuous run in this lake. The seasonal amplitude is heating demand, and its year-on-year change is a cleaner weather signal than temperature itself."
         >
           <ChartControls
@@ -212,6 +218,7 @@ export default async function SupplyPage() {
           title="OPEC world oil demand forecast"
           asOf={opecAsOf}
           stale={opecStale}
+          pipeline={"opec_momr"}
           sourceNote="OPEC Monthly Oil Market Report, quarterly. Built from fifteen monthly Excel appendices back to March 2025, so the series carries past quarters as well as OPEC's forward view. Six months in that range are not served by OPEC at all and are named in the pipeline's own log rather than interpolated."
         >
           {opecDemand.length === 0 ? (
@@ -230,6 +237,7 @@ export default async function SupplyPage() {
           title="OPEC non-DoC liquids supply forecast"
           asOf={opecAsOf}
           stale={opecStale}
+          pipeline={"opec_momr"}
           sourceNote="Supply from outside the Declaration of Cooperation — the barrels OPEC+ does not control, and the ones its own balance treats as given. US shale is the swing component within it."
         >
           {opecSupply.length === 0 ? (
@@ -248,6 +256,7 @@ export default async function SupplyPage() {
           title="JODI closing stocks"
           asOf={jodiPublish?.as_of ?? null}
           stale={isStale("jodi", jodiPublish?.as_of)}
+          pipeline={"jodi"}
           sourceNote="Joint Organisations Data Initiative, monthly, self-reported by each country. Coverage and revision practice vary by reporter, so levels are more comparable within a country over time than across countries."
         >
           {jodi.length === 0 ? (

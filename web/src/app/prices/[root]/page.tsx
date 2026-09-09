@@ -98,6 +98,7 @@ export default async function TickerPage({
           band={band}
           asOf={publish?.as_of ?? null}
           stale={isStale("yfinance", publish?.as_of)}
+          pipeline={"yfinance"}
         />
       </main>
     </>

@@ -19,7 +19,10 @@ import type { SeasonalRow, SeriesLongRow } from "@/types/database";
  * colour that reads as a different series would misstate that.
  */
 
-const MA_STYLE: Record<number, { color: string; dash: "solid" | "dot" | "dash" }> = {
+const MA_STYLE: Record<
+  number,
+  { color: string; dash: "solid" | "dot" | "dash" }
+> = {
   50: { color: SERIES.lightBlue, dash: "solid" },
   100: { color: SERIES.orange, dash: "dash" },
   200: { color: SERIES.red, dash: "dot" },
@@ -39,6 +42,7 @@ export function TickerPanels({
   band,
   asOf,
   stale,
+  pipeline,
 }: {
   root: string;
   label: string;
@@ -47,9 +51,11 @@ export function TickerPanels({
   band: SeasonalRow[];
   asOf: string | null;
   stale: boolean;
+  pipeline?: string;
 }) {
   const closeId = `fut.${root}.f01.close`;
-  const latest = price.filter((r) => r.series_id === closeId).at(-1)?.value ?? null;
+  const latest =
+    price.filter((r) => r.series_id === closeId).at(-1)?.value ?? null;
 
   const labels: Record<string, string> = { [closeId]: "Close" };
   for (const window of MA_WINDOWS) {
@@ -68,12 +74,15 @@ export function TickerPanels({
         title={`${label} — close and moving averages`}
         asOf={asOf}
         stale={stale}
+        pipeline={pipeline}
         sourceNote={
           `Simple moving averages over 50, 100 and 200 trading sessions, computed in ` +
           `pipelines/derived/moving_averages.py. Each line starts only once its window ` +
           `is genuinely full, so a 200-day average begins 200 sessions in rather than ` +
           `creeping up from a shorter one.` +
-          (latest !== null ? ` Latest close ${formatNumber(latest, 2)} ${unit ?? ""}.` : "")
+          (latest !== null
+            ? ` Latest close ${formatNumber(latest, 2)} ${unit ?? ""}.`
+            : "")
         }
       >
         <ChartControls lines={lines} unit={unit} height={340} />
@@ -83,6 +92,7 @@ export function TickerPanels({
         title={`${label} — seasonal range`}
         asOf={asOf}
         stale={stale}
+        pipeline={pipeline}
         sourceNote="Seven-year range and median by day of year, 2020 excluded. This year's track stops at the last close rather than running to year end."
       >
         {band.length === 0 ? (

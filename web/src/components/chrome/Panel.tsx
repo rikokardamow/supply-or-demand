@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { RELEASE_CADENCE } from "@/data/staleness";
 import { formatDate } from "@/lib/format";
 
 /**
@@ -15,12 +16,15 @@ export function Panel({
   asOf,
   sourceNote,
   stale,
+  pipeline,
   children,
 }: {
   title: string;
   asOf?: string | null;
   sourceNote?: string | null;
   stale?: boolean;
+  /** Names the source's cadence beside the as-of date. See `AsOfBadge`. */
+  pipeline?: string;
   children: ReactNode;
 }) {
   return (
@@ -42,7 +46,9 @@ export function Panel({
         >
           {title}
         </h3>
-        {asOf ? <AsOfBadge asOf={asOf} stale={stale} /> : null}
+        {asOf ? (
+          <AsOfBadge asOf={asOf} stale={stale} pipeline={pipeline} />
+        ) : null}
       </div>
       <hr
         style={{
@@ -72,22 +78,57 @@ export function Panel({
  * The as-of stamp. Reads `serving.publish_log.as_of` -- the *data's* own as-of, never
  * `published_at` and never `max(ts)` of the series (Spec 33 §6). A republished but
  * unchanged feed must not look fresh.
+ *
+ * The cadence sits under the date because a date on its own cannot tell a reader whether
+ * it is current. The flagship WPSR panel is dated twelve days back and is the newest
+ * report EIA has released; without "weekly, Wed 10:30 ET" beside it, that reads as a site
+ * nobody maintains.
  */
-export function AsOfBadge({ asOf, stale }: { asOf: string; stale?: boolean }) {
+export function AsOfBadge({
+  asOf,
+  stale,
+  pipeline,
+}: {
+  asOf: string;
+  stale?: boolean;
+  pipeline?: string;
+}) {
+  const cadence = pipeline ? RELEASE_CADENCE[pipeline] : undefined;
+
   return (
     <span
-      className="tabular"
-      title={stale ? "Older than this source's expected cadence" : undefined}
       style={{
-        fontSize: "0.72rem",
-        letterSpacing: "0.06em",
-        textTransform: "uppercase",
-        color: stale ? "var(--status-amber)" : "var(--muted)",
-        whiteSpace: "nowrap",
+        display: "inline-flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: "0.15rem",
       }}
     >
-      {stale ? "Stale · " : "As of "}
-      {formatDate(asOf)}
+      <span
+        className="tabular"
+        title={stale ? "Older than this source's expected cadence" : undefined}
+        style={{
+          fontSize: "0.72rem",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: stale ? "var(--status-amber)" : "var(--muted)",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {stale ? "Stale · " : "As of "}
+        {formatDate(asOf)}
+      </span>
+      {cadence ? (
+        <span
+          style={{
+            fontSize: "0.68rem",
+            color: "var(--muted)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {cadence}
+        </span>
+      ) : null}
     </span>
   );
 }

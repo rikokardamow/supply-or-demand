@@ -89,6 +89,7 @@ export default async function BalancesPage() {
           title="At a glance"
           asOf={linesPublish?.as_of ?? null}
           stale={isStale(PIPELINE, linesPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote={
             "Week-on-week is an absolute change in each line's own unit; year-on-year and " +
             "vs-median are percentages. The seasonal median excludes 2020."
@@ -101,6 +102,7 @@ export default async function BalancesPage() {
           title="US crude oil stocks, excluding the SPR"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote={
             seasonalPublish?.source_note ??
             "EIA Weekly Petroleum Status Report, via serving.seasonal_v"
@@ -119,6 +121,7 @@ export default async function BalancesPage() {
           title="Crude oil at Cushing, Oklahoma"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote="The WTI delivery point: the tank farm the front-month contract settles against, which is why its fill matters out of proportion to its size."
         >
           <SeasonalChart
@@ -132,6 +135,7 @@ export default async function BalancesPage() {
           title="Total motor gasoline stocks"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote="Seven-year range and median, 2020 excluded."
         >
           <SeasonalChart
@@ -145,6 +149,7 @@ export default async function BalancesPage() {
           title="Distillate fuel oil stocks"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote="Diesel and heating oil. Seven-year range and median, 2020 excluded."
         >
           <SeasonalChart
@@ -158,6 +163,7 @@ export default async function BalancesPage() {
           title="Refinery utilisation"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote="Per cent of operable capacity. Sustained readings near 100% leave no slack for an unplanned outage."
         >
           <ChartControls lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
@@ -167,6 +173,7 @@ export default async function BalancesPage() {
           title="Crude production, exports and imports"
           asOf={seasonalPublish?.as_of ?? null}
           stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          pipeline={PIPELINE}
           sourceNote="All three on one axis in thousand barrels per day, so the balance between them is readable directly."
         >
           <ChartControls

@@ -37,6 +37,7 @@ export default async function EventsPage() {
           title="Coverage by source"
           asOf={asOf}
           stale={stale}
+          pipeline={"events"}
           sourceNote="Coverage rather than a volume chart, deliberately. OFAC's events all carry a single timestamp — the ingestion date, since a listing has no natural event time — so a daily-volume line would show one artificial spike dwarfing every real source. Distinct days is the honest measure of how much history each source actually spans."
         >
           <div style={{ overflowX: "auto" }}>
@@ -108,6 +109,7 @@ export default async function EventsPage() {
           title="Most recent events"
           asOf={asOf}
           stale={stale}
+          pipeline={"events"}
           sourceNote="Severity is the field that decides whether an event reaches a price chart: the Python overlay draws only severity 2 and above."
         >
           <div style={{ overflowX: "auto" }}>
