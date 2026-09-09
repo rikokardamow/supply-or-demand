@@ -20,21 +20,65 @@ const HEAT_THRESHOLD_PCT = 10;
 /** Where the wash reaches full strength. Beyond it, saturation stops increasing. */
 const HEAT_SATURATION_PCT = 40;
 
-function heatStyle(pct: number | null): { background?: string } {
-  if (pct === null || Number.isNaN(pct)) return {};
+/**
+ * The two wash colours, and why they are not the two series colours.
+ *
+ * Blue for a surplus, red for a deficit -- not a traffic-light scheme: a stock build is
+ * not "good" and a draw is not "bad".
+ *
+ * **The surplus wash is the palette's light blue, not the navy the charts draw with.**
+ * A wash is an alpha blend onto white, and the chroma it produces is proportional to how
+ * unevenly the source colour's channels sit below white. Navy #0f2a4a is rgb(15,42,74),
+ * which is 240/213/181 below white -- a spread of 59. Red #c0392b is 63/198/212 below --
+ * a spread of 149. So navy yields roughly 40% of red's colour at identical alpha, and
+ * desaturates into a grey the eye reads as unstyled shading rather than as a signal.
+ *
+ * Measured off the live table before this fix: deficits carried chroma 19-41, surpluses
+ * only 5-9, while contrast was comparable at 1.39 against 1.52. The asymmetry was
+ * saturation, not lightness -- so a reader scanning the column for outliers found every
+ * draw and missed every build.
+ */
+const SURPLUS_RGB = "91, 155, 213";
+const DEFICIT_RGB = "192, 57, 43";
+
+/**
+ * Light blue's channel spread is 122 against red's 149, so it still under-colours at
+ * equal alpha. This closes the remaining gap. Both halves of the ramp now produce the
+ * same chroma for the same distance from the median, which is what `tokens.test.ts`'s
+ * companion test in HeatTable.test.ts asserts.
+ */
+const SURPLUS_ALPHA_GAIN = 149 / 122;
+
+/** The wash for a cell, or null where the distance is not worth the eye stopping on. */
+export function heatWash(
+  pct: number | null,
+): { rgb: string; alpha: number } | null {
+  if (pct === null || Number.isNaN(pct)) return null;
   const magnitude = Math.abs(pct);
-  if (magnitude < HEAT_THRESHOLD_PCT) return {};
+  if (magnitude < HEAT_THRESHOLD_PCT) return null;
 
   const scaled = Math.min(
     (magnitude - HEAT_THRESHOLD_PCT) /
       (HEAT_SATURATION_PCT - HEAT_THRESHOLD_PCT),
     1,
   );
-  const alpha = 0.08 + scaled * 0.22;
-  // Navy for a surplus, red for a deficit -- the house series palette, not a
-  // traffic-light scheme: a stock build is not "good" and a draw is not "bad".
-  const rgb = pct > 0 ? "15, 42, 74" : "192, 57, 43";
-  return { background: `rgba(${rgb}, ${alpha.toFixed(3)})` };
+  const base = 0.08 + scaled * 0.22;
+  return pct > 0
+    ? { rgb: SURPLUS_RGB, alpha: base * SURPLUS_ALPHA_GAIN }
+    : { rgb: DEFICIT_RGB, alpha: base };
+}
+
+/** The channel spread of a wash once blended onto white -- its perceived colourfulness. */
+export function washChroma(wash: { rgb: string; alpha: number }): number {
+  const channels = wash.rgb.split(",").map((n) => Number(n.trim()));
+  const blended = channels.map((c) => 255 - (255 - c) * wash.alpha);
+  return Math.max(...blended) - Math.min(...blended);
+}
+
+function heatStyle(pct: number | null): { background?: string } {
+  const wash = heatWash(pct);
+  if (wash === null) return {};
+  return { background: `rgba(${wash.rgb}, ${wash.alpha.toFixed(3)})` };
 }
 
 /**
