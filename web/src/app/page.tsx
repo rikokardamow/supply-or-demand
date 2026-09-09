@@ -2,13 +2,15 @@ import Link from "next/link";
 
 import { ChartControls } from "@/components/charts/ChartControls";
 import { Masthead } from "@/components/chrome/Masthead";
+import { ScreenCard, type ScreenStat } from "@/components/chrome/ScreenCard";
 import { StatStrip } from "@/components/chrome/StatStrip";
+import { fetchSanctionTotals } from "@/data/queries/events";
 import { fetchHeadlines } from "@/data/queries/overview";
 import {
   fetchLatestPublishBy,
   fetchLatestPublishes,
 } from "@/data/queries/publishLog";
-import { fetchSeries } from "@/data/queries/series";
+import { bySeries, fetchSeries } from "@/data/queries/series";
 import { commonUnit, toLines } from "@/data/toLines";
 import { formatDate, formatNumber } from "@/lib/format";
 
@@ -86,13 +88,61 @@ const SCREENS = [
   },
 ];
 
+/**
+ * The series each card draws, and how many decimals its figure wants.
+ *
+ * Four of the eight screens have a series behind them. Curves, Vessels, Events and
+ * Sanctions are curves and registers rather than histories, and a card for one of those
+ * shows a count or nothing at all -- drawing a shape for a screen that has no series
+ * would be inventing data to fill a slot.
+ */
+const CARD_SERIES: Record<string, { seriesId: string; digits: number }> = {
+  "/balances": { seriesId: "WCESTUS1", digits: 0 },
+  "/prices": { seriesId: "fut.lco.f01.close", digits: 2 },
+  "/gas": { seriesId: "agsi.EU.full_pct", digits: 1 },
+  "/supply": { seriesId: "bh.rigs.united_states.total", digits: 0 },
+};
+
 export default async function Home() {
-  const [headlines, publishes, lead, leadPublish] = await Promise.all([
-    fetchHeadlines(),
-    fetchLatestPublishes(),
-    fetchSeries(Object.keys(LEAD_SERIES), 5),
-    fetchLatestPublishBy("series_long", "yfinance"),
-  ]);
+  const [headlines, publishes, lead, leadPublish, cardRows, sanctions] =
+    await Promise.all([
+      fetchHeadlines(),
+      fetchLatestPublishes(),
+      fetchSeries(Object.keys(LEAD_SERIES), 5),
+      fetchLatestPublishBy("series_long", "yfinance"),
+      // One year: a sparkline 220px wide cannot resolve five years of daily closes into
+      // anything but a smear, and the card is asking "which way lately", not "what is the
+      // history".
+      fetchSeries(
+        Object.values(CARD_SERIES).map((c) => c.seriesId),
+        1,
+      ),
+      fetchSanctionTotals(),
+    ]);
+
+  const grouped = bySeries(cardRows);
+  const stats: Record<string, ScreenStat> = {
+    "/sanctions": {
+      note: `${formatNumber(sanctions.entries, 0)} listed entries · ${formatNumber(
+        sanctions.with_imo,
+        0,
+      )} carry a vessel IMO`,
+    },
+  };
+  for (const [href, card] of Object.entries(CARD_SERIES)) {
+    const rows = grouped.get(card.seriesId) ?? [];
+    const values = rows
+      .map((r) => r.value)
+      .filter((v): v is number => v !== null && v !== undefined);
+    if (values.length < 2) continue;
+    stats[href] = {
+      spark: values,
+      value: values[values.length - 1],
+      change: values[values.length - 1] - values[values.length - 2],
+      unit: rows[rows.length - 1]?.unit ?? null,
+      digits: card.digits,
+    };
+  }
 
   return (
     <>
@@ -221,38 +271,14 @@ export default async function Home() {
             }}
           >
             {SCREENS.map((screen, i) => (
-              <Link
+              <ScreenCard
                 key={screen.href}
                 href={screen.href}
-                className="rise screen-card"
-                style={{
-                  textDecoration: "none",
-                  display: "block",
-                  paddingTop: "var(--space-3)",
-                  borderTop: "1px solid var(--rule)",
-                  animationDelay: `${120 + i * 40}ms`,
-                }}
-              >
-                <h4
-                  style={{
-                    fontFamily: "var(--heading-stack)",
-                    fontSize: "var(--size-lead)",
-                    fontWeight: 600,
-                    marginBottom: "var(--space-2)",
-                    color: "var(--ink)",
-                  }}
-                >
-                  {screen.title}
-                </h4>
-                <p
-                  style={{
-                    fontSize: "var(--size-small)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  {screen.blurb}
-                </p>
-              </Link>
+                title={screen.title}
+                blurb={screen.blurb}
+                stat={stats[screen.href]}
+                delay={120 + i * 40}
+              />
             ))}
           </div>
         </section>
