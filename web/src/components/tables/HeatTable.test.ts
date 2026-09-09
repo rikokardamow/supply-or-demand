@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { heatWash, washChroma } from "@/components/tables/HeatTable";
@@ -58,13 +61,37 @@ describe("heat wash", () => {
     expect(heatWash(40)!.alpha).toBeCloseTo(heatWash(400)!.alpha, 10);
   });
 
-  it("keeps both washes light enough to read dark text on", () => {
-    // The figure sits on top of the wash and must stay legible at the strongest tint.
+  it("keeps both washes dark enough to read light text on", () => {
+    // The mirror of the light UI's assertion, and it has to be the mirror rather than the
+    // same numbers: there the figure was dark text on a pale wash and the wash had to stay
+    // light; here it is --text #e6e8eb on a wash over near-black, so the wash must stay
+    // DARK. Carrying the old `> 170` across unchanged would have failed for the right
+    // reason and been "fixed" by loosening it, which is how a legibility test quietly
+    // stops testing legibility.
     for (const pct of [45, -45]) {
       const wash = heatWash(pct)!;
       const channels = wash.rgb.split(",").map((n) => Number(n.trim()));
-      const blended = channels.map((c) => 255 - (255 - c) * wash.alpha);
-      expect(Math.min(...blended)).toBeGreaterThan(170);
+      const blended = channels.map((c) => c * wash.alpha);
+      expect(Math.max(...blended)).toBeLessThan(150);
     }
+  });
+
+  it("keeps the numeric wash colours identical to the channel tokens", () => {
+    // HeatTable carries the channels as numbers because washChroma must do arithmetic on
+    // them, while the emitted CSS uses var(--navy-rgb)/var(--red-rgb) so no component
+    // hardcodes a colour. Two representations of one value drift unless something asserts
+    // they agree -- and a drift here paints a colour the palette no longer contains, with
+    // every other test still green.
+    const css = readFileSync(
+      join(import.meta.dirname, "..", "..", "theme", "tokens.css"),
+      "utf8",
+    );
+    const token = (name: string): string => {
+      const match = new RegExp(`--${name}:\s*([^;]+);`).exec(css);
+      if (!match) throw new Error(`token --${name} is not defined in tokens.css`);
+      return match[1].trim();
+    };
+    expect(heatWash(45)!.rgb).toBe(token("navy-rgb"));
+    expect(heatWash(-45)!.rgb).toBe(token("red-rgb"));
   });
 });
