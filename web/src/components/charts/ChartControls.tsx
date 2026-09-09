@@ -153,7 +153,7 @@ export function ChartControls({
                     <button
                       key={line.name}
                       type="button"
-                      className="chip"
+                      className="term-key"
                       onClick={() => toggle(line.name)}
                       aria-pressed={!isHidden}
                     >
@@ -177,12 +177,12 @@ export function ChartControls({
           </div>
 
           {showSegments ? (
-            <div className="segmented">
+            <div style={{ display: "flex", gap: 0 }}>
               {ranges.map((key) => (
                 <button
                   key={key}
                   type="button"
-                  className="segment"
+                  className="term-key"
                   onClick={() => setRange(key)}
                   aria-pressed={effectiveRange === key}
                 >
