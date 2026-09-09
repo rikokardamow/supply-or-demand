@@ -64,3 +64,13 @@ logs/
 site/.next/
 site/node_modules/
 site/.vercel/
+
+# Build artefacts and local run output. tsbuildinfo is a machine-specific incremental
+# cache -- it was tracked by accident and produces a diff on every build.
+*.tsbuildinfo
+*.log
+.next/
+site/site.log
+
+# Playwright MCP scratch output
+.playwright-mcp/
