@@ -177,7 +177,7 @@ def main() -> None:
             settles,
             as_of=_as_of(settles),
             source_note=(
-                "Contract-coded futures settles from the lake"
+                "Contract-coded futures settles"
                 f" ({', '.join(sorted(set(settles['root'])))});"
                 " expiry and open interest not carried by the source"
             ),
