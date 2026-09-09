@@ -49,6 +49,9 @@ export const STALE_AFTER_MS: Record<string, number> = {
   // Every derived series is only as fresh as the source beneath it; the daily moving
   // averages are the tightest of them.
   derived: 4 * DAYS,
+  // GDELT and the social pulls run daily; OFAC's own SDN file is republished daily.
+  events: 4 * DAYS,
+  ofac: 4 * DAYS,
   // Near-real-time sources, unchanged from Spec 32 §5 -- neither publishes with a lag.
   ais: 30 * 60 * 1000,
   grp: 26 * HOURS,
