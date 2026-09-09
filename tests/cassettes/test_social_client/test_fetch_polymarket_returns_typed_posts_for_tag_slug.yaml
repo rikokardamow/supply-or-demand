@@ -387,10 +387,6 @@ interactions:
       - Sun, 06 Sep 2026 09:32:30 GMT
       last-modified:
       - Sun, 06 Sep 2026 09:23:19 GMT
-      set-cookie:
-      - __cf_bm=7a6hC7abutdHxa.CBSHCMFMHrsYA2n8zcbaOVgdIKUk-1788686850.690631-1.0.1.1-mBNPejN0BKEtdseL_kq.W_MYLcIN0fOwj_HxM_X4ao9JGjk2issoOCIuSYGU7baGznlt7SfQJPRURPufmhU8ZhWpd.krF7cHDLKiLqEcLSDQFYww9jRQtzJvTT7N0dRu;
-        HttpOnly; SameSite=None; Secure; Path=/; Domain=polymarket.com; Expires=Sun,
-        06 Sep 2026 09:57:30 GMT
       sunset:
       - Fri, 01 May 2026 00:00:00 GMT
       vary:

@@ -369,13 +369,6 @@ interactions:
       - no-referrer
       Server:
       - Apache
-      Set-Cookie:
-      - session=expiry=1788510858201273;Max-Age=600;path=/; HttpOnly; Secure;
-      - session=expiry=1788510858200917;Max-Age=600;path=/; HttpOnly; Secure;
-      - session=expiry=1788510858200917;Max-Age=600;path=/; HttpOnly; Secure;
-      - session=expiry=1788510858201273;Max-Age=600;path=/; HttpOnly; Secure;
-      - NSC_ESNS=7e8402ce-8032-1a9a-9678-00e0eddbf4e7_4057624251_3721211403_00000000096611660754;
-        Path=/; Expires=Fri, 04-Sep-2026 08:24:33 GMT
       Strict-Transport-Security:
       - max-age=31536000 ; preload
       X-Content-Type-Options:

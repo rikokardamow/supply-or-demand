@@ -63,6 +63,70 @@ export async function fetchFigures(): Promise<Figure[]> {
   }
 }
 
+/**
+ * A feed-supplied URL, or null if it is not plainly http(s).
+ *
+ * **React does not protect an `href`.** It escapes text content, which is why the parsing
+ * below can strip tags without an HTML parser — but a `javascript:` URI placed in an href
+ * is rendered as-is, with only a development-mode console warning. So a feed item carrying
+ * `<link>javascript:...</link>` would produce a link on the public page that executes
+ * script when a reader clicks it.
+ *
+ * The feed is the author's own Substack, so the realistic threat is not that Substack
+ * turns hostile: it is a compromised account, a tampering proxy, or a CDN serving someone
+ * else's response. Remote input rendered into an attribute gets validated regardless of
+ * who is nominally on the other end.
+ *
+ * Parsed with `URL` rather than matched with a regex. Browsers ignore whitespace and
+ * control characters inside a scheme, so `java	script:` navigates exactly like
+ * `javascript:` while defeating a naive `startsWith("javascript:")` check; `URL` applies
+ * the same normalisation the browser will.
+ */
+export function httpUrlOrNull(value: string | null | undefined): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.href
+      : null;
+  } catch {
+    // Not a parseable absolute URL — including protocol-relative "//host", which has no
+    // scheme of its own and would inherit the page's.
+    return null;
+  }
+}
+
+/**
+ * Decode the HTML entities a feed can carry.
+ *
+ * Numeric entities are handled generally rather than from a hand-written list: an earlier
+ * version decoded `&#8217;` but not its opening twin `&#8216;`, so an opening curly quote
+ * rendered as literal `&#8216;` on the page.
+ *
+ * **`&amp;` is decoded last, and that ordering is load-bearing.** Decoding it first would
+ * turn `&amp;lt;script&amp;gt;` into `&lt;script&gt;` and then into a real tag — the
+ * classic double-decode mistake.
+ */
+export function decodeEntities(value: string): string {
+  return value
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+      String.fromCodePoint(parseInt(hex, 16)),
+    )
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
+    .replace(/&lsquo;/g, "‘")
+    .replace(/&rsquo;/g, "’")
+    .replace(/&ldquo;/g, "“")
+    .replace(/&rdquo;/g, "”")
+    .replace(/&mdash;/g, "—")
+    .replace(/&ndash;/g, "–")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 export type Post = {
   title: string;
   url: string;
@@ -112,20 +176,18 @@ export async function fetchPosts(limit = 5): Promise<Post[]> {
         )?.[1] ??
         item.match(/<description>([\s\S]*?)<\/description>/)?.[1] ??
         null;
-      if (!title || !url) continue;
+      const safeUrl = httpUrlOrNull(url);
+      if (!title || !safeUrl) continue;
       posts.push({
-        title: title.trim(),
-        url: url.trim(),
+        title: decodeEntities(title.trim()),
+        url: safeUrl,
         date,
         // Substack wraps the standfirst in markup; strip tags and decode the handful of
         // entities that actually appear rather than pulling in an HTML parser.
+        // Tags are stripped before entities are decoded, so a decoded "&lt;" cannot
+        // become a tag that the strip already ran past.
         dek: rawDek
-          ? rawDek
-              .replace(/<[^>]+>/g, "")
-              .replace(/&#8217;|&rsquo;/g, "’")
-              .replace(/&#8212;|&mdash;/g, "—")
-              .replace(/&amp;/g, "&")
-              .replace(/&quot;/g, '"')
+          ? decodeEntities(rawDek.replace(/<[^>]+>/g, ""))
               .replace(/\s+/g, " ")
               .trim() || null
           : null,

@@ -48,6 +48,15 @@ def vcr_config() -> dict[str, object]:
             # matching on replay unless stripped from both sides the same way.
         ],
         "filter_headers": [
+            # Filtered by default rather than per-source. The cassettes are public, and a
+            # security review found six carrying third-party session and anti-bot cookies
+            # (Reddit, Cloudflare, an F5 affinity cookie) that no per-source filter had
+            # been written for. Those were expired and harmless -- the risk is the next
+            # integration, whose live session cookie or bearer token would land in a
+            # public cassette with nothing configured to catch it.
+            "authorization",
+            "set-cookie",
+            "cookie",
             "x-key",  # GIE's auth header (EIA uses a query param instead)
             "X-API-Key",  # Adanos's own auth header (pipelines/adanos)
         ],

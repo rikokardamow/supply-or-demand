@@ -369,12 +369,6 @@ interactions:
         }]}'
       Server:
       - snooserv
-      Set-Cookie:
-      - session_tracker=Z0akpR0b1a2DjH4Mmu.0.1788686127524.Z0FBQUFBQnFuUzh2OG1vZXc3NHctRU0xeVpuQjJkRlRNck9QazBscTdkRW5QQVlpanFKckdIRTJQdDJ3MXl3c0IxRDBWa2w3ODNkYkVNU1pZZGowLUMyNkpXd2hzQjViMFVtS2trMTFleEJZS1pPTlZVOXU2NDFyXzU3Ym1fQjA5Z09qd1lrYjJrZWY;
-        Domain=reddit.com; Max-Age=7199; Path=/; expires=Sun, 06-Sep-2026 11:15:27
-        GMT; secure; SameSite=None; Secure
-      - csv=2; Max-Age=63072000; Domain=.reddit.com; Path=/; Secure; SameSite=None
-      - edgebucket=anZSc4S2Cqm7jReZHm; Domain=reddit.com; Max-Age=63071999; Path=/;  secure
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains
       Via:
