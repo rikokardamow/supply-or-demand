@@ -69,3 +69,10 @@ change if exact timing starts to matter.
 
 See root `README.md`'s "Orchestration & scheduling" section for the short
 version of this page.
+
+## If `.venv/` or `data/lake/` ever turn up empty
+
+See `infra/DISASTER_RECOVERY.md` — the rebuild sequence, which pipelines have a real
+full-history backfill path versus a hardcoded trailing window with no way to recover
+older data, and `infra/check_lake_integrity.py`, an early-warning check for exactly
+this failure mode.

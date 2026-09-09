@@ -8,6 +8,8 @@ from core.freshness import (
     EXPECTED_CADENCE_DAYS,
     SANCTIONS_FRESHNESS_KEY,
     _status,
+    mass_data_loss_detected,
+    missing_sources,
     staleness_report,
 )
 
@@ -123,3 +125,56 @@ def test_staleness_report_returns_no_rows_when_the_lake_is_empty(
 
     assert report.empty
     assert list(report.columns) == ["dataset", "source", "last_seen", "days_stale", "status"]
+
+
+def test_missing_sources_is_empty_when_every_expected_source_has_written(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = datetime.now(UTC).replace(tzinfo=None)
+    non_sanctions = list(set(EXPECTED_CADENCE_DAYS) - {SANCTIONS_FRESHNESS_KEY})
+    ts_long = pd.DataFrame({"source": non_sanctions, "last_seen": [now] * len(non_sanctions)})
+    _patch_lake(monkeypatch, {"ts_long": ts_long}, sanctions=pd.DataFrame({"last_seen": [now]}))
+
+    assert missing_sources() == set()
+
+
+def test_missing_sources_flags_a_source_with_zero_rows_anywhere_in_the_lake(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A source absent from every dataset's last_ts_by_source result never appears in
+    # staleness_report() at all -- indistinguishable from "never configured" unless
+    # something explicitly diffs against the full expected roster.
+    now = datetime.now(UTC).replace(tzinfo=None)
+    _patch_lake(monkeypatch, {"ts_long": pd.DataFrame({"source": ["eia"], "last_seen": [now]})})
+
+    missing = missing_sources()
+
+    assert "gie" in missing
+    assert "eia" not in missing
+
+
+def test_mass_data_loss_detected_true_when_most_expected_sources_vanish(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The real, confirmed-live signature of the 2026-09-08 data/lake wipe: every
+    # source disappearing at once, not one pipeline going stale on its own schedule.
+    now = datetime.now(UTC).replace(tzinfo=None)
+    _patch_lake(monkeypatch, {"ts_long": pd.DataFrame({"source": ["eia"], "last_seen": [now]})})
+
+    assert mass_data_loss_detected() is True
+
+
+def test_mass_data_loss_detected_false_for_one_missing_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A single missing source is normal -- a pipeline never yet run, or one genuinely
+    # broken pipeline -- and must not trip the same alarm as a whole-lake wipe.
+    now = datetime.now(UTC).replace(tzinfo=None)
+    present = set(EXPECTED_CADENCE_DAYS) - {"gie", SANCTIONS_FRESHNESS_KEY}
+    _patch_lake(
+        monkeypatch,
+        {"ts_long": pd.DataFrame({"source": list(present), "last_seen": [now] * len(present)})},
+        sanctions=pd.DataFrame({"last_seen": [now]}),
+    )
+
+    assert mass_data_loss_detected() is False
