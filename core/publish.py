@@ -76,6 +76,20 @@ def publish(
         print(f"serving-layer publish skipped for {table}: SUPABASE_DB_URL not configured")
         return
 
+    # Postgres refuses an ON CONFLICT DO UPDATE whose own INSERT proposes the same
+    # constrained key twice ("cannot affect row a second time"), and real source data
+    # does contain such rows -- confirmed live 2026-09-09, the WPSR pull returned 10
+    # rows in 5 duplicate (series_id, ts) groups, clustered at the EIA client's
+    # 5,000-row pagination boundaries, every duplicate carrying an identical value.
+    # core/storage.py's own `_write_partitioned` dedups the same way for the lake, so
+    # the serving copy must not choke on data the lake accepts. `keep="last"` matches
+    # `_write_partitioned`'s sort-then-keep-last contract: order the frame so the row
+    # that should win comes last (by revision_date, where the table has one).
+    deduped = df.drop_duplicates(subset=key, keep="last")
+    if len(deduped) < len(df):
+        print(f"serving.{table}: dropped {len(df) - len(deduped)} duplicate {key} row(s)")
+    df = deduped
+
     columns = list(df.columns)
     # prepare_threshold=None disables psycopg3's automatic prepared statements, which
     # Supabase's transaction-mode pooler (port 6543, the connection mode Spec 32 §3
