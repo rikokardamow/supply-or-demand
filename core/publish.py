@@ -44,6 +44,8 @@ _ALLOWED_TABLES: Final = frozenset(
         "curve_settles",
         "spreads",
         "wpsr_lines",
+        "events",
+        "sanctions",
     }
 )
 

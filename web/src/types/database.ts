@@ -94,3 +94,39 @@ export type SpreadRow = {
   legs: string | null;
   value: number | null;
 };
+
+/** `serving.events` — tagged events from news, OFAC listings and social sources. */
+export type EventRow = {
+  event_id: string;
+  ts: string;
+  headline: string;
+  source: string;
+  url: string | null;
+  tags: string | null;
+  geo: string | null;
+  commodity: string | null;
+  severity: number | null;
+};
+
+/**
+ * `serving.sanctions` — OFAC SDN entries.
+ *
+ * The vessel fields identify a listed ship; they carry no position. This project has no
+ * AIS feed (Spec 11 is unbuilt), so nothing here may be presented as vessel tracking.
+ */
+export type SanctionRow = {
+  sanction_id: string;
+  name: string;
+  entity_type: string | null;
+  programs: string | null;
+  call_sign: string | null;
+  vess_type: string | null;
+  vess_flag: string | null;
+  vess_owner: string | null;
+  imo: string | null;
+  remarks: string | null;
+  energy_related: boolean | null;
+  status: string | null;
+  first_seen: string | null;
+  last_seen: string | null;
+};
