@@ -1,11 +1,13 @@
 /**
  * Design tokens, ported from `core/design.py` so the web UI and the Streamlit app read
- * as one publication. `core/design.py` is the source of truth: it measures these against
- * kardamow.substack.com, and `tests/test_config_matches_design.py` already stops the
- * Python side drifting. If a value changes there, change it here.
+ * as one publication. `core/design.py` is the source of truth for colour and type: it
+ * measures those against kardamow.substack.com, and
+ * `tests/test_config_matches_design.py` already stops the Python side drifting.
  *
- * The chrome values are NOT the series colours. `INK` is the near-black used for the
- * masthead, active nav and buttons; navy is a *data* colour and never paints chrome.
+ * The scale, rhythm and motion below are this surface's own — Streamlit does not expose
+ * them — but they follow the same discipline: an institutional research publication,
+ * quiet by intent. Restraint is the design here, so the work goes into type scale,
+ * vertical rhythm and hierarchy rather than ornament. Nothing decorative earns its place.
  */
 
 :root {
@@ -15,6 +17,10 @@
   --text: #363737;
   --muted: #757575;
   --rule: #e6e6e6;
+  /* A hair lighter than --rule, for separators that should be felt more than seen. */
+  --rule-faint: #f0f0f0;
+  /* The one tinted ground in the system: section wells and hover states. */
+  --wash: #fafafa;
 
   /* Status: the red/amber/green of core/freshness.py's report */
   --status-green: #1bc47d;
@@ -40,12 +46,42 @@
     Arial, sans-serif;
   --base-font-px: 15px;
 
-  /* Layout */
+  /* A modular scale at 1.25. Sizes are named by role, not by magnitude, so a heading
+     cannot be picked for how big it looks. */
+  --size-micro: 0.72rem;
+  --size-small: 0.82rem;
+  --size-body: 1rem;
+  --size-lead: 1.15rem;
+  --size-panel: 1.2rem;
+  --size-page: 1.75rem;
+  --size-display: 2.6rem;
+  --size-wordmark: 3.25rem;
+
+  /* Vertical rhythm. Every gap is a multiple of this, so the page has one meter rather
+     than a dozen hand-picked margins. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
   --gutter: 12px;
+  --measure: 1200px;
+
+  /* Motion. Short and eased, never bouncy: this is a research publication, and movement
+     is here to explain that something arrived, not to perform. Anything longer than
+     ~200ms starts to feel like waiting. */
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --duration: 180ms;
 }
 
 html {
   font-size: var(--base-font-px);
+  /* Modern browsers only paint the scrollbar gutter when needed, which shifts a centred
+     layout horizontally between a short page and a long one. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -53,6 +89,8 @@ body {
   color: var(--text);
   font-family: var(--body-stack);
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -61,10 +99,74 @@ h3 {
   font-family: var(--heading-stack);
   color: var(--text);
   font-weight: 600;
+  /* Display type is set solid-ish; the defaults are far too loose for a serif at size. */
+  line-height: 1.15;
+  /* Optical correction: a serif at display size needs its tracking pulled in. */
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-/* Tabular numerals everywhere a figure appears, so columns align down a table. */
+p {
+  line-height: 1.6;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  transition: color var(--duration) var(--ease);
+}
+
+/* Tabular numerals everywhere a figure appears, so columns align down a table and a
+   changing value does not make its neighbours jump. */
 .tabular {
   font-variant-numeric: tabular-nums;
   font-family: var(--body-stack);
+}
+
+/* Panels arrive rather than appear. Staggered by the caller so a page resolves top-down
+   the way a reader moves, which also masks the moment a chart paints. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 320ms var(--ease) both;
+}
+
+/* Honour a reader who has asked for less motion: they get the content, immediately, with
+   no movement at all. */
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* A stat reads as a destination, not decoration: the whole tile lifts on hover rather
+   than only its text, so the click target is obvious without a button. */
+.stat {
+  transition: background var(--duration) var(--ease);
+}
+
+.stat:hover {
+  background: var(--wash) !important;
+}
+
+/* The rule above a screen card darkens on hover -- the only affordance a text link in a
+   grid needs, and quieter than a border or a shadow. */
+.screen-card {
+  transition: border-color var(--duration) var(--ease);
+}
+
+.screen-card:hover {
+  border-top-color: var(--ink) !important;
 }
