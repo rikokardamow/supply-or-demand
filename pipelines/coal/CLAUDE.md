@@ -89,3 +89,33 @@ verbatim.
   ingested — they describe coal quality for emissions purposes, not the switching
   economics (quantity, price, heat content) this item exists for. Add them only with a
   reason.
+
+## Item 4 — final gate, real pull outcomes, 2026-09-09
+
+Real (not cassette) run against the live EIA API and the real lake:
+`.venv/Scripts/python.exe -m pipelines.coal.pull_coal` — exit 0: `wrote 510 coal rows
+across 5 series` (5 `DATA_KEYS` × ~102 quarters each; the pandas `dateutil`-fallback
+`UserWarning` on `"YYYY-Qn"` period parsing is cosmetic, not a data error — every row
+parsed to a real timestamp).
+
+**The single most important check in this plan, confirmed live: `set(coal["source"])`
+read back via a narrowed `read_ts_long(source="coal")` (never unbounded) is exactly
+`{"coal"}`.** No row leaked through carrying `source="eia"` — `get_facet_series`'s
+`source` parameter (see "Why `source=\"coal\"`, not `\"eia\"`" above) is working as
+designed on real, not just cassette, data.
+
+`series_id` set (5, one per `DATA_KEYS` entry, `US`+`98` only, matching the minted
+scheme): `COAL.CONSUMPTION.US-98.Q`, `COAL.HEAT_CONTENT.US-98.Q`, `COAL.PRICE.US-98.Q`,
+`COAL.RECEIPTS.US-98.Q`, `COAL.STOCKS.US-98.Q`. Units by series, read back from the real
+lake, verbatim as EIA publishes them (unconverted, per this project's ingest-time
+convention): `CONSUMPTION`/`RECEIPTS`/`STOCKS` → `"short tons"`; `PRICE` → `"dollars per
+short ton"`; `HEAT_CONTENT` → `"average sulfur percent by weight"` — the same real
+EIA-side mislabelling documented above, reproduced again here on live data rather than
+fixed at ingest time.
+
+**Full suite, lint and types**, run after this pull (shared with items 5/6's own
+verification — see `pipelines/eia/CLAUDE.md` Task 4): 773 passed, 1 failed (the known,
+out-of-scope `02_gas_storage.py`/GIE `deviation` KeyError, untouched by this package), 16
+deselected. `ruff check .` clean. `mypy core pipelines infra` — no issues found in 167
+source files, **the first time `pipelines/coal/` has been checked under mypy** (it is a
+new package under an already-checked path) — zero errors.
