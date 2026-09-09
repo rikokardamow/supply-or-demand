@@ -675,15 +675,19 @@ export function NavBar({ active }: { active?: string }) {
       }}
     >
       <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", flexShrink: 0 }}>
-        {/* A square, not a rounded tile. The terminal has no radius anywhere else and
-            one rounded corner in the top-left reads as an oversight. */}
+        {/* A square, not a rounded tile: the terminal has no radius anywhere else and one
+            rounded corner in the top-left reads as an oversight. Outlined rather than
+            filled, because a solid amber block is reserved for "you are here" and "this
+            data is stale" — a permanently amber tile in the corner would compete with the
+            stale badge, which is the only colour on the site meaning the figures may be
+            wrong. The mark takes a hairline instead and never competes. */}
         <span
           aria-hidden
           style={{
             width: 16,
             height: 16,
-            background: "var(--accent)",
-            color: "#000",
+            border: "1px solid var(--accent)",
+            color: "var(--accent)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
