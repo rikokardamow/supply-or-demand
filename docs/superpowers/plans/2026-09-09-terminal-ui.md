@@ -904,6 +904,25 @@ In `NotBuiltYet.tsx`, give its `<main>` the `.term-panel` treatment so an unbuil
 reads as an empty panel rather than a hole. Its `fontFamily: "var(--font)"` is already
 correct and needs no change.
 
+- [ ] **Step 2b: Add the two channel tokens the alpha washes need**
+
+`HeatTable` and `sanctions/page.tsx` both need a colour at *variable alpha*, and a CSS
+custom property holding `#4d9fff` cannot be interpolated into `rgba()`. Ruling 2 called for
+channel tokens; they were never added in Task 1. Add them to `tokens.css` beside the series
+block now:
+
+```css
+  /* Channel triples for the two series colours that are painted at variable alpha --
+     a heat wash, a bar fill. rgba() cannot interpolate a hex custom property, and the
+     alternative is a raw triple hardcoded in a component, which the no-hardcoded-colour
+     rule forbids and tokens.test.ts cannot see. */
+  --navy-rgb: 77, 159, 255;
+  --red-rgb: 255, 90, 77;
+```
+
+These must stay numerically identical to `--navy` (`#4d9fff`) and `--red` (`#ff5a4d`). Add
+a pin for each to `tokens.pins.test.ts` so they cannot drift from the hexes they mirror.
+
 - [ ] **Step 3: Re-tune the heat wash, and fix its asymmetry**
 
 Two separate problems.
@@ -927,7 +946,8 @@ to look equal rather than to *be* equal. Lifted blue `#4d9fff` is far more chrom
   const alpha = (pct > 0 ? 0.22 : 0.18) + scaled * (pct > 0 ? 0.38 : 0.34);
   // Blue for a surplus, red for a deficit -- the house series palette, not a
   // traffic-light scheme: a stock build is not "good" and a draw is not "bad".
-  const rgb = pct > 0 ? "77, 159, 255" : "255, 90, 77";
+  // The channel tokens, not raw triples -- see Step 2b.
+  const rgb = pct > 0 ? "var(--navy-rgb)" : "var(--red-rgb)";
 ```
 
 **Verify by measuring, not by eye** — the whole point of this step is that eyes got it
@@ -938,13 +958,14 @@ chroma.
 - [ ] **Step 4: De-hardcode the two routes**
 
 In `app/page.tsx:247`, the call-to-action link sits on `var(--accent)`. Amber needs black
-type, not white: `color: "#000"` → better, `color: "var(--bg)"`. Drop its `borderRadius`
+type, not white. Use `color: "var(--bg)"` — not `"#000"`, which would be a hardcoded
+colour even though the value is identical. Drop its `borderRadius`
 and `boxShadow` entries.
 
 In `app/sanctions/page.tsx:173`, the bar wash is hardcoded navy and will vanish:
 
 ```ts
-background: `linear-gradient(to left, rgba(77, 159, 255, 0.22) ${(100 * count) / max}%, transparent ${(100 * count) / max}%)`,
+background: `linear-gradient(to left, rgba(var(--navy-rgb), 0.22) ${(100 * count) / max}%, transparent ${(100 * count) / max}%)`,
 ```
 
 - [ ] **Step 5: Verify**
@@ -1080,14 +1101,20 @@ Then replace each local usage with `SERIES.navy`, `SERIES.lightBlue`, `SERIES.or
 
 - [ ] **Step 3: Darken the map**
 
-In `VesselMap.tsx`, `style: "carto-positron"` → `style: "carto-darkmatter"`, and move the
-four hardcoded vessel-type colours onto the lifted series values:
+In `VesselMap.tsx`, `style: "carto-positron"` → `style: "carto-darkmatter"`, and stop the
+four vessel-type colours being hex literals at all. They are series colours, so they come
+from the one module that owns series colours — **do not paste the new hexes into this
+file**, or Step 4's grep (which forbids any hex in a `.tsx`) will fail, correctly:
 
 ```ts
-  crude: "#ff5a4d",
-  lng: "#ffa62b",
-  products: "#9fd8ff",
-  other: "#99a3ad",
+import { SERIES } from "@/theme/plotly";
+
+const VESSEL_COLOURS = {
+  crude: SERIES.red,
+  lng: SERIES.orange,
+  products: SERIES.lightBlue,
+  other: SERIES.grey,
+} as const;
 ```
 
 - [ ] **Step 4: Verify no hardcoded colour survives outside the theme**
