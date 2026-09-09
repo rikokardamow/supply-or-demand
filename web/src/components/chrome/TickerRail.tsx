@@ -126,9 +126,9 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
         className="no-bar"
         style={{
           display: "flex",
-          gap: "var(--space-6)",
+          gap: 0,
           overflowX: "auto",
-          padding: "var(--space-3) var(--space-6)",
+          padding: "0 var(--space-4)",
         }}
       >
         {rows.map((row) => (
@@ -141,6 +141,8 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
               alignItems: "baseline",
               gap: "0.4rem",
               whiteSpace: "nowrap",
+              padding: "var(--space-2) var(--space-4)",
+              borderRight: "1px solid var(--border)",
               // The flash tints with the direction of the move, so the colour says which
               // way as well as that something happened.
               ["--flash-tone" as string]: toneFor(row.change),
