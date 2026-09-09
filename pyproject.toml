@@ -5,6 +5,8 @@ description = "Kardamow energy/macro research dashboard — DuckDB + Parquet lak
 requires-python = ">=3.12"
 readme = "README.md"
 authors = [{ name = "Riko Kardamow" }]
+license = "MIT"
+license-files = ["LICENSE"]
 
 dependencies = [
     "pandas>=2.2",
