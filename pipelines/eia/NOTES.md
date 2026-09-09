@@ -1063,3 +1063,48 @@ non-null values (`47.09`, `45.61`, `45.18`, `45.43`, `47.22` dollars per short t
 "code": 400}` — same conclusion as Spec 31A, now independently verified rather than
 carried over. Every facet/data call made with the route's real shape (`location`,
 `sector`, the seven data keys) succeeded.
+
+## Task 2 (31C) — biofuels capacity and feedstocks, and 4 feedstocks that report no data at all
+
+`pipelines/eia/pull_biofuels.py` pulls `petroleum/pnp/capbio` (3 codes, `CAPACITY`) and
+`petroleum/pnp/feedbiofuel` (26 codes, `FEEDSTOCKS`) via the plain `EIAClient.get_series`
+(no `geo_map` needed — both routes resolve `geo="US"` cleanly, confirmed in Task 0 above).
+`CAPACITY`'s three ids were corrected against a fresh live cross-check before this task
+started (the plan brief's own placeholder ids did not match Task 0's real discovery):
+`BIODIESEL = "M_EPOORDB_8BDPC_NUS_MMGL"`, `RENEWABLE_DIESEL = "M_EPOOROO_8BDPC_NUS_MMGL"`,
+`FUEL_ETHANOL = "M_EPOOXE_8BDPC_NUS_MMGL"`. `FEEDSTOCKS` is the full 26-id list transcribed
+from this file's own "full 26-series id/name enumeration" table above, in the same
+sorted-by-id order.
+
+**New finding, confirmed live during cassette recording, not present in Task 0's own
+notes above (which only recorded an *aggregate* 855-row null-drop count): 4 of the 26
+feedstocks report a literal null `value` for every single one of their recorded periods,
+not just some early-history rows like the routes documented earlier in this file.**
+Confirmed by fetching each in isolation (bypassing the shared-request batching of the
+other 22 codes): `M_EPOOBDAFD_YIFBP_NUS_MMLB` (dedicated energy crops),
+`M_EPOOBDBG_YIFBP_NUS_MMLB` (biogas), `M_EPOOBDRFWM_YIFBP_NUS_MMLB` (municipal solid
+waste) and `M_EPOOBDRFWY_YIFBP_NUS_MMLB` (yard and food waste) each return exactly 66
+rows (2021-01 to 2026-06), 0 of them non-null. This is EIA publishing the series (they
+are real, confirmed present in `list_series()`) with no real-world data behind them, not
+a client bug or a truncated `FEEDSTOCKS` paste — `EIAClient.get_series`'s existing
+null-skip correctly drops all 66 rows for each, leaving them entirely absent from any
+pull, forever, unless EIA someday starts reporting real values for these categories.
+
+**`tests/test_eia_biofuels.py::test_feedstocks_return_valid_ts_long_for_every_series` was
+adjusted for this** — the failing-test brief's own verbatim assertion
+(`set(df["series_id"]) == set(FEEDSTOCKS)`) does not hold against real data and cannot be
+made to hold by fixing code, since these 4 series have no reportable rows at all. The test
+now asserts equality against `FEEDSTOCKS` minus the 4 always-null ids above (named inline,
+with this section referenced) — still catching a regression in any of the other 22, which
+was the assertion's real intent. `FEEDSTOCKS` itself, `EXPECTED_FEEDSTOCK_COUNT` (26) and
+`pull_biofuels.py` are unchanged by this finding — the 4 ids stay in `FEEDSTOCKS` since
+they are real, current EIA series that could start reporting data in future.
+
+Full suite after this task (`.venv/Scripts/pytest.exe`): 768 passed, 1 failed, 16
+deselected. The one failure,
+`tests/test_pages_smoke.py::test_page_loads_without_raising[02_gas_storage.py]`
+(`KeyError: 'deviation'` inside `pipelines/gie/transforms.py`), is unrelated to this
+task — it touches no file this task changed, reproduces identically in isolation, and
+was already surfaced during the pre-task memory read as a side-effect of the recent
+lake/`.venv` rebuild (not this task's job to fix). `ruff check .` and `mypy core pipelines
+infra apps` both clean.
