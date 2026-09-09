@@ -88,6 +88,7 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("eia_gas_capacity", "pipelines.eia.pull_gas_capacity"),
         ("eia_gas_consumption", "pipelines.eia.pull_gas_consumption"),
         ("eia_biofuels", "pipelines.eia.pull_biofuels"),
+        ("coal", "pipelines.coal.pull_coal"),
         # Spec 20's "refit monthly". Reads the crack series pipelines.derived.cracks
         # writes on the weekly cadence, so it needs no ordering constraint inside this
         # group -- but it must not run before that pipeline has ever run at all.
