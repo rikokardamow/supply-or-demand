@@ -6,13 +6,14 @@ import {
   PIPELINE_CORRIDORS,
   RAIL_CORRIDORS,
   corridorLines,
+  corridorStats,
   modeTotals,
   netLine,
 } from "@/data/paddFlows";
 import { fetchFlows } from "@/data/queries/flows";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
 import { isStale } from "@/data/staleness";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatNumber } from "@/lib/format";
 
 /**
  * Flows (PADD): where US crude physically moves, and by what.
@@ -50,6 +51,14 @@ export default async function FlowsPage() {
     null,
   );
 
+  // Quoted in the standfirst below. Computed rather than written down: a figure typed into
+  // prose is wrong within a month of being typed, and the claim being made -- that the
+  // corridor reversed -- only holds if both numbers move with the data.
+  const southbound = corridorStats(rows, "pipeline", "PADD2", "PADD3");
+  const northbound = corridorStats(rows, "pipeline", "PADD3", "PADD2");
+  const millions = (v: number | null) =>
+    v === null ? "–" : formatNumber(v / 1000, 0);
+
   return (
     <>
       <PageHeader
@@ -66,6 +75,46 @@ export default async function FlowsPage() {
       />
 
       <main>
+        {/* The standfirst. The two lines in the first chart cross, and a reader should not
+            have to infer why from the shapes alone. */}
+        <section
+          className="card"
+          style={{
+            padding: "var(--space-5)",
+            marginBottom: "var(--space-6)",
+            borderLeft: "3px solid var(--accent)",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "var(--size-lead)",
+              lineHeight: 1.65,
+              maxWidth: "72ch",
+            }}
+          >
+            A pipeline is an option on a locational spread, and the spread most
+            of these are written on is Brent against WTI &mdash; which is a
+            logistics spread, not a quality one. WTI settles inland at Cushing,
+            Oklahoma, with no water access of its own, so when barrels cannot
+            get out of the Midwest the discount widens until something moves
+            them. The US export ban, lifted in December 2015, blocked that
+            adjustment for years and decoupled the two benchmarks outright:
+            infrastructure and regulation set the bound, not economics. What
+            follows is the physical side of that arithmetic. Across the whole
+            reported history the Gulf Coast sent the Midwest about{" "}
+            <span className="tabular">{millions(northbound.mean)}</span> million
+            barrels a month against{" "}
+            <span className="tabular">{millions(southbound.mean)}</span> going
+            the other way &mdash; imported crude landing at the coast and moving
+            inland. In the latest reported month those figures are{" "}
+            <span className="tabular">{millions(northbound.latest)}</span> and{" "}
+            <span className="tabular">{millions(southbound.latest)}</span>. The
+            corridor has reversed, and pipe built to carry foreign barrels north
+            now carries domestic barrels south. Read the modes separately: the
+            substitution between them is usually where the story is.
+          </p>
+        </section>
+
         <Panel
           title="Gulf Coast and Midwest, the two directions of the same pipe"
           asOf={asOf}
