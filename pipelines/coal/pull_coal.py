@@ -23,7 +23,7 @@ from collections.abc import Callable
 from typing import Any
 
 import pandas as pd
-from core.failures import failure_scope
+from core.failures import failure_scope, record_failure
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -103,6 +103,18 @@ def pull_coal(client: EIAClient) -> pd.DataFrame:
 def main() -> None:
     with failure_scope("coal.pull_coal"):
         df = pull_coal(EIAClient())
+        # Coal rows carry no fixed series_id set the way ETHANOL/CAPACITY do -- ids are
+        # minted per (data_key, location, sector) via coal_series_id. The marker
+        # ".<DATA_KEY>." (same string test_every_requested_data_key_produced_rows
+        # already uses) identifies which DATA_KEYS entry produced a given row, so a key
+        # that comes back with no rows at all -- the whole pull failing, or one of five
+        # data keys silently missing -- can still be recorded, even against a wholly
+        # empty df.
+        series_ids = list(df["series_id"])
+        for key in DATA_KEYS:
+            marker = f".{key.upper().replace('-', '_')}."
+            if not any(marker in sid for sid in series_ids):
+                record_failure(key, RuntimeError("no rows returned"))
         if df.empty:
             print("no coal rows pulled", flush=True)
             return
