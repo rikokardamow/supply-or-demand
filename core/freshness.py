@@ -132,3 +132,32 @@ def staleness_report() -> pd.DataFrame:
         )
 
     return pd.DataFrame(rows, columns=_STATUS_COLUMNS)
+
+
+# Fraction of every known source that must vanish at once before this is treated as
+# a distinct, whole-lake incident rather than N unrelated single-pipeline staleness
+# alerts. Calibrated against the real 2026-09-08 incident (an out-of-band event wiped
+# data/lake/ and .venv/ together, cause never determined): every source went from
+# "has data" to "zero rows anywhere" simultaneously, not one at a time on its own
+# schedule -- staleness_report() alone can't tell that apart from a genuinely broken
+# single pipeline, since a source with zero rows never appears in its output at all.
+MASS_LOSS_FRACTION = 0.5
+
+
+def missing_sources() -> set[str]:
+    """Every `EXPECTED_CADENCE_DAYS` source with literally zero rows anywhere in the
+    lake right now -- distinct from staleness, which only ever applies to a source
+    that has written at least once. A source that has simply never been run yet looks
+    identical to one that just lost all its history; this function can't tell those
+    apart either, but `mass_data_loss_detected()` below cares about the aggregate
+    count, not any single source's reason for being missing."""
+    seen = set(staleness_report()["source"])
+    return set(EXPECTED_CADENCE_DAYS) - seen
+
+
+def mass_data_loss_detected(threshold: float = MASS_LOSS_FRACTION) -> bool:
+    """True when more than `threshold` of every known source is simultaneously
+    missing -- the real, confirmed-live signature of a whole-lake wipe. A single
+    missing source (a pipeline never yet run, or one genuinely broken) must not trip
+    this; only a large, simultaneous fraction should."""
+    return len(missing_sources()) / len(EXPECTED_CADENCE_DAYS) > threshold
