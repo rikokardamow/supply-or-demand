@@ -161,6 +161,37 @@ def test_publish_appends_one_publish_log_row_with_the_real_row_count(
     assert fake_conn.committed is True
 
 
+def test_publish_dedups_rows_sharing_a_key_before_upserting(
+    fake_conn: _FakeConnection, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # Postgres refuses an ON CONFLICT DO UPDATE whose own INSERT proposes the same
+    # constrained key twice ("cannot affect row a second time"). Real EIA responses do
+    # contain such rows: confirmed live 2026-09-09, the WPSR pull returned 10 rows in 5
+    # duplicate (series_id, ts) groups, all clustered at the client's 5,000-row
+    # pagination boundaries and all carrying identical values. write_ts_long's own
+    # dedup absorbs these for the lake, so publish() must do the same for the serving
+    # copy rather than blowing up on data the lake accepts.
+    duplicated = pd.concat([_df(), _df().iloc[[0]]], ignore_index=True)  # 3 rows, 2 keys
+
+    publish(
+        "series_long",
+        duplicated,
+        as_of=datetime.now(UTC),
+        source_note="test",
+        key=["series_id", "ts"],
+    )
+
+    assert fake_conn.cur.copied_data[0].count("\n") == 2  # 2 unique keys, not 3 rows
+    log_params = next(
+        params
+        for sql, params in fake_conn.cur.executed
+        if "insert into serving.publish_log" in sql
+    )
+    assert log_params is not None
+    assert log_params[3] == 2  # row_count reflects what was actually published
+    assert "duplicate" in capsys.readouterr().out
+
+
 def test_publish_skips_cleanly_when_supabase_is_not_configured(
     fake_conn: _FakeConnection, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -183,7 +214,12 @@ def test_publish_skips_cleanly_when_supabase_is_not_configured(
 
 
 def test_publish_chunks_large_frames_into_multiple_copy_calls(fake_conn: _FakeConnection) -> None:
-    big = pd.concat([_df()] * 3, ignore_index=True)  # 6 rows
+    # Six genuinely distinct keys -- repeating _df() would collapse to 2 rows under
+    # publish()'s own dedup and test nothing about chunking.
+    big = pd.concat([_df()] * 3, ignore_index=True)
+    big["ts"] = pd.to_datetime(
+        ["2026-09-01", "2026-09-08", "2026-09-15", "2026-09-22", "2026-09-29", "2026-10-06"]
+    )
     publish(
         "series_long",
         big,

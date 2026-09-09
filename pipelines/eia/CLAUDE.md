@@ -1157,3 +1157,64 @@ concurrently, out of this task's scope to touch. No other failure appeared. **Li
 `.venv/Scripts/ruff.exe check .` — all checks passed. **Types**:
 `.venv/Scripts/mypy.exe core pipelines infra` — no issues found in 167 source files,
 `pipelines/coal/` included for the first time under this check with zero errors.
+
+## Spec 32 — WPSR publishes to the Supabase serving layer (2026-09-09)
+
+`pull_wpsr.py` now calls `core.publish.publish("series_long", ...)` after its
+`write_ts_long` call. The lake write happens first and is committed before the publish
+runs, so a serving-layer failure loses no data — but it is deliberately **not** wrapped
+in a try/except: per `core/failures.py`'s own rule, a failed publish must surface as a
+non-zero exit rather than a quietly missing publish. An *unset* `SUPABASE_DB_URL` is the
+one exception, treated as "not opted in" and skipped with a printed message (CI and any
+machine without the credential stay green).
+
+**Real finding, confirmed live 2026-09-09: `EIAClient`'s pagination returns a small
+number of duplicate rows at page boundaries.** A full WPSR pull (47,466 rows across the
+6 route groups) contained **10 rows forming 5 duplicate `(series_id, ts)` groups** —
+`WGIRIP22` (1994-09-23, 2010-09-10), `WGIRIP32` (1994-09-23), `WGTSTUS1` (2010-09-10),
+`W_NA_YUP_R10_PER`. Every duplicate pair carried an **identical value** (checked:
+`groupby(['series_id','ts'])['value'].nunique()` was 1 for all 5 groups), so these are
+true repeats, not revisions. Their positional indices cluster at the client's own
+5,000-row page boundaries (4999/5003, 22980/22984, 27979–27982), consistent with EIA's
+`sort[0][column]=period` not being a *total* order — rows tied on `period` can shift
+between pages across the two requests that straddle a boundary, so a row can be returned
+twice (and, in principle, another missed).
+
+This has always been happening; `write_ts_long`'s `(series_id, ts)` dedup absorbed it
+silently, which is why it was never visible. It only surfaced because Postgres refuses
+an `ON CONFLICT DO UPDATE` whose own INSERT proposes the same key twice
+(`CardinalityViolation: ON CONFLICT DO UPDATE command cannot affect row a second time`).
+`core.publish.publish()` now dedups on its `key` before upserting, mirroring
+`_write_partitioned`, and prints how many rows it dropped.
+
+**Not fixed in the client itself, deliberately.** Deduping at the `EIAClient` layer
+would change behaviour for all ~15 routes already using `get_series`, and the lake has
+been correct throughout regardless. If a future pull ever needs *exact* raw fidelity from
+this client, this is the note to read first.
+
+**First real publish, live-verified 2026-09-09** against the `kardamow-serving` Supabase
+project (`uckqjixhqqlqyxzbpaso`, eu-central-1, free tier):
+- `serving.series_long`: **47,461 rows** (47,466 pulled − 5 duplicates), 27 distinct
+  series, 1982-08-20 → 2026-08-28.
+- **Idempotency confirmed against Spec 32's own acceptance criterion**: the pull was run
+  a second time; `serving.series_long` held flat at **47,461** while
+  `serving.publish_log` went **1 → 2** rows. Re-running changes the log, not the table.
+- Read back through the public PostgREST endpoint with the **anon** key: both
+  `latest_publish_v` and `series_long` return real rows (Cushing `W_EPC0_SAX_YCUOK_MBBL`
+  = 22,508 MBBL for 2026-08-28), and an anon `INSERT` is refused with HTTP 401
+  `permission denied for table series_long` — read-only access is real, not assumed.
+
+**Connection gotchas, both hit for real:** Supabase's *direct* connection host
+(`db.<ref>.supabase.co:5432`) is IPv6-only on the free tier and does not resolve from
+this Windows laptop (`getaddrinfo failed`) — use the **shared pooler**
+(`aws-0-eu-central-1.pooler.supabase.com:6543`, username `postgres.<project-ref>`), which
+is IPv4 on every tier. The `aws-0`/`aws-1` prefix is per-project and cannot be guessed:
+`aws-1` returned `FATAL: (ENOTFOUND) tenant/user postgres.<ref> not found`. Transaction
+mode (6543) also rejects prepared statements, which psycopg3 issues automatically after
+the 5th repeat of a statement — hence `prepare_threshold=None` in `core/publish.py`.
+
+**Still to build (Spec 32 Sessions 2–3):** `serving.seasonal` and `serving.wpsr_lines`
+are created but unpopulated — the `wow`/`yoy_pct`/`vs_median_pct` columns need real
+derived analytics (via `core.seasonal`), which is its own task, not a line in this pull.
+The `POST /api/revalidate` hook is likewise unbuilt: there is no Vercel deployment to
+call yet.
