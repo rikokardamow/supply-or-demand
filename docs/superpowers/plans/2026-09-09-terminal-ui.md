@@ -1,5 +1,11 @@
 # Terminal UI Implementation Plan
 
+> **SUPERSEDED 2026-09-09 — DO NOT EXECUTE.** The user ruled to keep the light product
+> UI (`078efa2`), which is live on data.kardamow.com. No task below was ever dispatched
+> and no code was written. This is kept as a documented road not taken: if a terminal
+> look is wanted later, the design decisions and the two defects found while planning are
+> already worked out rather than needing rediscovery. See the spec for the same note.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Restyle `web/` (Next.js, data.kardamow.com) into a Bloomberg-style terminal — black ground, monospace, amber accent, zero radius, full-bleed, 11px density — without touching the Streamlit app or `core/design.py`.

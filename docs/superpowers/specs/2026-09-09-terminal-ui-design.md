@@ -1,7 +1,10 @@
 # Design — Terminal UI for `web/` (Bloomberg-style)
 
 **Date:** 2026-09-09
-**Status:** approved design, not yet planned
+**Status:** SUPERSEDED 2026-09-09 — not built. The user ruled to keep the light product
+UI (`078efa2`), which went live on data.kardamow.com the same day. Planned in full
+(`docs/superpowers/plans/2026-09-09-terminal-ui.md`), never executed; no code was
+written. Kept as a documented road not taken.
 **Surface:** `web/` (Next.js, data.kardamow.com) only
 **Does not touch:** `apps/dashboard/` (Streamlit), `core/design.py`
 
