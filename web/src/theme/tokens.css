@@ -1,104 +1,115 @@
 /**
- * The design system for data.kardamow.com.
+ * The design system for data.kardamow.com — a terminal.
  *
- * **This surface deliberately no longer matches `core/design.py`.** That module measures
- * its chrome against kardamow.substack.com and drives the Streamlit app, which stays as it
- * is; this is a product interface — an off-white ground, white cards, one sans-serif — and
- * trying to serve both from one palette produced something that read as neither. The two
- * still agree on the only values where disagreement would be a defect: the **series
- * colours**, which encode meaning (navy is the primary series, orange is always the
- * seasonal median), so a chart exported from Python and one rendered here are the same
- * chart. Chrome is this surface's own.
+ * **This surface does not match `core/design.py`, and now differs from it further.** That
+ * module measures its chrome against kardamow.substack.com and drives the Streamlit app,
+ * which keeps the identity it was restyled to on 2026-09-08. This is a terminal: black
+ * ground, one monospace family, amber as the accent, no radius, no shadow, edge to edge.
  *
- * Structure is carried by surface and border rather than by rules and whitespace. A card
- * is the unit: it has a ground, an edge and a radius, and it either contains data or it
- * does not exist.
+ * The two surfaces still agree on what the series *mean* — navy is the primary series,
+ * orange is always the seasonal median — but no longer on the values. Navy at #0f2a4a is
+ * invisible on black. See `theme/plotly.ts` for the full statement of that contract.
+ *
+ * Amber is rationed. It is type on a dark strip, not a fill. A solid amber block means
+ * exactly two things: this nav item is the page you are on, or this data is stale. If
+ * amber becomes the ground for every panel header there is nothing louder left for a
+ * warning to use.
  */
 
 :root {
-  /* Ground and surface. The page is never white — white is what a card is, and a card on
-     a white page has no edge to speak of however carefully its border is drawn. */
-  --bg: #f4f6f8;
-  --surface: #ffffff;
-  --surface-2: #f9fafb;
-  --surface-hover: #f4f6f8;
+  /* Ground and surface. The page is black; a panel is a barely-lifted ground with a
+     1px edge. Structure is carried by the edge, never by a shadow. */
+  --bg: #000000;
+  --surface: #0a0b0d;
+  --surface-2: #131519;
+  --surface-hover: #131519;
 
-  --border: #e4e8ed;
-  --border-strong: #d2d8e0;
+  --border: #2a2f37;
+  --border-strong: #3d434d;
+  /* Between rows inside a table. Lighter than --border so a table does not read as a
+     stack of separate panels. */
+  --hairline: #16191f;
 
-  --text: #101828;
-  --muted: #667085;
-  --faint: #98a2b3;
+  --text: #e6e8eb;
+  --muted: #9aa2ad;
+  /* 5.63:1 on black. The obvious choice (#6b7280) is 4.34:1 and fails — and this token
+     is used at 0.86rem for cadence lines, which is exactly where it matters. */
+  --faint: #7d8590;
 
-  /* Brand. Navy is the publication's own colour and stays; it is what a primary action,
-     an active tab and the first series in a chart all share. */
-  --accent: #0f2a4a;
-  --accent-soft: #eaeff5;
+  --accent: #ff9e1b;
+  --accent-soft: #2a1f0a;
 
-  /* Direction. Green up and red down, the convention every market interface uses. Never
-     the only carrier of meaning: a figure always shows its sign as well. */
-  --up: #067647;
-  --down: #b42318;
-  --up-soft: #ecfdf3;
-  --down-soft: #fef3f2;
+  /* Direction. Never the only carrier of meaning: a figure always shows its sign too.
+     --down is #ee4a56, not the #ea3943 first drafted for it: that draft is 4.495:1 on
+     --surface-2, short of the 4.5:1 floor by the same kind of margin --faint missed by
+     above. Same lesson, same fix. */
+  --up: #16c784;
+  --down: #ee4a56;
+  --up-soft: #06251a;
+  --down-soft: #2a0f11;
 
-  /* Status: the amber of a stale panel. */
-  --warn: #b54708;
-  --warn-soft: #fffaeb;
+  /* Status: a stale panel. This is the one place a solid amber bar is spent on
+     something other than the active nav item. */
+  --warn: #ff9e1b;
+  --warn-soft: #2a1f0a;
 
-  /* Series (data, not brand) — the one block shared with core/design.py. */
-  --navy: #0f2a4a;
-  --light-blue: #5b9bd5;
-  --red: #c0392b;
-  --orange: #e67e22;
-  --grey: #95a5a6;
-  --band: rgba(150, 150, 150, 0.25);
-  --grid: #eaecf0;
+  /* Series (data, not brand) — roles shared with core/design.py, values are ours. */
+  --navy: #4d9fff;
+  --light-blue: #9fd8ff;
+  --red: #ff5a4d;
+  --orange: #ffa62b;
+  --grey: #99a3ad;
+  --band: rgba(160, 170, 185, 0.18);
+  --grid: #1e232b;
 
-  /* One family. Every figure and every heading is Inter — a serif heading over a sans
-     figure was the single loudest thing making this read as a document rather than an
-     interface. */
-  --font: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
-  --base-font-px: 15px;
+  /* One family, monospace, for every label, figure, heading and table cell. Inter is
+     kept for running prose only — page deks and source notes — because a paragraph set
+     in mono is the part of the real terminal worth leaving behind. */
+  --font: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+  --font-prose: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --base-font-px: 11px;
 
-  --size-micro: 0.72rem;
-  --size-small: 0.82rem;
-  --size-body: 0.94rem;
-  --size-lead: 1.05rem;
-  --size-panel: 1.05rem;
-  --size-stat: 1.9rem;
-  --size-page: 1.9rem;
-  --size-display: clamp(2.2rem, 4.4vw, 3.6rem);
+  /* Re-derived against an 11px root. These are NOT the old rem values: at 11px the old
+     scale would render the previous design 27% smaller rather than a denser one. */
+  --size-micro: 0.86rem;
+  --size-small: 0.95rem;
+  --size-body: 1rem;
+  --size-lead: 1.09rem;
+  --size-panel: 0.95rem;
+  --size-stat: 1.55rem;
+  --size-page: 1.18rem;
+  --size-display: 1.55rem;
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
+  --space-1: 0.18rem;
+  --space-2: 0.27rem;
+  --space-3: 0.36rem;
+  --space-4: 0.55rem;
+  --space-5: 0.73rem;
+  --space-6: 0.91rem;
+  --space-8: 1.09rem;
+  --space-12: 1.64rem;
 
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-pill: 999px;
+  /* A terminal has no rounded corners. Kept as tokens so a component naming one still
+     resolves rather than breaking. */
+  --r-sm: 0;
+  --r-md: 0;
+  --r-lg: 0;
+  --r-pill: 0;
 
-  /* Shadows are almost invisible by design. A card is separated by its border; the shadow
-     only stops it looking pasted flat onto the ground. */
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.06);
+  --shadow-sm: none;
+  --shadow-md: none;
 
-  --measure: 1240px;
+  /* Full-bleed: kept only so nothing referencing it breaks mid-migration. Task 2 removes
+     the last consumer. */
+  --measure: 100%;
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
-  --duration: 160ms;
+  --duration: 120ms;
 }
 
 html {
   font-size: var(--base-font-px);
-  /* Modern browsers only paint the scrollbar gutter when needed, which shifts a centred
-     layout horizontally between a short page and a long one. */
   scrollbar-gutter: stable;
 }
 
@@ -106,9 +117,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
+  font-variant-numeric: tabular-nums;
   margin: 0;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -117,14 +128,14 @@ h3,
 h4 {
   font-family: var(--font);
   color: var(--text);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
   margin: 0;
 }
 
 p {
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -133,156 +144,166 @@ a {
   text-decoration: none;
 }
 
-/* Tabular numerals everywhere a figure appears, so columns align down a table and a
-   changing value does not make its neighbours jump. */
+/* Running prose — a page dek, a source note. The one place Inter survives. */
+.prose {
+  font-family: var(--font-prose);
+  font-variant-numeric: normal;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-/* -- The card, the unit of the interface ------------------------------------------- */
+/* -- Primitives -------------------------------------------------------------------- */
 
-.card {
+/* A panel. The unit of the interface: an edge, a ground, and no radius. */
+.term-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
+  border-collapse: collapse;
 }
 
-/* A card that is a link lifts; a card that is only a container never moves. Movement on
-   hover is a promise that clicking does something. */
-.card-link {
-  display: block;
-  transition:
-    border-color var(--duration) var(--ease),
-    box-shadow var(--duration) var(--ease),
-    transform var(--duration) var(--ease);
-}
-
-.card-link:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-/* -- Navigation --------------------------------------------------------------------- */
-
-.app-bar {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  background: rgba(244, 246, 248, 0.85);
-  backdrop-filter: saturate(1.4) blur(10px);
+/* A panel's header strip: amber label left, as-of right. */
+.term-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--surface-2);
+  color: var(--accent);
+  font-size: var(--size-micro);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--border);
 }
 
-.nav-pill {
+/* A tiled grid of panels with no gutters — adjacent borders sit flush. */
+.term-grid {
+  display: grid;
+  gap: 0;
+}
+
+.term-grid > * {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+
+/* One figure in a monitor row: label, value, delta. */
+.term-cell {
+  padding: var(--space-3) var(--space-4);
+}
+
+.term-cell .k {
+  color: var(--faint);
+  font-size: var(--size-micro);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.term-cell .v {
+  font-size: var(--size-stat);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: var(--space-1) 0;
+}
+
+.term-cell .d {
+  font-size: var(--size-micro);
+}
+
+/* A key: nav item, range switch, series toggle. The active one is the inverted block. */
+.term-key {
   display: inline-flex;
   align-items: center;
-  padding: 0.34rem 0.7rem;
-  border-radius: var(--r-pill);
-  font-size: var(--size-small);
-  font-weight: 500;
-  color: var(--muted);
-  white-space: nowrap;
-  transition:
-    background var(--duration) var(--ease),
-    color var(--duration) var(--ease);
-}
-
-.nav-pill:hover {
-  background: var(--surface);
-  color: var(--text);
-}
-
-.nav-pill[aria-current="page"] {
-  background: var(--accent);
-  color: #fff;
-}
-
-/* -- Controls ----------------------------------------------------------------------- */
-
-/* A segmented control, the range switch. Reads as one control with a selected segment
-   rather than as three buttons that happen to sit together. */
-.segmented {
-  display: inline-flex;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  padding: 2px;
-}
-
-.segment {
   border: 0;
   background: none;
   cursor: pointer;
   font-family: var(--font);
   font-size: var(--size-micro);
-  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--muted);
-  padding: 0.22rem 0.6rem;
-  border-radius: var(--r-pill);
-  transition:
-    background var(--duration) var(--ease),
-    color var(--duration) var(--ease);
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+  transition: color var(--duration) var(--ease);
 }
 
-.segment[aria-pressed="true"] {
-  background: var(--surface);
+.term-key:hover {
   color: var(--text);
-  box-shadow: var(--shadow-sm);
 }
 
-/* A series toggle. The swatch carries the colour; struck-through type carries "off",
-   because a colour going grey is not legible to everyone. */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: var(--r-pill);
-  padding: 0.2rem 0.6rem;
-  cursor: pointer;
-  font-family: var(--font);
-  font-size: var(--size-micro);
-  font-weight: 500;
-  color: var(--text);
-  transition:
-    background var(--duration) var(--ease),
-    border-color var(--duration) var(--ease);
+.term-key[aria-current="page"],
+.term-key[aria-pressed="true"] {
+  background: var(--accent);
+  color: #000000;
+  font-weight: 700;
 }
 
-.chip:hover {
-  background: var(--surface-hover);
-}
-
-.chip[aria-pressed="false"] {
+.term-key[aria-pressed="false"] {
   color: var(--faint);
   text-decoration: line-through;
+}
+
+/* An inverted status bar. Amber for stale; red reserved for a genuine failure. */
+.term-bar {
+  display: inline-flex;
+  align-items: center;
+  background: var(--warn);
+  color: #000000;
+  font-size: var(--size-micro);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0 var(--space-3);
+  white-space: nowrap;
+}
+
+/* A data table inside a panel. */
+.term-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-small);
+}
+
+.term-table th {
+  text-align: right;
+  padding: var(--space-2) var(--space-4);
+  color: var(--faint);
+  font-weight: 400;
+  font-size: var(--size-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.term-table td {
+  text-align: right;
+  padding: var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+
+.term-table th:first-child,
+.term-table td:first-child {
+  text-align: left;
+}
+
+.term-table tbody tr:hover td {
   background: var(--surface-2);
 }
 
-/* -- Motion ------------------------------------------------------------------------- */
+/* -- Motion ------------------------------------------------------------------------ */
 
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.rise {
-  animation: rise 300ms var(--ease) both;
-}
-
+/* `.rise` and the card hover-lift are gone: both were product-UI promises that a thing
+   is about to move or is clickable. A terminal does not move. `.flash` stays, because a
+   value flashing when it ticks is genuine terminal behaviour. */
 @keyframes flash {
   from {
-    background: color-mix(in srgb, var(--flash-tone) 18%, transparent);
+    background: color-mix(in srgb, var(--flash-tone) 30%, transparent);
   }
   to {
     background: transparent;
@@ -290,27 +311,18 @@ a {
 }
 
 .flash {
-  animation: flash 900ms var(--ease) both;
-  border-radius: var(--r-sm);
+  animation: flash 700ms var(--ease) both;
 }
 
-/* Honour a reader who has asked for less motion: they get the content, immediately, with
-   no movement at all. */
 @media (prefers-reduced-motion: reduce) {
-  .rise,
   .flash {
     animation: none;
-  }
-  .card-link:hover {
-    transform: none;
   }
   * {
     transition-duration: 0.01ms !important;
   }
 }
 
-/* Hide a scrollbar on a row that scrolls sideways by design. The row still scrolls by
-   wheel, touch and keyboard; only the bar is gone. */
 .no-bar {
   scrollbar-width: none;
 }
