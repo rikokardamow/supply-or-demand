@@ -68,18 +68,20 @@ export function ScreenCard({
   stat?: ScreenStat;
   delay: number;
 }) {
+  // `delay` staggered the old `.rise` entrance animation, which the terminal doesn't
+  // have. Kept in the signature -- unused -- so callers passing it need no edit.
+  void delay;
   const yearChange = overWindow(stat?.spark);
 
   return (
     <Link
       href={href}
-      className="card card-link rise"
+      className="term-panel"
       style={{
         display: "flex",
         flexDirection: "column",
         gap: "var(--space-3)",
         padding: "var(--space-4)",
-        animationDelay: `${delay}ms`,
       }}
     >
       <div
