@@ -18,6 +18,9 @@ import type { Point } from "@/lib/vessels";
  *
  * The rotation is deliberately slow — a full turn takes two minutes. Fast enough to be
  * unmistakably live, slow enough to read as weight rather than as a spinner.
+ *
+ * Drawn for a white ground: a pale body, grey graticule, blue tankers. The geometry is
+ * unchanged from the dark version; only the values are inverted.
  */
 
 const TILT = (18 * Math.PI) / 180;
@@ -99,9 +102,9 @@ export function Globe({ points }: { points: Point[] }) {
         half,
         r,
       );
-      body.addColorStop(0, "rgba(34,52,68,0.55)");
-      body.addColorStop(0.65, "rgba(12,18,26,0.5)");
-      body.addColorStop(1, "rgba(0,0,0,0.5)");
+      body.addColorStop(0, "rgba(248,250,252,1)");
+      body.addColorStop(0.7, "rgba(238,242,247,1)");
+      body.addColorStop(1, "rgba(226,232,240,1)");
       c.beginPath();
       c.arc(half, half, r, 0, Math.PI * 2);
       c.fillStyle = body;
@@ -110,12 +113,12 @@ export function Globe({ points }: { points: Point[] }) {
       // The limb, picked out slightly brighter than the grid so the sphere has an edge.
       c.beginPath();
       c.arc(half, half, r, 0, Math.PI * 2);
-      c.strokeStyle = "rgba(140,190,215,0.28)";
+      c.strokeStyle = "rgba(148,163,184,0.55)";
       c.lineWidth = 1;
       c.stroke();
 
       // Graticule. Enough to read as a globe turning; not so much that it becomes a net.
-      c.strokeStyle = "rgba(150,200,225,0.13)";
+      c.strokeStyle = "rgba(148,163,184,0.32)";
       for (let lat = -60; lat <= 60; lat += 30) {
         c.beginPath();
         let started = false;
@@ -164,8 +167,8 @@ export function Globe({ points }: { points: Point[] }) {
         // the sparse ones as dust.
         if (point.tanker) {
           const glow = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, 5);
-          glow.addColorStop(0, `rgba(110,231,255,${alpha * 0.5})`);
-          glow.addColorStop(1, "rgba(110,231,255,0)");
+          glow.addColorStop(0, `rgba(29,78,216,${alpha * 0.28})`);
+          glow.addColorStop(1, "rgba(29,78,216,0)");
           c.beginPath();
           c.arc(p.x, p.y, 5, 0, Math.PI * 2);
           c.fillStyle = glow;
@@ -174,9 +177,11 @@ export function Globe({ points }: { points: Point[] }) {
 
         c.beginPath();
         c.arc(p.x, p.y, point.tanker ? 2.1 : 1.6, 0, Math.PI * 2);
+        // Blue for a tanker, mid-grey for everything else -- on white the unclassified
+        // fleet has to darken rather than brighten to register.
         c.fillStyle = point.tanker
-          ? `rgba(160,240,255,${alpha})`
-          : `rgba(215,230,245,${alpha * 0.75})`;
+          ? `rgba(29,78,216,${alpha})`
+          : `rgba(100,116,139,${alpha * 0.7})`;
         c.fill();
       }
     }

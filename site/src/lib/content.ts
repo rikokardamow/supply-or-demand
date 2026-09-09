@@ -51,7 +51,8 @@ export async function fetchFigures(): Promise<Figure[]> {
           label: spec.label,
           value: latest,
           unit: (data[0].unit as string | null) ?? null,
-          change: latest !== null && previous !== null ? latest - previous : null,
+          change:
+            latest !== null && previous !== null ? latest - previous : null,
           digits: spec.digits,
         };
       }),
@@ -62,7 +63,20 @@ export async function fetchFigures(): Promise<Figure[]> {
   }
 }
 
-export type Post = { title: string; url: string; date: string | null };
+export type Post = {
+  title: string;
+  url: string;
+  date: string | null;
+  /**
+   * The post's own standfirst from the feed.
+   *
+   * Worth carrying rather than showing titles alone: these are the strongest evidence of
+   * the method on the whole page. "A 438-gigawatt line, five times the grid's all-time
+   * peak, halved the moment a deposit was demanded" argues for itself in a way that a
+   * title cannot.
+   */
+  dek: string | null;
+};
 
 /**
  * Recent posts, read from the Substack's public RSS.
@@ -92,8 +106,30 @@ export async function fetchPosts(limit = 5): Promise<Post[]> {
         item.match(/<link><!\[CDATA\[([\s\S]*?)\]\]><\/link>/)?.[1] ??
         item.match(/<link>([\s\S]*?)<\/link>/)?.[1];
       const date = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? null;
+      const rawDek =
+        item.match(
+          /<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/,
+        )?.[1] ??
+        item.match(/<description>([\s\S]*?)<\/description>/)?.[1] ??
+        null;
       if (!title || !url) continue;
-      posts.push({ title: title.trim(), url: url.trim(), date });
+      posts.push({
+        title: title.trim(),
+        url: url.trim(),
+        date,
+        // Substack wraps the standfirst in markup; strip tags and decode the handful of
+        // entities that actually appear rather than pulling in an HTML parser.
+        dek: rawDek
+          ? rawDek
+              .replace(/<[^>]+>/g, "")
+              .replace(/&#8217;|&rsquo;/g, "’")
+              .replace(/&#8212;|&mdash;/g, "—")
+              .replace(/&amp;/g, "&")
+              .replace(/&quot;/g, '"')
+              .replace(/\s+/g, " ")
+              .trim() || null
+          : null,
+      });
       if (posts.length >= limit) break;
     }
     return posts;

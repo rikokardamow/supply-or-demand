@@ -11,33 +11,82 @@ import { fetchVesselPoints } from "@/lib/vessels";
 /**
  * kardamow.com — the landing page.
  *
- * Built from the references supplied: a dark cinematic ground, one oversized display line,
- * glass cards floating over the lighting, pill buttons. The difference from those
- * references is that the floating stat cards hold **real, current figures** rather than
- * mocked percentages, and the writing list is the actual Substack feed. On a research
- * site, a landing page that invents its own numbers has lost the argument on the first
- * screen.
+ * Every line of copy here is the author's own, taken from the publication's About page
+ * rather than written for it. That matters more than it sounds: a portfolio for a writer
+ * whose whole argument is primary sources cannot open with copy invented by someone else,
+ * and the About page already says it better than a rewrite would.
  *
- * Revalidated hourly. Both sources are cheap and neither changes faster than that.
+ * The figures, the vessel positions and the post list are all live. Nothing on the page is
+ * a placeholder.
  */
 export const revalidate = 3600;
 
-const CAPABILITIES = [
+const EMAIL = "riko@kardamow.com";
+
+/**
+ * The three areas, condensed from the About page's own descriptions.
+ *
+ * Each keeps the line that states the mechanism rather than the subject, because that is
+ * what distinguishes this from a topic list: "a refiner who pulls throughput has voted
+ * with a plant, not a forecast" says what the work does.
+ */
+const COVERAGE = [
   {
-    title: "Physical oil",
-    body: "Crude and product balances, refinery economics, inter-regional movements, and the arithmetic that connects a cargo to a price.",
+    title: "Energy fundamentals and physical markets",
+    body: "The crude curve first — backwardation, contango, and the term-structure dislocations that signal where the physical market disagrees with paper — then LNG and gas across JKM, TTF and Henry Hub, and the cargo routing that shows where tightness is real and where it is only narrative.",
+    line: "Crack spreads tell you what the market expects; run cuts tell you what refiners actually believe. When the two detach, take the run cut — a refiner who pulls throughput has voted with a plant, not a forecast.",
   },
   {
-    title: "Gas and LNG",
-    body: "European storage against its own history, send-out and inventory, and the contract structures that decide where a cargo actually goes.",
+    title: "Geopolitics, trade and macro",
+    body: "Sanctions architecture and the enforcement gaps beneath it. Sovereign risk and the chain that carries a basis-point move in Treasuries through the dollar, through EM currencies, through import economics, and into physical demand.",
+    line: "Policy moves the molecule on a lag and the market prices the policy on the day. The gap between those two clocks is where a sanctions regime is either enforced or quietly routed around — so track the workaround, not the designation.",
   },
   {
-    title: "Sanctions and flows",
-    body: "OFAC listings, vessel movements and the gap between a policy taking effect and a barrel changing course.",
+    title: "Infrastructure and the transition",
+    body: "Pipeline and export-terminal capacity, and the basis differentials that throughput constraints create when ambition outruns steel. Dark spreads, spark spreads and dispatch order — which fuel actually clears the merit order.",
+    line: "Steel is slower than capital and capital is slower than belief, so every transition story eventually becomes a bottleneck story — and the bottleneck, once it binds, sets the price for everything queued behind it.",
+  },
+];
+
+/** Real, attributed, from the publication's own page. Nothing paraphrased. */
+const TESTIMONIALS = [
+  {
+    quote:
+      "Kardamow maps where energy, geopolitics, and finance intersect before the market prices it in. Riko tracks the structural imbalances most analysts miss — sanctions gaps, cargo routing decisions, the lag between policy and physical trade.",
+    name: "Quy Ma",
+    outlet: "The Marketplace by Quy Ma",
   },
   {
-    title: "Positioning",
-    body: "What managed money is holding, as a share of the open interest it sits in — read against the physical picture, not instead of it.",
+    quote:
+      "Real primary-source work — built the Kharg loading data himself and got the corridor argument right before most people had the numbers.",
+    name: "William David",
+    outlet: "The Chokepoint",
+  },
+  {
+    quote:
+      "A sharp, independent Substack exploring the crossroads of energy markets, finance, and geopolitics. Clear-eyed analysis of how power, capital, and resources shape the global economic landscape.",
+    name: "Panda Perspectives",
+    outlet: "Panda Perspectives",
+  },
+];
+
+const TIERS = [
+  {
+    name: "Free",
+    price: "€0",
+    body: "Previews of every piece, and the occasional one unlocked in full — enough to judge the method on the mechanism rather than the marketing.",
+  },
+  {
+    name: "Kardamow Pro",
+    price: "€25/month",
+    note: "or €250/year",
+    body: "Every publication and the complete archive back to 2024, including the long-form synthesis behind the weekday work.",
+    featured: true,
+  },
+  {
+    name: "Kardamowians",
+    price: "€500/year",
+    body: "The founding tier. Everything in Pro, plus a direct line — one-to-one on the markets, and the questions that do not fit a comment thread.",
   },
 ];
 
@@ -52,227 +101,240 @@ export default async function Home() {
     <main>
       {/* -- Bar ---------------------------------------------------------------- */}
       <header
-        className="measure"
-        style={{ paddingTop: "1.75rem", paddingBottom: "1rem" }}
+        style={{
+          borderBottom: "1px solid var(--border)",
+          position: "sticky",
+          top: 0,
+          background: "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(10px)",
+          zIndex: 20,
+        }}
       >
-        <nav style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div
+          className="measure"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1.5rem",
+            paddingTop: "0.9rem",
+            paddingBottom: "0.9rem",
+          }}
+        >
           <span
-            style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}
+            style={{
+              fontWeight: 600,
+              letterSpacing: "-0.03em",
+              fontSize: "1.1rem",
+            }}
           >
-            <span
-              aria-hidden
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: 8,
-                background: "linear-gradient(140deg, #6366f1, #0ea5e9)",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.82rem",
-                fontWeight: 700,
-              }}
-            >
-              K
-            </span>
-            <span style={{ fontWeight: 600, letterSpacing: "-0.02em" }}>
-              Kardamow
-            </span>
+            Kardamow
           </span>
-
-          <span style={{ marginLeft: "auto", display: "flex", gap: "1.5rem" }}>
-            <a
-              href="#writing"
-              style={{ fontSize: "0.9rem", color: "var(--muted)" }}
-            >
-              Writing
-            </a>
-            <a
-              href="#work"
-              style={{ fontSize: "0.9rem", color: "var(--muted)" }}
-            >
-              Work
-            </a>
-            <a
-              href="https://data.kardamow.com"
-              style={{ fontSize: "0.9rem", color: "var(--muted)" }}
-            >
-              Data
-            </a>
-          </span>
-        </nav>
+          <nav style={{ display: "flex", gap: "1.5rem", marginLeft: "auto" }}>
+            {[
+              ["Writing", "#writing"],
+              ["Coverage", "#coverage"],
+              ["About", "#about"],
+              ["Data", "https://data.kardamow.com"],
+            ].map(([label, href]) => (
+              <a
+                key={label}
+                href={href}
+                style={{
+                  fontSize: "0.9rem",
+                  color: "var(--muted)",
+                  fontWeight: 500,
+                }}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <a className="btn btn-solid" href="https://kardamow.substack.com">
+            Subscribe
+          </a>
+        </div>
       </header>
 
       {/* -- Hero --------------------------------------------------------------- */}
       <section
         className="measure"
-        style={{ paddingTop: "clamp(2rem, 6vw, 5rem)", paddingBottom: "4rem" }}
+        style={{ paddingTop: "5rem", paddingBottom: "3rem" }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(min(100%, 27rem), 1fr))",
-            gap: "clamp(2rem, 5vw, 4rem)",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <p
-              className="rise"
-              style={{
-                fontSize: "0.78rem",
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: "var(--faint)",
-                marginBottom: "1.6rem",
-              }}
-            >
-              Independent research · Energy, macro, geopolitics
-            </p>
-
-            <h1
-              className="rise"
-              style={{
-                fontSize: "clamp(2.3rem, 4.4vw, 3.9rem)",
-                maxWidth: "17ch",
-                marginBottom: "1.6rem",
-                animationDelay: "80ms",
-              }}
-            >
-              The structural imbalances most analysts miss.
-            </h1>
-
-            <p
-              className="rise"
-              style={{
-                fontSize: "clamp(1rem, 1.5vw, 1.15rem)",
-                color: "var(--muted)",
-                maxWidth: "52ch",
-                marginBottom: "2.4rem",
-                animationDelay: "160ms",
-              }}
-            >
-              Sanctions enforcement gaps, shipping routes that stop making
-              sense, and the lag between a policy taking effect and a barrel
-              changing course — worked from primary sources, before the price
-              reflects any of it.
-            </p>
-
-            <div
-              className="rise"
-              style={{
-                display: "flex",
-                gap: "0.8rem",
-                flexWrap: "wrap",
-                animationDelay: "240ms",
-              }}
-            >
-              <a className="btn btn-solid" href="https://kardamow.substack.com">
-                Read the research
-              </a>
-              <a className="btn btn-ghost" href="https://data.kardamow.com">
-                Explore the data →
-              </a>
-            </div>
-          </div>
-
-          {/* The centrepiece: real vessel positions, turning. A rendered object would be
-              decoration; this is the same AIS capture the vessels page draws, so the image
-              is an argument rather than an illustration. */}
-          {vessels.length > 0 ? (
-            <div className="rise" style={{ animationDelay: "300ms" }}>
-              <Globe points={vessels} />
-            </div>
-          ) : null}
-        </div>
-
-        {/* The figures. Real, current, and each one is a number the research argues from. */}
-        {figures.length > 0 ? (
-          <div
-            className="rise"
+        <div className="rise" style={{ marginBottom: "1.6rem" }}>
+          <span className="eyebrow">Independent research</span>
+          <span
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
-              gap: "1rem",
-              marginTop: "4rem",
-              maxWidth: "44rem",
-              animationDelay: "320ms",
+              marginLeft: "0.8rem",
+              fontSize: "0.88rem",
+              color: "var(--muted)",
             }}
           >
-            {figures.map((f) => (
-              <a
-                key={f.label}
-                href="https://data.kardamow.com"
-                className="glass glass-link"
-                style={{ padding: "1.1rem 1.2rem", display: "block" }}
-              >
-                <div
-                  style={{
-                    fontSize: "0.7rem",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "var(--faint)",
-                    marginBottom: "0.7rem",
-                  }}
-                >
-                  {f.label}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: "0.4rem",
-                  }}
-                >
-                  <span
-                    className="tabular"
-                    style={{
-                      fontSize: "1.75rem",
-                      fontWeight: 600,
-                      letterSpacing: "-0.03em",
-                    }}
-                  >
-                    {formatNumber(f.value, f.digits)}
-                  </span>
-                  <span style={{ fontSize: "0.72rem", color: "var(--faint)" }}>
-                    {f.unit ?? ""}
-                  </span>
-                </div>
-                {f.change !== null ? (
-                  <div
-                    className="tabular"
-                    style={{
-                      marginTop: "0.5rem",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      color:
-                        f.change === 0
-                          ? "var(--faint)"
-                          : f.change > 0
-                            ? "var(--up)"
-                            : "var(--down)",
-                    }}
-                  >
-                    {formatSigned(f.change, f.digits)}
-                  </div>
-                ) : null}
-              </a>
-            ))}
-          </div>
-        ) : null}
+            Energy, macro and geopolitics · published most days
+          </span>
+        </div>
 
-        <p
+        <h1
+          className="rise"
           style={{
-            marginTop: "1.1rem",
-            fontSize: "0.76rem",
-            color: "var(--faint)",
+            fontSize: "clamp(2.6rem, 6vw, 4.6rem)",
+            maxWidth: "20ch",
+            marginBottom: "1.4rem",
+            animationDelay: "60ms",
           }}
         >
-          {vessels.length > 0
-            ? `${vessels.length.toLocaleString("en-GB")} vessel positions from the latest AIS capture, and figures live from the same published data behind data.kardamow.com. Terrestrial AIS, so empty ocean means no receiver rather than no ships.`
-            : "Live from the same published data behind data.kardamow.com."}
+          It writes the mechanism, not the event.
+        </h1>
+
+        <p
+          className="rise"
+          style={{
+            fontSize: "clamp(1.05rem, 1.5vw, 1.2rem)",
+            color: "var(--muted)",
+            maxWidth: "62ch",
+            marginBottom: "2.2rem",
+            animationDelay: "120ms",
+          }}
+        >
+          Independent research on the seam where energy, finance and geopolitics
+          meet — the tanker rerouted in the night, the refinery run cut nobody
+          reported, the central-bank decision that will move a cargo three weeks
+          from now, sitting quietly unpriced while the rest of the feed reads
+          yesterday&rsquo;s headline.
         </p>
+
+        <div
+          className="rise"
+          style={{
+            display: "flex",
+            gap: "0.7rem",
+            flexWrap: "wrap",
+            animationDelay: "180ms",
+          }}
+        >
+          <a className="btn btn-solid" href="https://kardamow.substack.com">
+            Read the research
+          </a>
+          <a className="btn btn-ghost" href="https://data.kardamow.com">
+            Explore the data
+          </a>
+        </div>
+      </section>
+
+      {/* -- The visual: live figures beside the globe --------------------------- */}
+      <section className="measure" style={{ paddingBottom: "5rem" }}>
+        <div
+          className="frame rise"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            animationDelay: "240ms",
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 22rem), 1fr))",
+              alignItems: "center",
+              gap: "2rem",
+              padding: "clamp(1.5rem, 4vw, 3rem)",
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  fontSize: "0.74rem",
+                  letterSpacing: "0.09em",
+                  textTransform: "uppercase",
+                  color: "var(--faint)",
+                  marginBottom: "1.4rem",
+                }}
+              >
+                Live from the working data
+              </p>
+
+              {figures.length > 0 ? (
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "0.9rem",
+                    marginBottom: "1.6rem",
+                  }}
+                >
+                  {figures.map((f) => (
+                    <div
+                      key={f.label}
+                      style={{
+                        display: "flex",
+                        alignItems: "baseline",
+                        justifyContent: "space-between",
+                        gap: "1rem",
+                        paddingBottom: "0.9rem",
+                        borderBottom: "1px solid var(--border)",
+                      }}
+                    >
+                      <span
+                        style={{ fontSize: "0.92rem", color: "var(--muted)" }}
+                      >
+                        {f.label}
+                      </span>
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "baseline",
+                          gap: "0.55rem",
+                        }}
+                      >
+                        <span
+                          className="tabular"
+                          style={{ fontSize: "1.5rem", fontWeight: 600 }}
+                        >
+                          {formatNumber(f.value, f.digits)}
+                        </span>
+                        <span
+                          style={{ fontSize: "0.74rem", color: "var(--faint)" }}
+                        >
+                          {f.unit ?? ""}
+                        </span>
+                        {f.change !== null ? (
+                          <span
+                            className="tabular"
+                            style={{
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              color:
+                                f.change === 0
+                                  ? "var(--faint)"
+                                  : f.change > 0
+                                    ? "var(--up)"
+                                    : "var(--down)",
+                            }}
+                          >
+                            {formatSigned(f.change, f.digits)}
+                          </span>
+                        ) : null}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              <p
+                style={{
+                  fontSize: "0.82rem",
+                  color: "var(--faint)",
+                  maxWidth: "40ch",
+                }}
+              >
+                {vessels.length > 0
+                  ? `${vessels.length.toLocaleString("en-GB")} vessel positions from the latest AIS capture, and prices from the same published data behind data.kardamow.com. Terrestrial AIS, so empty ocean means no receiver rather than no ships.`
+                  : "Prices from the same published data behind data.kardamow.com."}
+              </p>
+            </div>
+
+            {vessels.length > 0 ? <Globe points={vessels} /> : null}
+          </div>
+        </div>
       </section>
 
       {/* -- Writing ------------------------------------------------------------ */}
@@ -280,7 +342,7 @@ export default async function Home() {
         <section
           id="writing"
           className="measure"
-          style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+          style={{ paddingTop: "1rem", paddingBottom: "5rem" }}
         >
           <div
             style={{
@@ -291,40 +353,67 @@ export default async function Home() {
               marginBottom: "2rem",
             }}
           >
-            <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.1rem)" }}>
+            <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
               Recent writing
             </h2>
             <a
-              href="https://kardamow.substack.com"
-              style={{ fontSize: "0.86rem", color: "var(--muted)" }}
+              href="https://kardamow.substack.com/archive"
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--accent)",
+                fontWeight: 500,
+              }}
             >
-              All posts →
+              Full archive →
             </a>
           </div>
 
-          <div style={{ display: "grid", gap: "0.7rem" }}>
+          <div>
             {posts.map((post) => (
               <a
                 key={post.url}
                 href={post.url}
-                className="glass glass-link"
+                className="row"
                 style={{
-                  padding: "1.1rem 1.3rem",
-                  display: "flex",
-                  alignItems: "baseline",
-                  justifyContent: "space-between",
+                  display: "grid",
+                  gridTemplateColumns: "minmax(0, 1fr) auto",
                   gap: "1.5rem",
+                  alignItems: "start",
+                  padding: "1.3rem 0.6rem",
                 }}
               >
-                <span style={{ fontSize: "1.02rem", fontWeight: 500 }}>
-                  {post.title}
+                <span>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                      letterSpacing: "-0.02em",
+                      marginBottom: "0.35rem",
+                    }}
+                  >
+                    {post.title}
+                  </span>
+                  {post.dek ? (
+                    <span
+                      style={{
+                        display: "block",
+                        fontSize: "0.92rem",
+                        color: "var(--muted)",
+                        maxWidth: "78ch",
+                      }}
+                    >
+                      {post.dek}
+                    </span>
+                  ) : null}
                 </span>
                 <span
                   className="tabular"
                   style={{
-                    fontSize: "0.76rem",
+                    fontSize: "0.8rem",
                     color: "var(--faint)",
                     whiteSpace: "nowrap",
+                    paddingTop: "0.25rem",
                   }}
                 >
                   {formatDate(post.date)}
@@ -335,105 +424,367 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {/* -- Work --------------------------------------------------------------- */}
+      {/* -- Coverage ----------------------------------------------------------- */}
       <section
-        id="work"
-        className="measure"
-        style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+        id="coverage"
+        style={{
+          background: "var(--ground)",
+          borderTop: "1px solid var(--border)",
+        }}
       >
-        <h2
-          style={{
-            fontSize: "clamp(1.5rem, 3vw, 2.1rem)",
-            marginBottom: "1rem",
-          }}
+        <div
+          className="measure"
+          style={{ paddingTop: "5rem", paddingBottom: "5rem" }}
         >
-          What the work covers
-        </h2>
-        <p
-          style={{
-            color: "var(--muted)",
-            maxWidth: "56ch",
-            marginBottom: "2rem",
-          }}
-        >
-          Every claim is built from a source that can be checked, and the
-          working data is published rather than described.
-        </p>
+          <h2
+            style={{
+              fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+              marginBottom: "0.9rem",
+            }}
+          >
+            What it covers
+          </h2>
+          <p
+            style={{
+              color: "var(--muted)",
+              maxWidth: "64ch",
+              marginBottom: "2.5rem",
+            }}
+          >
+            Three areas, each the same question asked of a different set of
+            pipes: where does the physical market quietly disagree with the
+            paper one, and how long before the paper is forced to notice?
+          </p>
 
+          <div style={{ display: "grid", gap: "1rem" }}>
+            {COVERAGE.map((area) => (
+              <div
+                key={area.title}
+                className="card"
+                style={{
+                  padding: "clamp(1.4rem, 3vw, 2rem)",
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(min(100%, 24rem), 1fr))",
+                  gap: "1.5rem",
+                }}
+              >
+                <div>
+                  <h3 style={{ fontSize: "1.15rem", marginBottom: "0.7rem" }}>
+                    {area.title}
+                  </h3>
+                  <p style={{ fontSize: "0.94rem", color: "var(--muted)" }}>
+                    {area.body}
+                  </p>
+                </div>
+                <p
+                  style={{
+                    fontSize: "0.98rem",
+                    borderLeft: "2px solid var(--accent)",
+                    paddingLeft: "1.1rem",
+                    alignSelf: "center",
+                  }}
+                >
+                  {area.line}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* -- About -------------------------------------------------------------- */}
+      <section
+        id="about"
+        className="measure"
+        style={{ paddingTop: "5rem", paddingBottom: "4rem" }}
+      >
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(255px, 1fr))",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 26rem), 1fr))",
+            gap: "clamp(2rem, 5vw, 4rem)",
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+                marginBottom: "1.2rem",
+              }}
+            >
+              Who writes this
+            </h2>
+            <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
+              I write under a pen name, and I work the seam between two desks
+              that, in most institutions, barely speak to each other. I came up
+              through fixed income — the whole life of a trade, from execution
+              through settlement to the risk numbers behind it — and carried
+              that into energy economics.
+            </p>
+            <p style={{ color: "var(--muted)", marginBottom: "1.6rem" }}>
+              I put the two together because the questions worth asking kept
+              living in the space between them, and because the settlement side
+              is where I learned to see that transmission first: a trade that
+              fails to settle, a margin call that lands a day early, a letter of
+              credit that stops clearing all show up in the back office weeks
+              before they show up in a price.
+            </p>
+            <p style={{ fontSize: "1.05rem", fontWeight: 500 }}>
+              I learned the plumbing of both markets from the back office
+              forward, which is the direction in which the plumbing actually
+              leaks.
+            </p>
+          </div>
+
+          <div>
+            <h3
+              style={{
+                fontSize: "0.74rem",
+                letterSpacing: "0.09em",
+                textTransform: "uppercase",
+                color: "var(--faint)",
+                marginBottom: "1.2rem",
+              }}
+            >
+              The frame
+            </h3>
+            <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
+              The work rests on two foundations and refuses to choose between
+              them. Reflexivity — that what participants believe feeds back into
+              the thing they imagine they are merely measuring — and the
+              physical mechanics of the trade: the cargo, the freight, the
+              war-risk premium, the regasification slot, the breakeven at which
+              floating storage stops paying its carry.
+            </p>
+            <p style={{ color: "var(--muted)" }}>
+              Reflexivity with no contact with the molecule is a seminar. A flow
+              desk with no model of why beliefs move is a price feed with no
+              memory. Kardamow lives at the join — close enough to know how a
+              barrel actually moves, far enough back to see the belief that is
+              moving it.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* -- Testimonials ------------------------------------------------------- */}
+      <section className="measure" style={{ paddingBottom: "5rem" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 19rem), 1fr))",
             gap: "1rem",
           }}
         >
-          {CAPABILITIES.map((c) => (
-            <div key={c.title} className="glass" style={{ padding: "1.4rem" }}>
-              <h3 style={{ fontSize: "1.05rem", marginBottom: "0.6rem" }}>
-                {c.title}
-              </h3>
-              <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-                {c.body}
-              </p>
-            </div>
+          {TESTIMONIALS.map((t) => (
+            <figure
+              key={t.name}
+              className="card"
+              style={{ padding: "1.5rem", margin: 0 }}
+            >
+              <blockquote
+                style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6 }}
+              >
+                &ldquo;{t.quote}&rdquo;
+              </blockquote>
+              <figcaption
+                style={{
+                  marginTop: "1.1rem",
+                  fontSize: "0.85rem",
+                  color: "var(--faint)",
+                }}
+              >
+                <span style={{ color: "var(--text)", fontWeight: 600 }}>
+                  {t.name}
+                </span>{" "}
+                · {t.outlet}
+              </figcaption>
+            </figure>
           ))}
+        </div>
+      </section>
+
+      {/* -- Tiers -------------------------------------------------------------- */}
+      <section
+        style={{
+          background: "var(--ground)",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <div
+          className="measure"
+          style={{ paddingTop: "5rem", paddingBottom: "5rem" }}
+        >
+          <h2
+            style={{
+              fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+              marginBottom: "0.9rem",
+            }}
+          >
+            What it costs
+          </h2>
+          <p
+            style={{
+              color: "var(--muted)",
+              maxWidth: "58ch",
+              marginBottom: "2.5rem",
+            }}
+          >
+            Each note is built to do one thing: make the rest of your morning
+            feed redundant.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 17rem), 1fr))",
+              gap: "1rem",
+            }}
+          >
+            {TIERS.map((tier) => (
+              <div
+                key={tier.name}
+                className="card"
+                style={{
+                  padding: "1.6rem",
+                  borderColor: tier.featured ? "var(--text)" : "var(--border)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 600,
+                    marginBottom: "0.6rem",
+                  }}
+                >
+                  {tier.name}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <span
+                    className="tabular"
+                    style={{
+                      fontSize: "1.8rem",
+                      fontWeight: 600,
+                      letterSpacing: "-0.03em",
+                    }}
+                  >
+                    {tier.price}
+                  </span>
+                  {tier.note ? (
+                    <span style={{ fontSize: "0.8rem", color: "var(--faint)" }}>
+                      {tier.note}
+                    </span>
+                  ) : null}
+                </div>
+                <p
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "var(--muted)",
+                    marginTop: "0.9rem",
+                  }}
+                >
+                  {tier.body}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p
+            style={{
+              fontSize: "0.85rem",
+              color: "var(--faint)",
+              marginTop: "1.5rem",
+            }}
+          >
+            Group access runs at twenty-five per cent off for four or more seats
+            — built for desks, funds and family offices. For institutional
+            terms,{" "}
+            <a href={`mailto:${EMAIL}`} style={{ color: "var(--accent)" }}>
+              {EMAIL}
+            </a>
+            .
+          </p>
         </div>
       </section>
 
       {/* -- Contact ------------------------------------------------------------ */}
       <section
         className="measure"
-        style={{ paddingTop: "3rem", paddingBottom: "5rem" }}
+        style={{ paddingTop: "5rem", paddingBottom: "4rem" }}
       >
-        <div
-          className="glass"
+        <h2
           style={{
-            padding: "clamp(1.8rem, 4vw, 3rem)",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1.5rem",
+            fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+            marginBottom: "0.9rem",
           }}
         >
-          <div>
-            <h2
-              style={{
-                fontSize: "clamp(1.4rem, 2.6vw, 1.9rem)",
-                marginBottom: "0.6rem",
-              }}
-            >
-              Get in touch
-            </h2>
-            <p style={{ color: "var(--muted)", maxWidth: "42ch" }}>
-              For research, commissioned work, or a question about something
-              published here.
-            </p>
-          </div>
-          <a className="btn btn-solid" href="https://kardamow.substack.com">
+          Get in touch
+        </h2>
+        <p
+          style={{
+            color: "var(--muted)",
+            maxWidth: "52ch",
+            marginBottom: "1.8rem",
+          }}
+        >
+          For inquiries, collaboration, or a good-faith exchange of ideas —
+          including a good-faith disagreement worth having.
+        </p>
+        <div style={{ display: "flex", gap: "0.7rem", flexWrap: "wrap" }}>
+          <a className="btn btn-solid" href={`mailto:${EMAIL}`}>
+            {EMAIL}
+          </a>
+          <a className="btn btn-ghost" href="https://kardamow.substack.com">
             Subscribe
           </a>
         </div>
 
         <footer
           style={{
-            marginTop: "3rem",
+            marginTop: "4rem",
             paddingTop: "1.5rem",
-            borderTop: "1px solid var(--edge)",
+            borderTop: "1px solid var(--border)",
             display: "flex",
             flexWrap: "wrap",
             gap: "1rem",
             justifyContent: "space-between",
-            fontSize: "0.8rem",
+            fontSize: "0.82rem",
             color: "var(--faint)",
           }}
         >
-          <span>© {new Date().getFullYear()} Kardamow</span>
-          <span style={{ display: "flex", gap: "1.25rem" }}>
+          <span>© {new Date().getFullYear()} Riko Kardamow</span>
+          <span style={{ display: "flex", gap: "1.4rem" }}>
             <a href="https://kardamow.substack.com">Substack</a>
             <a href="https://data.kardamow.com">Data</a>
+            <a href={`mailto:${EMAIL}`}>Email</a>
           </span>
         </footer>
+
+        <p
+          style={{
+            marginTop: "2rem",
+            fontSize: "0.76rem",
+            color: "var(--faint)",
+            maxWidth: "78ch",
+            lineHeight: 1.6,
+          }}
+        >
+          Everything published by Kardamow is for informational purposes only
+          and reflects the author&rsquo;s own views. Not a licensed investment
+          professional, a registered adviser or a broker-dealer; nothing here is
+          financial advice, a recommendation to enter any trade, or a
+          solicitation to buy or sell any asset.
+        </p>
       </section>
     </main>
   );

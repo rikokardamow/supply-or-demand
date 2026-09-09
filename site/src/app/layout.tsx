@@ -22,11 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en-GB" className={inter.variable}>
-      <body>
-        <div className="vignette" aria-hidden />
-        <div className="grain" aria-hidden />
-        <div className="layer">{children}</div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
