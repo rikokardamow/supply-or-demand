@@ -52,7 +52,11 @@ function walk(dir: string): string[] {
 function definedTokens(): Set<string> {
   const css = readFileSync(TOKENS, "utf8");
   return new Set(
-    [...css.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
+    // A declaration follows the start of a line, a `;` or a `{` -- not merely the
+    // start of a line. Anchoring on `^` alone would see only the first of two tokens
+    // declared on one line, and every reference to the second would then pass
+    // vacuously, which is worse than no test. (Raised by a peer session.)
+    [...css.matchAll(/(?:^|[;{])\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
   );
 }
 
