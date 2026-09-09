@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/**
+ * No dark-mode block, deliberately. `apps/dashboard` locks an explicit light theme in
+ * `.streamlit/config.toml` and root CLAUDE.md is explicit that the app must never rely on
+ * the viewer's OS or browser dark-mode preference -- an exhibit exported for an article
+ * has one appearance. The real palette lives in `@/theme/tokens.css`, ported from
+ * `core/design.py`.
+ */
+
+@theme inline {
+  --color-background: var(--paper);
+  --color-foreground: var(--text);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-lora);
+}

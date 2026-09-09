@@ -1,0 +1,70 @@
+/**
+ * Design tokens, ported from `core/design.py` so the web UI and the Streamlit app read
+ * as one publication. `core/design.py` is the source of truth: it measures these against
+ * kardamow.substack.com, and `tests/test_config_matches_design.py` already stops the
+ * Python side drifting. If a value changes there, change it here.
+ *
+ * The chrome values are NOT the series colours. `INK` is the near-black used for the
+ * masthead, active nav and buttons; navy is a *data* colour and never paints chrome.
+ */
+
+:root {
+  /* Chrome (measured from the Substack) */
+  --ink: #020617;
+  --paper: #ffffff;
+  --text: #363737;
+  --muted: #757575;
+  --rule: #e6e6e6;
+
+  /* Status: the red/amber/green of core/freshness.py's report */
+  --status-green: #1bc47d;
+  --status-amber: #e67e22;
+  --status-red: #c0392b;
+
+  /* Series (data, not brand) */
+  --navy: #0f2a4a;
+  --light-blue: #5b9bd5;
+  --red: #c0392b;
+  --orange: #e67e22;
+  --grey: #95a5a6;
+  --band: rgba(150, 150, 150, 0.25);
+  --grid: #e6e6e6;
+
+  /* Type. Headings are Lora; every number and in-chart string stays on Inter -- a
+     figure must never render in the serif (root CLAUDE.md's chart house style). */
+  /* next/font self-hosts these and exposes the family through its own variable; the
+     literal name and the rest of the stack stay as real fallbacks, matching
+     core/design.py's HEADING_STACK / BODY_STACK exactly. */
+  --heading-stack: var(--font-lora), Lora, Georgia, "Times New Roman", serif;
+  --body-stack: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --base-font-px: 15px;
+
+  /* Layout */
+  --gutter: 12px;
+}
+
+html {
+  font-size: var(--base-font-px);
+}
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--body-stack);
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading-stack);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Tabular numerals everywhere a figure appears, so columns align down a table. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--body-stack);
+}
