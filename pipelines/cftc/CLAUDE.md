@@ -37,10 +37,35 @@ reading this dataset should expect it, not assume a single underscore.
 | `ho` | `022651` | NY HARBOR ULSD | live grouped query against the dataset |
 | `lco` | `06765T` | BRENT LAST DAY | live grouped query **and** a direct spot-check (real OI ~270k contracts, `commodity: CRUDE OIL`, `contract_units: CONTRACTS OF 1,000 BARRELS`, most recent report date matching the current week) |
 
-`lco`'s own `cftc_market_code` comes back `"NYME"` rather than an ICE-specific code — a
-real CFTC reporting quirk (ICE Brent futures are CFTC-regulated and reported through the
-NYMEX-grouped reporting umbrella for US regulatory purposes), not a data error; confirmed
-correct via the direct spot-check above before trusting it for real series.
+### `lco` is NOT ICE Brent — corrected 2026-09-09
+
+An earlier version of this note read `lco`'s `cftc_market_code` of `"NYME"` as "a CFTC
+reporting quirk — ICE Brent futures are CFTC-regulated and reported through the
+NYMEX-grouped reporting umbrella". **That was wrong**, and it is the kind of wrong that
+puts a real number under a label it does not belong to.
+
+`06765T` is the **NYMEX Brent Last Day contract (BZ)**, cash-settled against ICE Brent but
+a separate, much smaller market. `market_and_exchange_names` says so literally — "BRENT
+LAST DAY - NEW YORK MERCANTILE EXCHANGE" — and the open interest settles it beyond doubt:
+
+| series | latest open interest |
+|---|---|
+| `cftc.cl.oi` (WTI) | 1,921,085 |
+| `cftc.lco.oi` (BZ) | 253,258 |
+
+ICE Brent's open interest is in the millions, comparable to WTI's. A quarter of a million
+lots is BZ. The `"NYME"` market code is not a quirk to explain away; it is the exchange,
+stated correctly.
+
+ICE Brent itself trades on ICE Futures Europe, which reports to the FCA, and its
+positioning appears in **ICE's own** Commitments of Traders, not the CFTC's. This pipeline
+does not pull it. Anything labelled "Brent" from this source must carry its exchange, or a
+reader will compare a 253k-lot contract against the global benchmark — see
+`web/src/data/positioning.ts`, where every contract label names its market for exactly
+this reason.
+
+The original spot-check above (~270k OI) was itself the evidence that should have settled
+this at the time; it was recorded and then read as confirmation of the wrong conclusion.
 
 ## Weekly-only, not daily
 

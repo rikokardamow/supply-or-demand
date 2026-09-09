@@ -1,10 +1,11 @@
 import { ChartControls } from "@/components/charts/ChartControls";
+import { PositioningChart } from "@/components/charts/PositioningChart";
 import { PageHeader } from "@/components/chrome/PageHeader";
 import { Panel } from "@/components/chrome/Panel";
 import {
   CONTRACTS,
   POSITIONING_SERIES,
-  legLines,
+  positioningBook,
   netLengthLines,
   netShareLines,
 } from "@/data/positioning";
@@ -89,16 +90,15 @@ export default async function PositioningPage() {
             stale={stale}
             pipeline={PIPELINE}
             sourceNote={
-              `${CONTRACTS[root].market}. Both gross legs and the open interest they ` +
-              `sit in: a net that has not moved can hide both legs growing together, ` +
-              `which is a different market from one where nobody has a position.`
+              `${CONTRACTS[root].market}. Long above the axis, short below it, and the ` +
+              `open interest they sit in on the right. Bars rather than lines because ` +
+              `the CFTC counts the book once a week and there is nothing in between: a ` +
+              `line joining the counts would draw a path the position never took. A net ` +
+              `that has not moved can hide both legs growing together, which is a ` +
+              `different market from one where nobody has a position.`
             }
           >
-            <ChartControls
-              lines={legLines(rows, root)}
-              unit="contracts"
-              height={300}
-            />
+            <PositioningChart data={positioningBook(rows, root)} height={320} />
           </Panel>
         ))}
       </main>

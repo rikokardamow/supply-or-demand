@@ -9,21 +9,17 @@ import {
 import { SERIES_CYCLE } from "@/theme/plotly";
 
 /**
- * A time-series chart a reader can narrow: window on the left, series on the right.
- *
- * The controls borrow the top navigation's idiom — small type, an ink underline on the
- * active item — rather than introducing buttons. A research page that grows a row of
- * pill buttons above every exhibit starts to read as an application; the point here is
- * that the controls recede until wanted.
+ * A time-series chart a reader can narrow: series chips on the left, a segmented range
+ * control on the right.
  *
  * **Filtering happens on data already fetched.** The server sends the full window once,
  * and narrowing slices it in the browser, so changing the range is instant and costs no
- * request. The alternative — refetching per range — would put a network round trip
- * between a reader and a question they are asking of data already on the page.
+ * request.
  *
  * Series toggling duplicates what Plotly's own legend click does. It is here because a
- * legend entry gives no sign that it is clickable, and a reader who does not already
- * know the convention never discovers it.
+ * legend entry gives no sign that it is clickable, and a reader who does not already know
+ * the convention never discovers it — so `TimeSeriesChart` draws no legend of its own
+ * wherever these chips appear.
  */
 
 export type RangeKey = "1Y" | "5Y" | "Max";
@@ -46,24 +42,25 @@ function cutoffFor(range: RangeKey): Date | null {
 function withinRange(line: SeriesLine, cutoff: Date | null): SeriesLine {
   if (cutoff === null) return line;
   const from = line.x.findIndex((x) => new Date(x) >= cutoff);
-  // Every point predates the cutoff: keep the line rather than empty it, so a series
-  // that simply ended earlier -- serving.spreads stops in 2024 -- still draws instead of
+  // Every point predates the cutoff: keep the line rather than empty it, so a series that
+  // simply ended earlier -- serving.spreads stops in 2024 -- still draws instead of
   // vanishing when a reader picks a short window.
   if (from === -1) return line;
   return { ...line, x: line.x.slice(from), y: line.y.slice(from) };
 }
 
-const controlBase: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  padding: "0 0 2px",
-  cursor: "pointer",
-  fontFamily: "var(--body-stack)",
-  fontSize: "var(--size-micro)",
-  letterSpacing: "0.06em",
-  textTransform: "uppercase",
-  transition: "color var(--duration) var(--ease)",
-};
+/** How many years of data are actually on the page, across all series. */
+function spanYears(lines: SeriesLine[]): number {
+  let earliest = Infinity;
+  for (const line of lines) {
+    const first = line.x[0];
+    if (first === undefined) continue;
+    const t = new Date(first).getTime();
+    if (Number.isFinite(t) && t < earliest) earliest = t;
+  }
+  if (!Number.isFinite(earliest)) return 0;
+  return (Date.now() - earliest) / (365.25 * 24 * 60 * 60 * 1000);
+}
 
 export function ChartControls({
   lines,
@@ -84,25 +81,42 @@ export function ChartControls({
   const [range, setRange] = useState<RangeKey>(defaultRange);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
 
-  // Colours are pinned by each line's position in the *original* list, before any
-  // filtering. TimeSeriesChart otherwise assigns them by index into what it receives, so
-  // hiding the first series would recolour every remaining one -- and a reader who hides
-  // a line to see the rest more clearly would find the rest had changed meaning.
+  // Colours and line weights are pinned by each line's position in the *original* list,
+  // before any filtering. TimeSeriesChart otherwise assigns both by index into what it
+  // receives, so hiding the first series would recolour every remaining one and promote
+  // whichever line landed at index 0 to the bold "primary" weight -- a reader who hid a
+  // line to see the rest more clearly would find the rest had changed meaning.
   const coloured = useMemo(
     () =>
       lines.map((line, i) => ({
         ...line,
         color: line.color ?? SERIES_CYCLE[i % SERIES_CYCLE.length],
+        width: line.width ?? (i === 0 ? 2 : 1.5),
       })),
     [lines],
   );
 
+  // Only offer windows the data can actually fill. A three-year series behind a "5Y" and a
+  // "Max" button renders both identically, so two of the three controls silently claim to
+  // do something they do not -- and "Max" stops meaning maximum. A window is offered only
+  // when there is more history than it shows.
+  const ranges = useMemo(() => {
+    const span = spanYears(coloured);
+    const offered = (Object.keys(RANGE_YEARS) as RangeKey[]).filter((key) => {
+      const years = RANGE_YEARS[key];
+      return years === null || years < span;
+    });
+    return offered.length > 1 ? offered : [];
+  }, [coloured]);
+
+  const effectiveRange = ranges.includes(range) ? range : "Max";
+
   const shown = useMemo(() => {
-    const cutoff = showRange ? cutoffFor(range) : null;
+    const cutoff = showRange ? cutoffFor(effectiveRange) : null;
     return coloured
       .filter((line) => !hidden.has(line.name))
       .map((line) => withinRange(line, cutoff));
-  }, [coloured, range, hidden, showRange]);
+  }, [coloured, effectiveRange, hidden, showRange]);
 
   function toggle(name: string) {
     setHidden((current) => {
@@ -115,86 +129,77 @@ export function ChartControls({
     });
   }
 
+  const showChips = coloured.length > 1;
+  const showSegments = showRange && ranges.length > 0;
+
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "var(--space-3)",
-          marginBottom: "var(--space-2)",
-        }}
-      >
-        <div style={{ display: "flex", gap: "var(--space-3)" }}>
-          {coloured.length > 1
-            ? coloured.map((line) => {
-                const isHidden = hidden.has(line.name);
-                return (
-                  <button
-                    key={line.name}
-                    type="button"
-                    onClick={() => toggle(line.name)}
-                    aria-pressed={!isHidden}
-                    style={{
-                      ...controlBase,
-                      color: isHidden ? "var(--muted)" : "var(--text)",
-                      textDecoration: isHidden ? "line-through" : "none",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.35rem",
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      style={{
-                        width: 9,
-                        height: 2,
-                        background: isHidden ? "var(--rule)" : line.color,
-                        display: "inline-block",
-                      }}
-                    />
-                    {line.name}
-                  </button>
-                );
-              })
-            : null}
-        </div>
-
-        {showRange ? (
-          <div style={{ display: "flex", gap: "var(--space-3)" }}>
-            {(Object.keys(RANGE_YEARS) as RangeKey[]).map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setRange(key)}
-                aria-pressed={range === key}
-                style={{
-                  ...controlBase,
-                  color: range === key ? "var(--ink)" : "var(--muted)",
-                  borderBottom:
-                    range === key
-                      ? "1px solid var(--ink)"
-                      : "1px solid transparent",
-                }}
-              >
-                {key}
-              </button>
-            ))}
+      {showChips || showSegments ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "var(--space-3)",
+            marginBottom: "var(--space-4)",
+          }}
+        >
+          <div style={{ display: "flex", gap: "0.35rem", flexWrap: "wrap" }}>
+            {showChips
+              ? coloured.map((line) => {
+                  const isHidden = hidden.has(line.name);
+                  return (
+                    <button
+                      key={line.name}
+                      type="button"
+                      className="chip"
+                      onClick={() => toggle(line.name)}
+                      aria-pressed={!isHidden}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 2,
+                          background: isHidden
+                            ? "var(--border-strong)"
+                            : line.color,
+                          display: "inline-block",
+                        }}
+                      />
+                      {line.name}
+                    </button>
+                  );
+                })
+              : null}
           </div>
-        ) : null}
-      </div>
 
-      {/* The toggle row above is the legend. Letting Plotly draw its own underneath would
-          name every series twice, in a different case and a different order -- and the
-          one a reader can actually click would be the one that looks least clickable. */}
+          {showSegments ? (
+            <div className="segmented">
+              {ranges.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  className="segment"
+                  onClick={() => setRange(key)}
+                  aria-pressed={effectiveRange === key}
+                >
+                  {key}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
       <TimeSeriesChart
         lines={shown}
         unit={unit}
         secondaryUnit={secondaryUnit}
         height={height}
-        showLegend={coloured.length <= 1}
+        showLegend={!showChips}
       />
     </div>
   );

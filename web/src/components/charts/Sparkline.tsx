@@ -13,18 +13,19 @@
  */
 
 const WIDTH = 220;
-const HEIGHT = 40;
 const PAD = 2;
 
 export function Sparkline({
   values,
   color = "var(--navy)",
   label,
+  height: HEIGHT = 40,
 }: {
   values: number[];
   color?: string;
   /** Read out to a screen reader in place of the drawing. */
   label: string;
+  height?: number;
 }) {
   // Two points is the fewest that can make a line. One value, or a flat series where
   // max === min, would divide by zero below.

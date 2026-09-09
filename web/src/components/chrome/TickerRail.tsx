@@ -9,22 +9,32 @@ import { formatNumber, formatSigned } from "@/lib/format";
 /**
  * The headline figures as a rail beneath the navigation, on every section page.
  *
- * A reader looking at European storage still wants to know where Brent closed, and
- * making them go back to the front page to find out is the sort of thing a site does
- * when nobody asked how it would be read. Bloomberg and the FT both carry the market
- * across every page for the same reason.
+ * A reader looking at European storage still wants to know where Brent closed, and making
+ * them go back to the front page to find out is the sort of thing a site does when nobody
+ * asked how it would be read.
  *
  * **It re-checks, but it does not pretend.** The rail refetches on a timer, and a figure
  * flashes only when it has genuinely changed. These series publish weekly or daily, so
- * almost every refetch changes nothing and nothing flashes -- which is the honest
- * outcome. A rail that ticked on a schedule regardless would be inventing movement the
- * data does not have.
+ * almost every refetch changes nothing and nothing flashes -- which is the honest outcome.
+ * A rail that ticked on a schedule regardless would be inventing movement the data does
+ * not have.
  *
  * The server renders the first set, so the figures are in the HTML and a reader with no
  * JavaScript still gets them; the timer only ever replaces what is already there.
  */
 
 const REFRESH_MS = 300_000;
+/**
+ * After a failure, wait longer each time, to a ceiling.
+ *
+ * `/api/headlines` is ISR-cached, so in the normal case every open tab is served from one
+ * cached response and Supabase sees one query per window. **An error is not cacheable**,
+ * so during a Supabase outage that protection disappears exactly when it is needed and
+ * every tab's poll reaches the query again. Backing off turns a steady retry storm into a
+ * handful of attempts, and the jitter stops every tab in the world retrying on the same
+ * second.
+ */
+const MAX_BACKOFF_MS = 1_800_000;
 
 function decimals(unit: string | null): number {
   if (unit === "MBBL" || unit === "rigs") return 0;
@@ -33,7 +43,7 @@ function decimals(unit: string | null): number {
 
 function toneFor(value: number | null): string {
   if (value === null || value === 0) return "var(--muted)";
-  return value > 0 ? "var(--navy)" : "var(--red)";
+  return value > 0 ? "var(--up)" : "var(--down)";
 }
 
 export function TickerRail({ headlines }: { headlines: Headline[] }) {
@@ -45,11 +55,37 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
 
   useEffect(() => {
     let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let failures = 0;
+
+    function scheduleNext() {
+      if (cancelled) return;
+      // Full jitter on the backoff: without it, every tab that failed at the same moment
+      // retries at the same moment too.
+      const delay =
+        failures === 0
+          ? REFRESH_MS
+          : Math.min(MAX_BACKOFF_MS, REFRESH_MS * 2 ** failures) *
+            (0.5 + Math.random());
+      timer = setTimeout(refresh, delay);
+    }
 
     async function refresh() {
       try {
         const response = await fetch("/api/headlines");
-        if (!response.ok) return;
+        if (!response.ok) {
+          failures += 1;
+          // Logged, not swallowed. The reader is deliberately shown no error -- the
+          // figures on screen are still true and carry their own as-of dates -- but a
+          // persistent failure has to leave a trace somewhere, or the rail can stop
+          // updating forever with nothing anywhere to say so.
+          console.error(
+            `ticker refresh failed: /api/headlines returned ${response.status}`,
+          );
+          scheduleNext();
+          return;
+        }
+
         const next = (await response.json()).headlines as Headline[];
         if (cancelled) return;
 
@@ -64,36 +100,36 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
         previous.current = next;
         setRows(next);
         setChanged(moved);
-      } catch {
-        // A failed refresh leaves the figures that are already on screen in place. They
-        // carry their own as-of dates, so a reader is never shown a stale number that
-        // claims to be current -- and an error banner over a rail of six numbers would
-        // be a worse outcome than showing the last good ones.
+        failures = 0;
+      } catch (error) {
+        failures += 1;
+        console.error("ticker refresh failed", error);
       }
+      scheduleNext();
     }
 
-    const timer = setInterval(refresh, REFRESH_MS);
+    scheduleNext();
     return () => {
       cancelled = true;
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, []);
 
   return (
     <div
-      className="bleed"
       style={{
-        background: "var(--paper)",
-        borderBottom: "1px solid var(--rule)",
+        background: "var(--surface)",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       <div
-        className="bleed-inner"
+        className="no-bar"
         style={{
+          maxWidth: "var(--measure)",
+          margin: "0 auto",
           display: "flex",
-          gap: "var(--space-8)",
+          gap: "var(--space-6)",
           overflowX: "auto",
-          scrollbarWidth: "none",
           padding: "var(--space-3) var(--space-6)",
         }}
       >
@@ -105,8 +141,7 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
             style={{
               display: "flex",
               alignItems: "baseline",
-              gap: "0.45rem",
-              textDecoration: "none",
+              gap: "0.4rem",
               whiteSpace: "nowrap",
               // The flash tints with the direction of the move, so the colour says which
               // way as well as that something happened.
@@ -116,8 +151,8 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
             <span
               style={{
                 fontSize: "var(--size-micro)",
-                letterSpacing: "0.08em",
                 textTransform: "uppercase",
+                letterSpacing: "0.04em",
                 color: "var(--muted)",
               }}
             >
@@ -125,11 +160,7 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
             </span>
             <span
               className="tabular"
-              style={{
-                fontSize: "var(--size-small)",
-                color: "var(--ink)",
-                fontWeight: 600,
-              }}
+              style={{ fontSize: "var(--size-small)", fontWeight: 600 }}
             >
               {formatNumber(row.value, decimals(row.unit))}
             </span>
@@ -137,6 +168,7 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
               className="tabular"
               style={{
                 fontSize: "var(--size-micro)",
+                fontWeight: 600,
                 color: toneFor(row.change),
               }}
             >

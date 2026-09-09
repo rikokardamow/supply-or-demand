@@ -37,9 +37,16 @@ const DURATION_MS = 620;
  * on the server, where there is no layout, hence the swap. The branch is decided once per
  * environment, so the hook order never changes between renders.
  */
-const useBeforePaint = typeof window === "undefined" ? useEffect : useLayoutEffect;
+const useBeforePaint =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-export function CountUp({ value, digits }: { value: number | null; digits: number }) {
+export function CountUp({
+  value,
+  digits,
+}: {
+  value: number | null;
+  digits: number;
+}) {
   const node = useRef<HTMLSpanElement>(null);
   const frame = useRef<number | null>(null);
 
@@ -59,7 +66,10 @@ export function CountUp({ value, digits }: { value: number | null; digits: numbe
       }
       // Ease out: quick off the mark, settling at the end. A linear count reads
       // mechanical, like an odometer rather than a figure resolving.
-      span.textContent = formatNumber(value * (1 - (1 - progress) ** 3), digits);
+      span.textContent = formatNumber(
+        value * (1 - (1 - progress) ** 3),
+        digits,
+      );
       frame.current = requestAnimationFrame(step);
     };
 

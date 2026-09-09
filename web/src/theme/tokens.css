@@ -1,88 +1,98 @@
 /**
- * Design tokens, ported from `core/design.py` so the web UI and the Streamlit app read
- * as one publication. `core/design.py` is the source of truth for colour and type: it
- * measures those against kardamow.substack.com, and
- * `tests/test_config_matches_design.py` already stops the Python side drifting.
+ * The design system for data.kardamow.com.
  *
- * The scale, rhythm and motion below are this surface's own — Streamlit does not expose
- * them — but they follow the same discipline: an institutional research publication,
- * quiet by intent. Restraint is the design here, so the work goes into type scale,
- * vertical rhythm and hierarchy rather than ornament. Nothing decorative earns its place.
+ * **This surface deliberately no longer matches `core/design.py`.** That module measures
+ * its chrome against kardamow.substack.com and drives the Streamlit app, which stays as it
+ * is; this is a product interface — an off-white ground, white cards, one sans-serif — and
+ * trying to serve both from one palette produced something that read as neither. The two
+ * still agree on the only values where disagreement would be a defect: the **series
+ * colours**, which encode meaning (navy is the primary series, orange is always the
+ * seasonal median), so a chart exported from Python and one rendered here are the same
+ * chart. Chrome is this surface's own.
+ *
+ * Structure is carried by surface and border rather than by rules and whitespace. A card
+ * is the unit: it has a ground, an edge and a radius, and it either contains data or it
+ * does not exist.
  */
 
 :root {
-  /* Chrome (measured from the Substack) */
-  --ink: #020617;
-  --paper: #ffffff;
-  --text: #363737;
-  --muted: #757575;
-  --rule: #e6e6e6;
-  /* A hair lighter than --rule, for separators that should be felt more than seen. */
-  --rule-faint: #f0f0f0;
-  /* The one tinted ground in the system: section wells and hover states. */
-  --wash: #fafafa;
+  /* Ground and surface. The page is never white — white is what a card is, and a card on
+     a white page has no edge to speak of however carefully its border is drawn. */
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #f9fafb;
+  --surface-hover: #f4f6f8;
 
-  /* The shell: masthead, ticker and footer. A newspaper tints its shell and leaves the
-     article on white -- the FT's pink surrounds white columns, the Economist's red
-     masthead sits above a white page. The reading ground stays --paper so charts, and
-     the Streamlit app they are shared with, still agree on their background. */
-  --shell: #f7f5f1;
-  --shell-rule: #e4e0d8;
+  --border: #e4e8ed;
+  --border-strong: #d2d8e0;
 
-  /* Status: the red/amber/green of core/freshness.py's report */
-  --status-green: #1bc47d;
-  --status-amber: #e67e22;
-  --status-red: #c0392b;
+  --text: #101828;
+  --muted: #667085;
+  --faint: #98a2b3;
 
-  /* Series (data, not brand) */
+  /* Brand. Navy is the publication's own colour and stays; it is what a primary action,
+     an active tab and the first series in a chart all share. */
+  --accent: #0f2a4a;
+  --accent-soft: #eaeff5;
+
+  /* Direction. Green up and red down, the convention every market interface uses. Never
+     the only carrier of meaning: a figure always shows its sign as well. */
+  --up: #067647;
+  --down: #b42318;
+  --up-soft: #ecfdf3;
+  --down-soft: #fef3f2;
+
+  /* Status: the amber of a stale panel. */
+  --warn: #b54708;
+  --warn-soft: #fffaeb;
+
+  /* Series (data, not brand) — the one block shared with core/design.py. */
   --navy: #0f2a4a;
   --light-blue: #5b9bd5;
   --red: #c0392b;
   --orange: #e67e22;
   --grey: #95a5a6;
   --band: rgba(150, 150, 150, 0.25);
-  --grid: #e6e6e6;
+  --grid: #eaecf0;
 
-  /* Type. Headings are Lora; every number and in-chart string stays on Inter -- a
-     figure must never render in the serif (root CLAUDE.md's chart house style). */
-  /* next/font self-hosts these and exposes the family through its own variable; the
-     literal name and the rest of the stack stay as real fallbacks, matching
-     core/design.py's HEADING_STACK / BODY_STACK exactly. */
-  --heading-stack: var(--font-lora), Lora, Georgia, "Times New Roman", serif;
-  --body-stack:
-    var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  /* One family. Every figure and every heading is Inter — a serif heading over a sans
+     figure was the single loudest thing making this read as a document rather than an
+     interface. */
+  --font: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
   --base-font-px: 15px;
 
-  /* A modular scale at 1.25. Sizes are named by role, not by magnitude, so a heading
-     cannot be picked for how big it looks. */
   --size-micro: 0.72rem;
   --size-small: 0.82rem;
-  --size-body: 1rem;
-  --size-lead: 1.15rem;
-  --size-panel: 1.2rem;
-  --size-page: 1.75rem;
-  --size-display: 2.6rem;
-  --size-wordmark: 3.25rem;
+  --size-body: 0.94rem;
+  --size-lead: 1.05rem;
+  --size-panel: 1.05rem;
+  --size-stat: 1.9rem;
+  --size-page: 1.9rem;
+  --size-display: clamp(2.2rem, 4.4vw, 3.6rem);
 
-  /* Vertical rhythm. Every gap is a multiple of this, so the page has one meter rather
-     than a dozen hand-picked margins. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
+  --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-12: 3rem;
 
-  --gutter: 12px;
-  --measure: 1200px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
 
-  /* Motion. Short and eased, never bouncy: this is a research publication, and movement
-     is here to explain that something arrived, not to perform. Anything longer than
-     ~200ms starts to feel like waiting. */
+  /* Shadows are almost invisible by design. A card is separated by its border; the shadow
+     only stops it looking pasted flat onto the ground. */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.06);
+
+  --measure: 1240px;
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
-  --duration: 180ms;
+  --duration: 160ms;
 }
 
 html {
@@ -93,9 +103,9 @@ html {
 }
 
 body {
-  background: var(--paper);
+  background: var(--bg);
   color: var(--text);
-  font-family: var(--body-stack);
+  font-family: var(--font);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -103,14 +113,13 @@ body {
 
 h1,
 h2,
-h3 {
-  font-family: var(--heading-stack);
+h3,
+h4 {
+  font-family: var(--font);
   color: var(--text);
   font-weight: 600;
-  /* Display type is set solid-ish; the defaults are far too loose for a serif at size. */
-  line-height: 1.15;
-  /* Optical correction: a serif at display size needs its tracking pulled in. */
-  letter-spacing: -0.01em;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
   margin: 0;
 }
 
@@ -121,18 +130,141 @@ p {
 
 a {
   color: inherit;
-  transition: color var(--duration) var(--ease);
+  text-decoration: none;
 }
 
 /* Tabular numerals everywhere a figure appears, so columns align down a table and a
    changing value does not make its neighbours jump. */
 .tabular {
   font-variant-numeric: tabular-nums;
-  font-family: var(--body-stack);
+  font-feature-settings: "tnum";
 }
 
-/* Panels arrive rather than appear. Staggered by the caller so a page resolves top-down
-   the way a reader moves, which also masks the moment a chart paints. */
+/* -- The card, the unit of the interface ------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* A card that is a link lifts; a card that is only a container never moves. Movement on
+   hover is a promise that clicking does something. */
+.card-link {
+  display: block;
+  transition:
+    border-color var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.card-link:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* -- Navigation --------------------------------------------------------------------- */
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(244, 246, 248, 0.85);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.34rem 0.7rem;
+  border-radius: var(--r-pill);
+  font-size: var(--size-small);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  transition:
+    background var(--duration) var(--ease),
+    color var(--duration) var(--ease);
+}
+
+.nav-pill:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.nav-pill[aria-current="page"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* -- Controls ----------------------------------------------------------------------- */
+
+/* A segmented control, the range switch. Reads as one control with a selected segment
+   rather than as three buttons that happen to sit together. */
+.segmented {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 2px;
+}
+
+.segment {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: var(--size-micro);
+  font-weight: 500;
+  color: var(--muted);
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--r-pill);
+  transition:
+    background var(--duration) var(--ease),
+    color var(--duration) var(--ease);
+}
+
+.segment[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* A series toggle. The swatch carries the colour; struck-through type carries "off",
+   because a colour going grey is not legible to everyone. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: var(--size-micro);
+  font-weight: 500;
+  color: var(--text);
+  transition:
+    background var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+}
+
+.chip:hover {
+  background: var(--surface-hover);
+}
+
+.chip[aria-pressed="false"] {
+  color: var(--faint);
+  text-decoration: line-through;
+  background: var(--surface-2);
+}
+
+/* -- Motion ------------------------------------------------------------------------- */
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -145,123 +277,12 @@ a {
 }
 
 .rise {
-  animation: rise 320ms var(--ease) both;
+  animation: rise 300ms var(--ease) both;
 }
 
-/* Honour a reader who has asked for less motion: they get the content, immediately, with
-   no movement at all. */
-@media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
-  }
-  * {
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* A stat is a destination, and its hover has to say so without drawing a box. An earlier
-   version washed the tile's background, which -- with no padding to breathe into -- put a
-   hard grey rectangle around the text that read as a selection artefact rather than a
-   hover. The label going to ink says the same thing and disturbs nothing. */
-.stat .stat-label {
-  transition: color var(--duration) var(--ease);
-}
-
-.stat:hover .stat-label {
-  color: var(--ink);
-}
-
-/* The rule above a screen card darkens on hover -- the only affordance a text link in a
-   grid needs, and quieter than a border or a shadow. */
-.screen-card {
-  transition: border-color var(--duration) var(--ease);
-}
-
-.screen-card:hover {
-  border-top-color: var(--ink) !important;
-}
-
-/* -- The shell --------------------------------------------------------------------- */
-
-/* The masthead bleeds to the window edge while its contents stay on the page measure.
-   A tinted band that stopped at 1200px would read as a box rather than as the paper. */
-.bleed {
-  background: var(--shell);
-  border-bottom: 1px solid var(--shell-rule);
-}
-
-.bleed-inner {
-  max-width: var(--measure);
-  margin: 0 auto;
-  padding: 0 var(--space-6);
-}
-
-/* Navigation stays with the reader down a page of charts. The wordmark above it scrolls
-   away and a compact mark takes its place -- the newspaper's own behaviour, where the
-   masthead is printed once at the top and the section name runs in the header after it. */
-.nav-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--shell);
-  border-bottom: 1px solid var(--shell-rule);
-  transition: box-shadow var(--duration) var(--ease);
-}
-
-/* Only once the page has actually scrolled: a shadow under a bar that is still at the
-   top of an unscrolled document is a shadow cast by nothing. */
-.nav-bar[data-stuck="true"] {
-  box-shadow: 0 1px 12px rgba(2, 6, 23, 0.06);
-}
-
-.nav-mark {
-  opacity: 0;
-  transform: translateY(2px);
-  transition:
-    opacity var(--duration) var(--ease),
-    transform var(--duration) var(--ease);
-  pointer-events: none;
-}
-
-.nav-bar[data-stuck="true"] .nav-mark {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-
-/* A nav item's underline grows from the centre rather than switching on, so moving
-   between sections reads as one continuous rule rather than six separate ones. */
-.nav-link {
-  position: relative;
-  padding-bottom: 0.3rem;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--ink);
-  transform: scaleX(0);
-  transition: transform var(--duration) var(--ease);
-}
-
-.nav-link:hover::after {
-  transform: scaleX(1);
-}
-
-.nav-link[aria-current="page"]::after {
-  transform: scaleX(1);
-}
-
-/* A figure that has just changed flashes its own ground for a beat. This is the only
-   place colour arrives unasked, and it says one thing: this number is not the one you
-   were looking at a moment ago. */
 @keyframes flash {
   from {
-    background: color-mix(in srgb, var(--flash-tone) 22%, transparent);
+    background: color-mix(in srgb, var(--flash-tone) 18%, transparent);
   }
   to {
     background: transparent;
@@ -270,14 +291,30 @@ a {
 
 .flash {
   animation: flash 900ms var(--ease) both;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
 
+/* Honour a reader who has asked for less motion: they get the content, immediately, with
+   no movement at all. */
 @media (prefers-reduced-motion: reduce) {
+  .rise,
   .flash {
     animation: none;
   }
-  .nav-mark {
-    transition: none;
+  .card-link:hover {
+    transform: none;
   }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hide a scrollbar on a row that scrolls sideways by design. The row still scrolls by
+   wheel, touch and keyboard; only the bar is gone. */
+.no-bar {
+  scrollbar-width: none;
+}
+
+.no-bar::-webkit-scrollbar {
+  display: none;
 }

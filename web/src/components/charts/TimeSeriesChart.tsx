@@ -22,6 +22,12 @@ export type SeriesLine = {
   y: (number | null)[];
   /** Overrides the palette cycle where a colour carries meaning of its own. */
   color?: string;
+  /**
+   * Stroke weight. Set by the caller where filtering can change a line's position --
+   * deriving it from the array index instead would promote whichever line happened to land
+   * first to the bold "primary" weight the moment another was hidden.
+   */
+  width?: number;
   dash?: "solid" | "dot" | "dash";
   /** Plot against a secondary right-hand axis (Spec 33: navy left, light blue right). */
   secondary?: boolean;
@@ -68,7 +74,7 @@ export function TimeSeriesChart({
       connectgaps: false,
       line: {
         color: line.color ?? SERIES_CYCLE[i % SERIES_CYCLE.length],
-        width: i === 0 ? 2 : 1.5,
+        width: line.width ?? (i === 0 ? 2 : 1.5),
         dash: line.dash ?? "solid",
       },
       ...(line.secondary ? { yaxis: "y2" } : {}),
