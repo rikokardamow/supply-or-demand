@@ -6,13 +6,13 @@ import type { Headline } from "@/data/queries/overview";
 import { formatDate, formatPercent, formatSigned } from "@/lib/format";
 
 /**
- * The headline figures, as cards.
+ * The headline figures, as a monitor row of terminal cells.
  *
- * Each is a card because each is a destination: label, level, direction, a year of shape,
- * and the date the figure is for. An earlier version set these as bare numbers separated
- * by whitespace, on the reasoning that a border was doing work whitespace could do. It
- * could not: without an edge, six figures in a row read as one undifferentiated band and
- * nothing said any of them was clickable.
+ * Each cell is bordered because each is a destination: label, level, direction, a year of
+ * shape, and the date the figure is for. An earlier version set these as bare numbers
+ * separated by whitespace, on the reasoning that a border was doing work whitespace could
+ * do. It could not: without an edge, six figures in a row read as one undifferentiated band
+ * and nothing said any of them was clickable.
  *
  * Direction is carried by sign *and* colour, never colour alone -- a red figure with no
  * minus in front of it is unreadable to anyone who cannot separate the two hues, and the
@@ -46,57 +46,20 @@ export function StatStrip({
 }) {
   return (
     <div
+      className="term-grid"
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(176px, 1fr))",
-        gap: "var(--space-4)",
+        gridTemplateColumns: "repeat(auto-fit, minmax(128px, 1fr))",
         marginBottom: "var(--space-8)",
       }}
     >
-      {headlines.map((h, i) => {
+      {headlines.map((h) => {
         const spark = sparks[h.key];
         return (
-          <Link
-            key={h.key}
-            href={h.href}
-            className="card card-link rise"
-            style={{
-              padding: "var(--space-4)",
-              animationDelay: `${i * 40}ms`,
-            }}
-          >
-            <div
-              style={{
-                fontSize: "var(--size-micro)",
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                fontWeight: 500,
-                marginBottom: "var(--space-3)",
-              }}
-            >
-              {h.label}
-            </div>
+          <Link key={h.key} href={h.href} className="term-cell">
+            <div className="k">{h.label}</div>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: "0.35rem",
-                marginBottom: "var(--space-3)",
-              }}
-            >
-              <span
-                className="tabular"
-                style={{
-                  fontSize: "var(--size-stat)",
-                  fontWeight: 600,
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1,
-                }}
-              >
-                <CountUp value={h.value} digits={decimals(h.unit)} />
-              </span>
+            <div className="v tabular" style={{ display: "flex", alignItems: "baseline", gap: "0.35rem" }}>
+              <CountUp value={h.value} digits={decimals(h.unit)} />
               <span
                 style={{ fontSize: "var(--size-micro)", color: "var(--faint)" }}
               >
@@ -120,6 +83,7 @@ export function StatStrip({
             ) : null}
 
             <div
+              className="d"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -130,7 +94,6 @@ export function StatStrip({
               <span
                 className="tabular"
                 style={{
-                  fontSize: "var(--size-micro)",
                   fontWeight: 600,
                   color: toneFor(h.change),
                   background: toneSoft(h.change),
@@ -144,7 +107,6 @@ export function StatStrip({
                 <span
                   className="tabular"
                   style={{
-                    fontSize: "var(--size-micro)",
                     color: "var(--muted)",
                   }}
                 >
