@@ -170,7 +170,7 @@ function FrequencyTable({
                 fontVariantNumeric: "tabular-nums",
                 // A wash proportional to the count, so the shape of the distribution is
                 // readable without a second chart.
-                background: `linear-gradient(to left, rgba(15,42,74,0.12) ${(100 * count) / max}%, transparent ${(100 * count) / max}%)`,
+                background: `linear-gradient(to left, rgba(var(--navy-rgb), 0.22) ${(100 * count) / max}%, transparent ${(100 * count) / max}%)`,
               }}
             >
               {formatNumber(count, 0)}

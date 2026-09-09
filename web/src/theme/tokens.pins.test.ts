@@ -40,6 +40,14 @@ describe("chrome tokens", () => {
     expect(token("grid")).toBe("#1e232b");
   });
 
+  it("pins the rgba channel triples to their hex twins", () => {
+    // rgba() cannot interpolate var(--navy)/var(--red) directly, so these triples exist
+    // purely to mirror them -- if they drift apart the heat wash and the bar fill would
+    // paint a colour the hex tokens no longer name.
+    expect(token("navy-rgb")).toBe("77, 159, 255");
+    expect(token("red-rgb")).toBe("255, 90, 77");
+  });
+
   it("is monospace at 11px", () => {
     expect(token("font")).toContain("JetBrains Mono");
     expect(token("base-font-px")).toBe("11px");
