@@ -1108,3 +1108,52 @@ task — it touches no file this task changed, reproduces identically in isolati
 was already surfaced during the pre-task memory read as a side-effect of the recent
 lake/`.venv` rebuild (not this task's job to fix). `ruff check .` and `mypy core pipelines
 infra apps` both clean.
+
+## Task 4 (31C) — final gate, real pulls for items 5 and 6, 2026-09-09
+
+Real (not cassette) runs against the live EIA API and the real lake, confirming the
+findings recorded above rather than superseding them.
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_ethanol_weekly` — exit 0: `petroleum/pnp/
+wprode: dropped 1500 row(s) with no value` / `wrote 3588 weekly ethanol rows across 6
+regions` — matches Spec 31C's Task-0/Task-1 finding above exactly (1,500 null rows
+dropped across the six series, 848+848+473×4 = 3,588 surviving rows).
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_biofuels` — exit 0, two independent
+failure scopes both succeeded: `wrote 198 biofuel capacity rows` (3 codes × 66 rows) and
+`petroleum/pnp/feedbiofuel: dropped 855 row(s) with no value` / `wrote 873 biofuel
+feedstock rows across 22 feedstocks` — the 22, not 26, matches Task 2's live-confirmed
+finding that 4 of the 26 requested feedstocks (`M_EPOOBDAFD_YIFBP_NUS_MMLB`,
+`M_EPOOBDBG_YIFBP_NUS_MMLB`, `M_EPOOBDRFWM_YIFBP_NUS_MMLB`,
+`M_EPOOBDRFWY_YIFBP_NUS_MMLB`) report a literal null for every period and are therefore
+absent from any pull — confirmed again here as `set(FEEDSTOCKS) - set(feed["series_id"])`
+against the freshly pulled frame, same four ids, no drift.
+
+**Item's-own-question checks, read from the real lake with `source="eia"`-narrowed
+`read_ts_long` calls (never unbounded):**
+- Ethanol: 3,588 rows, `geo` = `{'PADD1', 'PADD2', 'PADD3', 'PADD4', 'PADD5', 'US'}`.
+  **PADD5 present** — the West Coast under-ingestion risk plan 31A's Task 0 flagged does
+  not apply here.
+- Biofuels: 198 capacity rows, 873 feedstock rows; `RENEWABLE_DIESEL`
+  (`M_EPOOROO_8BDPC_NUS_MMGL`) carries 66 of the 198 capacity rows (its full share, one of
+  three `CAPACITY` codes at 66 rows each). **Distinct feedstock units: `{'MMLB'}` — one
+  unit only**, confirmed again on the fresh pull; the 26 series (22 with real data) can
+  share an axis unconverted, as Task 0/2 already found.
+
+**Coal source check (the single most important check in this plan) — `set(coal["source"])
+== {"coal"}` exactly, confirmed live against a fresh `pull_coal` run**; see
+`pipelines/coal/NOTES.md` item 4 for the full readout (row counts, series ids, units).
+`get_facet_series`'s `source="coal"` parameter is doing its job — nothing here is filed
+under `coal/` while its own `source` column reads `eia`.
+
+**Full suite** (`.venv/Scripts/pytest.exe`, run after all three real pulls above): 773
+passed, 1 failed, 16 deselected (112s). The one failure is the same known,
+already-being-addressed, out-of-scope issue named above —
+`tests/test_pages_smoke.py::test_page_loads_without_raising[02_gas_storage.py]`
+(`KeyError: 'deviation'` inside `pipelines/gie/transforms.py`) — a side effect of the
+`data/lake/`/`.venv` wipe-and-rebuild this session inherited, not of anything this task or
+plan 31C changed; a background GIE historical backfill to fix it was running
+concurrently, out of this task's scope to touch. No other failure appeared. **Lint**:
+`.venv/Scripts/ruff.exe check .` — all checks passed. **Types**:
+`.venv/Scripts/mypy.exe core pipelines infra` — no issues found in 167 source files,
+`pipelines/coal/` included for the first time under this check with zero errors.
