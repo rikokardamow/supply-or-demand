@@ -56,6 +56,45 @@ export default async function OilMathPage() {
       />
 
       <main>
+        {/* The standfirst. A page of six charts needs one paragraph saying why the
+            arithmetic is worth doing at all, and the elasticities are the reason: they are
+            what turns a weekly American survey into a global price signal. */}
+        <section
+          className="card"
+          style={{
+            padding: "var(--space-5)",
+            marginBottom: "var(--space-6)",
+            borderLeft: "3px solid var(--accent)",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "var(--size-lead)",
+              lineHeight: 1.65,
+              maxWidth: "72ch",
+            }}
+          >
+            Oil moves violently because almost nothing about it responds to
+            price in the short run. A demand elasticity near{" "}
+            <span className="tabular">&minus;0.06</span> and a supply elasticity
+            near <span className="tabular">0.04</span> mean a 5% loss of supply
+            needs something close to an 85% move in price to clear the market,
+            where fresh tomatoes would need about 1%. That is why a weekly
+            American stock survey moves a global benchmark, and why it is worth
+            taking apart. The headline everyone quotes &mdash; crude stocks fell
+            4.4 million barrels &mdash; is one line of a six-term identity, and
+            which term moved is the entire question: a draw built on hard
+            refinery runs is a different market from one built on collapsed
+            imports, and the two point opposite ways. So the components below
+            are drawn with their signs, the change they imply is checked against
+            the change actually reported, and the barrels the identity cannot
+            place are shown rather than quietly absorbed. Stocks are then read
+            as days of cover rather than as a barrel count, because refining
+            capacity has grown and the same barrel no longer buys the same
+            comfort.
+          </p>
+        </section>
+
         <Panel
           title="The crude balance, week by week"
           asOf={asOf}
