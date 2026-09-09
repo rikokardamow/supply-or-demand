@@ -24,6 +24,7 @@ import { fetchVesselPoints } from "@/lib/vessels";
 export const revalidate = 3600;
 
 const EMAIL = "riko@kardamow.com";
+const SUBSCRIBE = "https://kardamow.substack.com/subscribe";
 
 /**
  * The three areas, condensed from the About page's own descriptions.
@@ -151,7 +152,7 @@ export default async function Home() {
               </a>
             ))}
           </nav>
-          <a className="btn btn-solid" href="https://kardamow.substack.com">
+          <a className="btn btn-solid" href={SUBSCRIBE}>
             Subscribe
           </a>
         </div>
@@ -751,11 +752,13 @@ export default async function Home() {
             }}
           >
             {TIERS.map((tier) => (
-              <div
+              <a
                 key={tier.name}
-                className="card"
+                href={SUBSCRIBE}
+                className="card card-link"
                 style={{
                   padding: "1.6rem",
+                  display: "block",
                   borderColor: tier.featured ? "var(--text)" : "var(--border)",
                 }}
               >
@@ -800,7 +803,18 @@ export default async function Home() {
                 >
                   {tier.body}
                 </p>
-              </div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    marginTop: "1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "var(--accent)",
+                  }}
+                >
+                  {tier.name === "Free" ? "Start reading" : "Subscribe"} &rarr;
+                </span>
+              </a>
             ))}
           </div>
 
@@ -849,7 +863,7 @@ export default async function Home() {
           <a className="btn btn-solid" href={`mailto:${EMAIL}`}>
             {EMAIL}
           </a>
-          <a className="btn btn-ghost" href="https://kardamow.substack.com">
+          <a className="btn btn-ghost" href={SUBSCRIBE}>
             Subscribe
           </a>
         </div>
