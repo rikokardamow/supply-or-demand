@@ -61,12 +61,30 @@ create table serving.flows (
   from_node  text not null,
   to_node    text not null,
   ts         timestamptz not null,
-  period     text not null,      -- 'weekly','monthly'
+  period     text not null,      -- MEASURED: 'hourly','daily','monthly' (see below)
   value      double precision,
   unit       text,
-  mode       text,               -- 'pipeline','seaborne','rail'
-  primary key (source, from_node, to_node, ts, period)
+  mode       text not null,      -- 'pipeline','tanker_barge','rail','nomination','grid_interchange'
+  primary key (source, from_node, to_node, ts, period, mode)
 );
+-- Two corrections to this draft, both measured against the real lake on 2026-09-09 and
+-- applied in 20260909160000_flows_key_includes_mode.sql:
+--
+-- 1. `mode` belongs in the primary key. Without it the table cannot represent a corridor
+--    served by more than one transport mode at the same timestamp -- the ordinary case
+--    for inter-PADD crude (PADD1->PADD2 in Feb 1986 carries both a pipeline movement and
+--    a tanker/barge one). Of 126,751 lake rows, 32,420 collided under the drafted key and
+--    13,687 of those 13,700 groups differed only by `mode`: ~15% of the data silently
+--    discarded, with the surviving mode left to chance.
+-- 2. `period` is 'hourly'/'daily'/'monthly', not 'weekly'/'monthly'. Measured from the
+--    median gap between consecutive observations on one corridor: EIA grid interchange
+--    is hourly, EIA inter-PADD movements monthly, ENTSOG gas daily. Nothing in this lake
+--    is weekly.
+--
+-- Note also that `serving.flows` carries no interconnection-point dimension, matching the
+-- lake's own `flows` schema. ENTSOG maps 21 physical points onto 8 corridors, so
+-- `pipelines/derived/publish_flows.py` sums the points feeding a corridor rather than
+-- letting the upsert pick one -- see its module docstring.
 
 -- Latest vessel position per MMSI (positions history stays in the lake)
 create table serving.vessel_latest (
