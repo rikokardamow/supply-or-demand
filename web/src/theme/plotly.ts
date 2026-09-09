@@ -16,8 +16,8 @@ export const SERIES = {
   band: "rgba(150,150,150,0.25)",
 } as const;
 
-export const GRID = "#e6e6e6";
-export const MUTED = "#757575";
+export const GRID = "#eaecf0";
+export const MUTED = "#667085";
 
 /** Numbers never render in the serif — root NOTES.md's chart house style. */
 export const BODY_STACK =

@@ -4,18 +4,17 @@ import { Sparkline } from "@/components/charts/Sparkline";
 import { formatNumber, formatSigned } from "@/lib/format";
 
 /**
- * One screen's card on the front page: name, a line of what is on it, and — where the
- * screen has a series to show — a sparkline with its latest figure.
+ * One screen's card: name, latest figure, a year of shape, and a line of what is on it.
  *
  * The earlier version was eight identical grey paragraphs. Nothing on it distinguished
  * Balances from Sanctions, and a reader had to decide where to go by reading prose. The
- * market sites this was measured against (Kalshi, Polymarket, 2026-09-09) all put real
- * numbers inside every card for that reason: a card with data in it is a reason to click,
- * a card with a description in it is a chore.
+ * market interfaces this was measured against (Kalshi, Polymarket, 2026-09-09) all put
+ * real numbers inside every card for that reason: a card with data in it is a reason to
+ * click, a card with a description in it is a chore.
  *
- * **A card without a series shows no chart rather than a placeholder.** Vessels, Events
- * and Sanctions are registers, not time series; drawing a flat line or a fake shape for
- * them would be inventing data to fill a slot.
+ * **A card without a series shows no chart rather than a placeholder.** Curves, Vessels
+ * and Events are curves and registers, not time series; drawing a flat line or a fake
+ * shape for them would be inventing data to fill a slot.
  */
 
 export type ScreenStat = {
@@ -25,9 +24,36 @@ export type ScreenStat = {
   change?: number | null;
   unit?: string | null;
   digits?: number;
-  /** A count where there is no series to plot — "2,506 listed entries". */
+  /** A count where there is no series to plot — "19,365 listed entries". */
   note?: string;
 };
+
+/**
+ * The change across the drawn window, and the tone that matches it.
+ *
+ * The card previously paired a year-long sparkline with the *last observation's* change,
+ * so Positioning showed a red line falling across the year beside a green "+14,345" from
+ * the final week — two true statements about different horizons, sitting adjacent with
+ * nothing to say they were different, which reads as a contradiction. Both now describe
+ * the same year.
+ */
+function overWindow(spark: number[] | undefined): number | null {
+  if (!spark || spark.length < 2) return null;
+  return spark[spark.length - 1] - spark[0];
+}
+
+/**
+ * The direction the drawn window travelled, not the last observation's move.
+ *
+ * The sparkline covers a year; colouring it by the most recent week-on-week change would
+ * paint a year of decline green because the final point happened to tick up. The tone has
+ * to describe the line the reader is looking at.
+ */
+function windowTone(spark: number[] | undefined): string {
+  const change = overWindow(spark);
+  if (change === null || change === 0) return "var(--muted)";
+  return change > 0 ? "var(--up)" : "var(--down)";
+}
 
 export function ScreenCard({
   href,
@@ -42,24 +68,17 @@ export function ScreenCard({
   stat?: ScreenStat;
   delay: number;
 }) {
-  const tone =
-    stat?.change === undefined || stat.change === null || stat.change === 0
-      ? "var(--muted)"
-      : stat.change > 0
-        ? "var(--navy)"
-        : "var(--red)";
+  const yearChange = overWindow(stat?.spark);
 
   return (
     <Link
       href={href}
-      className="rise screen-card"
+      className="card card-link rise"
       style={{
-        textDecoration: "none",
         display: "flex",
         flexDirection: "column",
         gap: "var(--space-3)",
-        paddingTop: "var(--space-3)",
-        borderTop: "1px solid var(--rule)",
+        padding: "var(--space-4)",
         animationDelay: `${delay}ms`,
       }}
     >
@@ -71,28 +90,16 @@ export function ScreenCard({
           gap: "var(--space-3)",
         }}
       >
-        <h4
-          style={{
-            fontFamily: "var(--heading-stack)",
-            fontSize: "var(--size-lead)",
-            fontWeight: 600,
-            color: "var(--ink)",
-            margin: 0,
-          }}
-        >
+        <h4 style={{ fontSize: "var(--size-lead)", fontWeight: 600 }}>
           {title}
         </h4>
         {stat?.value !== undefined && stat.value !== null ? (
           <span
             className="tabular"
-            style={{
-              fontSize: "var(--size-small)",
-              color: "var(--ink)",
-              fontWeight: 600,
-            }}
+            style={{ fontSize: "var(--size-small)", fontWeight: 600 }}
           >
             {formatNumber(stat.value, stat.digits ?? 2)}
-            <span style={{ color: "var(--muted)", fontWeight: 400 }}>
+            <span style={{ color: "var(--faint)", fontWeight: 400 }}>
               {stat.unit ? ` ${stat.unit}` : ""}
             </span>
           </span>
@@ -110,40 +117,34 @@ export function ScreenCard({
           <div style={{ flex: 1, minWidth: 0 }}>
             <Sparkline
               values={stat.spark}
-              label={`${title}: twelve months of ${title.toLowerCase()}`}
+              color={windowTone(stat.spark)}
+              label={`${title}: the last year`}
+              height={32}
             />
           </div>
           <span
             className="tabular"
             style={{
               fontSize: "var(--size-micro)",
-              color: tone,
+              fontWeight: 600,
+              color: windowTone(stat.spark),
               whiteSpace: "nowrap",
             }}
           >
-            {formatSigned(stat.change ?? null, stat.digits ?? 2)}
+            {formatSigned(yearChange, stat.digits ?? 2)}
+            <span style={{ color: "var(--faint)", fontWeight: 400 }}> 1y</span>
           </span>
         </div>
       ) : stat?.note ? (
         <p
           className="tabular"
-          style={{
-            fontSize: "var(--size-small)",
-            color: "var(--text)",
-            margin: 0,
-          }}
+          style={{ fontSize: "var(--size-small)", fontWeight: 500 }}
         >
           {stat.note}
         </p>
       ) : null}
 
-      <p
-        style={{
-          fontSize: "var(--size-small)",
-          color: "var(--muted)",
-          margin: 0,
-        }}
-      >
+      <p style={{ fontSize: "var(--size-small)", color: "var(--muted)" }}>
         {blurb}
       </p>
     </Link>

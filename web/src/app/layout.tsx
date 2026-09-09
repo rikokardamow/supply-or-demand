@@ -1,25 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import "./globals.css";
 import "@/theme/tokens.css";
 
 /**
- * Lora for headings, Inter for body copy and every number -- the pairing
- * `core/design.py` defines and `apps/dashboard` already uses. Both are self-hosted by
- * `next/font`, so the app stays legible with Google Fonts blocked, which is the same
- * reason `core/design.py` carries real fallback stacks.
+ * One family, Inter, for headings and figures alike.
+ *
+ * The serif heading face is gone from this surface. A Lora heading over an Inter figure is
+ * the signature of a document, and this is an interface -- it was the loudest single thing
+ * making the site read as a newspaper someone had put charts in. `core/design.py` still
+ * pairs Lora with Inter for the Streamlit app and the exported exhibits, which are
+ * documents and should stay that way.
+ *
+ * Self-hosted by `next/font`, so the app stays legible with Google Fonts blocked.
  */
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
   display: "swap",
 });
 
@@ -30,11 +28,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // No measure wrapper here: the masthead and ticker rail tint the full window width
-    // while their contents stay on the page measure, and a container around everything
-    // would stop the tint at 1200px and turn the shell into a box. `main` carries the
-    // measure instead -- see globals.css.
-    <html lang="en-GB" className={`${inter.variable} ${lora.variable}`}>
+    <html lang="en-GB" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

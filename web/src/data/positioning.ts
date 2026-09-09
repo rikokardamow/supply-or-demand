@@ -14,7 +14,8 @@ import type { SeriesLongRow } from "@/types/database";
  * **Both measures are aligned on timestamp, not on position.** The four contracts share a
  * report date but Brent's history starts in 2011 and the NYMEX contracts' in 2006, and a
  * missing week in one leg would silently pair the wrong two numbers if these were zipped
- * by index. A date present in one leg and not the other yields no point at all.
+ * by index. A date reported in only one leg keeps its place on the axis and takes a
+ * null, so the line breaks there rather than being drawn straight across it.
  */
 
 /**
@@ -49,7 +50,18 @@ export const POSITIONING_SERIES = Object.keys(CONTRACTS).flatMap((root) => [
   `cftc.${root}.oi`,
 ]);
 
-/** Pair two series on their shared timestamps and combine them point by point. */
+/**
+ * Pair two series on their shared timestamps and combine them point by point.
+ *
+ * **A week where either leg is missing keeps its timestamp and takes a null value — it is
+ * never dropped.** Dropping it would leave two real points either side of the hole as
+ * neighbours, and Plotly joins neighbours: `connectgaps: false` breaks a line at an
+ * explicit null y, not at an absent x. The CFTC did not publish during the 2013 and
+ * 2018–19 US government shutdowns, so dropping those weeks would draw one smooth sloping
+ * line straight across a month when the report did not run — asserting a continuously
+ * measured position through a gap where there is none. That is exactly what
+ * `TimeSeriesChart`'s own rule forbids.
+ */
 function combine(
   rows: SeriesLongRow[],
   leftId: string,
@@ -57,17 +69,28 @@ function combine(
   f: (left: number, right: number) => number | null,
 ): { x: string[]; y: (number | null)[] } {
   const grouped = bySeries(rows);
+  const left = new Map(
+    (grouped.get(leftId) ?? []).map((r) => [r.ts, r.value] as const),
+  );
   const right = new Map(
     (grouped.get(rightId) ?? []).map((r) => [r.ts, r.value] as const),
   );
 
+  // The union, so a date reported in only one leg still appears — as a break, which is
+  // what a half-reported week honestly is.
+  const dates = [...new Set([...left.keys(), ...right.keys()])].sort();
+
   const x: string[] = [];
   const y: (number | null)[] = [];
-  for (const point of grouped.get(leftId) ?? []) {
-    const other = right.get(point.ts);
-    if (point.value === null || other === null || other === undefined) continue;
-    x.push(point.ts);
-    y.push(f(point.value, other));
+  for (const ts of dates) {
+    const a = left.get(ts);
+    const b = right.get(ts);
+    x.push(ts);
+    y.push(
+      a === null || a === undefined || b === null || b === undefined
+        ? null
+        : f(a, b),
+    );
   }
   return { x, y };
 }
@@ -128,18 +151,35 @@ export function netShareLines(rows: SeriesLongRow[]): SeriesLine[] {
   });
 }
 
-/** One contract's two managed-money legs, for a page that shows the gross detail. */
-export function legLines(rows: SeriesLongRow[], root: Root): SeriesLine[] {
+/**
+ * One contract's managed money book, shaped for `PositioningChart`: the two gross legs
+ * and the open interest they sit in, on one shared date axis.
+ *
+ * The axis is the union of every date any of the three reports, so a week missing from
+ * one of them still occupies its place and takes a null there. Dropping it instead would
+ * put two real weeks side by side as neighbours and let the open-interest line join
+ * straight across the hole.
+ */
+export function positioningBook(rows: SeriesLongRow[], root: Root) {
   const grouped = bySeries(rows);
-  return [
-    { id: `cftc.${root}.mm_long`, name: "Managed money long" },
-    { id: `cftc.${root}.mm_short`, name: "Managed money short" },
-    { id: `cftc.${root}.oi`, name: "Open interest" },
-  ].flatMap(({ id, name }) => {
-    const points = grouped.get(id);
-    if (!points || points.length === 0) return [];
-    return [
-      { name, x: points.map((p) => p.ts), y: points.map((p) => p.value) },
-    ];
-  });
+  const at = (metric: string) =>
+    new Map(
+      (grouped.get(`cftc.${root}.${metric}`) ?? []).map(
+        (r) => [r.ts, r.value] as const,
+      ),
+    );
+
+  const long = at("mm_long");
+  const short = at("mm_short");
+  const oi = at("oi");
+  const x = [
+    ...new Set([...long.keys(), ...short.keys(), ...oi.keys()]),
+  ].sort();
+
+  return {
+    x,
+    long: x.map((ts) => long.get(ts) ?? null),
+    short: x.map((ts) => short.get(ts) ?? null),
+    openInterest: x.map((ts) => oi.get(ts) ?? null),
+  };
 }
