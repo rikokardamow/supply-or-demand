@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pandas as pd
-from core.publish import publish
+from core.publish import publish, seasonal_frame
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -46,14 +46,29 @@ def main() -> None:
     # but per core/failures.py's own convention, a failure must still surface as a
     # non-zero exit (never silently swallowed), so infra/run_scheduled.py and Task
     # Scheduler's "Last Run Result" reflect it truthfully.
+    as_of = datetime.now(UTC)
     publish(
         "series_long",
         df,
-        as_of=datetime.now(UTC),
+        as_of=as_of,
         source_note="EIA WPSR, weekly petroleum stocks/supply routes",
         key=["series_id", "ts"],
         pipeline="wpsr",
     )
+
+    # Spec 32 §5's cadence table has wpsr publishing seasonal bands alongside gie.
+    # Weekly stocks are the archetypal seasonal-band exhibit, and the band comes from
+    # core.seasonal, so 2020 stays excluded (golden rule 4).
+    bands = seasonal_frame(df)
+    publish(
+        "seasonal",
+        bands,
+        as_of=as_of,
+        source_note="EIA WPSR seasonal bands, 5-year window, 2020 excluded",
+        key=["series_id", "doy"],
+        pipeline="wpsr",
+    )
+    print(f"published {len(bands)} seasonal rows across {bands['series_id'].nunique()} series")
 
 
 if __name__ == "__main__":

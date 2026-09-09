@@ -108,3 +108,41 @@ pick up any late revisions GIE publishes for recent gas-days. Verified live: re-
 refreshed `revision_date` (to a newer `updatedAt`) for every row inside the trailing window,
 while a row just outside it (6 days back) kept its older `revision_date` untouched — exactly
 the intended behaviour, and zero duplicate rows either way.
+
+## Spec 32 — publishing to the Supabase serving layer (2026-09-09)
+
+`publish_gie.py` publishes GIE into `serving.series_long` and `serving.seasonal` for the
+Next.js UI (Spec 33). It **reads the lake, not a freshly-pulled frame** — `pull_daily.py`
+only re-fetches a trailing 5-day window, so publishing its own output would put five days
+into the serving copy and leave the seasonal band with nothing to compute from. Scheduled
+in `infra/run_scheduled.py`'s `daily` group, *after* the `gie` pull it depends on.
+
+**Live-verified 2026-09-09**: 416,357 rows across 142 series into `serving.series_long`,
+and 51,830 rows across the same 142 series into `serving.seasonal` (142 × 365 day-of-year).
+Both idempotent — re-running only appends to `serving.publish_log`.
+
+**Two real defects the live data exposed, neither reachable from unit tests alone:**
+
+1. **The current-year track was forward-filled into the future.** `core.seasonal`'s
+   `_daily_ffill_by_year` fills every year onto a dense daily grid, which is correct for a
+   completed year but fabricates the current one — it carries today's value flat to 31
+   December. Confirmed live before the fix: `agsi.DE.full_pct` read **54.75% at doy 300 and
+   doy 365**, both months away, which would have drawn a fake flat projection across the
+   UI's seasonal chart. `serving.seasonal`'s own schema comment specifies `current` as
+   "null if not yet". `core.publish.seasonal_rows` now blanks `current` after today's
+   normalised day-of-year; `prior` is deliberately left filled across the whole curve,
+   since a completed year genuinely holds its last value forward.
+2. **Duplicate timestamps crash the seasonal maths.** `_daily_ffill_by_year` reindexes a
+   ts-indexed series onto a daily grid, which requires unique timestamps —
+   `ValueError: cannot reindex on an axis with duplicate labels` otherwise. GIE never hit
+   this (it reads the already-deduped lake) but WPSR did, because it publishes its raw
+   pulled frame and EIA's pagination returns a few boundary rows twice (see
+   `pipelines/eia/NOTES.md`). Fixed in `core.publish.seasonal_rows` by deduping on `ts`
+   first. **`core/seasonal.py` itself was deliberately not changed** — it is shared by
+   every dashboard page, and cleaning the input is the serving layer's own job.
+
+**What the published band actually says** (a real reading, not a smoke test):
+`agsi.DE.full_pct` at doy 252 (9 September) — 7-year band 62.05–96.62%, median **87.57%**,
+this year **54.75%**, last year 74.23%. German storage is not merely low against the
+median, it is **below the 7-year minimum** for the date. `years = 7` confirms the band is
+built from 2018–2025 with 2020 excluded, exactly as golden rule 4 requires.
