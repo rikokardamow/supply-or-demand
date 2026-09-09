@@ -28,7 +28,15 @@
 - **No component hardcodes a colour.** Every hex lives in `tokens.css` or `theme/plotly.ts`.
 - **Contrast floor: 4.5:1** for any text token against the ground it sits on. Enforced by test, not by eye.
 - **Density:** `--base-font-px: 11px`. Every `--size-*` and `--space-*` token is in `rem` and must be re-derived against the new root — otherwise the result is the old design shrunk 27%.
-- **Node/pnpm:** run all `web/` commands from `web/`. `pnpm test` = `vitest run`.
+- **Node/pnpm:** run all `web/` commands from `web/`. `pnpm test` = `vitest run`,
+  `pnpm lint` = `eslint`, `pnpm typecheck` = `tsc --noEmit`.
+- **Do NOT run `pnpm build`.** It fails in this environment with a Rust allocator OOM
+  (`memory allocation of N bytes failed`) — the machine has under 1 GB free of 7.79 GB, and
+  Turbopack needs gigabytes. This is environmental and reproduces regardless of the diff;
+  two separate implementers hit it. `pnpm typecheck` is the substitute gate for every task.
+  The real production build runs on Vercel, which is where it has to pass anyway. See
+  Ruling 7 in the ledger, and the Definition of Done, which keeps the build as a
+  pre-merge item rather than a per-task one.
 - **Commits:** stage files by name. Never `git add -A` — a peer session may be writing to this tree.
 
 ---
@@ -620,7 +628,7 @@ Leave the `padding` entry in place — Task 3 and Task 4 retune those.
 - [ ] **Step 4: Verify nothing references the measure and the app still builds**
 
 ```bash
-cd web && grep -rn "var(--measure)" src/ ; pnpm build
+cd web && grep -rn "var(--measure)" src/ ; pnpm typecheck
 ```
 
 Expected: grep prints nothing; build succeeds.
@@ -724,7 +732,7 @@ Give the rail a flat ground, 1px right-borders between symbols, and remove any r
 - [ ] **Step 3: Verify**
 
 ```bash
-cd web && pnpm lint && pnpm build
+cd web && pnpm lint && pnpm typecheck
 ```
 
 Expected: both pass.
@@ -795,7 +803,7 @@ Replace the `<h2>` at `var(--size-page)` and the 60ch dek block with a compact t
 - [ ] **Step 4: Verify**
 
 ```bash
-cd web && pnpm lint && pnpm build
+cd web && pnpm lint && pnpm typecheck
 ```
 
 - [ ] **Step 5: Commit**
@@ -838,7 +846,7 @@ still holds and should stay; only the surface changes.
 - [ ] **Step 3: Verify**
 
 ```bash
-cd web && pnpm lint && pnpm build
+cd web && pnpm lint && pnpm typecheck
 ```
 
 - [ ] **Step 4: Commit**
@@ -938,7 +946,7 @@ background: `linear-gradient(to left, rgba(77, 159, 255, 0.22) ${(100 * count) /
 - [ ] **Step 5: Verify**
 
 ```bash
-cd web && grep -rn "var(--rule)\|var(--heading-stack)" src/ ; pnpm lint && pnpm build
+cd web && grep -rn "var(--rule)\|var(--heading-stack)" src/ ; pnpm lint && pnpm typecheck
 ```
 
 Expected: grep prints nothing; lint and build pass.
@@ -977,7 +985,7 @@ Keep the coloured swatch on each series toggle.
 - [ ] **Step 2: Verify**
 
 ```bash
-cd web && pnpm lint && pnpm build
+cd web && pnpm lint && pnpm typecheck
 ```
 
 - [ ] **Step 3: Commit**
@@ -1087,7 +1095,7 @@ cd web && grep -rn "#[0-9a-fA-F]\{6\}" src/ --include=*.tsx
 Expected: nothing. Then:
 
 ```bash
-pnpm test && pnpm lint && pnpm build
+pnpm test && pnpm lint && pnpm typecheck
 ```
 
 - [ ] **Step 5: Commit**
@@ -1162,7 +1170,7 @@ broken cross-surface colour contract.
 - [ ] **Step 5: Full verification**
 
 ```bash
-cd web && pnpm test && pnpm lint && pnpm build
+cd web && pnpm test && pnpm lint && pnpm typecheck
 ```
 
 Expected: all three pass. Do not proceed on a failure.

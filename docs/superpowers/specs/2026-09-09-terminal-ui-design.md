@@ -203,7 +203,11 @@ and are unaffected.
    shadow, no white ground, no pill).
 2. `tokens.css` is the only place chrome values are defined; no component hardcodes a hex.
 3. `web/src/theme/tokens.test.ts` passes, including the contrast assertions.
-4. `pnpm test`, `pnpm lint` and `pnpm build` pass in `web/`.
+4. `pnpm test`, `pnpm lint` and `pnpm typecheck` pass in `web/`. `pnpm build` is a
+   **pre-merge** gate, not a per-task one: it cannot run on this machine (Turbopack's Rust
+   allocator OOMs with under 1 GB free of 7.79 GB, reproducibly and regardless of the
+   diff), so it is satisfied by Vercel's build on the branch — which is where it has to
+   pass to ship anyway. Do not merge on a red Vercel build.
 5. The full Python test suite is unchanged and green.
 6. `plotly.ts`'s header comment states the real cross-surface contract.
 7. `web/CLAUDE.md` and `CHANGELOG.md` record the change, as the 2026-09-08 restyle did.
