@@ -50,6 +50,12 @@ const SCREENS = [
       "The weekly US petroleum picture: the at-a-glance table, and crude, gasoline and distillate stocks against their seasonal ranges.",
   },
   {
+    href: "/oil-math",
+    title: "Oil math",
+    blurb:
+      "The weekly US crude balance and where it fails to close, days of cover, refinery utilisation against runs, and the 3-2-1 margin.",
+  },
+  {
     href: "/prices",
     title: "Prices",
     blurb:
@@ -66,6 +72,12 @@ const SCREENS = [
     title: "Supply",
     blurb:
       "Drilling activity, US monthly production and crude acquisition cost, the OPEC balance and JODI closing stocks.",
+  },
+  {
+    href: "/flows",
+    title: "Flows",
+    blurb:
+      "EIA inter-PADD crude movements by pipeline, rail and tanker — including the Midwest-to-Gulf reversal that shale built.",
   },
   {
     href: "/curves",
@@ -102,7 +114,7 @@ const SCREENS = [
 /**
  * The series each screen card draws, and how many decimals its figure wants.
  *
- * Five of the nine screens have a series behind them. Curves, Vessels, Events and
+ * Six of the eleven screens have a series behind them. Curves, Vessels, Events and
  * Sanctions are curves and registers rather than histories, and a card for one of those
  * shows a count or nothing at all -- drawing a shape for a screen that has no series would
  * be inventing data to fill a slot.
@@ -113,6 +125,7 @@ const CARD_SERIES: Record<string, { seriesId: string; digits: number }> = {
   "/gas": { seriesId: "agsi.EU.full_pct", digits: 1 },
   "/supply": { seriesId: "bh.rigs.united_states.total", digits: 0 },
   "/positioning": { seriesId: "cftc.cl.oi", digits: 0 },
+  "/oil-math": { seriesId: "WPULEUS3", digits: 1 },
 };
 
 export default async function Home() {

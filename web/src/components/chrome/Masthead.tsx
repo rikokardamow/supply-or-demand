@@ -15,9 +15,11 @@ import { NavBar } from "@/components/chrome/NavBar";
 export const SCREENS = [
   { href: "/", label: "Overview" },
   { href: "/balances", label: "Balances" },
+  { href: "/oil-math", label: "Oil math" },
   { href: "/prices", label: "Prices" },
   { href: "/supply", label: "Supply" },
   { href: "/gas", label: "Gas" },
+  { href: "/flows", label: "Flows" },
   { href: "/curves", label: "Curves" },
   { href: "/positioning", label: "Positioning" },
   { href: "/vessels", label: "Vessels" },
