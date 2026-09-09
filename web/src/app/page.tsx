@@ -69,6 +69,12 @@ const SCREENS = [
       "The Brent forward curve and WTI calendar spreads. Both read stale by design — their sources have genuinely stopped.",
   },
   {
+    href: "/positioning",
+    title: "Positioning",
+    blurb:
+      "CFTC Commitments of Traders: managed money net length in WTI, Brent, RBOB and heating oil, and what it is as a share of open interest.",
+  },
+  {
     href: "/vessels",
     title: "Vessels",
     blurb:
@@ -91,7 +97,7 @@ const SCREENS = [
 /**
  * The series each card draws, and how many decimals its figure wants.
  *
- * Four of the eight screens have a series behind them. Curves, Vessels, Events and
+ * Four of the nine screens have a series behind them. Curves, Vessels, Events and
  * Sanctions are curves and registers rather than histories, and a card for one of those
  * shows a count or nothing at all -- drawing a shape for a screen that has no series
  * would be inventing data to fill a slot.
@@ -261,7 +267,7 @@ export default async function Home() {
               marginBottom: "var(--space-6)",
             }}
           >
-            Eight screens
+            Nine screens
           </h3>
           <div
             style={{

@@ -27,6 +27,7 @@ export const SCREENS = [
   { href: "/supply", label: "Supply" },
   { href: "/gas", label: "Gas" },
   { href: "/curves", label: "Curves" },
+  { href: "/positioning", label: "Positioning" },
   { href: "/vessels", label: "Vessels" },
   { href: "/events", label: "Events" },
   { href: "/sanctions", label: "Sanctions" },
