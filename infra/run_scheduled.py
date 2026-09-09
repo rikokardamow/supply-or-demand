@@ -53,6 +53,7 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),
         # Must run after "eia_wpsr" above -- reads the Cushing stocks row it just wrote.
         ("derived_cushing", "pipelines.derived.cushing"),
+        ("eia_ethanol_weekly", "pipelines.eia.pull_ethanol_weekly"),
     ],
     "ng_storage": [
         ("eia_gas_storage", "pipelines.eia.pull_gas_storage"),
@@ -86,6 +87,8 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         ("eia_prices", "pipelines.eia.pull_prices"),
         ("eia_gas_capacity", "pipelines.eia.pull_gas_capacity"),
         ("eia_gas_consumption", "pipelines.eia.pull_gas_consumption"),
+        ("eia_biofuels", "pipelines.eia.pull_biofuels"),
+        ("coal", "pipelines.coal.pull_coal"),
         # Spec 20's "refit monthly". Reads the crack series pipelines.derived.cracks
         # writes on the weekly cadence, so it needs no ordering constraint inside this
         # group -- but it must not run before that pipeline has ever run at all.

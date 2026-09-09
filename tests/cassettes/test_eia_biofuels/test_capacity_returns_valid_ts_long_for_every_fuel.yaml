@@ -1,0 +1,922 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/petroleum/pnp/capbio/data/?data%5B0%5D=value&facets%5Bseries%5D%5B%5D=M_EPOORDB_8BDPC_NUS_MMGL&facets%5Bseries%5D%5B%5D=M_EPOOROO_8BDPC_NUS_MMGL&facets%5Bseries%5D%5B%5D=M_EPOOXE_8BDPC_NUS_MMGL&frequency=monthly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "198", "dateFormat": "YYYY-MM", "frequency":
+        "monthly", "data": [{"period": "2026-06", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4969", "units":
+        "MMGL"}, {"period": "2026-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18375",
+        "units": "MMGL"}, {"period": "2026-06", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1955", "units":
+        "MMGL"}, {"period": "2026-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18374",
+        "units": "MMGL"}, {"period": "2026-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4969", "units":
+        "MMGL"}, {"period": "2026-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1955", "units":
+        "MMGL"}, {"period": "2026-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4969", "units": "MMGL"}, {"period":
+        "2026-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18360", "units":
+        "MMGL"}, {"period": "2026-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1955", "units":
+        "MMGL"}, {"period": "2026-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18388",
+        "units": "MMGL"}, {"period": "2026-03", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4892", "units":
+        "MMGL"}, {"period": "2026-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1955", "units":
+        "MMGL"}, {"period": "2026-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18436",
+        "units": "MMGL"}, {"period": "2026-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4892", "units":
+        "MMGL"}, {"period": "2026-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1963", "units":
+        "MMGL"}, {"period": "2026-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18386",
+        "units": "MMGL"}, {"period": "2026-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4892", "units":
+        "MMGL"}, {"period": "2026-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1963", "units":
+        "MMGL"}, {"period": "2025-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "5014", "units": "MMGL"}, {"period":
+        "2025-12", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18351", "units":
+        "MMGL"}, {"period": "2025-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1958", "units":
+        "MMGL"}, {"period": "2025-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18341",
+        "units": "MMGL"}, {"period": "2025-11", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "5014", "units":
+        "MMGL"}, {"period": "2025-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1958", "units":
+        "MMGL"}, {"period": "2025-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18339",
+        "units": "MMGL"}, {"period": "2025-10", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4989", "units":
+        "MMGL"}, {"period": "2025-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1978", "units":
+        "MMGL"}, {"period": "2025-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18339",
+        "units": "MMGL"}, {"period": "2025-09", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4975", "units":
+        "MMGL"}, {"period": "2025-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1978", "units":
+        "MMGL"}, {"period": "2025-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18339",
+        "units": "MMGL"}, {"period": "2025-08", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4975", "units":
+        "MMGL"}, {"period": "2025-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1978", "units":
+        "MMGL"}, {"period": "2025-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4746", "units": "MMGL"}, {"period":
+        "2025-07", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18329", "units":
+        "MMGL"}, {"period": "2025-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1978", "units":
+        "MMGL"}, {"period": "2025-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4750", "units": "MMGL"}, {"period":
+        "2025-06", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18321", "units":
+        "MMGL"}, {"period": "2025-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1982", "units":
+        "MMGL"}, {"period": "2025-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18319",
+        "units": "MMGL"}, {"period": "2025-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4750", "units":
+        "MMGL"}, {"period": "2025-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1987", "units":
+        "MMGL"}, {"period": "2025-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4750", "units": "MMGL"}, {"period":
+        "2025-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18353", "units":
+        "MMGL"}, {"period": "2025-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1989", "units":
+        "MMGL"}, {"period": "2025-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18475",
+        "units": "MMGL"}, {"period": "2025-03", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4750", "units":
+        "MMGL"}, {"period": "2025-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1989", "units":
+        "MMGL"}, {"period": "2025-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18475",
+        "units": "MMGL"}, {"period": "2025-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4718", "units":
+        "MMGL"}, {"period": "2025-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1989", "units":
+        "MMGL"}, {"period": "2025-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18475",
+        "units": "MMGL"}, {"period": "2025-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4718", "units":
+        "MMGL"}, {"period": "2025-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1986", "units":
+        "MMGL"}, {"period": "2024-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4718", "units": "MMGL"}, {"period":
+        "2024-12", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18322", "units":
+        "MMGL"}, {"period": "2024-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1995", "units":
+        "MMGL"}, {"period": "2024-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18322",
+        "units": "MMGL"}, {"period": "2024-11", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4718", "units":
+        "MMGL"}, {"period": "2024-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1995", "units":
+        "MMGL"}, {"period": "2024-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18322",
+        "units": "MMGL"}, {"period": "2024-10", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4580", "units":
+        "MMGL"}, {"period": "2024-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1995", "units":
+        "MMGL"}, {"period": "2024-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18319",
+        "units": "MMGL"}, {"period": "2024-09", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4580", "units":
+        "MMGL"}, {"period": "2024-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1995", "units":
+        "MMGL"}, {"period": "2024-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18319",
+        "units": "MMGL"}, {"period": "2024-08", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4598", "units":
+        "MMGL"}, {"period": "2024-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "1995", "units":
+        "MMGL"}, {"period": "2024-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4598", "units": "MMGL"}, {"period":
+        "2024-07", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18319", "units":
+        "MMGL"}, {"period": "2024-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2022", "units":
+        "MMGL"}, {"period": "2024-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4897", "units": "MMGL"}, {"period":
+        "2024-06", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18303", "units":
+        "MMGL"}, {"period": "2024-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2022", "units":
+        "MMGL"}, {"period": "2024-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18233",
+        "units": "MMGL"}, {"period": "2024-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4575", "units":
+        "MMGL"}, {"period": "2024-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2022", "units":
+        "MMGL"}, {"period": "2024-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "4600", "units": "MMGL"}, {"period":
+        "2024-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "18115", "units":
+        "MMGL"}, {"period": "2024-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2009", "units":
+        "MMGL"}, {"period": "2024-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18110",
+        "units": "MMGL"}, {"period": "2024-03", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4593", "units":
+        "MMGL"}, {"period": "2024-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2001", "units":
+        "MMGL"}, {"period": "2024-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18110",
+        "units": "MMGL"}, {"period": "2024-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4328", "units":
+        "MMGL"}, {"period": "2024-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2001", "units":
+        "MMGL"}, {"period": "2024-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "18110",
+        "units": "MMGL"}, {"period": "2024-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "4328", "units":
+        "MMGL"}, {"period": "2024-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2090", "units":
+        "MMGL"}, {"period": "2023-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17829",
+        "units": "MMGL"}, {"period": "2023-12", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3857", "units":
+        "MMGL"}, {"period": "2023-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2073", "units":
+        "MMGL"}, {"period": "2023-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17829",
+        "units": "MMGL"}, {"period": "2023-11", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3897", "units":
+        "MMGL"}, {"period": "2023-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2083", "units":
+        "MMGL"}, {"period": "2023-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17723",
+        "units": "MMGL"}, {"period": "2023-10", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3857", "units":
+        "MMGL"}, {"period": "2023-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2083", "units":
+        "MMGL"}, {"period": "2023-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "3704", "units": "MMGL"}, {"period":
+        "2023-09", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17717", "units":
+        "MMGL"}, {"period": "2023-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2074", "units":
+        "MMGL"}, {"period": "2023-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "3704", "units": "MMGL"}, {"period":
+        "2023-08", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17717", "units":
+        "MMGL"}, {"period": "2023-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2084", "units":
+        "MMGL"}, {"period": "2023-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17707",
+        "units": "MMGL"}, {"period": "2023-07", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3704", "units":
+        "MMGL"}, {"period": "2023-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2084", "units":
+        "MMGL"}, {"period": "2023-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17705",
+        "units": "MMGL"}, {"period": "2023-06", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3700", "units":
+        "MMGL"}, {"period": "2023-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2086", "units":
+        "MMGL"}, {"period": "2023-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17662",
+        "units": "MMGL"}, {"period": "2023-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3278", "units":
+        "MMGL"}, {"period": "2023-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2082", "units":
+        "MMGL"}, {"period": "2023-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "3278", "units": "MMGL"}, {"period":
+        "2023-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17732", "units":
+        "MMGL"}, {"period": "2023-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2087", "units":
+        "MMGL"}, {"period": "2023-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "3278", "units": "MMGL"}, {"period":
+        "2023-03", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17696", "units":
+        "MMGL"}, {"period": "2023-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2087", "units":
+        "MMGL"}, {"period": "2023-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17567",
+        "units": "MMGL"}, {"period": "2023-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "3278", "units":
+        "MMGL"}, {"period": "2023-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2074", "units":
+        "MMGL"}, {"period": "2023-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17618",
+        "units": "MMGL"}, {"period": "2023-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "2999", "units":
+        "MMGL"}, {"period": "2023-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2086", "units":
+        "MMGL"}, {"period": "2022-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "2939", "units": "MMGL"}, {"period":
+        "2022-12", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17177", "units":
+        "MMGL"}, {"period": "2022-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2090", "units":
+        "MMGL"}, {"period": "2022-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17177",
+        "units": "MMGL"}, {"period": "2022-11", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "2755", "units":
+        "MMGL"}, {"period": "2022-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2092", "units":
+        "MMGL"}, {"period": "2022-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17175",
+        "units": "MMGL"}, {"period": "2022-10", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "2219", "units":
+        "MMGL"}, {"period": "2022-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2092", "units":
+        "MMGL"}, {"period": "2022-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17175",
+        "units": "MMGL"}, {"period": "2022-09", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "2219", "units":
+        "MMGL"}, {"period": "2022-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2092", "units":
+        "MMGL"}, {"period": "2022-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17175",
+        "units": "MMGL"}, {"period": "2022-08", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "2219", "units":
+        "MMGL"}, {"period": "2022-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2092", "units":
+        "MMGL"}, {"period": "2022-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "2174", "units": "MMGL"}, {"period":
+        "2022-07", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17314", "units":
+        "MMGL"}, {"period": "2022-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2097", "units":
+        "MMGL"}, {"period": "2022-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "1947", "units": "MMGL"}, {"period":
+        "2022-06", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17441", "units":
+        "MMGL"}, {"period": "2022-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2223", "units":
+        "MMGL"}, {"period": "2022-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17381",
+        "units": "MMGL"}, {"period": "2022-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1947", "units":
+        "MMGL"}, {"period": "2022-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2223", "units":
+        "MMGL"}, {"period": "2022-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "1922", "units": "MMGL"}, {"period":
+        "2022-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17403", "units":
+        "MMGL"}, {"period": "2022-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2225", "units":
+        "MMGL"}, {"period": "2022-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17403",
+        "units": "MMGL"}, {"period": "2022-03", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1750", "units":
+        "MMGL"}, {"period": "2022-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2284", "units":
+        "MMGL"}, {"period": "2022-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17403",
+        "units": "MMGL"}, {"period": "2022-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1750", "units":
+        "MMGL"}, {"period": "2022-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2285", "units":
+        "MMGL"}, {"period": "2022-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17403",
+        "units": "MMGL"}, {"period": "2022-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1750", "units":
+        "MMGL"}, {"period": "2022-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2263", "units":
+        "MMGL"}, {"period": "2021-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "1106", "units": "MMGL"}, {"period":
+        "2021-12", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17425", "units":
+        "MMGL"}, {"period": "2021-12", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2245", "units":
+        "MMGL"}, {"period": "2021-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17467",
+        "units": "MMGL"}, {"period": "2021-11", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1106", "units":
+        "MMGL"}, {"period": "2021-11", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2389", "units":
+        "MMGL"}, {"period": "2021-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17408",
+        "units": "MMGL"}, {"period": "2021-10", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1014", "units":
+        "MMGL"}, {"period": "2021-10", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2461", "units":
+        "MMGL"}, {"period": "2021-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17408",
+        "units": "MMGL"}, {"period": "2021-09", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1014", "units":
+        "MMGL"}, {"period": "2021-09", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2461", "units":
+        "MMGL"}, {"period": "2021-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17408",
+        "units": "MMGL"}, {"period": "2021-08", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "1014", "units":
+        "MMGL"}, {"period": "2021-08", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2431", "units":
+        "MMGL"}, {"period": "2021-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "1014", "units": "MMGL"}, {"period":
+        "2021-07", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17408", "units":
+        "MMGL"}, {"period": "2021-07", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2431", "units":
+        "MMGL"}, {"period": "2021-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "1014", "units": "MMGL"}, {"period":
+        "2021-06", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17408", "units":
+        "MMGL"}, {"period": "2021-06", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2429", "units":
+        "MMGL"}, {"period": "2021-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17436",
+        "units": "MMGL"}, {"period": "2021-05", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "983", "units":
+        "MMGL"}, {"period": "2021-05", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2429", "units":
+        "MMGL"}, {"period": "2021-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "983", "units": "MMGL"}, {"period":
+        "2021-04", "duoarea": "NUS", "area-name": "U.S.", "product": "EPOOXE", "product-name":
+        "Fuel Ethanol", "process": "8BDPC", "process-name": "Biodiesel Production
+        Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description": "U.S.
+        Fuel Ethanol Production Capacity (Million Gallons)", "value": "17436", "units":
+        "MMGL"}, {"period": "2021-04", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2411", "units":
+        "MMGL"}, {"period": "2021-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17416",
+        "units": "MMGL"}, {"period": "2021-03", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "863", "units":
+        "MMGL"}, {"period": "2021-03", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2411", "units":
+        "MMGL"}, {"period": "2021-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17502",
+        "units": "MMGL"}, {"period": "2021-02", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels",
+        "process": "8BDPC", "process-name": "Biodiesel Production Capacity", "series":
+        "M_EPOOROO_8BDPC_NUS_MMGL", "series-description": "U.S. Renewable Diesel and
+        Other Biofuels Production Capacity (Million Gallons)", "value": "863", "units":
+        "MMGL"}, {"period": "2021-02", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2411", "units":
+        "MMGL"}, {"period": "2021-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOXE", "product-name": "Fuel Ethanol", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOOXE_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Fuel Ethanol Production Capacity (Million Gallons)", "value": "17557",
+        "units": "MMGL"}, {"period": "2021-01", "duoarea": "NUS", "area-name": "U.S.",
+        "product": "EPOORDB", "product-name": "Biodiesel", "process": "8BDPC", "process-name":
+        "Biodiesel Production Capacity", "series": "M_EPOORDB_8BDPC_NUS_MMGL", "series-description":
+        "U.S. Biodiesel Production Capacity (Million Gallons)", "value": "2395", "units":
+        "MMGL"}, {"period": "2021-01", "duoarea": "NUS", "area-name": "U.S.", "product":
+        "EPOOROO", "product-name": "Renewable Diesel and Other Biofuels", "process":
+        "8BDPC", "process-name": "Biodiesel Production Capacity", "series": "M_EPOOROO_8BDPC_NUS_MMGL",
+        "series-description": "U.S. Renewable Diesel and Other Biofuels Production
+        Capacity (Million Gallons)", "value": "863", "units": "MMGL"}]}, "request":
+        {"command": "/v2/petroleum/pnp/capbio/data/", "params": {"api_key": "FILTERED",
+        "frequency": "monthly", "data": ["value"], "facets": {"series": ["M_EPOORDB_8BDPC_NUS_MMGL",
+        "M_EPOOROO_8BDPC_NUS_MMGL", "M_EPOOXE_8BDPC_NUS_MMGL"]}, "sort": [{"column":
+        "period", "direction": "desc"}], "offset": "0", "length": "5000"}}, "apiVersion":
+        "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1939'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:04:34 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gjtou6tdf0sco50meg
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - b19d6ef3-9a22-4ba2-4e31-9d9d0616f46e
+    status:
+      code: 200
+      message: OK
+version: 1

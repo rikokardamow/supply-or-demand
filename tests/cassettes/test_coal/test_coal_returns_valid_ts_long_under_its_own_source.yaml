@@ -1,0 +1,1573 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/coal/consumption-and-quality/data/?data%5B0%5D=receipts&facets%5Blocation%5D%5B%5D=US&facets%5Bsector%5D%5B%5D=98&frequency=quarterly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "102", "dateFormat": "YYYY-\"Q\"Q", "frequency":
+        "quarterly", "data": [{"period": "2026-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "84693707", "receipts-units": "short tons"}, {"period": "2026-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "93680949", "receipts-units": "short tons"},
+        {"period": "2025-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "99438180",
+        "receipts-units": "short tons"}, {"period": "2025-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "104208135", "receipts-units": "short tons"}, {"period": "2025-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "91172578", "receipts-units": "short tons"},
+        {"period": "2025-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "89808045",
+        "receipts-units": "short tons"}, {"period": "2024-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "93767096", "receipts-units": "short tons"}, {"period": "2024-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "98370308", "receipts-units": "short tons"},
+        {"period": "2024-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "79933935",
+        "receipts-units": "short tons"}, {"period": "2024-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "91176664", "receipts-units": "short tons"}, {"period": "2023-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "104472029", "receipts-units": "short tons"},
+        {"period": "2023-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "110942799",
+        "receipts-units": "short tons"}, {"period": "2023-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "100776949", "receipts-units": "short tons"}, {"period": "2023-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "109006396", "receipts-units": "short tons"},
+        {"period": "2022-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "114977194",
+        "receipts-units": "short tons"}, {"period": "2022-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "123997956", "receipts-units": "short tons"}, {"period": "2022-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "110580801", "receipts-units": "short tons"},
+        {"period": "2022-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "113428840",
+        "receipts-units": "short tons"}, {"period": "2021-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "115856177", "receipts-units": "short tons"}, {"period": "2021-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "123204054", "receipts-units": "short tons"},
+        {"period": "2021-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "111751533",
+        "receipts-units": "short tons"}, {"period": "2021-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "103872552", "receipts-units": "short tons"}, {"period": "2020-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "112429428", "receipts-units": "short tons"},
+        {"period": "2020-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "115642152",
+        "receipts-units": "short tons"}, {"period": "2020-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "91147504", "receipts-units": "short tons"}, {"period": "2020-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "113895844", "receipts-units": "short tons"},
+        {"period": "2019-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "133564319",
+        "receipts-units": "short tons"}, {"period": "2019-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "146236721", "receipts-units": "short tons"}, {"period": "2019-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "135063436", "receipts-units": "short tons"},
+        {"period": "2019-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "138192102",
+        "receipts-units": "short tons"}, {"period": "2018-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "154125626", "receipts-units": "short tons"}, {"period": "2018-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "156463274", "receipts-units": "short tons"},
+        {"period": "2018-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "135259050",
+        "receipts-units": "short tons"}, {"period": "2018-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "142130836", "receipts-units": "short tons"}, {"period": "2017-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "154133751", "receipts-units": "short tons"},
+        {"period": "2017-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "170969350",
+        "receipts-units": "short tons"}, {"period": "2017-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "148467385", "receipts-units": "short tons"}, {"period": "2017-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "159590798", "receipts-units": "short tons"},
+        {"period": "2016-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "172188565",
+        "receipts-units": "short tons"}, {"period": "2016-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "183569172", "receipts-units": "short tons"}, {"period": "2016-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "136679203", "receipts-units": "short tons"},
+        {"period": "2016-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "148417983",
+        "receipts-units": "short tons"}, {"period": "2015-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "183932969", "receipts-units": "short tons"}, {"period": "2015-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "208122918", "receipts-units": "short tons"},
+        {"period": "2015-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "183249751",
+        "receipts-units": "short tons"}, {"period": "2015-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "195383361", "receipts-units": "short tons"}, {"period": "2014-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "216015239", "receipts-units": "short tons"},
+        {"period": "2014-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "219410354",
+        "receipts-units": "short tons"}, {"period": "2014-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "205641160", "receipts-units": "short tons"}, {"period": "2014-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "200261085", "receipts-units": "short tons"},
+        {"period": "2013-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "200924280",
+        "receipts-units": "short tons"}, {"period": "2013-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "216430119", "receipts-units": "short tons"}, {"period": "2013-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "196163804", "receipts-units": "short tons"},
+        {"period": "2013-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "196825444",
+        "receipts-units": "short tons"}, {"period": "2012-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "211974853", "receipts-units": "short tons"}, {"period": "2012-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "218981569", "receipts-units": "short tons"},
+        {"period": "2012-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "188287742",
+        "receipts-units": "short tons"}, {"period": "2012-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "208541780", "receipts-units": "short tons"}, {"period": "2011-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "238887672", "receipts-units": "short tons"},
+        {"period": "2011-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "241674856",
+        "receipts-units": "short tons"}, {"period": "2011-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "221113513", "receipts-units": "short tons"}, {"period": "2011-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "230971818", "receipts-units": "short tons"},
+        {"period": "2010-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "244346975",
+        "receipts-units": "short tons"}, {"period": "2010-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "250016270", "receipts-units": "short tons"}, {"period": "2010-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "232686106", "receipts-units": "short tons"},
+        {"period": "2010-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "229629681",
+        "receipts-units": "short tons"}, {"period": "2009-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "226983279", "receipts-units": "short tons"}, {"period": "2009-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "245824667", "receipts-units": "short tons"},
+        {"period": "2009-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "237199250",
+        "receipts-units": "short tons"}, {"period": "2009-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "249932466", "receipts-units": "short tons"}, {"period": "2008-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "267593899", "receipts-units": "short tons"},
+        {"period": "2008-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "269294948",
+        "receipts-units": "short tons"}, {"period": "2008-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "255205213", "receipts-units": "short tons"}, {"period": "2008-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "253562911", "receipts-units": "short tons"},
+        {"period": "2007-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "263548534",
+        "receipts-units": "short tons"}, {"period": "2007-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "266494905", "receipts-units": "short tons"}, {"period": "2007-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "257110794", "receipts-units": "short tons"},
+        {"period": "2007-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "253438731",
+        "receipts-units": "short tons"}, {"period": "2006-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "267993293", "receipts-units": "short tons"}, {"period": "2006-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "270129642", "receipts-units": "short tons"},
+        {"period": "2006-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "264996893",
+        "receipts-units": "short tons"}, {"period": "2006-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "261097114", "receipts-units": "short tons"}, {"period": "2005-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "252883332", "receipts-units": "short tons"},
+        {"period": "2005-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "258542550",
+        "receipts-units": "short tons"}, {"period": "2005-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "245467955", "receipts-units": "short tons"}, {"period": "2005-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "248067539", "receipts-units": "short tons"},
+        {"period": "2004-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "247666529",
+        "receipts-units": "short tons"}, {"period": "2004-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "251875644", "receipts-units": "short tons"}, {"period": "2004-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "244177090", "receipts-units": "short tons"},
+        {"period": "2004-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "242537947",
+        "receipts-units": "short tons"}, {"period": "2003-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "249214756", "receipts-units": "short tons"}, {"period": "2003-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "248510245", "receipts-units": "short tons"},
+        {"period": "2003-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "239906502",
+        "receipts-units": "short tons"}, {"period": "2003-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "232946663", "receipts-units": "short tons"}, {"period": "2002-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "226901945", "receipts-units": "short tons"},
+        {"period": "2002-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "228886860",
+        "receipts-units": "short tons"}, {"period": "2002-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "199115450", "receipts-units": "short tons"}, {"period": "2002-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "215324649", "receipts-units": "short tons"},
+        {"period": "2001-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "189372725",
+        "receipts-units": "short tons"}, {"period": "2001-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "receipts":
+        "191904291", "receipts-units": "short tons"}, {"period": "2001-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "receipts": "192312500", "receipts-units": "short tons"},
+        {"period": "2001-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "receipts": "189225303",
+        "receipts-units": "short tons"}], "description": "Coal consumption and quality
+        data by state and sector, \n            including price, reciepts, heat content,
+        sulfur content, ash content, and stocks. \n            Source: EIA Form 7A
+        and MSHA Form 7000-2.  Interactive browser:  https://www.eia.gov/coal/data/browser/"},
+        "request": {"command": "/v2/coal/consumption-and-quality/data/", "params":
+        {"api_key": "FILTERED", "frequency": "quarterly", "data": ["receipts"], "sort":
+        [{"column": "period", "direction": "desc"}], "offset": "0", "length": "5000",
+        "facets": {"location": ["US"], "sector": ["98"]}}}, "apiVersion": "2.1.13",
+        "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1616'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:22:03 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gk5p5udpnna1d25kr0
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - ee3028db-cf91-457d-76c8-c2316fc9ff3a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/coal/consumption-and-quality/data/?data%5B0%5D=consumption&facets%5Blocation%5D%5B%5D=US&facets%5Bsector%5D%5B%5D=98&frequency=quarterly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "102", "dateFormat": "YYYY-\"Q\"Q", "frequency":
+        "quarterly", "data": [{"period": "2026-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "80355702.02", "consumption-units": "short tons"}, {"period": "2026-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "96318889.05", "consumption-units": "short
+        tons"}, {"period": "2025-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "99193324.7", "consumption-units": "short tons"}, {"period": "2025-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "118270837.44", "consumption-units": "short
+        tons"}, {"period": "2025-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "90355563.22", "consumption-units": "short tons"}, {"period": "2025-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "109174953.82", "consumption-units": "short
+        tons"}, {"period": "2024-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "89060025.34", "consumption-units": "short tons"}, {"period": "2024-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "111369438.09", "consumption-units": "short
+        tons"}, {"period": "2024-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "81926974.48", "consumption-units": "short tons"}, {"period": "2024-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "90901772.86", "consumption-units": "short
+        tons"}, {"period": "2023-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "91277241.73", "consumption-units": "short tons"}, {"period": "2023-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "122711085.17", "consumption-units": "short
+        tons"}, {"period": "2023-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "81987196", "consumption-units": "short tons"}, {"period": "2023-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "91229781.85", "consumption-units": "short
+        tons"}, {"period": "2022-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "105940545.6", "consumption-units": "short tons"}, {"period": "2022-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "135434301.65", "consumption-units": "short
+        tons"}, {"period": "2022-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "108092324.71", "consumption-units": "short tons"}, {"period": "2022-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "123366533.47", "consumption-units": "short
+        tons"}, {"period": "2021-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "103057140.41", "consumption-units": "short tons"}, {"period": "2021-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "157020896.37", "consumption-units": "short
+        tons"}, {"period": "2021-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "113708193.68", "consumption-units": "short tons"}, {"period": "2021-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "127648314.74", "consumption-units": "short
+        tons"}, {"period": "2020-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "111741924.71", "consumption-units": "short tons"}, {"period": "2020-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "139008771.84", "consumption-units": "short
+        tons"}, {"period": "2020-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "87101308.76", "consumption-units": "short tons"}, {"period": "2020-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "97974843.82", "consumption-units": "short
+        tons"}, {"period": "2019-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "120033850.2", "consumption-units": "short tons"}, {"period": "2019-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "155611792.61", "consumption-units": "short
+        tons"}, {"period": "2019-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "117770530.37", "consumption-units": "short tons"}, {"period": "2019-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "145189426.78", "consumption-units": "short
+        tons"}, {"period": "2018-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "155993457.56", "consumption-units": "short tons"}, {"period": "2018-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "181691014.65", "consumption-units": "short
+        tons"}, {"period": "2018-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "144112377.93", "consumption-units": "short tons"}, {"period": "2018-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "155420019.85", "consumption-units": "short
+        tons"}, {"period": "2017-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "159649403.25", "consumption-units": "short tons"}, {"period": "2017-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "190544718.53", "consumption-units": "short
+        tons"}, {"period": "2017-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "154229938.41", "consumption-units": "short tons"}, {"period": "2017-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "160568992.63", "consumption-units": "short
+        tons"}, {"period": "2016-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "167807072.63", "consumption-units": "short tons"}, {"period": "2016-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "210511874.37", "consumption-units": "short
+        tons"}, {"period": "2016-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "147491312", "consumption-units": "short tons"}, {"period": "2016-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "152744227.36", "consumption-units": "short
+        tons"}, {"period": "2015-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "152601037.24", "consumption-units": "short tons"}, {"period": "2015-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "214811312.85", "consumption-units": "short
+        tons"}, {"period": "2015-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "174375550.85", "consumption-units": "short tons"}, {"period": "2015-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "196656181.75", "consumption-units": "short
+        tons"}, {"period": "2014-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "193081102.85", "consumption-units": "short tons"}, {"period": "2014-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "231065565.78", "consumption-units": "short
+        tons"}, {"period": "2014-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "195921608.55", "consumption-units": "short tons"}, {"period": "2014-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "231533582.31", "consumption-units": "short
+        tons"}, {"period": "2013-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "208941568.47", "consumption-units": "short tons"}, {"period": "2013-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "237204693.71", "consumption-units": "short
+        tons"}, {"period": "2013-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "199844704.63", "consumption-units": "short tons"}, {"period": "2013-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "211970806.55", "consumption-units": "short
+        tons"}, {"period": "2012-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "209091354", "consumption-units": "short tons"}, {"period": "2012-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "238075673", "consumption-units": "short
+        tons"}, {"period": "2012-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "185720513", "consumption-units": "short tons"}, {"period": "2012-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "190663951", "consumption-units": "short
+        tons"}, {"period": "2011-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "209736329", "consumption-units": "short tons"}, {"period": "2011-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "262618081", "consumption-units": "short
+        tons"}, {"period": "2011-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "224176535", "consumption-units": "short tons"}, {"period": "2011-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "235953140", "consumption-units": "short
+        tons"}, {"period": "2010-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "231195289", "consumption-units": "short tons"}, {"period": "2010-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "267942736", "consumption-units": "short
+        tons"}, {"period": "2010-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "229469459", "consumption-units": "short tons"}, {"period": "2010-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "246445006", "consumption-units": "short
+        tons"}, {"period": "2009-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "235838388", "consumption-units": "short tons"}, {"period": "2009-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "244444531", "consumption-units": "short
+        tons"}, {"period": "2009-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "216502021", "consumption-units": "short tons"}, {"period": "2009-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "236842011", "consumption-units": "short
+        tons"}, {"period": "2008-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "250125273", "consumption-units": "short tons"}, {"period": "2008-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "278997897", "consumption-units": "short
+        tons"}, {"period": "2008-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "247156276", "consumption-units": "short tons"}, {"period": "2008-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "264300643", "consumption-units": "short
+        tons"}, {"period": "2007-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "257478349", "consumption-units": "short tons"}, {"period": "2007-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "283556467", "consumption-units": "short
+        tons"}, {"period": "2007-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "246590911", "consumption-units": "short tons"}, {"period": "2007-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "257515760", "consumption-units": "short
+        tons"}, {"period": "2006-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "255759073.98", "consumption-units": "short tons"}, {"period": "2006-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "279623436.86", "consumption-units": "short
+        tons"}, {"period": "2006-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "240393818.24", "consumption-units": "short tons"}, {"period": "2006-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "250859701.93", "consumption-units": "short
+        tons"}, {"period": "2005-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "257430104.78", "consumption-units": "short tons"}, {"period": "2005-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "282054067.5", "consumption-units": "short
+        tons"}, {"period": "2005-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "242306120.68", "consumption-units": "short tons"}, {"period": "2005-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "255694267.61", "consumption-units": "short
+        tons"}, {"period": "2004-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "254771267.14", "consumption-units": "short tons"}, {"period": "2004-Q3",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "270735095.74", "consumption-units": "short
+        tons"}, {"period": "2004-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "238498620.12", "consumption-units": "short tons"}, {"period": "2004-Q1",
+        "location": "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "252263029.47", "consumption-units": "short
+        tons"}, {"period": "2003-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "251811684", "consumption-units": "short tons"}, {"period": "2003-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "271853866", "consumption-units": "short
+        tons"}, {"period": "2003-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "232085228", "consumption-units": "short tons"}, {"period": "2003-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "249365384", "consumption-units": "short
+        tons"}, {"period": "2002-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "246799507", "consumption-units": "short tons"}, {"period": "2002-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "268662789", "consumption-units": "short
+        tons"}, {"period": "2002-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "231652931", "consumption-units": "short tons"}, {"period": "2002-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "230391485", "consumption-units": "short
+        tons"}, {"period": "2001-Q4", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "229896536", "consumption-units": "short tons"}, {"period": "2001-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "263450241", "consumption-units": "short
+        tons"}, {"period": "2001-Q2", "location": "US", "stateDescription": "U.S.
+        Total", "sector": "98", "sectorDescription": "Electric Power", "consumption":
+        "229370911", "consumption-units": "short tons"}, {"period": "2001-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "consumption": "241715247", "consumption-units": "short
+        tons"}], "description": "Coal consumption and quality data by state and sector,
+        \n            including price, reciepts, heat content, sulfur content, ash
+        content, and stocks. \n            Source: EIA Form 7A and MSHA Form 7000-2.  Interactive
+        browser:  https://www.eia.gov/coal/data/browser/"}, "request": {"command":
+        "/v2/coal/consumption-and-quality/data/", "params": {"api_key": "FILTERED",
+        "frequency": "quarterly", "data": ["consumption"], "sort": [{"column": "period",
+        "direction": "desc"}], "offset": "0", "length": "5000", "facets": {"location":
+        ["US"], "sector": ["98"]}}}, "apiVersion": "2.1.13", "ExcelAddInVersion":
+        "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1706'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:22:04 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gk5petdc5v4t89o73g
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - 9ada57f4-d842-4b53-4aee-61eff11b37d4
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/coal/consumption-and-quality/data/?data%5B0%5D=stocks&facets%5Blocation%5D%5B%5D=US&facets%5Bsector%5D%5B%5D=98&frequency=quarterly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "102", "dateFormat": "YYYY-\"Q\"Q", "frequency":
+        "quarterly", "data": [{"period": "2026-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "118251741", "stocks-units": "short tons"}, {"period": "2026-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "110929286", "stocks-units": "short tons"}, {"period":
+        "2025-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "109451629", "stocks-units":
+        "short tons"}, {"period": "2025-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "105397986", "stocks-units": "short tons"}, {"period": "2025-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "116420506", "stocks-units": "short tons"}, {"period":
+        "2025-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "111657316", "stocks-units":
+        "short tons"}, {"period": "2024-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "127825935", "stocks-units": "short tons"}, {"period": "2024-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "122555119", "stocks-units": "short tons"}, {"period":
+        "2024-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "135229253", "stocks-units":
+        "short tons"}, {"period": "2024-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "135537254", "stocks-units": "short tons"}, {"period": "2023-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "133028387", "stocks-units": "short tons"}, {"period":
+        "2023-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "118053733", "stocks-units":
+        "short tons"}, {"period": "2023-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "129190541", "stocks-units": "short tons"}, {"period": "2023-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "109041137", "stocks-units": "short tons"}, {"period":
+        "2022-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "88860583", "stocks-units":
+        "short tons"}, {"period": "2022-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "79354139", "stocks-units": "short tons"}, {"period": "2022-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "86868606", "stocks-units": "short tons"}, {"period":
+        "2022-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "86143270", "stocks-units":
+        "short tons"}, {"period": "2021-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "91884252", "stocks-units": "short tons"}, {"period": "2021-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "77475973", "stocks-units": "short tons"}, {"period":
+        "2021-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "108678173", "stocks-units":
+        "short tons"}, {"period": "2021-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "109613539", "stocks-units": "short tons"}, {"period": "2020-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "133326678", "stocks-units": "short tons"}, {"period":
+        "2020-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "129173027", "stocks-units":
+        "short tons"}, {"period": "2020-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "150525287", "stocks-units": "short tons"}, {"period": "2020-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "145283037", "stocks-units": "short tons"}, {"period":
+        "2019-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "128176292", "stocks-units":
+        "short tons"}, {"period": "2019-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "110614957", "stocks-units": "short tons"}, {"period": "2019-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "116860902", "stocks-units": "short tons"}, {"period":
+        "2019-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "96932056", "stocks-units":
+        "short tons"}, {"period": "2018-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "102792854", "stocks-units": "short tons"}, {"period": "2018-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "100383973", "stocks-units": "short tons"}, {"period":
+        "2018-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "121041362", "stocks-units":
+        "short tons"}, {"period": "2018-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "126007914", "stocks-units": "short tons"}, {"period": "2017-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "137687148", "stocks-units": "short tons"}, {"period":
+        "2017-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "139571200", "stocks-units":
+        "short tons"}, {"period": "2017-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "158013959", "stocks-units": "short tons"}, {"period": "2017-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "161815490", "stocks-units": "short tons"}, {"period":
+        "2016-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "162009014", "stocks-units":
+        "short tons"}, {"period": "2016-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "156566909", "stocks-units": "short tons"}, {"period": "2016-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "182086476", "stocks-units": "short tons"}, {"period":
+        "2016-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "191552735", "stocks-units":
+        "short tons"}, {"period": "2015-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "195548037", "stocks-units": "short tons"}, {"period": "2015-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "162108619", "stocks-units": "short tons"}, {"period":
+        "2015-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "166436597", "stocks-units":
+        "short tons"}, {"period": "2015-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "154346698", "stocks-units": "short tons"}, {"period": "2014-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "151548454", "stocks-units": "short tons"}, {"period":
+        "2014-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "124546118", "stocks-units":
+        "short tons"}, {"period": "2014-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "133479434", "stocks-units": "short tons"}, {"period": "2014-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "118260238", "stocks-units": "short tons"}, {"period":
+        "2013-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "147884247", "stocks-units":
+        "short tons"}, {"period": "2013-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "152693941", "stocks-units": "short tons"}, {"period": "2013-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "171123564", "stocks-units": "short tons"}, {"period":
+        "2013-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "171736370", "stocks-units":
+        "short tons"}, {"period": "2012-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "185115833", "stocks-units": "short tons"}, {"period": "2012-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "182019651", "stocks-units": "short tons"}, {"period":
+        "2012-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "197923990", "stocks-units":
+        "short tons"}, {"period": "2012-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "195379811", "stocks-units": "short tons"}, {"period": "2011-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "172386680", "stocks-units": "short tons"}, {"period":
+        "2011-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "143710892", "stocks-units":
+        "short tons"}, {"period": "2011-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "165149050", "stocks-units": "short tons"}, {"period": "2011-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "166255223", "stocks-units": "short tons"}, {"period":
+        "2010-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "174917260", "stocks-units":
+        "short tons"}, {"period": "2010-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "163775651", "stocks-units": "short tons"}, {"period": "2010-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "181489676", "stocks-units": "short tons"}, {"period":
+        "2010-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "177741587", "stocks-units":
+        "short tons"}, {"period": "2009-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "189466761", "stocks-units": "short tons"}, {"period": "2009-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "197208096", "stocks-units": "short tons"}, {"period":
+        "2009-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "195655837", "stocks-units":
+        "short tons"}, {"period": "2009-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "174222814", "stocks-units": "short tons"}, {"period": "2008-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "161588607", "stocks-units": "short tons"}, {"period":
+        "2008-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "143903317", "stocks-units":
+        "short tons"}, {"period": "2008-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "152542197", "stocks-units": "short tons"}, {"period": "2008-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "146497086", "stocks-units": "short tons"}, {"period":
+        "2007-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "151221161", "stocks-units":
+        "short tons"}, {"period": "2007-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "142665524", "stocks-units": "short tons"}, {"period": "2007-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "154812135", "stocks-units": "short tons"}, {"period":
+        "2007-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "141388690", "stocks-units":
+        "short tons"}, {"period": "2006-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "140964439", "stocks-units": "short tons"}, {"period": "2006-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "126871541", "stocks-units": "short tons"}, {"period":
+        "2006-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "135733732", "stocks-units":
+        "short tons"}, {"period": "2006-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "112141358", "stocks-units": "short tons"}, {"period": "2005-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "101136654", "stocks-units": "short tons"}, {"period":
+        "2005-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "98192234", "stocks-units":
+        "short tons"}, {"period": "2005-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "115524333", "stocks-units": "short tons"}, {"period": "2005-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "105226403", "stocks-units": "short tons"}, {"period":
+        "2004-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "106668800", "stocks-units":
+        "short tons"}, {"period": "2004-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "106208559", "stocks-units": "short tons"}, {"period": "2004-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "120262725", "stocks-units": "short tons"}, {"period":
+        "2004-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "113130829", "stocks-units":
+        "short tons"}, {"period": "2003-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "121567396", "stocks-units": "short tons"}, {"period": "2003-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "124518267", "stocks-units": "short tons"}, {"period":
+        "2003-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "144257037", "stocks-units":
+        "short tons"}, {"period": "2003-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "133535505", "stocks-units": "short tons"}, {"period": "2002-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "141713705", "stocks-units": "short tons"}, {"period":
+        "2002-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "135962184", "stocks-units":
+        "short tons"}, {"period": "2002-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "152133563", "stocks-units": "short tons"}, {"period": "2002-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "146443070", "stocks-units": "short tons"}, {"period":
+        "2001-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "138495695", "stocks-units":
+        "short tons"}, {"period": "2001-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "stocks":
+        "115749623", "stocks-units": "short tons"}, {"period": "2001-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "stocks": "126683457", "stocks-units": "short tons"}, {"period":
+        "2001-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "stocks": "109153528", "stocks-units":
+        "short tons"}], "description": "Coal consumption and quality data by state
+        and sector, \n            including price, reciepts, heat content, sulfur
+        content, ash content, and stocks. \n            Source: EIA Form 7A and MSHA
+        Form 7000-2.  Interactive browser:  https://www.eia.gov/coal/data/browser/"},
+        "request": {"command": "/v2/coal/consumption-and-quality/data/", "params":
+        {"api_key": "FILTERED", "frequency": "quarterly", "data": ["stocks"], "sort":
+        [{"column": "period", "direction": "desc"}], "offset": "0", "length": "5000",
+        "facets": {"location": ["US"], "sector": ["98"]}}}, "apiVersion": "2.1.13",
+        "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1574'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:22:05 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gk5pnqslctrfqj3pdg
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - fb37d51e-eb7e-4e6f-7c6a-2a7de57c31a6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/coal/consumption-and-quality/data/?data%5B0%5D=price&facets%5Blocation%5D%5B%5D=US&facets%5Bsector%5D%5B%5D=98&frequency=quarterly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "102", "dateFormat": "YYYY-\"Q\"Q", "frequency":
+        "quarterly", "data": [{"period": "2026-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "47.09", "price-units": "dollars per short ton"}, {"period": "2026-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.61", "price-units": "dollars per short ton"},
+        {"period": "2025-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "45.18", "price-units":
+        "dollars per short ton"}, {"period": "2025-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "45.43", "price-units": "dollars per short ton"}, {"period": "2025-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "47.22", "price-units": "dollars per short ton"},
+        {"period": "2025-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "45.69", "price-units":
+        "dollars per short ton"}, {"period": "2024-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "45.42", "price-units": "dollars per short ton"}, {"period": "2024-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.83", "price-units": "dollars per short ton"},
+        {"period": "2024-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "48.24", "price-units":
+        "dollars per short ton"}, {"period": "2024-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "46.61", "price-units": "dollars per short ton"}, {"period": "2023-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "46.72", "price-units": "dollars per short ton"},
+        {"period": "2023-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "46.66", "price-units":
+        "dollars per short ton"}, {"period": "2023-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "46.49", "price-units": "dollars per short ton"}, {"period": "2023-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "47.95", "price-units": "dollars per short ton"},
+        {"period": "2022-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "47.49", "price-units":
+        "dollars per short ton"}, {"period": "2022-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "46.98", "price-units": "dollars per short ton"}, {"period": "2022-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "42.4", "price-units": "dollars per short ton"},
+        {"period": "2022-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "40.82", "price-units":
+        "dollars per short ton"}, {"period": "2021-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "38.41", "price-units": "dollars per short ton"}, {"period": "2021-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "38.06", "price-units": "dollars per short ton"},
+        {"period": "2021-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "36.46", "price-units":
+        "dollars per short ton"}, {"period": "2021-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "36.14", "price-units": "dollars per short ton"}, {"period": "2020-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "36.26", "price-units": "dollars per short ton"},
+        {"period": "2020-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "36.53", "price-units":
+        "dollars per short ton"}, {"period": "2020-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "35.51", "price-units": "dollars per short ton"}, {"period": "2020-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "36.11", "price-units": "dollars per short ton"},
+        {"period": "2019-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "36.85", "price-units":
+        "dollars per short ton"}, {"period": "2019-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "37.98", "price-units": "dollars per short ton"}, {"period": "2019-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "39.44", "price-units": "dollars per short ton"},
+        {"period": "2019-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "39.82", "price-units":
+        "dollars per short ton"}, {"period": "2018-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "39.31", "price-units": "dollars per short ton"}, {"period": "2018-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "38.82", "price-units": "dollars per short ton"},
+        {"period": "2018-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "39.23", "price-units":
+        "dollars per short ton"}, {"period": "2018-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "38.96", "price-units": "dollars per short ton"}, {"period": "2017-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "38.44", "price-units": "dollars per short ton"},
+        {"period": "2017-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "38.71", "price-units":
+        "dollars per short ton"}, {"period": "2017-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "39.83", "price-units": "dollars per short ton"}, {"period": "2017-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "39.41", "price-units": "dollars per short ton"},
+        {"period": "2016-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "39.47", "price-units":
+        "dollars per short ton"}, {"period": "2016-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "40.28", "price-units": "dollars per short ton"}, {"period": "2016-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "41.22", "price-units": "dollars per short ton"},
+        {"period": "2016-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "40.84", "price-units":
+        "dollars per short ton"}, {"period": "2015-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "40.98", "price-units": "dollars per short ton"}, {"period": "2015-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "42.39", "price-units": "dollars per short ton"},
+        {"period": "2015-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "43.43", "price-units":
+        "dollars per short ton"}, {"period": "2015-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "43.56", "price-units": "dollars per short ton"}, {"period": "2014-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.67", "price-units": "dollars per short ton"},
+        {"period": "2014-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "45.7", "price-units":
+        "dollars per short ton"}, {"period": "2014-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "46.53", "price-units": "dollars per short ton"}, {"period": "2014-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "44.75", "price-units": "dollars per short ton"},
+        {"period": "2013-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "44.89", "price-units":
+        "dollars per short ton"}, {"period": "2013-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "44.41", "price-units": "dollars per short ton"}, {"period": "2013-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.8", "price-units": "dollars per short ton"},
+        {"period": "2013-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "45.04", "price-units":
+        "dollars per short ton"}, {"period": "2012-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "45.28", "price-units": "dollars per short ton"}, {"period": "2012-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.84", "price-units": "dollars per short ton"},
+        {"period": "2012-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "46.32", "price-units":
+        "dollars per short ton"}, {"period": "2012-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "45.72", "price-units": "dollars per short ton"}, {"period": "2011-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.37", "price-units": "dollars per short ton"},
+        {"period": "2011-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "47.56", "price-units":
+        "dollars per short ton"}, {"period": "2011-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "46.71", "price-units": "dollars per short ton"}, {"period": "2011-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "45.31", "price-units": "dollars per short ton"},
+        {"period": "2010-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "43.7", "price-units":
+        "dollars per short ton"}, {"period": "2010-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "44.49", "price-units": "dollars per short ton"}, {"period": "2010-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "44.41", "price-units": "dollars per short ton"},
+        {"period": "2010-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "44.48", "price-units":
+        "dollars per short ton"}, {"period": "2009-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "41.9", "price-units": "dollars per short ton"}, {"period": "2009-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "42.98", "price-units": "dollars per short ton"},
+        {"period": "2009-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "43.87", "price-units":
+        "dollars per short ton"}, {"period": "2009-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "44.47", "price-units": "dollars per short ton"}, {"period": "2008-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "42.66", "price-units": "dollars per short ton"},
+        {"period": "2008-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "42.21", "price-units":
+        "dollars per short ton"}, {"period": "2008-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "40.19", "price-units": "dollars per short ton"}, {"period": "2008-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "37.51", "price-units": "dollars per short ton"},
+        {"period": "2007-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "35.39", "price-units":
+        "dollars per short ton"}, {"period": "2007-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "35.23", "price-units": "dollars per short ton"}, {"period": "2007-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "35.51", "price-units": "dollars per short ton"},
+        {"period": "2007-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "35.02", "price-units":
+        "dollars per short ton"}, {"period": "2006-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "33.8", "price-units": "dollars per short ton"}, {"period": "2006-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "33.89", "price-units": "dollars per short ton"},
+        {"period": "2006-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "34.2", "price-units":
+        "dollars per short ton"}, {"period": "2006-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "33.92", "price-units": "dollars per short ton"}, {"period": "2005-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "31.63", "price-units": "dollars per short ton"},
+        {"period": "2005-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "31.51", "price-units":
+        "dollars per short ton"}, {"period": "2005-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "31.19", "price-units": "dollars per short ton"}, {"period": "2005-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "29.76", "price-units": "dollars per short ton"},
+        {"period": "2004-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "28.11", "price-units":
+        "dollars per short ton"}, {"period": "2004-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "27.54", "price-units": "dollars per short ton"}, {"period": "2004-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "27.07", "price-units": "dollars per short ton"},
+        {"period": "2004-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "26.44", "price-units":
+        "dollars per short ton"}, {"period": "2003-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "25.62", "price-units": "dollars per short ton"}, {"period": "2003-Q3", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "25.82", "price-units": "dollars per short ton"},
+        {"period": "2003-Q2", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "26.17", "price-units":
+        "dollars per short ton"}, {"period": "2003-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "26.06", "price-units": "dollars per short ton"}, {"period": "2002-Q4", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "25.04", "price-units": "dollars per short ton"},
+        {"period": "2002-Q3", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "25.5", "price-units":
+        "dollars per short ton"}, {"period": "2002-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "25.35", "price-units": "dollars per short ton"}, {"period": "2002-Q1", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "25.78", "price-units": "dollars per short ton"},
+        {"period": "2001-Q4", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "24.4", "price-units":
+        "dollars per short ton"}, {"period": "2001-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "price":
+        "24.56", "price-units": "dollars per short ton"}, {"period": "2001-Q2", "location":
+        "US", "stateDescription": "U.S. Total", "sector": "98", "sectorDescription":
+        "Electric Power", "price": "24.94", "price-units": "dollars per short ton"},
+        {"period": "2001-Q1", "location": "US", "stateDescription": "U.S. Total",
+        "sector": "98", "sectorDescription": "Electric Power", "price": "24.81", "price-units":
+        "dollars per short ton"}], "description": "Coal consumption and quality data
+        by state and sector, \n            including price, reciepts, heat content,
+        sulfur content, ash content, and stocks. \n            Source: EIA Form 7A
+        and MSHA Form 7000-2.  Interactive browser:  https://www.eia.gov/coal/data/browser/"},
+        "request": {"command": "/v2/coal/consumption-and-quality/data/", "params":
+        {"api_key": "FILTERED", "frequency": "quarterly", "data": ["price"], "sort":
+        [{"column": "period", "direction": "desc"}], "offset": "0", "length": "5000",
+        "facets": {"location": ["US"], "sector": ["98"]}}}, "apiVersion": "2.1.13",
+        "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1321'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:22:06 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gk5q05tp8r7gi7s0jg
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - e7a16d3c-ffcc-4ec0-7fb8-e2f5892d2fac
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/coal/consumption-and-quality/data/?data%5B0%5D=heat-content&facets%5Blocation%5D%5B%5D=US&facets%5Bsector%5D%5B%5D=98&frequency=quarterly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response": {"total": "102", "dateFormat": "YYYY-\"Q\"Q", "frequency":
+        "quarterly", "data": [{"period": "2026-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.940266", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2026-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.034256", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2025-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.723584", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2025-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.731842", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2025-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.743535", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2025-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.823697", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2024-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.646058", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2024-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.828726", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2024-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.957279", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2024-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.658184", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2023-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.606005", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2023-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.85887", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2023-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.694157", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2023-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.668871", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2022-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.567635", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2022-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.7272", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2022-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.843313", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2022-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.962299", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2021-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.555928", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2021-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.956342", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2021-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.079525", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2021-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.073437", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2020-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.888599", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2020-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.04888", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2020-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.784215", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2020-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.65483", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2019-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.868201", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2019-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.018124", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2019-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.899698", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2019-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.811379", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2018-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.750327", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2018-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.922828", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2018-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.971013", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2018-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.991735", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2017-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.821223", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2017-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.989497", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2017-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.11997", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2017-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.980679", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2016-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "18.960719", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2016-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.206682", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2016-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.25537", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2016-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.188773", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2015-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "18.841988", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2015-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.11573", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2015-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.14319", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2015-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.410726", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2014-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.098533", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2014-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.146419", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2014-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.375317", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2014-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.520166", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2013-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.082252", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2013-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.170436", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2013-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.263418", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2013-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.181892", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2012-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.067116", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2012-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.303721", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2012-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.370153", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2012-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.082699", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2011-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "18.97102", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2011-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.412624", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2011-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.46234", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2011-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.436983", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2010-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.404438", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2010-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.670233", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2010-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.669272", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2010-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.698658", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2009-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.470448", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2009-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.530884", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2009-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.505799", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2009-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.554648", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2008-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.52248", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2008-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.688559", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2008-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.770967", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2008-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.861366", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2007-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.834192", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2007-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.955979", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2007-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.935762", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2007-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.911553", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2006-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.81021", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2006-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.932478", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2006-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.003454", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2006-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.972265", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2005-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.963638", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2005-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.083859", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2005-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.991423", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2005-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "19.9078", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2004-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "19.820645", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2004-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "19.952811", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2004-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "20.07054", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2004-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.084879", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2003-Q4", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "20.019012", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2003-Q3", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "20.152706", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2003-Q2", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.053239", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2003-Q1", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "20.097966", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2002-Q4", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "20.118801", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2002-Q3", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.283191", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2002-Q2", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "20.271121", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2002-Q1", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "20.270782", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2001-Q4", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.209005", "heat-content-units": "average sulfur
+        percent by weight"}, {"period": "2001-Q3", "location": "US", "stateDescription":
+        "U.S. Total", "sector": "98", "sectorDescription": "Electric Power", "heat-content":
+        "20.341276", "heat-content-units": "average sulfur percent by weight"}, {"period":
+        "2001-Q2", "location": "US", "stateDescription": "U.S. Total", "sector": "98",
+        "sectorDescription": "Electric Power", "heat-content": "20.383872", "heat-content-units":
+        "average sulfur percent by weight"}, {"period": "2001-Q1", "location": "US",
+        "stateDescription": "U.S. Total", "sector": "98", "sectorDescription": "Electric
+        Power", "heat-content": "20.411358", "heat-content-units": "average sulfur
+        percent by weight"}], "description": "Coal consumption and quality data by
+        state and sector, \n            including price, reciepts, heat content, sulfur
+        content, ash content, and stocks. \n            Source: EIA Form 7A and MSHA
+        Form 7000-2.  Interactive browser:  https://www.eia.gov/coal/data/browser/"},
+        "request": {"command": "/v2/coal/consumption-and-quality/data/", "params":
+        {"api_key": "FILTERED", "frequency": "quarterly", "data": ["heat-content"],
+        "sort": [{"column": "period", "direction": "desc"}], "offset": "0", "length":
+        "5000", "facets": {"location": ["US"], "sector": ["98"]}}}, "apiVersion":
+        "2.1.13", "ExcelAddInVersion": "2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1513'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 09 Sep 2026 07:22:07 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d0gk5q8983vn8rapsgd0
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - fce0036e-e787-446f-5181-0f55ebcbc83e
+    status:
+      code: 200
+      message: OK
+version: 1
