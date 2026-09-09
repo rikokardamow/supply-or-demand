@@ -1,9 +1,112 @@
-# Kardamow Energy Dashboard
+# Kardamow
 
-Solo-analyst energy/macro research dashboard (publication: Kardamow). Ingest pipelines pull
-per-source data into a DuckDB + Parquet lake; a Streamlit multipage app reads the lake and
-renders it in a shared house chart style. See `NOTES.md` for the conventions every part of
-this repo follows, and `specs/` for the full spec-driven build plan.
+Independent research on energy, macro and geopolitics — and the data platform behind it.
+
+Ingest pipelines pull from primary sources into a DuckDB + Parquet lake on a laptop. A
+publish step promotes a serving copy to Postgres. Two Next.js sites and a Streamlit app
+read it. Every figure on the public sites was computed before it was served; nothing is
+estimated in the browser.
+
+| | |
+|---|---|
+| **[data.kardamow.com](https://data.kardamow.com)** | The working data — 11 screens, ~1,600 published series |
+| **[kardamow.com](https://kardamow.com)** | The publication's landing page |
+| **[kardamow.substack.com](https://kardamow.substack.com)** | The writing itself |
+
+---
+
+## What it looks like
+
+**The weekly US crude balance, and where it fails to close.** The identity is
+`Δ(commercial + SPR stocks) = production + imports − exports − runs + adjustment`. The
+adjustment is not a rounding error — EIA publishes it because the components come from
+different surveys — so it gets its own line rather than being hidden.
+
+![Oil math — the crude balance and its residual](docs/screenshots/data-oil-math.png)
+
+**CFTC Commitments of Traders.** Managed money long above the axis, short below, open
+interest on its own scale. Bars rather than lines because the CFTC counts the book once a
+week and there is nothing in between: a line joining the counts would draw a path the
+position never took.
+
+![Positioning — managed money against open interest](docs/screenshots/data-positioning.png)
+
+**Inter-PADD crude movements, monthly since 1986.** Modes are kept apart rather than
+summed, because the mode is usually the story — Bakken crude moved by rail because there
+was no pipe, and stopped when there was.
+
+![Flows — inter-PADD crude movements](docs/screenshots/data-flows.png)
+
+**The WPSR at a glance.** Distance from the seasonal median is washed blue for a surplus
+and red for a deficit — balanced so a build is exactly as visible as a draw, which took
+measuring rather than eyeballing (see `web/src/components/tables/HeatTable.test.ts`).
+
+![Balances — the WPSR at-a-glance table](docs/screenshots/data-balances.png)
+
+**The overview**, and the publication's own landing page.
+
+![data.kardamow.com overview](docs/screenshots/data-overview.png)
+
+![kardamow.com landing page](docs/screenshots/site-landing.png)
+
+---
+
+## The read API
+
+The serving layer is a public, read-only REST API. It is Supabase PostgREST over a
+`serving` schema where every table grants `SELECT` to `anon` under row-level security, and
+there is no write path — so the anon key below is safe to publish and is already in the
+browser bundle of both sites.
+
+```bash
+# Latest WTI front-month closes
+curl "$SUPABASE_URL/rest/v1/series_long?series_id=eq.fut.cl.f01.close&order=ts.desc&limit=5" \
+  -H "apikey: $SUPABASE_ANON_KEY" \
+  -H "Accept-Profile: serving"
+
+# What each pipeline last published, and the data's own as-of
+curl "$SUPABASE_URL/rest/v1/latest_publish_v?select=table_name,as_of,published_at" \
+  -H "apikey: $SUPABASE_ANON_KEY" -H "Accept-Profile: serving"
+```
+
+| Table | Contents |
+|---|---|
+| `series_long` | Every scalar series — prices, stocks, storage, positioning, macro |
+| `seasonal` | Day-of-year band, median and current track (2020 always excluded) |
+| `flows` | Directional movements: inter-PADD crude, RTO interchange, ENTSOG gas |
+| `wpsr_lines` | The WPSR at-a-glance table as published |
+| `curve_settles`, `spreads` | Forward curve and calendar spreads |
+| `events`, `sanctions` | Tagged news and the OFAC SDN register |
+| `vessel_latest` | Latest AIS position per vessel |
+| `publish_log`, `latest_publish_v` | Provenance — what ran, when, and the data's own as-of |
+
+Two conventions worth knowing before you build on it:
+
+- **`as_of` is the data's own date, never the time the job ran.** A source that has stopped
+  updating keeps its old `as_of` however recently it was refreshed. That distinction is the
+  point of recording both.
+- **PostgREST caps a response at 1,000 rows server-side** and a client `Range` header
+  cannot raise it. Page with `offset`, or see `web/src/data/paginate.ts` for a total-order
+  implementation that does not drop or duplicate rows across pages.
+
+---
+
+## Reusable pieces
+
+Nothing here is published to PyPI or npm, but three modules are self-contained enough to
+lift:
+
+| Module | What it does |
+|---|---|
+| `core/seasonal.py` | Day-of-year bands on a non-leap reference year, 2020 excluded by rule |
+| `core/publish.py` | Idempotent `COPY`-to-staging upsert into Postgres, with an allow-list of tables and a provenance log |
+| `core/failures.py` | A failure scope that isolates per-item errors, redacts credentials from exception text, and refuses to report success on a partial run |
+
+`.claude/skills/energy-analyst/` is a domain reference distilled from ~90 trading manuals
+and papers — units, benchmark methodology, spread taxonomy, refining, and the mistakes that
+produce quietly wrong numbers. It is written for an agent but reads fine as prose.
+
+---
 
 ## Stack
 
