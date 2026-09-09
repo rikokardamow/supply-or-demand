@@ -15,7 +15,7 @@ unrelated. Both are national and monthly; neither needs a geo_map (area-name res
 from __future__ import annotations
 
 import pandas as pd
-from core.failures import failure_scope
+from core.failures import failure_scope, record_failure
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
@@ -61,6 +61,20 @@ FEEDSTOCKS: list[str] = [
 # a mismatch means the constant is incomplete, not that the route changed.
 EXPECTED_FEEDSTOCK_COUNT = 26
 
+# Task 2 (31C), confirmed live: these 4 of the 26 FEEDSTOCKS report a literal null value
+# for every one of their recorded periods (2021-01 to 2026-06) -- dedicated energy crops,
+# biogas, municipal solid waste, yard/food waste. EIAClient.get_series's null-skip
+# correctly drops them to zero rows, forever, unless EIA someday starts reporting real
+# values. Excluded here from the missing-member failure check so a healthy pull isn't
+# flagged as partially failed on every single run -- see pipelines/eia/CLAUDE.md's
+# Task 2 (31C) entry and tests/test_eia_biofuels.py.
+ALWAYS_NULL_FEEDSTOCKS: set[str] = {
+    "M_EPOOBDAFD_YIFBP_NUS_MMLB",
+    "M_EPOOBDBG_YIFBP_NUS_MMLB",
+    "M_EPOOBDRFWM_YIFBP_NUS_MMLB",
+    "M_EPOOBDRFWY_YIFBP_NUS_MMLB",
+}
+
 CAPACITY_ROUTE = "petroleum/pnp/capbio"
 FEEDSTOCK_ROUTE = "petroleum/pnp/feedbiofuel"
 # Both routes declare `monthly` only -- confirmed live. A wrong frequency returns empty.
@@ -81,27 +95,49 @@ def pull_feedstocks(client: EIAClient) -> pd.DataFrame:
 
 
 def main() -> None:
-    # Two separate failure scopes: a feedstock outage must not cost us the capacity
-    # data, and vice versa. Per-route resilience is the project's standing rule.
-    with failure_scope("eia.pull_biofuels.capacity"):
-        capacity = pull_capacity(EIAClient())
-        if capacity.empty:
-            print("no biofuel capacity rows pulled", flush=True)
-        else:
-            write_ts_long(capacity, source="eia")
-            print(f"wrote {len(capacity)} biofuel capacity rows", flush=True)
+    # A single failure_scope, with a try/except around each route: failure_scope alone
+    # does NOT isolate one route's exception from the other -- it only collects
+    # record_failure calls and raises once at the end, it never catches an exception
+    # raised by its own body. Two separate failure_scope context managers (the previous
+    # shape here) therefore did not give real per-route resilience, since an exception
+    # from pull_capacity would propagate straight out of the first `with` block before
+    # pull_feedstocks ever ran. This shape -- one scope, try/except per route -- is what
+    # actually matches pipelines/eia/pull_prices.py's pull_all precedent: one route
+    # failing is recorded and skipped, never raised here, so the rest of the pull still
+    # runs; failure_scope turns any recorded failure into a non-zero exit on the way out.
+    with failure_scope("eia.pull_biofuels"):
+        client = EIAClient()
 
-    with failure_scope("eia.pull_biofuels.feedstocks"):
-        feedstocks = pull_feedstocks(EIAClient())
-        if feedstocks.empty:
-            print("no biofuel feedstock rows pulled", flush=True)
+        try:
+            capacity = pull_capacity(client)
+        except Exception as exc:  # one route must never abort the other
+            record_failure("eia biofuels capacity", exc)
         else:
-            write_ts_long(feedstocks, source="eia")
-            print(
-                f"wrote {len(feedstocks)} biofuel feedstock rows across "
-                f"{feedstocks['series_id'].nunique()} feedstocks",
-                flush=True,
-            )
+            for series_id in sorted(set(CAPACITY) - set(capacity["series_id"])):
+                record_failure(series_id, RuntimeError("no rows returned"))
+            if capacity.empty:
+                print("no biofuel capacity rows pulled", flush=True)
+            else:
+                write_ts_long(capacity, source="eia")
+                print(f"wrote {len(capacity)} biofuel capacity rows", flush=True)
+
+        try:
+            feedstocks = pull_feedstocks(client)
+        except Exception as exc:  # one route must never abort the other
+            record_failure("eia biofuels feedstocks", exc)
+        else:
+            missing = set(FEEDSTOCKS) - ALWAYS_NULL_FEEDSTOCKS - set(feedstocks["series_id"])
+            for series_id in sorted(missing):
+                record_failure(series_id, RuntimeError("no rows returned"))
+            if feedstocks.empty:
+                print("no biofuel feedstock rows pulled", flush=True)
+            else:
+                write_ts_long(feedstocks, source="eia")
+                print(
+                    f"wrote {len(feedstocks)} biofuel feedstock rows across "
+                    f"{feedstocks['series_id'].nunique()} feedstocks",
+                    flush=True,
+                )
 
 
 if __name__ == "__main__":
