@@ -130,3 +130,21 @@ export type SanctionRow = {
   first_seen: string | null;
   last_seen: string | null;
 };
+
+/**
+ * `serving.vessel_latest_v` — the latest AIS fix per vessel, lat/lon projected out of
+ * the PostGIS geography. Positions only; there is no track history in the serving layer.
+ */
+export type VesselRow = {
+  mmsi: number;
+  ts: string;
+  lat: number;
+  lon: number;
+  sog: number | null;
+  cog: number | null;
+  nav_status: string | null;
+  ship_type: string | null;
+  draught: number | null;
+  name: string | null;
+  destination: string | null;
+};

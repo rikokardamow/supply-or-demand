@@ -53,6 +53,7 @@ export const STALE_AFTER_MS: Record<string, number> = {
   events: 4 * DAYS,
   ofac: 4 * DAYS,
   // Near-real-time sources, unchanged from Spec 32 §5 -- neither publishes with a lag.
+  // Spec 32 §5 sets 30 minutes: a position fix that old is no longer where the ship is.
   ais: 30 * 60 * 1000,
   grp: 26 * HOURS,
 };

@@ -16,6 +16,7 @@ const SCREENS = [
   { href: "/supply", label: "Supply" },
   { href: "/gas", label: "Gas" },
   { href: "/curves", label: "Curves" },
+  { href: "/vessels", label: "Vessels" },
   { href: "/events", label: "Events" },
   { href: "/sanctions", label: "Sanctions" },
 ] as const;
