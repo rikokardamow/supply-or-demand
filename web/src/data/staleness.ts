@@ -47,6 +47,10 @@ export const STALE_AFTER_MS: Record<string, number> = {
   // those panels could never grey however far behind the release fell -- a staleness
   // check that cannot fire is worse than none, because it looks like one that passed.
   eia: 100 * DAYS,
+  // Weekly, stamped on the Tuesday and released the Friday after: the freshest possible
+  // reading is already 3 days old, and a week later it is 10. 14 days flags a genuinely
+  // missed release without flagging a normal one, the same reasoning as wpsr above.
+  cftc: 14 * DAYS,
   // Both are parsed from monthly publications, and OPEC's MOMR lands around the 11th-14th
   // -- so a month-old figure is normal and only two months is genuinely late.
   opec_momr: 60 * DAYS,
@@ -84,6 +88,7 @@ export const RELEASE_CADENCE: Record<string, string> = {
   yfinance: "Every trading day",
   baker_hughes: "Weekly · Fri ~noon CT",
   eia: "Monthly · about two months behind the reported month",
+  cftc: "Weekly · Tuesday's book, released Fri 15:30 ET",
   opec_momr: "Monthly · around the 11th–14th",
   jodi: "Monthly · around the 20th",
   derived: "Recomputed whenever its source publishes",
