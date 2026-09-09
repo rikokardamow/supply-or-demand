@@ -29,17 +29,8 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="card" style={{ marginBottom: "var(--space-6)" }}>
-      <header
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          gap: "var(--space-4)",
-          padding: "var(--space-4) var(--space-5)",
-          borderBottom: "1px solid var(--border)",
-        }}
-      >
+    <section className="term-panel" style={{ marginBottom: "var(--space-6)" }}>
+      <header className="term-head">
         <h3 style={{ fontSize: "var(--size-panel)", fontWeight: 600 }}>
           {title}
         </h3>
@@ -48,7 +39,7 @@ export function Panel({
         ) : null}
       </header>
 
-      <div style={{ padding: "var(--space-5)" }}>{children}</div>
+      <div style={{ padding: "var(--space-4)" }}>{children}</div>
 
       {sourceNote ? (
         <footer
@@ -56,7 +47,6 @@ export function Panel({
             padding: "var(--space-3) var(--space-5)",
             borderTop: "1px solid var(--border)",
             background: "var(--surface-2)",
-            borderRadius: "0 0 var(--r-lg) var(--r-lg)",
             fontSize: "var(--size-micro)",
             color: "var(--muted)",
             lineHeight: 1.55,
@@ -103,19 +93,21 @@ export function AsOfBadge({
       <span
         className="tabular"
         title={stale ? "Older than this source's expected cadence" : undefined}
-        style={{
-          fontSize: "var(--size-micro)",
-          fontWeight: 500,
-          padding: "0.15rem 0.5rem",
-          borderRadius: "var(--r-pill)",
-          whiteSpace: "nowrap",
-          color: stale ? "var(--warn)" : "var(--muted)",
-          background: stale ? "var(--warn-soft)" : "var(--surface-2)",
-          border: `1px solid ${stale ? "transparent" : "var(--border)"}`,
-        }}
       >
-        {stale ? "Stale · " : "As of "}
-        {formatDate(asOf)}
+        {stale ? (
+          <span className="term-bar">STALE · {formatDate(asOf)}</span>
+        ) : (
+          <span
+            style={{
+              color: "var(--faint)",
+              fontSize: "var(--size-micro)",
+              fontWeight: 400,
+              letterSpacing: 0,
+            }}
+          >
+            AS OF {formatDate(asOf)}
+          </span>
+        )}
       </span>
       {cadence ? (
         <span
