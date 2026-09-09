@@ -169,3 +169,31 @@ export const MARINE_CORRIDORS: [string, string][] = [
   ["PADD2", "PADD1"],
   ["PADD1", "PADD3"],
 ];
+
+/**
+ * One corridor's latest reported month and its long-run average.
+ *
+ * Computed rather than written down, because the standfirst on `/flows` quotes both and a
+ * hard-coded figure would be wrong within a month of being typed. The average spans the
+ * whole reported history, which is the claim being made -- that the recent direction is a
+ * reversal against the long run, not against last year.
+ */
+export function corridorStats(
+  rows: FlowRow[],
+  mode: Mode,
+  from: string,
+  to: string,
+): { latest: number | null; mean: number | null } {
+  const points = rows.filter(
+    (r) =>
+      r.mode === mode &&
+      r.from_node === from &&
+      r.to_node === to &&
+      r.value !== null,
+  );
+  if (points.length === 0) return { latest: null, mean: null };
+
+  const newest = points.reduce((a, b) => (b.ts > a.ts ? b : a));
+  const total = points.reduce((sum, r) => sum + (r.value ?? 0), 0);
+  return { latest: newest.value, mean: total / points.length };
+}
