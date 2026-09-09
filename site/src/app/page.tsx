@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { Globe } from "@/components/Globe";
 import {
   fetchFigures,
@@ -565,6 +567,109 @@ export default async function Home() {
               barrel actually moves, far enough back to see the belief that is
               moving it.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* -- The Red Boy -------------------------------------------------------- */}
+      <section
+        style={{
+          background: "var(--ground)",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <div
+          className="measure"
+          style={{ paddingTop: "5rem", paddingBottom: "5rem" }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 20rem), 1fr))",
+              gap: "clamp(2rem, 5vw, 4rem)",
+              alignItems: "center",
+            }}
+          >
+            {/* Goya, "Manuel Osorio Manrique de Zuniga", 1787-88. The Met, 49.7.41, and in
+                the public domain -- released CC0 under the museum's Open Access policy,
+                which is why it can sit on a page that sells subscriptions. */}
+            <figure style={{ margin: 0 }}>
+              <Image
+                src="/red-boy.jpg"
+                alt={
+                  "Goya's portrait of Manuel Osorio Manrique de Zuniga: a child in red " +
+                  "silk holding a string tied to a magpie, with a cage of finches beside " +
+                  "him and three cats watching the bird from the shadows."
+                }
+                width={900}
+                height={1200}
+                priority={false}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "var(--r-md)",
+                  border: "1px solid var(--border)",
+                  display: "block",
+                }}
+              />
+              <figcaption
+                style={{
+                  marginTop: "0.8rem",
+                  fontSize: "0.76rem",
+                  color: "var(--faint)",
+                  lineHeight: 1.5,
+                }}
+              >
+                Francisco de Goya, <em>Manuel Osorio Manrique de Zuñiga</em>,
+                1787&ndash;88. The Metropolitan Museum of Art, 49.7.41. Public
+                domain.
+              </figcaption>
+            </figure>
+
+            <div>
+              <h2
+                style={{
+                  fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
+                  marginBottom: "1.2rem",
+                }}
+              >
+                Why the Red Boy
+              </h2>
+              <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
+                A child in scarlet silk stands at the centre of the canvas,
+                perfectly composed, holding a string tied to a tame magpie.
+                Around him sit a cage of finches and three cats, and the cats
+                are watching the bird with the particular stillness of things
+                that have decided to wait.
+              </p>
+              <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
+                At first glance it is a portrait of innocence. Look a second
+                longer and it becomes a study in power, fragility and risk —
+                apparent stability inside a complex system, holding only for as
+                long as nothing at the edge of the frame decides to move.
+              </p>
+              <p style={{ color: "var(--muted)", marginBottom: "1.6rem" }}>
+                That is the whole of how commodity markets work, compressed into
+                a single painting: a calm that is real while it lasts and
+                entirely conditional, resting on the standing assumption that
+                the other party will not act — that the cats will go on waiting
+                — even as the conditions keeping them still are quietly
+                changing.
+              </p>
+              <p
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 500,
+                  borderLeft: "2px solid var(--accent)",
+                  paddingLeft: "1.1rem",
+                }}
+              >
+                The most dangerous moment in any market is the one that looks
+                most like safety. Everything published here is an attempt to
+                keep watching the cats.
+              </p>
+            </div>
           </div>
         </div>
       </section>
