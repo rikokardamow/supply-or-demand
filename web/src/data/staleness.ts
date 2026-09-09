@@ -40,6 +40,15 @@ export const STALE_AFTER_MS: Record<string, number> = {
   curve: 4 * DAYS,
   // Every trading day; 4 days covers a long weekend plus a public holiday.
   yfinance: 4 * DAYS,
+  // Weekly on a Friday; 10 days covers a public holiday without a false alarm.
+  baker_hughes: 10 * DAYS,
+  // Both are parsed from monthly publications, and OPEC's MOMR lands around the 11th-14th
+  // -- so a month-old figure is normal and only two months is genuinely late.
+  opec_momr: 60 * DAYS,
+  jodi: 75 * DAYS,
+  // Every derived series is only as fresh as the source beneath it; the daily moving
+  // averages are the tightest of them.
+  derived: 4 * DAYS,
   // Near-real-time sources, unchanged from Spec 32 §5 -- neither publishes with a lag.
   ais: 30 * 60 * 1000,
   grp: 26 * HOURS,
