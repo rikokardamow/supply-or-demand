@@ -101,9 +101,6 @@
   --shadow-sm: none;
   --shadow-md: none;
 
-  /* Full-bleed: kept only so nothing referencing it breaks mid-migration. Task 2 removes
-     the last consumer. */
-  --measure: 100%;
   --ease: cubic-bezier(0.2, 0, 0.2, 1);
   --duration: 120ms;
 }
