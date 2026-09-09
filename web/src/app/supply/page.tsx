@@ -7,12 +7,13 @@ import { isStale } from "@/data/staleness";
 import { commonUnit, toLines } from "@/data/toLines";
 
 /**
- * Supply: drilling activity, the OPEC balance, and JODI stocks.
+ * Supply: drilling activity, US monthly production and crude cost, the OPEC balance, and
+ * JODI stocks.
  *
- * These three sources have very different depth, and the panels say so rather than
- * presenting them alike. Baker Hughes is weekly with a real run of history; OPEC's MOMR
- * tables and JODI arrive as a handful of recent points each, because both are parsed from
- * monthly publications rather than an API with an archive.
+ * The sources here have very different depth and the panels say so rather than
+ * presenting them alike. EIA's monthly series run back to the 1970s; Baker Hughes is
+ * weekly with a real run; OPEC's MOMR tables are a rolling forecast window parsed from
+ * each month's PDF, and JODI arrives as a handful of recent months.
  */
 export const revalidate = 3600;
 
@@ -28,13 +29,55 @@ const CANADA_RIGS = {
   "bh.rigs.canada.total": "Canada total",
 };
 
-const OPEC_BALANCE = {
-  "momr.demand_balance.nondoc_liquids_production.total_liquids_production.quarterly":
-    "Total liquids production",
+// EIA monthly, back to 1997. Production dwarfs exports, so they share a chart but not an
+// axis -- on one scale the export line would sit flat against the floor.
+const GAS_SUPPLY = {
+  N9070US2: "Dry gas production",
+  N9133US2: "LNG exports",
+};
+
+// Refiner acquisition cost, monthly since 1974. The domestic/imported split is the one
+// that moves with the quality and freight story rather than with flat price.
+const CRUDE_COST = {
+  R0000____3: "Composite",
+  R1200____3: "Domestic",
+  R1300____3: "Imported",
+};
+
+// Landed cost of imported crude by API gravity band, monthly since 1983 -- the spread
+// between the bands is the light/heavy differential in its rawest published form.
+const LANDED_BY_GRAVITY = {
+  I000000208: "20–24.9° API",
+  I000000258: "25–29.9° API",
+  I000000308: "30–34.9° API",
+  I000000358: "35–39.9° API",
+  I000000408: "40–44.9° API",
+};
+
+// Gas delivered to end users, monthly since 1973 -- the longest run in this lake.
+const GAS_CONSUMPTION = {
+  N3010US2: "Residential",
+  N3020US2: "Commercial",
+};
+
+// OPEC's headline balance table. Twelve quarters now, spanning 2025 Q1 to 2027 Q4 --
+// past and forecast -- because pull_momr_history.py backfilled fifteen monthly issues.
+// Before that backfill only the current issue's forward window existed, which is why
+// this panel had eight forecast quarters and nothing behind them.
+const OPEC_DEMAND = {
+  "momr.demand_balance.world_demand.a_total_world_demand.quarterly": "World demand",
+  "momr.demand_balance.world_demand.americas.quarterly": "Americas",
+  "momr.demand_balance.world_demand.asia_pacific.quarterly": "Asia-Pacific",
+  "momr.demand_balance.world_demand.europe.quarterly": "Europe",
+};
+
+const OPEC_SUPPLY = {
   "momr.demand_balance.nondoc_liquids_production.total_nondoc_liquids_production.quarterly":
-    "Non-DoC liquids production",
-  "momr.demand_balance.nondoc_liquids_production.opec_crude_oil_production_secondary_sources.quarterly":
-    "OPEC crude (secondary sources)",
+    "Total non-DoC liquids",
+  "momr.demand_balance.nondoc_liquids_production.of_which_us.quarterly": "of which US",
+  "momr.demand_balance.nondoc_liquids_production.doc_ngls.quarterly": "DoC NGLs",
+  "momr.demand_balance.nondoc_liquids_production.processing_gains.quarterly":
+    "Processing gains",
 };
 
 const JODI_STOCKS = {
@@ -45,16 +88,40 @@ const JODI_STOCKS = {
 };
 
 export default async function SupplyPage() {
-  const [usRigs, caRigs, opec, jodi, rigPublish, opecPublish, jodiPublish] =
-    await Promise.all([
-      fetchSeries(Object.keys(US_RIGS), 5),
-      fetchSeries(Object.keys(CANADA_RIGS), 5),
-      fetchSeries(Object.keys(OPEC_BALANCE), 5),
-      fetchSeries(Object.keys(JODI_STOCKS), 5),
-      fetchLatestPublishBy("series_long", "baker_hughes"),
-      fetchLatestPublishBy("series_long", "opec_momr"),
-      fetchLatestPublishBy("series_long", "jodi"),
-    ]);
+  const [
+    usRigs,
+    caRigs,
+    gasSupply,
+    crudeCost,
+    landed,
+    gasConsumption,
+    opecDemand,
+    opecSupply,
+    jodi,
+    rigPublish,
+    eiaPublish,
+    opecPublish,
+    jodiPublish,
+  ] = await Promise.all([
+    fetchSeries(Object.keys(US_RIGS), 5),
+    fetchSeries(Object.keys(CANADA_RIGS), 5),
+    fetchSeries(Object.keys(GAS_SUPPLY), 15),
+    fetchSeries(Object.keys(CRUDE_COST), 15),
+    fetchSeries(Object.keys(LANDED_BY_GRAVITY), 15),
+    fetchSeries(Object.keys(GAS_CONSUMPTION), 15),
+    fetchSeries(Object.keys(OPEC_DEMAND), 6),
+    fetchSeries(Object.keys(OPEC_SUPPLY), 6),
+    fetchSeries(Object.keys(JODI_STOCKS), 5),
+    fetchLatestPublishBy("series_long", "baker_hughes"),
+    fetchLatestPublishBy("series_long", "eia"),
+    fetchLatestPublishBy("series_long", "opec_momr"),
+    fetchLatestPublishBy("series_long", "jodi"),
+  ]);
+
+  const eiaAsOf = eiaPublish?.as_of ?? null;
+  const eiaStale = isStale("eia", eiaAsOf);
+  const opecAsOf = opecPublish?.as_of ?? null;
+  const opecStale = isStale("opec_momr", opecAsOf);
 
   return (
     <main>
@@ -70,7 +137,7 @@ export default async function SupplyPage() {
         Supply
       </h2>
       <p style={{ color: "var(--muted)", fontSize: "0.82rem", margin: "0 0 1.6rem" }}>
-        Drilling activity, the OPEC balance and JODI closing stocks
+        Drilling activity, US monthly production and crude cost, the OPEC balance and JODI stocks
       </p>
 
       <Panel
@@ -86,21 +153,77 @@ export default async function SupplyPage() {
         title="Canada rig count"
         asOf={rigPublish?.as_of ?? null}
         stale={isStale("baker_hughes", rigPublish?.as_of)}
-        sourceNote="Baker Hughes, weekly. Canadian activity swings hard with spring break-up, when thawing ground halts movement — the annual collapse is seasonal, not a signal."
+        sourceNote="Baker Hughes, weekly. Canadian activity swings hard with spring break-up, when thawing ground halts rig movement — the annual collapse is seasonal, not a signal."
       >
         <TimeSeriesChart lines={toLines(caRigs, CANADA_RIGS)} unit={commonUnit(caRigs)} />
       </Panel>
 
       <Panel
-        title="OPEC liquids balance"
-        asOf={opecPublish?.as_of ?? null}
-        stale={isStale("opec_momr", opecPublish?.as_of)}
-        sourceNote="OPEC Monthly Oil Market Report, quarterly. Only a handful of quarters are held: these tables are parsed from each month's published PDF, which carries a short forward window rather than an archive, so this is a snapshot of the current view and not a history."
+        title="US dry gas production and LNG exports"
+        asOf={eiaAsOf}
+        stale={eiaStale}
+        sourceNote="EIA monthly, since 1997. Separate axes: production runs several times the export volume, and on one scale the export line would sit flat against the floor. Feedgas has no distinct EIA series, so exports are the only published measure of the LNG pull."
       >
-        {opec.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>No OPEC balance published.</p>
+        <TimeSeriesChart
+          lines={toLines(gasSupply, GAS_SUPPLY, { secondary: ["N9133US2"] })}
+          unit="MMcf — production"
+          secondaryUnit="MMcf — exports"
+        />
+      </Panel>
+
+      <Panel
+        title="Refiner acquisition cost of crude oil"
+        asOf={eiaAsOf}
+        stale={eiaStale}
+        sourceNote="EIA monthly, since 1974 — what US refiners actually paid, rather than a marker price. The gap between domestic and imported carries the quality and freight story that a single benchmark hides."
+      >
+        <TimeSeriesChart lines={toLines(crudeCost, CRUDE_COST)} unit={commonUnit(crudeCost)} />
+      </Panel>
+
+      <Panel
+        title="Landed cost of imported crude by API gravity"
+        asOf={eiaAsOf}
+        stale={eiaStale}
+        sourceNote="EIA monthly, since 1983. The spread between bands is the light/heavy differential in its rawest published form: heavier barrels land cheaper, and the width of that gap is a refining-margin signal in itself."
+      >
+        <TimeSeriesChart lines={toLines(landed, LANDED_BY_GRAVITY)} unit={commonUnit(landed)} />
+      </Panel>
+
+      <Panel
+        title="US gas delivered to residential and commercial users"
+        asOf={eiaAsOf}
+        stale={eiaStale}
+        sourceNote="EIA monthly, since 1973 — the longest continuous run in this lake. The seasonal amplitude is heating demand, and its year-on-year change is a cleaner weather signal than temperature itself."
+      >
+        <TimeSeriesChart
+          lines={toLines(gasConsumption, GAS_CONSUMPTION)}
+          unit={commonUnit(gasConsumption)}
+        />
+      </Panel>
+
+      <Panel
+        title="OPEC world oil demand forecast"
+        asOf={opecAsOf}
+        stale={opecStale}
+        sourceNote="OPEC Monthly Oil Market Report, quarterly. Built from fifteen monthly Excel appendices back to March 2025, so the series carries past quarters as well as OPEC's forward view. Six months in that range are not served by OPEC at all and are named in the pipeline's own log rather than interpolated."
+      >
+        {opecDemand.length === 0 ? (
+          <p style={{ color: "var(--muted)" }}>No OPEC demand forecast published.</p>
         ) : (
-          <TimeSeriesChart lines={toLines(opec, OPEC_BALANCE)} unit={commonUnit(opec)} />
+          <TimeSeriesChart lines={toLines(opecDemand, OPEC_DEMAND)} unit={commonUnit(opecDemand)} />
+        )}
+      </Panel>
+
+      <Panel
+        title="OPEC non-DoC liquids supply forecast"
+        asOf={opecAsOf}
+        stale={opecStale}
+        sourceNote="Supply from outside the Declaration of Cooperation — the barrels OPEC+ does not control, and the ones its own balance treats as given. US shale is the swing component within it."
+      >
+        {opecSupply.length === 0 ? (
+          <p style={{ color: "var(--muted)" }}>No OPEC supply forecast published.</p>
+        ) : (
+          <TimeSeriesChart lines={toLines(opecSupply, OPEC_SUPPLY)} unit={commonUnit(opecSupply)} />
         )}
       </Panel>
 
