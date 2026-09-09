@@ -62,6 +62,13 @@
   --band: rgba(160, 170, 185, 0.18);
   --grid: #1e232b;
 
+  /* Channel triples for the two series colours that are painted at variable alpha --
+     a heat wash, a bar fill. rgba() cannot interpolate a hex custom property, and the
+     alternative is a raw triple hardcoded in a component, which the no-hardcoded-colour
+     rule forbids and tokens.test.ts cannot see. */
+  --navy-rgb: 77, 159, 255;
+  --red-rgb: 255, 90, 77;
+
   /* One family, monospace, for every label, figure, heading and table cell. Inter is
      kept for running prose only — page deks and source notes — because a paragraph set
      in mono is the part of the real terminal worth leaving behind. */

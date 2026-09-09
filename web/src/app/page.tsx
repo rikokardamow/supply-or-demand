@@ -257,12 +257,12 @@ export default async function Home() {
               href="/balances"
               style={{
                 background: "var(--accent)",
-                color: "#fff",
+                // Amber needs black type, not white -- var(--bg), not "#000", which
+                // would be a hardcoded colour even at an identical value.
+                color: "var(--bg)",
                 fontSize: "var(--size-small)",
                 fontWeight: 600,
                 padding: "0.55rem 1.1rem",
-                borderRadius: "var(--r-md)",
-                boxShadow: "var(--shadow-sm)",
               }}
             >
               This week&rsquo;s balances

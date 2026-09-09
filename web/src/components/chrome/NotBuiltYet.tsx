@@ -19,7 +19,7 @@ export function NotBuiltYet({
   summary: string;
 }) {
   return (
-    <main>
+    <main className="term-panel" style={{ padding: "var(--space-4)" }}>
       <Masthead active={href} />
       <h2
         style={{
