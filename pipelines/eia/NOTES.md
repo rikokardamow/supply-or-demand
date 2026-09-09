@@ -920,3 +920,240 @@ The Step 4 double-count check above reports 45 corridors for the full 90-day bac
 44 corridors for each 3-day re-pull — this is not a discrepancy in the guard itself (the
 check is row-count based, held flat at 100,092 both times), just one low-traffic corridor
 that reported no interchange activity in that specific 3-day window.
+
+## Spec 31C routes — confirmed live 2026-09-08
+
+Task 0 (discovery only, no pull code). The brief's own throwaway-script import line
+(`from core.config import settings`) does not exist in this repo — the real module is
+`core.settings` (confirmed: `pipelines/eia/client.py` already imports it that way, and
+Spec 31B's Task 0 made the same correction in this same file); used `core.settings` for
+every script below, no other deviation.
+
+| Route | Series facet? | Count | Codes used | Frequency | geo quirk | Item |
+|---|---|---|---|---|---|---|
+| `petroleum/pnp/wprode` | yes | 6 (unchanged from Spec 31A's count) | `W_EPOOXE_YOP_NUS_MBBLD` (US), `W_EPOOXE_YOP_R10_MBBLD`..`R50_MBBLD` (PADD1-5) | `weekly` | **no** — all six resolve cleanly to `US`/`PADD1`..`PADD5` via `_normalise_geo`'s existing `"PADD "` prefix rule; no `geo_map` needed | 6 |
+| `petroleum/pnp/capbio` | yes | 3 (unchanged) | `M_EPOORDB_8BDPC_NUS_MMGL` (biodiesel), `M_EPOOROO_8BDPC_NUS_MMGL` (renewable diesel & other), `M_EPOOXE_8BDPC_NUS_MMGL` (fuel ethanol) — all US national | `monthly` | no — all three `geo="US"` | 5 |
+| `petroleum/pnp/feedbiofuel` | yes | 26 (unchanged) | all 26 US national feedstock-input series (full id/name enumeration below) | `monthly` | no — all 26 `geo="US"` | 5 |
+| `coal/consumption-and-quality` | **no** — 400 on `facet/series` (fresh live call below, matching Spec 31A's prior finding) | n/a | facets `location` (74 values) + `sector` (8 values); power-sector code `98` | `quarterly`/`annual` only (declared) | n/a (no series id) | 4 |
+
+**wprode PADD geo resolution:** distinct `geo` set is exactly `{'US', 'PADD1', 'PADD2',
+'PADD3', 'PADD4', 'PADD5'}` — confirmed live across all six ids (not just the national
+code, which is all Spec 31A checked). **No `geo_map` needed**; this route does not have
+the `natural-gas/stor/cap`/`petroleum/pri/land3` literal-`"NA"` quirk. Unit is `MBBL/D`
+(thousand barrels per day) on every row. Row counts are uneven by design, not a data gap:
+`W_EPOOXE_YOP_NUS_MBBLD` (US) and `W_EPOOXE_YOP_R20_MBBLD` (PADD2/Midwest) both have 848
+rows (full history back to 2010-06-04), while PADD1/3/4/5 have 473 rows each (shorter
+history) — consistent with PADD2 being the dominant real-world corn-ethanol production
+region and the other four PADDs' production only having been tracked as a separate
+series since later. 1,500 null-value rows were dropped across the six series by
+`get_series`'s existing null-skip (visible, not silent, per its own logged message).
+
+**feedbiofuel distinct units across all 26 series: `{'MMLB'}` only — one unit, not the
+diverse per-feedstock set the brief's Step 3 flagged as a risk to check for.** Every one
+of the 26 series names ends `(Million Pounds)` and every row's `unit` field is `MMLB`,
+confirmed by grouping units per `series_id` across the full 26-series pull (873 rows
+after 855 nulls dropped, span 2019-01 to 2026-06) — soybean oil, corn oil, canola oil,
+tallow, used cooking oil (recorded here as `M_EPOOBDRFWO_YIFBP_NUS_MMLB` /
+`M_EPOOBDAFO_YIFBP_NUS_MMLB`, "other recycled"/"other waste oil, fat, and grease"),
+biogas, municipal solid waste and every other feedstock are all denominated in million
+pounds. A chart plotting all 26 on one axis is therefore **not** the unit-mismatch risk
+the brief warned about for this specific route — the real risk, if any, is scale (some
+feedstocks are two orders of magnitude smaller than soybean oil), not incompatible
+units. (Contrast with `capbio`, whose 3 series are `MMGL` — million gallons, a
+volume unit — do not plot `feedbiofuel` and `capbio` series on the same axis.)
+
+**`petroleum/pnp/feedbiofuel` — full 26-series id/name enumeration, from a fresh live
+`list_series()` call (fix round 1, 2026-09-08), sorted by id:**
+
+| Series ID | Name |
+|---|---|
+| `M_EPOOBDAFC_YIFBP_NUS_MMLB` | Corn Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFD_YIFBP_NUS_MMLB` | Dedicated energy crops Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFO_YIFBP_NUS_MMLB` | Other waste oil, fat, and grease inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDAFPO_YIFBP_NUS_MMLB` | Other-Agriculture and forestry products Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFR_YIFBP_NUS_MMLB` | Agriculture and forestry residues Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAFS_YIFBP_NUS_MMLB` | Grain Sorghum Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDAL_YIFBP_NUS_MMLB` | Oil from Algae inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDBG_YIFBP_NUS_MMLB` | Biogas Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDCNOD_YIFBP_NUS_MMLB` | Corn oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDCNOR_YIFBP_NUS_MMLB` | Corn oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDCNO_YIFBP_NUS_MMLB` | Total Corn Oil inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDCOD_YIFBP_NUS_MMLB` | Canola oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDCOR_YIFBP_NUS_MMLB` | Canola oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDCO_YIFBP_NUS_MMLB` | Total Canola Oil Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSPT_YIFBP_NUS_MMLB` | Poultry Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSTL_YIFBP_NUS_MMLB` | Tallow Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSWG_YIFBP_NUS_MMLB` | White Grease Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDFSYG_YIFBP_NUS_MMLB` | Yellow Grease Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDOB_YIFBP_NUS_MMLB` | Other biofuel feedstocks (NESOI) inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDRFWM_YIFBP_NUS_MMLB` | Municipal solid waste Inputs to Biofules Production (Million Pounds) [sic, EIA's own typo] |
+| `M_EPOOBDRFWO_YIFBP_NUS_MMLB` | Other recycled feed inputs to biofuels production (Million Pounds) |
+| `M_EPOOBDRFWY_YIFBP_NUS_MMLB` | Yard and food waste Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDSOD_YIFBP_NUS_MMLB` | Soybean oil inputs to biofuels production at biodiesel plants (Million Pounds) |
+| `M_EPOOBDSOR_YIFBP_NUS_MMLB` | Soybean oil inputs to biofuels production at renewable diesel plants (Million Pounds) |
+| `M_EPOOBDSO_YIFBP_NUS_MMLB` | Total Soybean Oil Inputs to Biofuels Production (Million Pounds) |
+| `M_EPOOBDVOO_YIFBP_NUS_MMLB` | Other vegetable oil inputs to biofuels production (Million Pounds) |
+
+**coal facets: location=74 values, US present? yes. sector=8 values.** `location`'s 74
+values mix 53 real geographies (50 states + DC + PR + `US`) with **21** census-region
+aggregate codes — a bigger and differently-shaped mixing problem than Spec 30's
+`electricity/electric-power-operational-data` (11 aggregate codes, one code per region).
+Here each of 10 named regions (`NEW`, `MAT`, `ENC`, `WNC`, `SAT`, `ESC`, `WSC`, `MTN`,
+`PCC`, `PCN`) is **duplicated** under a second, purely numeric code (`80`-`89`
+respectively — confirmed live, e.g. `ESC`/"East South Central" and `85`/"East South
+Central" are the same region under two ids), plus one solo aggregate, `90`/"Pacific",
+with no letter-mnemonic counterpart (the combined total of `PCC`+`PCN`). Any future pull
+scoped to `location=US` only is unaffected by this, but a future state-level pull must
+filter both the numeric and the letter aggregate codes out explicitly, same discipline
+as Spec 30's `GENERATOR_FUEL_LOCATIONS`.
+
+**coal power-sector code: `98`, name `"Electric Power"`.** Confirmed live from the
+8-value `sector` facet dump: `98` ("Electric Power") is the aggregate this project needs
+(matching the same code EIA uses for `electricity/electric-power-operational-data`'s
+`sectorid=98` in Spec 30) — distinct from `1` ("Electric Utility"), `94` ("Independent
+Power Producers"), `2`/`3` ("IPP Non-CHP"/"IPP CHP"), `9` ("Coke Plants"), `8`
+("Commercial and Institutional") and `10` ("Other Industrial"), none of which is the
+power-sector aggregate the spec's item 4 scopes to.
+
+**coal data keys and their unit strings (all seven, verbatim, from a live
+`facets[location][]=US`/`facets[sector][]=98` quarterly call):**
+- `receipts` → `"short tons"`
+- `consumption` → `"short tons"`
+- `stocks` → `"short tons"`
+- `price` → `"dollars per short ton"`
+- `heat-content` → `"average sulfur percent by weight"`
+- `sulfur-content` → `"average sulfur percent by weight"`
+- `ash-content` → `"average ash percent by weight"`
+
+**Real EIA-side bug, confirmed live, not a client parsing error: `heat-content-units`
+carries the wrong string.** `heat-content`'s unit label is the **literal same string** as
+`sulfur-content`'s (`"average sulfur percent by weight"`), even though the two keys carry
+unrelated real-world quantities — `heat-content`'s own values (`18.94`, `19.03`, `18.72`
+for the three most recent quarters) are in the right numeric range for MMBtu/short ton
+(the standard coal heat-content unit), not for a sulfur percentage (which would be a much
+smaller, single-digit number — compare `sulfur-content`'s own real values, `1.24`-`1.37`,
+for the same quarters). This is EIA mislabelling its own response field, not a
+mis-mapped column in this project's code — Task 3, if it surfaces `heat-content` on a
+chart, must hardcode the correct real-world unit (MMBtu per short ton) rather than
+trusting `heat-content-units` verbatim.
+
+**coal row field names (verbatim, one data key requested at a time):** `period`,
+`location`, `stateDescription`, `sector`, `sectorDescription`, `<data_key>` (e.g.
+`"price"`), `<data_key>-units` (e.g. `"price-units"`). **Value column:** the requested
+`data_key` itself, not a fixed `"value"` field — this route follows the same
+key-named-value-column shape as `get_operational_series`'s
+`electricity/electric-power-operational-data`, not `get_series`'s fixed `value`/`units`
+pair. **Unit column:** `<data_key>-units`. **Both `location` and `sector` are present on
+every row, confirmed** (plus the bonus `stateDescription`/`sectorDescription` human-
+readable fields) — not a blocker for Task 3's plan to mint series ids from them.
+
+**coal period format:** `"2026-Q2"` (`YYYY-Qn`), confirmed on live quarterly data.
+
+**`US` confirmed as a real, non-null `location` value — this route is not state-only.**
+Five most recent quarters of `price` for `location=US`/`sector=98` all returned real,
+non-null values (`47.09`, `45.61`, `45.18`, `45.43`, `47.22` dollars per short ton,
+2025-Q2 through 2026-Q2) — Task 3's national-scope plan is unaffected.
+
+**Routes that failed or returned nothing:** none. `coal/consumption-and-quality`'s
+`facet/series` still 400s as Spec 31A already found (expected — this route has no
+`series` facet at all). **Re-confirmed with a fresh live call in fix round 1
+(2026-09-08, not re-checked in the original Task 0 run):** `GET
+/v2/coal/consumption-and-quality/facet/series` returns HTTP 400 with body `{"error":
+"Invalid facet 'series' provided. The only valid facets are 'location', and 'sector'.",
+"code": 400}` — same conclusion as Spec 31A, now independently verified rather than
+carried over. Every facet/data call made with the route's real shape (`location`,
+`sector`, the seven data keys) succeeded.
+
+## Task 2 (31C) — biofuels capacity and feedstocks, and 4 feedstocks that report no data at all
+
+`pipelines/eia/pull_biofuels.py` pulls `petroleum/pnp/capbio` (3 codes, `CAPACITY`) and
+`petroleum/pnp/feedbiofuel` (26 codes, `FEEDSTOCKS`) via the plain `EIAClient.get_series`
+(no `geo_map` needed — both routes resolve `geo="US"` cleanly, confirmed in Task 0 above).
+`CAPACITY`'s three ids were corrected against a fresh live cross-check before this task
+started (the plan brief's own placeholder ids did not match Task 0's real discovery):
+`BIODIESEL = "M_EPOORDB_8BDPC_NUS_MMGL"`, `RENEWABLE_DIESEL = "M_EPOOROO_8BDPC_NUS_MMGL"`,
+`FUEL_ETHANOL = "M_EPOOXE_8BDPC_NUS_MMGL"`. `FEEDSTOCKS` is the full 26-id list transcribed
+from this file's own "full 26-series id/name enumeration" table above, in the same
+sorted-by-id order.
+
+**New finding, confirmed live during cassette recording, not present in Task 0's own
+notes above (which only recorded an *aggregate* 855-row null-drop count): 4 of the 26
+feedstocks report a literal null `value` for every single one of their recorded periods,
+not just some early-history rows like the routes documented earlier in this file.**
+Confirmed by fetching each in isolation (bypassing the shared-request batching of the
+other 22 codes): `M_EPOOBDAFD_YIFBP_NUS_MMLB` (dedicated energy crops),
+`M_EPOOBDBG_YIFBP_NUS_MMLB` (biogas), `M_EPOOBDRFWM_YIFBP_NUS_MMLB` (municipal solid
+waste) and `M_EPOOBDRFWY_YIFBP_NUS_MMLB` (yard and food waste) each return exactly 66
+rows (2021-01 to 2026-06), 0 of them non-null. This is EIA publishing the series (they
+are real, confirmed present in `list_series()`) with no real-world data behind them, not
+a client bug or a truncated `FEEDSTOCKS` paste — `EIAClient.get_series`'s existing
+null-skip correctly drops all 66 rows for each, leaving them entirely absent from any
+pull, forever, unless EIA someday starts reporting real values for these categories.
+
+**`tests/test_eia_biofuels.py::test_feedstocks_return_valid_ts_long_for_every_series` was
+adjusted for this** — the failing-test brief's own verbatim assertion
+(`set(df["series_id"]) == set(FEEDSTOCKS)`) does not hold against real data and cannot be
+made to hold by fixing code, since these 4 series have no reportable rows at all. The test
+now asserts equality against `FEEDSTOCKS` minus the 4 always-null ids above (named inline,
+with this section referenced) — still catching a regression in any of the other 22, which
+was the assertion's real intent. `FEEDSTOCKS` itself, `EXPECTED_FEEDSTOCK_COUNT` (26) and
+`pull_biofuels.py` are unchanged by this finding — the 4 ids stay in `FEEDSTOCKS` since
+they are real, current EIA series that could start reporting data in future.
+
+Full suite after this task (`.venv/Scripts/pytest.exe`): 768 passed, 1 failed, 16
+deselected. The one failure,
+`tests/test_pages_smoke.py::test_page_loads_without_raising[02_gas_storage.py]`
+(`KeyError: 'deviation'` inside `pipelines/gie/transforms.py`), is unrelated to this
+task — it touches no file this task changed, reproduces identically in isolation, and
+was already surfaced during the pre-task memory read as a side-effect of the recent
+lake/`.venv` rebuild (not this task's job to fix). `ruff check .` and `mypy core pipelines
+infra apps` both clean.
+
+## Task 4 (31C) — final gate, real pulls for items 5 and 6, 2026-09-09
+
+Real (not cassette) runs against the live EIA API and the real lake, confirming the
+findings recorded above rather than superseding them.
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_ethanol_weekly` — exit 0: `petroleum/pnp/
+wprode: dropped 1500 row(s) with no value` / `wrote 3588 weekly ethanol rows across 6
+regions` — matches Spec 31C's Task-0/Task-1 finding above exactly (1,500 null rows
+dropped across the six series, 848+848+473×4 = 3,588 surviving rows).
+
+`.venv/Scripts/python.exe -m pipelines.eia.pull_biofuels` — exit 0, two independent
+failure scopes both succeeded: `wrote 198 biofuel capacity rows` (3 codes × 66 rows) and
+`petroleum/pnp/feedbiofuel: dropped 855 row(s) with no value` / `wrote 873 biofuel
+feedstock rows across 22 feedstocks` — the 22, not 26, matches Task 2's live-confirmed
+finding that 4 of the 26 requested feedstocks (`M_EPOOBDAFD_YIFBP_NUS_MMLB`,
+`M_EPOOBDBG_YIFBP_NUS_MMLB`, `M_EPOOBDRFWM_YIFBP_NUS_MMLB`,
+`M_EPOOBDRFWY_YIFBP_NUS_MMLB`) report a literal null for every period and are therefore
+absent from any pull — confirmed again here as `set(FEEDSTOCKS) - set(feed["series_id"])`
+against the freshly pulled frame, same four ids, no drift.
+
+**Item's-own-question checks, read from the real lake with `source="eia"`-narrowed
+`read_ts_long` calls (never unbounded):**
+- Ethanol: 3,588 rows, `geo` = `{'PADD1', 'PADD2', 'PADD3', 'PADD4', 'PADD5', 'US'}`.
+  **PADD5 present** — the West Coast under-ingestion risk plan 31A's Task 0 flagged does
+  not apply here.
+- Biofuels: 198 capacity rows, 873 feedstock rows; `RENEWABLE_DIESEL`
+  (`M_EPOOROO_8BDPC_NUS_MMGL`) carries 66 of the 198 capacity rows (its full share, one of
+  three `CAPACITY` codes at 66 rows each). **Distinct feedstock units: `{'MMLB'}` — one
+  unit only**, confirmed again on the fresh pull; the 26 series (22 with real data) can
+  share an axis unconverted, as Task 0/2 already found.
+
+**Coal source check (the single most important check in this plan) — `set(coal["source"])
+== {"coal"}` exactly, confirmed live against a fresh `pull_coal` run**; see
+`pipelines/coal/NOTES.md` item 4 for the full readout (row counts, series ids, units).
+`get_facet_series`'s `source="coal"` parameter is doing its job — nothing here is filed
+under `coal/` while its own `source` column reads `eia`.
+
+**Full suite** (`.venv/Scripts/pytest.exe`, run after all three real pulls above): 773
+passed, 1 failed, 16 deselected (112s). The one failure is the same known,
+already-being-addressed, out-of-scope issue named above —
+`tests/test_pages_smoke.py::test_page_loads_without_raising[02_gas_storage.py]`
+(`KeyError: 'deviation'` inside `pipelines/gie/transforms.py`) — a side effect of the
+`data/lake/`/`.venv` wipe-and-rebuild this session inherited, not of anything this task or
+plan 31C changed; a background GIE historical backfill to fix it was running
+concurrently, out of this task's scope to touch. No other failure appeared. **Lint**:
+`.venv/Scripts/ruff.exe check .` — all checks passed. **Types**:
+`.venv/Scripts/mypy.exe core pipelines infra` — no issues found in 167 source files,
+`pipelines/coal/` included for the first time under this check with zero errors.

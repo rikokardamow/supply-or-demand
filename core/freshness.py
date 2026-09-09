@@ -47,6 +47,7 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     # Monthly group.
     "opec_momr": 35,
     "jodi": 35,
+    "coal": 35,
 }
 
 # The sanctions table has no `source` column (it's single-source, OFAC only) --
