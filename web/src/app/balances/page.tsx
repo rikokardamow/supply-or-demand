@@ -1,5 +1,5 @@
 import { SeasonalChart } from "@/components/charts/SeasonalChart";
-import { Masthead } from "@/components/chrome/Masthead";
+import { PageHeader } from "@/components/chrome/PageHeader";
 import { Panel } from "@/components/chrome/Panel";
 import { HeatTable } from "@/components/tables/HeatTable";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
@@ -72,115 +72,109 @@ export default async function BalancesPage() {
   const weekEnding = lines.find((r) => r.week_ending)?.week_ending ?? null;
 
   return (
-    <main>
-      <Masthead active="/balances" />
-
-      <h2
-        style={{
-          fontFamily: "var(--heading-stack)",
-          fontSize: "1.6rem",
-          margin: "0.5rem 0 0.35rem",
-        }}
-      >
-        Balances
-      </h2>
-      <p
-        style={{
-          color: "var(--muted)",
-          fontSize: "0.82rem",
-          margin: "0 0 1.6rem",
-        }}
-      >
-        EIA Weekly Petroleum Status Report
-        {weekEnding ? ` · week ending ${formatDate(weekEnding)}` : ""}
-      </p>
-
-      <Panel
-        title="At a glance"
-        asOf={linesPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, linesPublish?.as_of)}
-        sourceNote={
-          "Week-on-week is an absolute change in each line's own unit; year-on-year and " +
-          "vs-median are percentages. The seasonal median excludes 2020."
+    <>
+      <PageHeader
+        active="/balances"
+        title="Balances"
+        dek={
+          <>
+            EIA Weekly Petroleum Status Report
+            {weekEnding ? ` · week ending ${formatDate(weekEnding)}` : ""}
+          </>
         }
-      >
-        <HeatTable rows={lines} />
-      </Panel>
+      />
 
-      <Panel
-        title="US crude oil stocks, excluding the SPR"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote={
-          seasonalPublish?.source_note ??
-          "EIA Weekly Petroleum Status Report, via serving.seasonal_v"
-        }
-      >
-        {band.length === 0 ? (
-          <p style={{ color: "var(--muted)" }}>
-            No seasonal band published for {SERIES} yet.
-          </p>
-        ) : (
-          <SeasonalChart rows={band} unit={unit} bandYears={bandYears} />
-        )}
-      </Panel>
+      <main>
+        <Panel
+          title="At a glance"
+          asOf={linesPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, linesPublish?.as_of)}
+          sourceNote={
+            "Week-on-week is an absolute change in each line's own unit; year-on-year and " +
+            "vs-median are percentages. The seasonal median excludes 2020."
+          }
+        >
+          <HeatTable rows={lines} />
+        </Panel>
 
-      <Panel
-        title="Crude oil at Cushing, Oklahoma"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote="The WTI delivery point: the tank farm the front-month contract settles against, which is why its fill matters out of proportion to its size."
-      >
-        <SeasonalChart
-          rows={cushingBand}
-          unit={cushingBand.find((r) => r.unit)?.unit ?? null}
-          bandYears={cushingBand.find((r) => r.years)?.years ?? null}
-        />
-      </Panel>
+        <Panel
+          title="US crude oil stocks, excluding the SPR"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote={
+            seasonalPublish?.source_note ??
+            "EIA Weekly Petroleum Status Report, via serving.seasonal_v"
+          }
+        >
+          {band.length === 0 ? (
+            <p style={{ color: "var(--muted)" }}>
+              No seasonal band published for {SERIES} yet.
+            </p>
+          ) : (
+            <SeasonalChart rows={band} unit={unit} bandYears={bandYears} />
+          )}
+        </Panel>
 
-      <Panel
-        title="Total motor gasoline stocks"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote="Seven-year range and median, 2020 excluded."
-      >
-        <SeasonalChart
-          rows={gasolineBand}
-          unit={gasolineBand.find((r) => r.unit)?.unit ?? null}
-          bandYears={gasolineBand.find((r) => r.years)?.years ?? null}
-        />
-      </Panel>
+        <Panel
+          title="Crude oil at Cushing, Oklahoma"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote="The WTI delivery point: the tank farm the front-month contract settles against, which is why its fill matters out of proportion to its size."
+        >
+          <SeasonalChart
+            rows={cushingBand}
+            unit={cushingBand.find((r) => r.unit)?.unit ?? null}
+            bandYears={cushingBand.find((r) => r.years)?.years ?? null}
+          />
+        </Panel>
 
-      <Panel
-        title="Distillate fuel oil stocks"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote="Diesel and heating oil. Seven-year range and median, 2020 excluded."
-      >
-        <SeasonalChart
-          rows={distillateBand}
-          unit={distillateBand.find((r) => r.unit)?.unit ?? null}
-          bandYears={distillateBand.find((r) => r.years)?.years ?? null}
-        />
-      </Panel>
+        <Panel
+          title="Total motor gasoline stocks"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote="Seven-year range and median, 2020 excluded."
+        >
+          <SeasonalChart
+            rows={gasolineBand}
+            unit={gasolineBand.find((r) => r.unit)?.unit ?? null}
+            bandYears={gasolineBand.find((r) => r.years)?.years ?? null}
+          />
+        </Panel>
 
-      <Panel
-        title="Refinery utilisation"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote="Per cent of operable capacity. Sustained readings near 100% leave no slack for an unplanned outage."
-      >
-        <ChartControls lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
-      </Panel>
+        <Panel
+          title="Distillate fuel oil stocks"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote="Diesel and heating oil. Seven-year range and median, 2020 excluded."
+        >
+          <SeasonalChart
+            rows={distillateBand}
+            unit={distillateBand.find((r) => r.unit)?.unit ?? null}
+            bandYears={distillateBand.find((r) => r.years)?.years ?? null}
+          />
+        </Panel>
 
-      <Panel
-        title="Crude production, exports and imports"
-        asOf={seasonalPublish?.as_of ?? null}
-        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
-        sourceNote="All three on one axis in thousand barrels per day, so the balance between them is readable directly."
-      >
-        <ChartControls lines={toLines(trade, TRADE)} unit={commonUnit(trade)} />
-      </Panel>
-    </main>
+        <Panel
+          title="Refinery utilisation"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote="Per cent of operable capacity. Sustained readings near 100% leave no slack for an unplanned outage."
+        >
+          <ChartControls lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
+        </Panel>
+
+        <Panel
+          title="Crude production, exports and imports"
+          asOf={seasonalPublish?.as_of ?? null}
+          stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+          sourceNote="All three on one axis in thousand barrels per day, so the balance between them is readable directly."
+        >
+          <ChartControls
+            lines={toLines(trade, TRADE)}
+            unit={commonUnit(trade)}
+          />
+        </Panel>
+      </main>
+    </>
   );
 }

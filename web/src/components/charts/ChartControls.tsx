@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import { TimeSeriesChart, type SeriesLine } from "@/components/charts/TimeSeriesChart";
+import {
+  TimeSeriesChart,
+  type SeriesLine,
+} from "@/components/charts/TimeSeriesChart";
 import { SERIES_CYCLE } from "@/theme/plotly";
 
 /**
@@ -171,7 +174,9 @@ export function ChartControls({
                   ...controlBase,
                   color: range === key ? "var(--ink)" : "var(--muted)",
                   borderBottom:
-                    range === key ? "1px solid var(--ink)" : "1px solid transparent",
+                    range === key
+                      ? "1px solid var(--ink)"
+                      : "1px solid transparent",
                 }}
               >
                 {key}
@@ -181,11 +186,15 @@ export function ChartControls({
         ) : null}
       </div>
 
+      {/* The toggle row above is the legend. Letting Plotly draw its own underneath would
+          name every series twice, in a different case and a different order -- and the
+          one a reader can actually click would be the one that looks least clickable. */}
       <TimeSeriesChart
         lines={shown}
         unit={unit}
         secondaryUnit={secondaryUnit}
         height={height}
+        showLegend={coloured.length <= 1}
       />
     </div>
   );

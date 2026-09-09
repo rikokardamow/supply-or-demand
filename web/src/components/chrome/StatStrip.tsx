@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { CountUp } from "@/components/chrome/CountUp";
 import type { Headline } from "@/data/queries/overview";
-import { formatDate, formatNumber, formatPercent, formatSigned } from "@/lib/format";
+import { formatDate, formatPercent, formatSigned } from "@/lib/format";
 
 /**
  * The headline figures, above everything else.
@@ -57,6 +58,7 @@ export function StatStrip({ headlines }: { headlines: Headline[] }) {
           }}
         >
           <div
+            className="stat-label"
             style={{
               fontSize: "var(--size-micro)",
               letterSpacing: "0.08em",
@@ -70,19 +72,24 @@ export function StatStrip({ headlines }: { headlines: Headline[] }) {
 
           {/* Unit sits on the baseline beside the figure rather than under it: a third
               line per tile costs six lines of vertical noise across the row. */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: "0.3rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "baseline", gap: "0.3rem" }}
+          >
             <span
               className="tabular"
               style={{
-                fontSize: "1.75rem",
+                fontSize: "2.1rem",
                 color: "var(--ink)",
                 lineHeight: 1,
-                letterSpacing: "-0.025em",
+                letterSpacing: "-0.03em",
+                fontWeight: 500,
               }}
             >
-              {formatNumber(h.value, decimals(h.unit))}
+              <CountUp value={h.value} digits={decimals(h.unit)} />
             </span>
-            <span style={{ fontSize: "var(--size-micro)", color: "var(--muted)" }}>
+            <span
+              style={{ fontSize: "var(--size-micro)", color: "var(--muted)" }}
+            >
               {h.unit ?? ""}
             </span>
           </div>

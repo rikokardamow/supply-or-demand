@@ -1,4 +1,4 @@
-import { Masthead } from "@/components/chrome/Masthead";
+import { PageHeader } from "@/components/chrome/PageHeader";
 import { Panel } from "@/components/chrome/Panel";
 import { fetchEventCoverage, fetchRecentEvents } from "@/data/queries/events";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
@@ -25,100 +25,162 @@ export default async function EventsPage() {
   const stale = isStale("events", asOf);
 
   return (
-    <main>
-      <Masthead active="/events" />
-      <h2 style={{ fontFamily: "var(--heading-stack)", fontSize: "1.6rem", margin: "0.5rem 0 0.35rem" }}>
-        Events
-      </h2>
-      <p style={{ color: "var(--muted)", fontSize: "0.82rem", margin: "0 0 1.6rem" }}>
-        Tagged news, OFAC listings and self-hosted social sentiment
-      </p>
+    <>
+      <PageHeader
+        active="/events"
+        title="Events"
+        dek="Tagged news, OFAC listings and self-hosted social sentiment"
+      />
 
-      <Panel
-        title="Coverage by source"
-        asOf={asOf}
-        stale={stale}
-        sourceNote="Coverage rather than a volume chart, deliberately. OFAC's events all carry a single timestamp — the ingestion date, since a listing has no natural event time — so a daily-volume line would show one artificial spike dwarfing every real source. Distinct days is the honest measure of how much history each source actually spans."
-      >
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
-            <thead>
-              <tr>
-                <th style={{ ...cell, textAlign: "left", color: "var(--muted)", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em" }}>Source</th>
-                {["Events", "Distinct days", "Severity 2+", "First", "Last"].map((h) => (
-                  <th key={h} style={{ ...cell, textAlign: "right", color: "var(--muted)", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.06em" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {coverage.map((c) => (
-                <tr key={c.source}>
-                  <td style={cell}>{c.source}</td>
-                  <td style={num}>{formatNumber(c.events, 0)}</td>
-                  <td style={num}>{formatNumber(c.distinct_days, 0)}</td>
-                  <td style={num}>{formatNumber(c.severity_2_plus, 0)}</td>
-                  <td style={{ ...num, color: "var(--muted)" }}>{formatDate(c.first_ts)}</td>
-                  <td style={{ ...num, color: "var(--muted)" }}>{formatDate(c.last_ts)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
-
-      <Panel
-        title="Most recent events"
-        asOf={asOf}
-        stale={stale}
-        sourceNote="Severity is the field that decides whether an event reaches a price chart: the Python overlay draws only severity 2 and above."
-      >
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
-            <thead>
-              <tr>
-                {["Date", "Source", "Headline", "Commodity", "Severity"].map((h) => (
+      <main>
+        <Panel
+          title="Coverage by source"
+          asOf={asOf}
+          stale={stale}
+          sourceNote="Coverage rather than a volume chart, deliberately. OFAC's events all carry a single timestamp — the ingestion date, since a listing has no natural event time — so a daily-volume line would show one artificial spike dwarfing every real source. Distinct days is the honest measure of how much history each source actually spans."
+        >
+          <div style={{ overflowX: "auto" }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "0.85rem",
+              }}
+            >
+              <thead>
+                <tr>
                   <th
-                    key={h}
                     style={{
-                      textAlign: h === "Severity" ? "right" : "left",
-                      padding: "0.4rem 0.6rem",
-                      borderBottom: "1px solid var(--rule)",
-                      fontSize: "0.72rem",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
+                      ...cell,
+                      textAlign: "left",
                       color: "var(--muted)",
+                      fontSize: "0.72rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
                     }}
                   >
-                    {h}
+                    Source
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {recent.map((e) => (
-                <tr key={e.event_id}>
-                  <td style={cell}>{formatDate(e.ts)}</td>
-                  <td style={{ ...cell, color: "var(--muted)" }}>{e.source}</td>
-                  <td style={cell}>
-                    {e.url ? (
-                      <a href={e.url} target="_blank" rel="noreferrer" style={{ color: "var(--ink)" }}>
-                        {e.headline}
-                      </a>
-                    ) : (
-                      e.headline
-                    )}
-                  </td>
-                  <td style={{ ...cell, color: "var(--muted)" }}>{e.commodity ?? "–"}</td>
-                  <td style={{ ...cell, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
-                    {e.severity ?? "–"}
-                  </td>
+                  {[
+                    "Events",
+                    "Distinct days",
+                    "Severity 2+",
+                    "First",
+                    "Last",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      style={{
+                        ...cell,
+                        textAlign: "right",
+                        color: "var(--muted)",
+                        fontSize: "0.72rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
-    </main>
+              </thead>
+              <tbody>
+                {coverage.map((c) => (
+                  <tr key={c.source}>
+                    <td style={cell}>{c.source}</td>
+                    <td style={num}>{formatNumber(c.events, 0)}</td>
+                    <td style={num}>{formatNumber(c.distinct_days, 0)}</td>
+                    <td style={num}>{formatNumber(c.severity_2_plus, 0)}</td>
+                    <td style={{ ...num, color: "var(--muted)" }}>
+                      {formatDate(c.first_ts)}
+                    </td>
+                    <td style={{ ...num, color: "var(--muted)" }}>
+                      {formatDate(c.last_ts)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+
+        <Panel
+          title="Most recent events"
+          asOf={asOf}
+          stale={stale}
+          sourceNote="Severity is the field that decides whether an event reaches a price chart: the Python overlay draws only severity 2 and above."
+        >
+          <div style={{ overflowX: "auto" }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: "0.85rem",
+              }}
+            >
+              <thead>
+                <tr>
+                  {["Date", "Source", "Headline", "Commodity", "Severity"].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        style={{
+                          textAlign: h === "Severity" ? "right" : "left",
+                          padding: "0.4rem 0.6rem",
+                          borderBottom: "1px solid var(--rule)",
+                          fontSize: "0.72rem",
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                          color: "var(--muted)",
+                        }}
+                      >
+                        {h}
+                      </th>
+                    ),
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map((e) => (
+                  <tr key={e.event_id}>
+                    <td style={cell}>{formatDate(e.ts)}</td>
+                    <td style={{ ...cell, color: "var(--muted)" }}>
+                      {e.source}
+                    </td>
+                    <td style={cell}>
+                      {e.url ? (
+                        <a
+                          href={e.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          {e.headline}
+                        </a>
+                      ) : (
+                        e.headline
+                      )}
+                    </td>
+                    <td style={{ ...cell, color: "var(--muted)" }}>
+                      {e.commodity ?? "–"}
+                    </td>
+                    <td
+                      style={{
+                        ...cell,
+                        textAlign: "right",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {e.severity ?? "–"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+      </main>
+    </>
   );
 }
 
