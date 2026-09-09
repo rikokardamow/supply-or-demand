@@ -26,7 +26,8 @@ function heatStyle(pct: number | null): { background?: string } {
   if (magnitude < HEAT_THRESHOLD_PCT) return {};
 
   const scaled = Math.min(
-    (magnitude - HEAT_THRESHOLD_PCT) / (HEAT_SATURATION_PCT - HEAT_THRESHOLD_PCT),
+    (magnitude - HEAT_THRESHOLD_PCT) /
+      (HEAT_SATURATION_PCT - HEAT_THRESHOLD_PCT),
     1,
   );
   const alpha = 0.08 + scaled * 0.22;
@@ -50,7 +51,7 @@ function digitsFor(unit: string | null): number {
 
 const cell: React.CSSProperties = {
   padding: "0.4rem 0.6rem",
-  borderBottom: "1px solid var(--rule)",
+  borderBottom: "1px solid var(--border)",
   fontVariantNumeric: "tabular-nums",
   textAlign: "right",
   whiteSpace: "nowrap",
@@ -64,7 +65,7 @@ const headCell: React.CSSProperties = {
   letterSpacing: "0.06em",
   textTransform: "uppercase",
   color: "var(--muted)",
-  borderBottom: "1px solid var(--rule)",
+  borderBottom: "1px solid var(--border)",
 };
 
 export function HeatTable({ rows }: { rows: WpsrLineRow[] }) {
@@ -80,7 +81,7 @@ export function HeatTable({ rows }: { rows: WpsrLineRow[] }) {
         style={{
           width: "100%",
           borderCollapse: "collapse",
-          fontFamily: "var(--body-stack)",
+          fontFamily: "var(--font)",
           fontSize: "0.88rem",
         }}
       >
@@ -98,27 +99,29 @@ export function HeatTable({ rows }: { rows: WpsrLineRow[] }) {
           {rows.map((row) => {
             const digits = digitsFor(row.unit);
             return (
-            <tr key={row.line ?? ""}>
-              <td style={{ ...cell, textAlign: "left", whiteSpace: "normal" }}>
-                {row.label}
-              </td>
-              <td
-                style={{
-                  ...cell,
-                  textAlign: "left",
-                  color: "var(--muted)",
-                  fontSize: "0.78rem",
-                }}
-              >
-                {row.unit}
-              </td>
-              <td style={cell}>{formatNumber(row.value, digits)}</td>
-              <td style={cell}>{formatSigned(row.wow, digits)}</td>
-              <td style={cell}>{formatPercent(row.yoy_pct)}</td>
-              <td style={{ ...cell, ...heatStyle(row.vs_median_pct) }}>
-                {formatPercent(row.vs_median_pct)}
-              </td>
-            </tr>
+              <tr key={row.line ?? ""}>
+                <td
+                  style={{ ...cell, textAlign: "left", whiteSpace: "normal" }}
+                >
+                  {row.label}
+                </td>
+                <td
+                  style={{
+                    ...cell,
+                    textAlign: "left",
+                    color: "var(--muted)",
+                    fontSize: "0.78rem",
+                  }}
+                >
+                  {row.unit}
+                </td>
+                <td style={cell}>{formatNumber(row.value, digits)}</td>
+                <td style={cell}>{formatSigned(row.wow, digits)}</td>
+                <td style={cell}>{formatPercent(row.yoy_pct)}</td>
+                <td style={{ ...cell, ...heatStyle(row.vs_median_pct) }}>
+                  {formatPercent(row.vs_median_pct)}
+                </td>
+              </tr>
             );
           })}
         </tbody>

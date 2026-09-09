@@ -129,7 +129,7 @@ export default async function EventsPage() {
                         style={{
                           textAlign: h === "Severity" ? "right" : "left",
                           padding: "0.4rem 0.6rem",
-                          borderBottom: "1px solid var(--rule)",
+                          borderBottom: "1px solid var(--border)",
                           fontSize: "0.72rem",
                           letterSpacing: "0.06em",
                           textTransform: "uppercase",
@@ -155,7 +155,7 @@ export default async function EventsPage() {
                           href={e.url}
                           target="_blank"
                           rel="noreferrer"
-                          style={{ color: "var(--ink)" }}
+                          style={{ color: "var(--text)" }}
                         >
                           {e.headline}
                         </a>
@@ -188,7 +188,7 @@ export default async function EventsPage() {
 
 const cell: React.CSSProperties = {
   padding: "0.4rem 0.6rem",
-  borderBottom: "1px solid var(--rule)",
+  borderBottom: "1px solid var(--border)",
   verticalAlign: "top",
 };
 

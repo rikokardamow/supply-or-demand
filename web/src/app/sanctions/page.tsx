@@ -24,7 +24,7 @@ export const revalidate = 3600;
 
 const cell: React.CSSProperties = {
   padding: "0.4rem 0.6rem",
-  borderBottom: "1px solid var(--rule)",
+  borderBottom: "1px solid var(--border)",
   verticalAlign: "top",
 };
 

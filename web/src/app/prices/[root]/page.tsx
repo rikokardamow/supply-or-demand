@@ -76,11 +76,12 @@ export default async function TickerPage({
               style={{
                 fontSize: "0.85rem",
                 textDecoration: "none",
-                color: t.root === ticker.root ? "var(--ink)" : "var(--muted)",
+                color:
+                  t.root === ticker.root ? "var(--accent)" : "var(--muted)",
                 fontWeight: t.root === ticker.root ? 600 : 400,
                 borderBottom:
                   t.root === ticker.root
-                    ? "2px solid var(--ink)"
+                    ? "2px solid var(--accent)"
                     : "2px solid transparent",
                 paddingBottom: "0.1rem",
               }}
