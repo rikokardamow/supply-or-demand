@@ -1,4 +1,14 @@
+# Which dependencies may run their own install scripts.
+#
+# pnpm 10+ refuses to run any dependency's postinstall unless it is named here, and errors
+# rather than warning when one is left undecided -- `esbuild` sat as the literal placeholder
+# "set this to true or false", which passed locally only because an earlier install had
+# already put its binary on disk, and failed every clean checkout including Vercel's.
+#
+# esbuild: true -- it fetches its own platform-native binary, and vitest cannot run without
+# it. sharp and unrs-resolver stay false: Next brings its own image pipeline, and neither
+# build is needed for `next build`.
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
   sharp: false
   unrs-resolver: false
