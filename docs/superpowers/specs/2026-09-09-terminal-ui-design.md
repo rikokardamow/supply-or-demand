@@ -156,10 +156,12 @@ and are unaffected.
   the `+`/`−`.
 - **Empty and not-built states** (`NotBuiltYet`) get the panel treatment so a page with
   no data still reads as a panel with nothing in it, not as a hole.
-- **Contrast is a constraint on the token set, not an afterthought.** `--faint`
-  (`#6b7280`) on `#000` is ~4.7:1 — it passes 4.5:1, but only just, and it is used at
-  9.5px for cadence lines. Any token that fails against its own ground is wrong and gets
-  changed, not shipped.
+- **Contrast is a constraint on the token set, not an afterthought.** This was written
+  claiming `--faint` (`#6b7280`) on `#000` was ~4.7:1 and passing. Computed during
+  planning, it is **4.34:1 and fails** — corrected to `#7d8590` (5.63:1). The error is
+  left on the record because it is the argument for the test: eyes, and confident
+  estimates, are bad at this. Any token that fails against its own ground is wrong and
+  gets changed, not shipped.
 
 ## Testing
 
@@ -179,9 +181,11 @@ and are unaffected.
 - **Density regret is expensive.** 11px is tight. It was chosen against rendered mockups
   rather than in the abstract, and it is one token, but eight components will be built on
   it. If it is wrong, it is cheapest to say so before the plan is executed.
-- **Full-bleed touches every page wrapper.** This is the largest mechanical part of the
-  change and the most likely place for a route to be missed. The manual pass over all 13
-  routes exists for this.
+- **Full-bleed** was expected to touch every page wrapper. It does not: `--measure` has
+  exactly four consumers (`globals.css`'s `main`, `NavBar`, `PageHeader`, `TickerRail`),
+  because the measure lives on `main` rather than in each route. Corrected during
+  planning; this risk is much smaller than first recorded. The manual pass over all 13
+  routes still stands, for the density change rather than for the width.
 - **The maps and Plotly are the least certain.** A dark basemap and a dark plot ground are
   each one-line changes, but the charts were tuned on white and some may need per-chart
   attention.
