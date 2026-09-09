@@ -4,9 +4,12 @@ import { Panel } from "@/components/chrome/Panel";
 import { HeatTable } from "@/components/tables/HeatTable";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
 import { fetchSeasonalBand } from "@/data/queries/seasonal";
+import { fetchSeries } from "@/data/queries/series";
 import { fetchWpsrLines } from "@/data/queries/wpsr";
 import { isStale } from "@/data/staleness";
+import { commonUnit, toLines } from "@/data/toLines";
 import { formatDate } from "@/lib/format";
+import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
 
 /**
  * Balances (Spec 33.02).
@@ -26,9 +29,39 @@ export const revalidate = 3600;
 const SERIES = "WCESTUS1";
 const PIPELINE = "wpsr";
 
+// The other three stock lines the report is read for, each with its own seasonal band.
+const CUSHING = "W_EPC0_SAX_YCUOK_MBBL";
+const GASOLINE = "WGTSTUS1";
+const DISTILLATE = "WDISTUS1";
+
+const RUNS = {
+  WPULEUS3: "Refinery utilisation",
+};
+
+const TRADE = {
+  WCRFPUS2: "Crude production",
+  WCREXUS2: "Crude exports",
+  WCEIMUS2: "Crude imports",
+};
+
 export default async function BalancesPage() {
-  const [band, lines, seasonalPublish, linesPublish] = await Promise.all([
+  const [
+    band,
+    cushingBand,
+    gasolineBand,
+    distillateBand,
+    runs,
+    trade,
+    lines,
+    seasonalPublish,
+    linesPublish,
+  ] = await Promise.all([
     fetchSeasonalBand(SERIES),
+    fetchSeasonalBand(CUSHING),
+    fetchSeasonalBand(GASOLINE),
+    fetchSeasonalBand(DISTILLATE),
+    fetchSeries(Object.keys(RUNS), 5),
+    fetchSeries(Object.keys(TRADE), 5),
     fetchWpsrLines(),
     fetchLatestPublishBy("seasonal", PIPELINE),
     fetchLatestPublishBy("wpsr_lines", PIPELINE),
@@ -90,6 +123,63 @@ export default async function BalancesPage() {
         ) : (
           <SeasonalChart rows={band} unit={unit} bandYears={bandYears} />
         )}
+      </Panel>
+
+      <Panel
+        title="Crude oil at Cushing, Oklahoma"
+        asOf={seasonalPublish?.as_of ?? null}
+        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+        sourceNote="The WTI delivery point: the tank farm the front-month contract settles against, which is why its fill matters out of proportion to its size."
+      >
+        <SeasonalChart
+          rows={cushingBand}
+          unit={cushingBand.find((r) => r.unit)?.unit ?? null}
+          bandYears={cushingBand.find((r) => r.years)?.years ?? null}
+        />
+      </Panel>
+
+      <Panel
+        title="Total motor gasoline stocks"
+        asOf={seasonalPublish?.as_of ?? null}
+        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+        sourceNote="Seven-year range and median, 2020 excluded."
+      >
+        <SeasonalChart
+          rows={gasolineBand}
+          unit={gasolineBand.find((r) => r.unit)?.unit ?? null}
+          bandYears={gasolineBand.find((r) => r.years)?.years ?? null}
+        />
+      </Panel>
+
+      <Panel
+        title="Distillate fuel oil stocks"
+        asOf={seasonalPublish?.as_of ?? null}
+        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+        sourceNote="Diesel and heating oil. Seven-year range and median, 2020 excluded."
+      >
+        <SeasonalChart
+          rows={distillateBand}
+          unit={distillateBand.find((r) => r.unit)?.unit ?? null}
+          bandYears={distillateBand.find((r) => r.years)?.years ?? null}
+        />
+      </Panel>
+
+      <Panel
+        title="Refinery utilisation"
+        asOf={seasonalPublish?.as_of ?? null}
+        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+        sourceNote="Per cent of operable capacity. Sustained readings near 100% leave no slack for an unplanned outage."
+      >
+        <TimeSeriesChart lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
+      </Panel>
+
+      <Panel
+        title="Crude production, exports and imports"
+        asOf={seasonalPublish?.as_of ?? null}
+        stale={isStale(PIPELINE, seasonalPublish?.as_of)}
+        sourceNote="All three on one axis in thousand barrels per day, so the balance between them is readable directly."
+      >
+        <TimeSeriesChart lines={toLines(trade, TRADE)} unit={commonUnit(trade)} />
       </Panel>
     </main>
   );
