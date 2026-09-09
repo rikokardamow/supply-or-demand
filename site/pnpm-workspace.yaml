@@ -1,0 +1,4 @@
+# Same decision as web/: nothing here needs a dependency's install script to run.
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

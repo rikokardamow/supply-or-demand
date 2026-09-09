@@ -59,3 +59,8 @@ logs/
 
 # Superpowers brainstorming companion (mockups, server state)
 .superpowers/
+
+# Portfolio site build output
+site/.next/
+site/node_modules/
+site/.vercel/
