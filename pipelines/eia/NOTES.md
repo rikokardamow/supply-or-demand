@@ -1218,3 +1218,36 @@ are created but unpopulated — the `wow`/`yoy_pct`/`vs_median_pct` columns need
 derived analytics (via `core.seasonal`), which is its own task, not a line in this pull.
 The `POST /api/revalidate` hook is likewise unbuilt: there is no Vercel deployment to
 call yet.
+
+## `serving.wpsr_lines` — the at-a-glance table (Spec 32, 2026-09-09)
+
+`pipelines/eia/wpsr_lines.py` builds the weekly table the UI's Balances screen reads
+through `wpsr_latest_v` (Spec 33 §8 names it an explicit prerequisite): 15 national
+headline lines, each with its level, week-on-week change, year-on-year, and distance from
+its own seasonal median. `pull_wpsr.py` publishes it from the same full-history frame it
+already pulls.
+
+Conventions, all deliberate:
+- **`wow` is absolute**, in the line's own unit — EIA and every trade report quote a
+  weekly stock move in barrels ("crude drew 4.45 million"), never as a percentage.
+- **`yoy_pct` and `vs_median_pct` are percentages**, because distance from last year or
+  from a seasonal norm is only meaningful relative to the line's own size.
+- The year-ago comparison is the observation **nearest 364 days back within 10 days**, not
+  an exact date match: EIA's release date drifts around holidays.
+- A missing counterpart yields **`None`, never `0.0`** — a line with no year-ago
+  observation has no year-on-year change, and zero would render as "unchanged", which is
+  a different claim from "unknown".
+- PADD-level breakdowns are excluded by design; this is the at-a-glance table.
+
+**Real bug, caught only by looking at the published numbers.** `vs_median_pct` was
+computed by passing the whole multi-series frame into the seasonal median rather than the
+line's own series, so every line was measured against a median blended across all 27 WPSR
+series. Published output read **+11,462% for crude oil**, +33,742% for total stocks and
+−97.3% for refinery utilisation — crude stocks (~424,000 MBBL) being compared against a
+median mixed with refinery utilisation (98%) and daily rates (~17,000 MBBL/D). Every unit
+test passed throughout, because each fixture held a single series. Fixed, and
+`test_vs_median_uses_only_its_own_series_not_every_series_in_the_frame` now builds a frame
+with two series of wildly different magnitude specifically to catch a regression.
+
+The lesson is the one this file keeps relearning: a green suite is not a verified number.
+The fix was confirmed by reading the real published table back out of Supabase.

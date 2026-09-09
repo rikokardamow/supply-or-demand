@@ -11,6 +11,7 @@ from core.publish import publish, seasonal_frame
 from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
+from pipelines.eia.wpsr_lines import build_wpsr_lines
 
 STOCKS = ["WCESTUS1", "W_EPC0_SAX_YCUOK_MBBL", "WCSSTUS1", "WGTSTUS1", "WDISTUS1", "WTESTUS1"]
 UTILISATION = ["WPULEUS3", "W_NA_YUP_R10_PER", "W_NA_YUP_R20_PER", "W_NA_YUP_R30_PER",
@@ -83,6 +84,20 @@ def main() -> None:
         pipeline="wpsr",
     )
     print(f"published {published} seasonal rows across {bands['series_id'].nunique()} series")
+
+    # The at-a-glance table the UI's Balances screen reads through wpsr_latest_v. Built
+    # from the same full-history frame, since its year-ago and vs-median comparisons are
+    # drawn from that history.
+    lines = build_wpsr_lines(df)
+    published = publish(
+        "wpsr_lines",
+        lines,
+        as_of=as_of,
+        source_note="EIA WPSR at-a-glance: level, week-on-week, year-on-year, vs seasonal median",
+        key=["week_ending", "line"],
+        pipeline="wpsr",
+    )
+    print(f"published {published} wpsr_lines rows")
 
 
 if __name__ == "__main__":
