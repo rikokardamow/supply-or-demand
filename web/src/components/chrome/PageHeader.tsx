@@ -31,8 +31,6 @@ export async function PageHeader({
 
       <div
         style={{
-          maxWidth: "var(--measure)",
-          margin: "0 auto",
           padding: "var(--space-8) var(--space-6) 0",
         }}
       >

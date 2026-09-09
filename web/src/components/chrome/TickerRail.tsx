@@ -125,8 +125,6 @@ export function TickerRail({ headlines }: { headlines: Headline[] }) {
       <div
         className="no-bar"
         style={{
-          maxWidth: "var(--measure)",
-          margin: "0 auto",
           display: "flex",
           gap: "var(--space-6)",
           overflowX: "auto",
