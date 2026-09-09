@@ -207,7 +207,7 @@ export default async function Home() {
               marginBottom: "var(--space-5)",
             }}
           >
-            {formatNumber(publishes.length, 0)} tables · published from the lake
+            {formatNumber(publishes.length, 0)} datasets · primary sources only
           </span>
 
           <h2
@@ -231,10 +231,23 @@ export default async function Home() {
               marginBottom: "var(--space-6)",
             }}
           >
-            Prices, stocks, storage, cargoes, positioning and sanctions — pulled
-            from primary sources into a local data lake and published here as
-            rows. Every figure was computed before it was served; none of it is
-            estimated in your browser.
+            Prices, stocks, storage, cargo movements, positioning and sanctions,
+            assembled from primary sources and published as figures you can
+            interrogate. Every number is computed before the page is served, so
+            what you read is what was measured &mdash; never an estimate made in
+            your browser.
+          </p>
+
+          <p
+            style={{
+              fontSize: "var(--size-body)",
+              color: "var(--faint)",
+              maxWidth: "46ch",
+              marginBottom: "var(--space-6)",
+            }}
+          >
+            The working evidence behind Kardamow &mdash; independent research on
+            energy, macro and geopolitics.
           </p>
 
           <div
@@ -363,10 +376,10 @@ export default async function Home() {
                 maxWidth: "62ch",
               }}
             >
-              The as-of column is the data&rsquo;s own date, not the time the
-              pipeline ran. A source that has stopped updating shows an old
-              as-of however recently it was republished — which is the point of
-              recording both.
+              &ldquo;Data as of&rdquo; is the date the figures describe, not the
+              time the job ran. A source that has stopped updating keeps its old
+              as-of however recently it was refreshed &mdash; which is exactly
+              why both are recorded.
             </p>
           </header>
           <div style={{ overflowX: "auto" }}>
