@@ -60,6 +60,10 @@ CADENCE_GROUPS: dict[str, list[tuple[str, str]]] = {
         # is unset, so a machine that hasn't opted into the serving layer stays green.
         ("publish_gie", "pipelines.gie.publish_gie"),
         ("publish_curve", "pipelines.futures.publish_curve"),
+        # Reads both flows sources, so it follows "entsog" and the RTO interchange pull
+        # above. Inter-PADD movements are monthly and land on their own cadence; this
+        # republishes them unchanged, which the upsert absorbs.
+        ("publish_flows", "pipelines.derived.publish_flows"),
     ],
     "wpsr": [
         ("eia_wpsr", "pipelines.eia.pull_wpsr"),
