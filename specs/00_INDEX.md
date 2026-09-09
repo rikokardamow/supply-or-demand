@@ -148,3 +148,22 @@ of Spec 30 rather than bundled into it. The Grid Monitor item is not a duplicate
 `pipelines/gridstatus_iso/`: that library reaches CAISO and NYISO only, because ERCOT is blocked
 by bot protection (confirmed live 403) and PJM needs a Data Miner 2 key. Those are the two
 markets where gas-fired generation most moves the gas book.
+
+## Spec 32 — Serving layer (Supabase Postgres)
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 32 | Serving layer: a read-optimised `serving.*` Postgres schema on Supabase, published from the existing pipelines at the end of each run — the lake stays the system of record | not started | no — publishing layer only | 00, every pipeline spec |
+
+Adds `core/publish.py`, `supabase/migrations/`. The DuckDB/Parquet lake is unaffected;
+this is a serving copy for Spec 33's web UI. See `specs/32_serving-layer-supabase.md`.
+
+## Spec 33 — Front-end (Next.js on Vercel)
+
+| Spec | Title | Status | New source? | Depends on |
+|---|---|---|---|---|
+| 33 | Desk-grade web UI at `data.kardamow.com` (Next.js/Vercel/Supabase), matching the Streamlit app's masthead+top-nav chrome; public read-only now, paid desk tier later | not started | no | 32, 28 |
+
+New top-level `web/` directory, coexists with `apps/dashboard/` (Streamlit is not being
+replaced). See `specs/33_frontend-nextjs.md`. 33.01 (Hormuz) and 33.02 (Balances) are the
+first two screens; 33.03 (Gas) and 33.04 (Curves) are stubbed for later.
