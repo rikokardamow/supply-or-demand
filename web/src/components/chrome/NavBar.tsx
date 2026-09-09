@@ -20,8 +20,6 @@ export function NavBar({ active }: { active?: string }) {
     <div className="app-bar">
       <div
         style={{
-          maxWidth: "var(--measure)",
-          margin: "0 auto",
           padding: "var(--space-3) var(--space-6)",
           display: "flex",
           alignItems: "center",
