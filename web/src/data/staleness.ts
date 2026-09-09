@@ -83,7 +83,7 @@ export const STALE_AFTER_MS: Record<string, number> = {
 export const RELEASE_CADENCE: Record<string, string> = {
   wpsr: "Weekly · Wed 10:30 ET, a day later after a Monday holiday",
   gie: "Daily · ~19:30 CET, for the previous gas day",
-  flows: "Hourly to monthly, by source",
+  flows: "Hourly to monthly, by source · EIA inter-PADD is monthly",
   curve: "Daily settles",
   yfinance: "Every trading day",
   baker_hughes: "Weekly · Fri ~noon CT",
