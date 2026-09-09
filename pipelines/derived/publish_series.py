@@ -54,7 +54,7 @@ def main() -> None:
                     "series_long",
                     df,
                     as_of=df["ts"].max().to_pydatetime().replace(tzinfo=UTC),
-                    source_note=f"{source}: {df['series_id'].nunique()} series from the lake",
+                    source_note=f"{source}: {df['series_id'].nunique()} series",
                     key=["series_id", "ts"],
                     pipeline=source,
                 )
