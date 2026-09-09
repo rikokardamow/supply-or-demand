@@ -1,4 +1,4 @@
-import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ChartControls } from "@/components/charts/ChartControls";
 import { Masthead } from "@/components/chrome/Masthead";
 import { Panel } from "@/components/chrome/Panel";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
@@ -146,7 +146,7 @@ export default async function SupplyPage() {
         stale={isStale("baker_hughes", rigPublish?.as_of)}
         sourceNote="Baker Hughes, weekly. Rigs lead production by roughly six months, which is why the count is read as a forward indicator rather than a current one."
       >
-        <TimeSeriesChart lines={toLines(usRigs, US_RIGS)} unit={commonUnit(usRigs)} />
+        <ChartControls lines={toLines(usRigs, US_RIGS)} unit={commonUnit(usRigs)} />
       </Panel>
 
       <Panel
@@ -155,7 +155,7 @@ export default async function SupplyPage() {
         stale={isStale("baker_hughes", rigPublish?.as_of)}
         sourceNote="Baker Hughes, weekly. Canadian activity swings hard with spring break-up, when thawing ground halts rig movement — the annual collapse is seasonal, not a signal."
       >
-        <TimeSeriesChart lines={toLines(caRigs, CANADA_RIGS)} unit={commonUnit(caRigs)} />
+        <ChartControls lines={toLines(caRigs, CANADA_RIGS)} unit={commonUnit(caRigs)} />
       </Panel>
 
       <Panel
@@ -164,7 +164,7 @@ export default async function SupplyPage() {
         stale={eiaStale}
         sourceNote="EIA monthly, since 1997. Separate axes: production runs several times the export volume, and on one scale the export line would sit flat against the floor. Feedgas has no distinct EIA series, so exports are the only published measure of the LNG pull."
       >
-        <TimeSeriesChart
+        <ChartControls
           lines={toLines(gasSupply, GAS_SUPPLY, { secondary: ["N9133US2"] })}
           unit="MMcf — production"
           secondaryUnit="MMcf — exports"
@@ -177,7 +177,7 @@ export default async function SupplyPage() {
         stale={eiaStale}
         sourceNote="EIA monthly, since 1974 — what US refiners actually paid, rather than a marker price. The gap between domestic and imported carries the quality and freight story that a single benchmark hides."
       >
-        <TimeSeriesChart lines={toLines(crudeCost, CRUDE_COST)} unit={commonUnit(crudeCost)} />
+        <ChartControls lines={toLines(crudeCost, CRUDE_COST)} unit={commonUnit(crudeCost)} />
       </Panel>
 
       <Panel
@@ -186,7 +186,7 @@ export default async function SupplyPage() {
         stale={eiaStale}
         sourceNote="EIA monthly, since 1983. The spread between bands is the light/heavy differential in its rawest published form: heavier barrels land cheaper, and the width of that gap is a refining-margin signal in itself."
       >
-        <TimeSeriesChart lines={toLines(landed, LANDED_BY_GRAVITY)} unit={commonUnit(landed)} />
+        <ChartControls lines={toLines(landed, LANDED_BY_GRAVITY)} unit={commonUnit(landed)} />
       </Panel>
 
       <Panel
@@ -195,7 +195,7 @@ export default async function SupplyPage() {
         stale={eiaStale}
         sourceNote="EIA monthly, since 1973 — the longest continuous run in this lake. The seasonal amplitude is heating demand, and its year-on-year change is a cleaner weather signal than temperature itself."
       >
-        <TimeSeriesChart
+        <ChartControls
           lines={toLines(gasConsumption, GAS_CONSUMPTION)}
           unit={commonUnit(gasConsumption)}
         />
@@ -210,7 +210,7 @@ export default async function SupplyPage() {
         {opecDemand.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No OPEC demand forecast published.</p>
         ) : (
-          <TimeSeriesChart lines={toLines(opecDemand, OPEC_DEMAND)} unit={commonUnit(opecDemand)} />
+          <ChartControls lines={toLines(opecDemand, OPEC_DEMAND)} unit={commonUnit(opecDemand)} />
         )}
       </Panel>
 
@@ -223,7 +223,7 @@ export default async function SupplyPage() {
         {opecSupply.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No OPEC supply forecast published.</p>
         ) : (
-          <TimeSeriesChart lines={toLines(opecSupply, OPEC_SUPPLY)} unit={commonUnit(opecSupply)} />
+          <ChartControls lines={toLines(opecSupply, OPEC_SUPPLY)} unit={commonUnit(opecSupply)} />
         )}
       </Panel>
 
@@ -236,7 +236,7 @@ export default async function SupplyPage() {
         {jodi.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No JODI stocks published.</p>
         ) : (
-          <TimeSeriesChart lines={toLines(jodi, JODI_STOCKS)} unit={commonUnit(jodi)} />
+          <ChartControls lines={toLines(jodi, JODI_STOCKS)} unit={commonUnit(jodi)} />
         )}
       </Panel>
     </main>

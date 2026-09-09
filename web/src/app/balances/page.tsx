@@ -9,7 +9,7 @@ import { fetchWpsrLines } from "@/data/queries/wpsr";
 import { isStale } from "@/data/staleness";
 import { commonUnit, toLines } from "@/data/toLines";
 import { formatDate } from "@/lib/format";
-import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ChartControls } from "@/components/charts/ChartControls";
 
 /**
  * Balances (Spec 33.02).
@@ -170,7 +170,7 @@ export default async function BalancesPage() {
         stale={isStale(PIPELINE, seasonalPublish?.as_of)}
         sourceNote="Per cent of operable capacity. Sustained readings near 100% leave no slack for an unplanned outage."
       >
-        <TimeSeriesChart lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
+        <ChartControls lines={toLines(runs, RUNS)} unit={commonUnit(runs)} />
       </Panel>
 
       <Panel
@@ -179,7 +179,7 @@ export default async function BalancesPage() {
         stale={isStale(PIPELINE, seasonalPublish?.as_of)}
         sourceNote="All three on one axis in thousand barrels per day, so the balance between them is readable directly."
       >
-        <TimeSeriesChart lines={toLines(trade, TRADE)} unit={commonUnit(trade)} />
+        <ChartControls lines={toLines(trade, TRADE)} unit={commonUnit(trade)} />
       </Panel>
     </main>
   );

@@ -1,5 +1,5 @@
 import { SeasonalChart } from "@/components/charts/SeasonalChart";
-import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ChartControls } from "@/components/charts/ChartControls";
 import { Masthead } from "@/components/chrome/Masthead";
 import { Panel } from "@/components/chrome/Panel";
 import { fetchLatestPublishBy } from "@/data/queries/publishLog";
@@ -105,7 +105,7 @@ export default async function GasPage() {
         stale={stale}
         sourceNote="The five largest EU storage systems by working gas volume."
       >
-        <TimeSeriesChart
+        <ChartControls
           lines={toLines(countries, COUNTRY_SERIES)}
           unit={commonUnit(countries)}
         />
@@ -117,7 +117,7 @@ export default async function GasPage() {
         stale={stale}
         sourceNote="Gross flows, not netted: both run simultaneously across a system this size, and netting them would hide the turnover."
       >
-        <TimeSeriesChart lines={toLines(flows, FLOW_SERIES)} unit={commonUnit(flows)} />
+        <ChartControls lines={toLines(flows, FLOW_SERIES)} unit={commonUnit(flows)} />
       </Panel>
 
       <Panel
@@ -126,7 +126,7 @@ export default async function GasPage() {
         stale={stale}
         sourceNote="Send-out is a daily rate (GWh/d); inventory is a stock (1000 m³), so the two sit on separate axes."
       >
-        <TimeSeriesChart
+        <ChartControls
           lines={toLines(lng, LNG_SERIES, { secondary: ["alsi.EU.lng_inventory"] })}
           unit="GWh/d"
           secondaryUnit="1000 m³"
