@@ -36,5 +36,14 @@ class Settings(BaseSettings):
     ibkr_port: int = 7497
     ibkr_client_id: int = 1
 
+    # Spec 32 -- Supabase serving-layer publish. Pooler connection string (transaction
+    # mode, port 6543), database-owner credential -- never the anon/authenticated roles.
+    # Optional: only pipelines calling core.publish.publish() need it; every other
+    # pipeline and the Streamlit app run unaffected without it set.
+    supabase_db_url: str | None = None
+    # Spec 32/33 -- set once web/ exists and pipelines start calling the revalidate hook.
+    revalidate_secret: str | None = None
+    vercel_url: str | None = None
+
 
 settings = Settings()

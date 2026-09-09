@@ -52,6 +52,14 @@ dependencies = [
     # is bearish price language, not negative sentiment. Confirmed with the user
     # before adding (root CLAUDE.md rule 7).
     "vaderSentiment>=3.3,<4",
+    # Spec 32's Supabase serving-layer publish (core/publish.py). psycopg3, not
+    # psycopg2/supabase-py: the publish step needs raw COPY + INSERT...ON CONFLICT
+    # against the pooler connection string, not a REST/PostgREST client. The binary
+    # wheel avoids a local libpq build requirement on Windows. Confirmed with the user
+    # before adding (root CLAUDE.md rule 7) -- pandas stays the DataFrame convention
+    # (matching every existing pipeline), not the polars this spec's own draft notes
+    # originally called for.
+    "psycopg[binary]>=3.2",
 ]
 
 [project.optional-dependencies]
