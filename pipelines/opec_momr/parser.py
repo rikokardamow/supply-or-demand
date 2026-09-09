@@ -24,14 +24,24 @@ import pandas as pd
 _QUARTER_RE = re.compile(r"^([1-4])Q(\d{2})$")
 _YEAR_RE = re.compile(r"^(19|20)\d{2}$")
 
-# (sheet name, table_slug, expected title substring, default unit, anchor row
+# (sheet name, table_slug, accepted title substring or substrings, default unit, anchor row
 # labels that must be present -- the fail-loudly layout-drift guard, since every
 # *other* row is captured generically rather than against a fixed list).
-_SHEETS: list[tuple[str, str, str, str, tuple[str, ...]]] = [
+#
+# The title is a tuple because OPEC rewords it between years without changing the table.
+# Confirmed live 2026-09-09 while backfilling: the March 2025 issue says "World oil
+# demand and **supply** balance" where August 2026 says "...and **production** balance" --
+# same sheet, same layout, one word. A single expected substring made every 2025 issue
+# unparseable. Listing the accepted wordings keeps the drift guard (an unrecognised title
+# still raises) without treating a synonym as a structural change.
+_SHEETS: list[tuple[str, str, str | tuple[str, ...], str, tuple[str, ...]]] = [
     (
         "Table 11 - 1",
         "demand_balance",
-        "World oil demand and production balance",
+        (
+            "World oil demand and production balance",
+            "World oil demand and supply balance",
+        ),
         "mb/d",
         (
             "(a) Total world demand",
@@ -156,14 +166,15 @@ def _find_header_row(
     )
 
 
-def _check_title(ws: Any, expected_substring: str) -> None:
+def _check_title(ws: Any, expected: str | tuple[str, ...]) -> None:
+    accepted = (expected,) if isinstance(expected, str) else expected
     for row in ws.iter_rows(min_row=1, max_row=5, values_only=True):
         for cell in row:
             if isinstance(cell, str) and cell.strip().startswith("Table 11"):
-                if expected_substring not in cell:
+                if not any(candidate in cell for candidate in accepted):
                     raise ValueError(
-                        f"Sheet {ws.title!r}: expected title containing "
-                        f"{expected_substring!r}, found {cell!r}"
+                        f"Sheet {ws.title!r}: expected title containing one of "
+                        f"{accepted!r}, found {cell!r}"
                     )
                 return
     raise ValueError(f"Sheet {ws.title!r}: no title cell found (expected 'Table 11 ...')")
