@@ -14,6 +14,16 @@ function token(name: string): string {
   return match[1].trim();
 }
 
+/** A `#rrggbb` hex colour as the decimal "r, g, b" triple `rgba()` needs. */
+function toRgbTriple(hex: string): string {
+  const match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  if (!match) throw new Error(`not a 6-digit hex colour: ${hex}`);
+  return match
+    .slice(1)
+    .map((channel) => Number.parseInt(channel, 16))
+    .join(", ");
+}
+
 describe("chrome tokens", () => {
   it("is the terminal palette", () => {
     expect(token("bg")).toBe("#000000");
@@ -40,12 +50,14 @@ describe("chrome tokens", () => {
     expect(token("grid")).toBe("#1e232b");
   });
 
-  it("pins the rgba channel triples to their hex twins", () => {
+  it("keeps the rgba channel triples derived from their hex twins, not restated", () => {
     // rgba() cannot interpolate var(--navy)/var(--red) directly, so these triples exist
-    // purely to mirror them -- if they drift apart the heat wash and the bar fill would
-    // paint a colour the hex tokens no longer name.
-    expect(token("navy-rgb")).toBe("77, 159, 255");
-    expect(token("red-rgb")).toBe("255, 90, 77");
+    // purely to mirror them. The expectation is computed from the hex token itself, not
+    // written as a literal here -- a literal pin would keep passing if someone retuned
+    // --navy and updated navy-rgb's literal to match, which is exactly the drift this
+    // test exists to catch.
+    expect(token("navy-rgb")).toBe(toRgbTriple(token("navy")));
+    expect(token("red-rgb")).toBe(toRgbTriple(token("red")));
   });
 
   it("is monospace at 11px", () => {
