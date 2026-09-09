@@ -17,7 +17,7 @@ and a rerun on these pages means re-reading the lake.
 ## Global Constraints
 
 - Ships **after** `2026-09-06-ui-design-system.md`. `basemap.py` imports `core/design.py`, which that plan creates.
-- Branch `design/ui-restyle-impl`, in the worktree at `C:\Users\<user>\Documents\energy-dashboard.worktrees\ui-restyle`.
+- Branch `design/ui-restyle-impl`, in the worktree at `<REPO_ROOT>\Documents\<REPO>.worktrees\ui-restyle`.
 - **The worktree's `.venv` is a junction to the shared clone's.** Installing folium changes the peer session's environment too. Tell the peer before Task 1, and never run a bare `uv sync` — it prunes the dev extras and takes pytest/ruff/mypy with them. `uv sync --all-extras` (the repo's `make install`) is the restore.
 - `uv` is not on the Git Bash PATH: run it from PowerShell, or fall back to `./.venv/Scripts/python.exe -m pip`.
 - Out of scope: the cartopy anomaly maps on `08_weather`. They are matplotlib raster fields; Leaflet is the wrong tool.
