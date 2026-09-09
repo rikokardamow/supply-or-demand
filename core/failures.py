@@ -41,14 +41,39 @@ _SECRET_PARAM_RE = re.compile(
     r"=([^&\s\"'<>]+)"
 )
 
+# A connection URI carries its credential in the userinfo (`scheme://user:password@host`),
+# which `_SECRET_PARAM_RE` above -- a query-parameter rule -- never sees. Spec 32's
+# Supabase publish connects with exactly such a URI, and psycopg echoes the whole
+# connection string back in several of its own error messages (confirmed live
+# 2026-09-09: `missing "=" after "postgres-bogus://user:PASSWORD@host/db"`). Since
+# `infra/run_scheduled.py` prints `describe_exception` for every pipeline failure, an
+# unredacted database-owner password was reaching the logs. Only the password is
+# replaced: the scheme, user and host stay legible, because a redactor that mangles the
+# host turns a real diagnostic into an unreadable one.
+_URI_USERINFO_RE = re.compile(r"(?P<scheme>[a-z][a-z0-9+.\-]*://[^:/?#@\s]+:)[^@/?#\s]+@")
+
 # Only fields whose *name* marks them as a credential are matched against message text.
 # Matching on every settings value would be actively harmful -- `ibkr_host` is
 # "127.0.0.1" and `ibkr_client_id` is 1, and redacting those would mangle unrelated
-# messages beyond recognition.
-_SECRET_FIELD_SUFFIXES = ("_key", "_token", "_secret")
+# messages beyond recognition. `_db_url` is here rather than a bare `_url` for the same
+# reason: `supabase_db_url` embeds a password, an ordinary `*_url` setting would not.
+_SECRET_FIELD_SUFFIXES = ("_key", "_token", "_secret", "_db_url")
 # Below this length a "secret" is far more likely to be a placeholder ("ci-placeholder"
 # is 14, a real key is 32+) than something worth redacting at the cost of false hits.
 _MIN_SECRET_LENGTH = 8
+
+
+def _uri_password(value: str) -> str | None:
+    """The password out of a `scheme://user:password@host` string, if there is one.
+
+    Deliberately regex-based rather than `urllib.parse`: a real Supabase password can
+    contain characters (`%`, `#`) that make the value an invalid URI, and `urlsplit`
+    raises or mis-parses on exactly the inputs this most needs to handle.
+    """
+    match = _URI_USERINFO_RE.search(value)
+    if match is None:
+        return None
+    return value[match.end(1) : match.end() - 1] or None
 
 
 def _known_secrets() -> list[str]:
@@ -70,16 +95,26 @@ def _known_secrets() -> list[str]:
             continue
         if isinstance(value, str) and len(value) >= _MIN_SECRET_LENGTH:
             values.append(value)
+            # The whole URI is not enough on its own: psycopg reports *just the password
+            # fragment* when it cannot percent-decode it (`invalid percent-encoded
+            # token: "Secret%ZZpass"`), with no scheme or host for `_URI_USERINFO_RE` to
+            # anchor on and nothing matching the full string. Confirmed live 2026-09-09.
+            password = _uri_password(value)
+            if password and len(password) >= _MIN_SECRET_LENGTH:
+                values.append(password)
     return sorted(values, key=len, reverse=True)
 
 
 def redact(text: str) -> str:
-    """`text` with any credential removed. Two passes, both needed: exact replacement of
+    """`text` with any credential removed. Three passes, all needed: exact replacement of
     known settings values catches a key wherever it appears (query string, echoed header,
-    JSON body), and the query-parameter regex catches keys this process doesn't hold --
-    a URL built by a third-party library, or a value from a source outside settings."""
+    JSON body), the URI-userinfo regex catches a password embedded in a connection string
+    (`postgresql://user:password@host` -- psycopg echoes these back in its own errors),
+    and the query-parameter regex catches keys this process doesn't hold -- a URL built by
+    a third-party library, or a value from a source outside settings."""
     for secret in _known_secrets():
         text = text.replace(secret, REDACTED)
+    text = _URI_USERINFO_RE.sub(lambda m: f"{m.group('scheme')}{REDACTED}@", text)
     return _SECRET_PARAM_RE.sub(lambda m: f"{m.group(1)}={REDACTED}", text)
 
 

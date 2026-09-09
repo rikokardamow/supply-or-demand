@@ -149,6 +149,16 @@ def _as_of(frame: pd.DataFrame) -> datetime:
 
 def main() -> None:
     df = read_futures_settles()
+    if df.empty:
+        # An empty read is a defect, not a no-op -- see the same guard in
+        # pipelines/gie/publish_gie.py. Returning quietly would hand run_scheduled.py an
+        # "OK" for a run that published nothing where it published 132,546 rows the day
+        # before, which is exactly the silent-success class pipelines/eia/CLAUDE.md
+        # already documents.
+        raise RuntimeError(
+            f"read 0 fut.* rows across sources {FUTURES_SOURCES} -- the lake is empty or"
+            " unreadable; refusing to report success."
+        )
     settles = curve_settles_frame(df)
     spreads = spreads_frame(df)
     print(

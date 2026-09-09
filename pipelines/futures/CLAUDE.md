@@ -220,8 +220,8 @@ connections per root, and the unsanitised exception print.
 ## Serving-layer publish: `publish_curve.py` (Spec 32 Session 3, live 2026-09-09)
 
 `python -m pipelines.futures.publish_curve` reads the lake's `fut.*` series and publishes
-them into Supabase's `serving.curve_settles` and `serving.spreads`. It is **not** wired
-into `infra/run_scheduled.py` — the repo owner is handling scheduler wiring separately.
+them into Supabase's `serving.curve_settles` and `serving.spreads`. It runs in
+`infra/run_scheduled.py`'s `daily` group, after the `futures` pull it reads behind.
 
 ### The two lake shapes feed one table each — deliberately
 

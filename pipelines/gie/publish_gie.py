@@ -12,7 +12,7 @@ refreshes `serving.publish_log`.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC
 
 from core.publish import publish, seasonal_frame
 from core.storage import read_ts_long
@@ -25,10 +25,21 @@ def main() -> None:
     # the lake before filtering (see apps/dashboard's own unbounded-read fix).
     df = read_ts_long(source=SOURCE)
     if df.empty:
-        print("gie: nothing in the lake to publish")
-        return
+        # An empty read is a defect, not a no-op: this publisher exists because the lake
+        # is populated, so zero rows means the pull broke, a partition was renamed, or
+        # `data/` was wiped -- all of which this repo has actually seen (see
+        # infra/DISASTER_RECOVERY.md). Printing and returning 0 would hand
+        # run_scheduled.py an "OK" for a run that published nothing.
+        raise RuntimeError(
+            f"read 0 rows for source={SOURCE!r} -- the lake is empty or unreadable;"
+            " refusing to report success. Run pipelines.gie.pull_daily first."
+        )
 
-    as_of = datetime.now(UTC)
+    # `as_of` is the *data's* own as-of, never wall-clock time (Spec 32 §2). The UI greys
+    # a panel once as_of passes the source's staleness threshold (§5, GIE = 2 days), so
+    # stamping now() here would make the panel read fresh forever even if GIE's API went
+    # down for a week and this republished an unchanged lake every night.
+    as_of = df["ts"].max().to_pydatetime().replace(tzinfo=UTC)
     publish(
         "series_long",
         df,
@@ -39,12 +50,16 @@ def main() -> None:
     )
     print(f"published {len(df)} gie rows across {df['series_id'].nunique()} series")
 
+    # The band's width is whatever core.seasonal.default_years() currently spans (2018 to
+    # last year, 2020 excluded) -- 7 years today, and one more every 1 January. Read it
+    # off the frame rather than hard-coding a number the rows themselves would contradict.
     bands = seasonal_frame(df)
+    years = int(bands["years"].max()) if not bands.empty else 0
     publish(
         "seasonal",
         bands,
         as_of=as_of,
-        source_note="GIE AGSI+/ALSI+ seasonal bands, 5-year window, 2020 excluded",
+        source_note=f"GIE AGSI+/ALSI+ seasonal bands, {years}-year window, 2020 excluded",
         key=["series_id", "doy"],
         pipeline="gie",
     )
