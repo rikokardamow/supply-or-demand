@@ -27,3 +27,33 @@ export async function fetchLatestPublish(
   const rows = await fetchLatestPublishes();
   return rows.find((row) => row.table_name === tableName) ?? null;
 }
+
+/**
+ * The latest publish of one table *by one pipeline*.
+ *
+ * `latest_publish_v` is `distinct on (table_name)`, so for a table several pipelines
+ * write it returns whichever ran last — `serving.seasonal` is published by both wpsr and
+ * gie, and a WPSR panel showing GIE's timestamp would be wrong in exactly the way an
+ * as-of stamp exists to prevent. This goes to `publish_log` directly, which carries
+ * `pipeline`, so each panel gets the provenance of the rows it actually draws.
+ */
+export async function fetchLatestPublishBy(
+  tableName: string,
+  pipeline: string,
+): Promise<PublishLogRow | null> {
+  const { data, error } = await servingClient()
+    .from("publish_log")
+    .select("table_name, as_of, source_note, published_at")
+    .eq("table_name", tableName)
+    .eq("pipeline", pipeline)
+    .order("published_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    throw new Error(
+      `publish_log query failed for ${tableName}/${pipeline}: ${error.message}`,
+    );
+  }
+
+  return (data?.[0] as PublishLogRow | undefined) ?? null;
+}
