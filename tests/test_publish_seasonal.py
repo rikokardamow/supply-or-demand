@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 import pandas as pd
+import pytest
 from core.publish import SEASONAL_COLUMNS, seasonal_rows
 
 
@@ -159,3 +160,25 @@ def test_seasonal_rows_tolerates_duplicate_timestamps_in_the_incoming_frame() ->
 
     assert not rows.empty
     assert rows["band_max"].max() == 100.0
+
+
+def test_seasonal_rows_survives_29_february(monkeypatch: pytest.MonkeyPatch) -> None:
+    # core.seasonal's REFERENCE_YEAR (2001) is not a leap year, so normalising *today*
+    # onto it via date.replace(year=...) raises "day is out of range for month" every
+    # 29 February. core.seasonal itself never hits this because _drop_leap_day filters
+    # 29 February out before _normalised_doy ever sees it; this call site normalises an
+    # unfiltered date.today(). Without the clamp, every seasonal publish would abort on
+    # 2028-02-29 -- after the series_long publish had already committed, leaving the two
+    # tables a day out of step.
+    class _LeapDay(date):
+        @classmethod
+        def today(cls) -> date:
+            return date(2028, 2, 29)
+
+    monkeypatch.setattr("core.publish.date", _LeapDay)
+
+    rows = seasonal_rows(
+        _series({y: 100.0 for y in _band_years()}), series_id="agsi.DE.full_pct", unit="%"
+    )
+
+    assert not rows.empty

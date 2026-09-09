@@ -4,7 +4,7 @@ codes and how they were discovered."""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC
 
 import pandas as pd
 from core.publish import publish, seasonal_frame
@@ -46,7 +46,11 @@ def main() -> None:
     # but per core/failures.py's own convention, a failure must still surface as a
     # non-zero exit (never silently swallowed), so infra/run_scheduled.py and Task
     # Scheduler's "Last Run Result" reflect it truthfully.
-    as_of = datetime.now(UTC)
+    # `as_of` is the data's own as-of -- the latest week ending -- never wall-clock time
+    # (Spec 32 §2). The UI greys a panel once as_of passes the source's staleness
+    # threshold (§5, WPSR = 8 days); stamping now() would make it read fresh forever
+    # even if EIA stopped publishing and this republished an unchanged frame each week.
+    as_of = df["ts"].max().to_pydatetime().replace(tzinfo=UTC)
     publish(
         "series_long",
         df,
@@ -59,16 +63,26 @@ def main() -> None:
     # Spec 32 §5's cadence table has wpsr publishing seasonal bands alongside gie.
     # Weekly stocks are the archetypal seasonal-band exhibit, and the band comes from
     # core.seasonal, so 2020 stays excluded (golden rule 4).
+    #
+    # This builds bands from the freshly-pulled frame rather than the lake, which is only
+    # safe because this pull is a full-history re-pull (1982-present) every run. If it is
+    # ever narrowed to a trailing window, switch to reading the lake the way
+    # pipelines/gie/publish_gie.py does -- otherwise the band silently collapses to a
+    # window too short to compute and serving.seasonal keeps last run's rows.
     bands = seasonal_frame(df)
-    publish(
+    years = int(bands["years"].max()) if not bands.empty else 0
+    published = publish(
         "seasonal",
         bands,
         as_of=as_of,
-        source_note="EIA WPSR seasonal bands, 5-year window, 2020 excluded",
+        # The band spans core.seasonal.default_years() -- 2018 to last year, 2020
+        # excluded, so 7 years today and one more every 1 January. Read it off the frame
+        # rather than hard-coding a figure the rows' own `years` column would contradict.
+        source_note=f"EIA WPSR seasonal bands, {years}-year window, 2020 excluded",
         key=["series_id", "doy"],
         pipeline="wpsr",
     )
-    print(f"published {len(bands)} seasonal rows across {bands['series_id'].nunique()} series")
+    print(f"published {published} seasonal rows across {bands['series_id'].nunique()} series")
 
 
 if __name__ == "__main__":

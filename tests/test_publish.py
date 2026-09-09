@@ -238,3 +238,42 @@ def test_publish_chunks_large_frames_into_multiple_copy_calls(fake_conn: _FakeCo
     drops = [sql for sql, _ in fake_conn.cur.executed if "drop table" in sql]
     assert len(creates) == 3
     assert len(drops) == 3
+
+
+def test_publish_returns_the_row_count_it_actually_wrote(fake_conn: _FakeConnection) -> None:
+    written = publish(
+        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+    )
+    assert written == 2
+
+
+def test_publish_returns_zero_when_it_skipped(
+    fake_conn: _FakeConnection, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Callers print "published N rows" after publish() returns. Returning len(df) from
+    # the caller's own frame would claim a publish that never happened when the skip
+    # path was taken -- a log line asserting something the code did not verify.
+    monkeypatch.setattr("core.publish.settings.supabase_db_url", None)
+
+    written = publish(
+        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+    )
+
+    assert written == 0
+
+
+def test_publish_rejects_a_column_name_that_is_not_a_plain_identifier(
+    fake_conn: _FakeConnection,
+) -> None:
+    # Column names and key names are interpolated into the SQL text, unlike row values
+    # which go through COPY and parameters. No current caller can reach this (every one
+    # passes a literal or a canonical schema frame), so this asserts the precondition
+    # rather than patching a reachable hole -- it turns an implicit contract into an
+    # enforced one.
+    df = _df().rename(columns={"value": 'value"; drop table serving.series_long; --'})
+
+    with pytest.raises(ValueError, match="identifier"):
+        publish(
+            "series_long", df, as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
+        )
+    assert fake_conn.cur.executed == []

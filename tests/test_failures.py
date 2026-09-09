@@ -171,3 +171,61 @@ def test_record_failure_outside_a_scope_still_prints_sanitised(
     printed = capsys.readouterr().out
     assert "wpsr: FAILED" in printed
     assert "REALKEY123456" not in printed
+
+
+def test_redact_strips_a_password_from_a_database_uri() -> None:
+    # Spec 32's Supabase publish connects with a URI carrying the database-owner
+    # password in its userinfo (`://user:pass@host`). Confirmed live 2026-09-09 that
+    # psycopg echoes the whole connection string back in several ProgrammingError
+    # messages, and that neither existing pass caught it: `supabase_db_url` ends in
+    # `_url`, not one of `_SECRET_FIELD_SUFFIXES`, and `_SECRET_PARAM_RE` only matches
+    # `key=value` query parameters, never userinfo. `run_scheduled.py` prints
+    # `describe_exception` for every pipeline failure, so this reached the logs.
+    text = 'missing "=" after "postgres-bogus://postgres.abc:SuperSecretPw123@host/db"'
+
+    cleaned = redact(text)
+
+    assert "SuperSecretPw123" not in cleaned
+    assert REDACTED in cleaned
+
+
+def test_redact_strips_a_password_from_a_well_formed_postgres_uri() -> None:
+    cleaned = redact("postgresql://postgres.ref:hunter2hunter2@aws-0.pooler.example.com:6543/postgres")
+
+    assert "hunter2hunter2" not in cleaned
+    # The non-secret parts stay legible -- a redactor that mangles the host makes the
+    # diagnostic useless.
+    assert "aws-0.pooler.example.com" in cleaned
+
+
+def test_redact_leaves_a_uri_with_no_password_alone() -> None:
+    assert redact("https://agsi.gie.eu/api?from=2026-01-01") == "https://agsi.gie.eu/api?from=2026-01-01"
+
+
+def test_known_secrets_also_yields_the_password_inside_a_connection_uri(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Redacting only the whole URI value is not enough: psycopg reports *just the
+    # password fragment* when it fails to percent-decode it, e.g. `invalid
+    # percent-encoded token: "Secret%ZZpass"` -- no scheme, no host, nothing for the
+    # userinfo regex to anchor on and nothing matching the full URI string. Confirmed
+    # live 2026-09-09 against the installed psycopg. The password component therefore
+    # has to be a known secret in its own right.
+    from core.failures import _known_secrets
+
+    class _FakeSettings:
+        @staticmethod
+        def model_dump() -> dict[str, str]:
+            return {
+                "supabase_db_url": "postgresql://postgres.ref:Secret%ZZpass@host:6543/postgres",
+                "ibkr_host": "127.0.0.1",
+            }
+
+    monkeypatch.setitem(__import__("sys").modules, "core.settings", type(
+        "M", (), {"settings": _FakeSettings()}
+    ))
+
+    secrets = _known_secrets()
+
+    assert "Secret%ZZpass" in secrets, "the password component must be redactable on its own"
+    assert "127.0.0.1" not in secrets, "non-credential settings must never be redacted"

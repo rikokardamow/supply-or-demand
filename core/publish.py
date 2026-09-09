@@ -10,6 +10,8 @@ used by the web UI never write here (see Spec 32 §4 and the RLS policies applie
 from __future__ import annotations
 
 import io
+import re
+from collections.abc import Iterable
 from datetime import date, datetime
 from typing import Any, Final
 
@@ -57,20 +59,30 @@ def publish(
     key: list[str],
     pipeline: str | None = None,
     chunk_size: int = DEFAULT_CHUNK_SIZE,
-) -> None:
+) -> int:
     """Upsert `df` into `serving.<table>` on `key`, then append a `publish_log` row.
+    Returns the number of rows actually written -- 0 when the publish was skipped, so a
+    caller's own log line cannot claim a publish that never happened.
 
     Chunked COPY-into-a-temp-table + `INSERT ... ON CONFLICT DO UPDATE` (Spec 32 §3).
     COPY has no bound on row count per chunk, unlike a parameterised multi-row INSERT,
     which would hit Postgres' ~65,535-parameter limit well before `chunk_size` rows for
     any table with more than a handful of columns.
+
+    **Precondition: `df.columns` and `key` are identifiers, not data.** Row *values* go
+    through COPY and through parameters, so they can never reach a SQL identifier
+    position -- but column and key names are interpolated into the statement text, so
+    callers must supply them as literals or from a canonical schema, never from row
+    content. `_check_identifiers` below enforces this rather than leaving it implicit.
     """
     if table not in _ALLOWED_TABLES:
         raise UnknownServingTableError(
             f"{table!r} is not a whitelisted serving.* table ({sorted(_ALLOWED_TABLES)})"
         )
+    _check_identifiers([*df.columns, *key])
     if df.empty:
-        return
+        print(f"serving.{table}: empty frame, nothing published")
+        return 0
 
     # An unset SUPABASE_DB_URL is a legitimate state, not a failure: CI never has one,
     # and neither does a machine that hasn't opted into the serving layer. Skipping
@@ -80,7 +92,7 @@ def publish(
     db_url = settings.supabase_db_url
     if not db_url:
         print(f"serving-layer publish skipped for {table}: SUPABASE_DB_URL not configured")
-        return
+        return 0
 
     # Postgres refuses an ON CONFLICT DO UPDATE whose own INSERT proposes the same
     # constrained key twice ("cannot affect row a second time"), and real source data
@@ -113,6 +125,23 @@ def publish(
                 (table, as_of, source_note, len(df), pipeline),
             )
         conn.commit()
+    return len(df)
+
+
+# A plain lowercase SQL identifier. Anything else -- mixed case, a quote, whitespace, a
+# reserved word spelled oddly -- either breaks the unquoted interpolation below or is not
+# something this project's canonical schemas ever produce.
+_IDENTIFIER_RE: Final = re.compile(r"[a-z_][a-z0-9_]*")
+
+
+def _check_identifiers(names: Iterable[str]) -> None:
+    bad = sorted({name for name in names if not _IDENTIFIER_RE.fullmatch(str(name))})
+    if bad:
+        raise ValueError(
+            f"not a plain SQL identifier: {bad}. Column and key names are interpolated"
+            " into the statement text, so they must come from a literal or a canonical"
+            " schema -- never from row content."
+        )
 
 
 def _upsert_chunk(
@@ -159,6 +188,21 @@ SEASONAL_COLUMNS: Final = (
     "years",
     "unit",
 )
+
+
+def _today_doy() -> int:
+    """Today's day-of-year on `core.seasonal`'s own normalised calendar.
+
+    `REFERENCE_YEAR` (2001) is not a leap year, so `date(2028, 2, 29).replace(year=2001)`
+    raises `ValueError: day is out of range for month`. `core.seasonal` never hits this
+    because `_drop_leap_day` filters 29 February out before `_normalised_doy` sees it --
+    but *today* arrives unfiltered. 29 February is clamped to the 28th, matching
+    `_drop_leap_day`'s treatment of the day as not existing on this calendar.
+    """
+    today = date.today()
+    if (today.month, today.day) == (2, 29):
+        return date(REFERENCE_YEAR, 2, 28).timetuple().tm_yday
+    return today.replace(year=REFERENCE_YEAR).timetuple().tm_yday
 
 
 def seasonal_rows(df: pd.DataFrame, series_id: str, unit: str | None = None) -> pd.DataFrame:
@@ -215,8 +259,7 @@ def seasonal_rows(df: pd.DataFrame, series_id: str, unit: str | None = None) -> 
         storage read 54.75% at doy 300 and doy 365, both months away.
         """
         track = _year_track(this_year)
-        today_doy = date.today().replace(year=REFERENCE_YEAR).timetuple().tm_yday
-        return track.where(pd.Series(band.index <= today_doy, index=band.index))
+        return track.where(pd.Series(band.index <= _today_doy(), index=band.index))
 
     # Year columns carry a value only where that year actually reported, so counting
     # them per doy would vary along the curve. The band's own width is the honest
@@ -246,15 +289,34 @@ def seasonal_frame(df: pd.DataFrame) -> pd.DataFrame:
     block of NaN rows -- an empty band is not a finding, and publishing one would put a
     row on the UI's seasonal chart that says nothing.
     """
-    frames = [
-        seasonal_rows(
-            sub,
-            series_id=str(series_id),
-            unit=None if sub["unit"].empty else str(sub["unit"].iloc[0]),
-        )
-        for series_id, sub in df.groupby("series_id", sort=True)
-    ]
-    populated = [f for f in frames if not f.empty]
+    populated: list[pd.DataFrame] = []
+    dropped: list[str] = []
+    for series_id, sub in df.groupby("series_id", sort=True):
+        rows = seasonal_rows(sub, series_id=str(series_id), unit=_first_unit(sub))
+        if rows.empty:
+            dropped.append(str(series_id))
+        else:
+            populated.append(rows)
+
+    # A series that cannot form a band is a finding, not a non-event: publish() only
+    # upserts, so the rows from its last successful publish stay in the anon-readable
+    # table and the UI keeps drawing a stale `current` track against a live band. Naming
+    # them here is what makes that visible at all.
+    if dropped:
+        print(f"serving.seasonal: no usable band for {len(dropped)} series: {sorted(dropped)}")
+
     if not populated:
         return pd.DataFrame(columns=list(SEASONAL_COLUMNS))
     return pd.concat(populated, ignore_index=True)
+
+
+def _first_unit(sub: pd.DataFrame) -> str | None:
+    """The series' unit, or None -- never the string "nan".
+
+    `str(float("nan"))` is `"nan"`, which would publish a literal `unit = 'nan'` into an
+    anon-readable column rather than a NULL.
+    """
+    if sub["unit"].empty:
+        return None
+    first = sub["unit"].iloc[0]
+    return None if pd.isna(first) else str(first)
