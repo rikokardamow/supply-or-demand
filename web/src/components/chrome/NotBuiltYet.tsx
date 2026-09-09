@@ -23,7 +23,7 @@ export function NotBuiltYet({
       <Masthead active={href} />
       <h2
         style={{
-          fontFamily: "var(--heading-stack)",
+          fontFamily: "var(--font)",
           fontSize: "1.6rem",
           margin: "0.5rem 0 1rem",
         }}
