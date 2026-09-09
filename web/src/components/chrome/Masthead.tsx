@@ -11,6 +11,7 @@ import Link from "next/link";
  */
 
 const SCREENS = [
+  { href: "/", label: "Overview" },
   { href: "/balances", label: "Balances" },
   { href: "/prices", label: "Prices" },
   { href: "/supply", label: "Supply" },

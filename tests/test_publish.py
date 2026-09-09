@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pandas as pd
@@ -353,3 +353,38 @@ def test_publish_skips_the_revalidate_hook_when_it_is_not_configured(
     )
 
     assert called is False
+
+
+def test_publish_clamps_a_future_as_of_to_now(
+    fake_conn: _FakeConnection, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A forecast series' max(ts) is in the future -- OPEC's MOMR runs quarters out to
+    # 2027 -- and callers derive as_of from it. Left alone, serving.publish_log claimed
+    # "data as of 1 October 2027" and the staleness badge could never fire, because the
+    # data was permanently newer than now. Confirmed live 2026-09-09.
+    future = datetime.now(UTC) + timedelta(days=400)
+
+    publish(
+        "series_long", _df(), as_of=future, source_note="t", key=["series_id", "ts"]
+    )
+
+    params = next(
+        p for sql, p in fake_conn.cur.executed if "insert into serving.publish_log" in sql
+    )
+    assert params is not None
+    assert params[1] <= datetime.now(UTC)
+    assert "future" in capsys.readouterr().out
+
+
+def test_publish_leaves_a_past_as_of_alone(fake_conn: _FakeConnection) -> None:
+    # The clamp must not touch a genuinely stale source: serving.spreads reports April
+    # 2024 because its EIA route was discontinued, and that is the finding.
+    stale = datetime(2024, 4, 5, tzinfo=UTC)
+
+    publish("series_long", _df(), as_of=stale, source_note="t", key=["series_id", "ts"])
+
+    params = next(
+        p for sql, p in fake_conn.cur.executed if "insert into serving.publish_log" in sql
+    )
+    assert params is not None
+    assert params[1] == stale

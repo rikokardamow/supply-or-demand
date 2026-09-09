@@ -84,6 +84,18 @@ def publish(
             f"{table!r} is not a whitelisted serving.* table ({sorted(_ALLOWED_TABLES)})"
         )
     _check_identifiers([*df.columns, *key])
+
+    # `as_of` can never be in the future. Callers derive it from `df["ts"].max()`, which
+    # is right for an observed series but wrong for a forecast one: OPEC's MOMR carries
+    # quarters out to 2027, so the serving layer reported "data as of 1 October 2027" and
+    # the staleness badge could never fire, because the data was permanently newer than
+    # now. Confirmed live 2026-09-09 on the overview page. Clamping keeps the meaning the
+    # column is supposed to have -- how current the data is -- for forecast and observed
+    # series alike.
+    now = datetime.now(as_of.tzinfo) if as_of.tzinfo else datetime.now()
+    if as_of > now:
+        print(f"serving.{table}: as_of {as_of:%Y-%m-%d} is in the future, clamped to now")
+        as_of = now
     if df.empty:
         print(f"serving.{table}: empty frame, nothing published")
         return 0
