@@ -7,37 +7,37 @@
  * so this app carries its own and there is no import between the two.
  *
  * The direction is taken from references the author supplied: a dark cinematic ground, a
- * single oversized display line, glassmorphic cards floating over an organic centrepiece,
- * and pill buttons. Everything here is CSS — no 3D library, no animation dependency — so
- * the page ships as a couple of hundred lines and stays fast on a phone.
+ * single oversized display line, cards floating over a centrepiece, and pill buttons. The
+ * centrepiece is a canvas globe carrying real vessel positions rather than a rendered
+ * object — no 3D library, no texture, nothing to download.
  */
 
 :root {
-  /* The ground is not flat black. A near-black with a blue cast reads as depth rather than
-     as a switched-off screen, and it is what lets the accent glow register at all. */
-  --void: #07070c;
-  --ground: #0b0b14;
-  --raised: rgba(255, 255, 255, 0.04);
-  --edge: rgba(255, 255, 255, 0.08);
-  --edge-bright: rgba(255, 255, 255, 0.16);
+  /* True black. The globe is the light source in this composition, so the ground's job is
+     to disappear behind it rather than to glow on its own. */
+  --void: #000000;
+  --ground: #060608;
+  --raised: rgba(255, 255, 255, 0.025);
+  --edge: rgba(255, 255, 255, 0.09);
+  --edge-bright: rgba(255, 255, 255, 0.2);
 
   --text: #f4f4f7;
   --muted: #a1a1b5;
   --faint: #6b6b80;
 
-  /* One accent, used sparingly. Indigo rather than the data site's navy: this page has no
-     charts to stay consistent with, and it needs to glow against near-black. */
-  --accent: #6366f1;
-  --accent-soft: rgba(99, 102, 241, 0.14);
+  /* One accent, used sparingly. Cyan, matching the tanker points on the globe -- the accent is taken from the data
+     rather than chosen beside it. */
+  --accent: #6ee7ff;
+  --accent-soft: rgba(110, 231, 255, 0.12);
   --up: #34d399;
   --down: #fb7185;
 
   --font:
-    var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
+    var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 
-  --r-md: 12px;
-  --r-lg: 20px;
+  --r-md: 10px;
+  --r-lg: 14px;
   --r-pill: 999px;
 
   --measure: 1180px;
@@ -91,74 +91,27 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
-/* -- The centrepiece --------------------------------------------------------------- */
+/* -- Ground ------------------------------------------------------------------------ */
 
 /**
- * The references all place a rendered 3D object behind the headline. There is no render
- * here and no WebGL: three large blurred radial gradients, each drifting on its own slow
- * cycle, produce the same sense of a lit volume behind the type at a fraction of the cost
- * and with no asset to load. They are `position: fixed` so the glow stays put while the
- * page scrolls over it, which is what makes it read as lighting rather than as a picture.
+ * No blurred gradient. An earlier version drifted three large blurred orbs behind the type,
+ * which is the 2021 SaaS treatment and reads as dated now — and it substituted a cheap
+ * effect for the expensive thing the references actually have, which is a sharp rendered
+ * object. The globe is that object, and it is drawn from real vessel positions.
+ *
+ * What remains is a single very faint vignette, so the corners of a large screen do not
+ * read as flat void, and the grain below.
  */
-.aurora {
+.vignette {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.55;
-  will-change: transform;
-}
-
-.orb-a {
-  width: 46vw;
-  height: 46vw;
-  left: 50%;
-  top: 24%;
-  margin-left: -23vw;
-  background: radial-gradient(circle at 40% 40%, #4f46e5, transparent 68%);
-  animation: drift-a 22s var(--ease) infinite alternate;
-}
-
-.orb-b {
-  width: 34vw;
-  height: 34vw;
-  left: 22%;
-  top: 40%;
-  background: radial-gradient(circle at 50% 50%, #7c3aed, transparent 66%);
-  animation: drift-b 27s var(--ease) infinite alternate;
-}
-
-.orb-c {
-  width: 28vw;
-  height: 28vw;
-  right: 14%;
-  top: 18%;
-  background: radial-gradient(circle at 50% 50%, #0ea5e9, transparent 66%);
-  animation: drift-c 31s var(--ease) infinite alternate;
-  opacity: 0.4;
-}
-
-@keyframes drift-a {
-  to {
-    transform: translate3d(4vw, 6vh, 0) scale(1.12);
-  }
-}
-@keyframes drift-b {
-  to {
-    transform: translate3d(-6vw, -4vh, 0) scale(0.9);
-  }
-}
-@keyframes drift-c {
-  to {
-    transform: translate3d(-3vw, 7vh, 0) scale(1.15);
-  }
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 30%,
+    rgba(110, 231, 255, 0.05),
+    transparent 70%
+  );
 }
 
 /* A fine grain over the whole page. Large flat gradients band on 8-bit displays; a faint
@@ -185,7 +138,7 @@ a {
   background: var(--raised);
   border: 1px solid var(--edge);
   border-radius: var(--r-lg);
-  backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(6px);
 }
 
 .glass-link {
@@ -256,10 +209,10 @@ a {
   animation: rise 700ms var(--ease) both;
 }
 
-/* A reader who has asked for less motion gets a still page: the orbs stop drifting and
-   nothing slides in. The lighting stays, because it is composition rather than movement. */
+/* A reader who has asked for less motion gets a still page: nothing slides in, and the
+   globe draws once at a composed angle rather than rotating (handled in Globe.tsx, since
+   that animation is arithmetic rather than a transition). */
 @media (prefers-reduced-motion: reduce) {
-  .orb,
   .rise {
     animation: none;
   }

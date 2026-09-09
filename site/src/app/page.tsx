@@ -1,3 +1,4 @@
+import { Globe } from "@/components/Globe";
 import {
   fetchFigures,
   fetchPosts,
@@ -5,6 +6,7 @@ import {
   formatNumber,
   formatSigned,
 } from "@/lib/content";
+import { fetchVesselPoints } from "@/lib/vessels";
 
 /**
  * kardamow.com — the landing page.
@@ -40,14 +42,23 @@ const CAPABILITIES = [
 ];
 
 export default async function Home() {
-  const [figures, posts] = await Promise.all([fetchFigures(), fetchPosts(5)]);
+  const [figures, posts, vessels] = await Promise.all([
+    fetchFigures(),
+    fetchPosts(5),
+    fetchVesselPoints(),
+  ]);
 
   return (
     <main>
       {/* -- Bar ---------------------------------------------------------------- */}
-      <header className="measure" style={{ paddingTop: "1.75rem", paddingBottom: "1rem" }}>
+      <header
+        className="measure"
+        style={{ paddingTop: "1.75rem", paddingBottom: "1rem" }}
+      >
         <nav style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <span
+            style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}
+          >
             <span
               aria-hidden
               style={{
@@ -64,14 +75,22 @@ export default async function Home() {
             >
               K
             </span>
-            <span style={{ fontWeight: 600, letterSpacing: "-0.02em" }}>Kardamow</span>
+            <span style={{ fontWeight: 600, letterSpacing: "-0.02em" }}>
+              Kardamow
+            </span>
           </span>
 
           <span style={{ marginLeft: "auto", display: "flex", gap: "1.5rem" }}>
-            <a href="#writing" style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+            <a
+              href="#writing"
+              style={{ fontSize: "0.9rem", color: "var(--muted)" }}
+            >
               Writing
             </a>
-            <a href="#work" style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+            <a
+              href="#work"
+              style={{ fontSize: "0.9rem", color: "var(--muted)" }}
+            >
               Work
             </a>
             <a
@@ -87,67 +106,88 @@ export default async function Home() {
       {/* -- Hero --------------------------------------------------------------- */}
       <section
         className="measure"
-        style={{ paddingTop: "clamp(3rem, 9vw, 7rem)", paddingBottom: "4rem" }}
+        style={{ paddingTop: "clamp(2rem, 6vw, 5rem)", paddingBottom: "4rem" }}
       >
-        <p
-          className="rise"
-          style={{
-            fontSize: "0.78rem",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "var(--faint)",
-            marginBottom: "1.6rem",
-          }}
-        >
-          Independent research · Energy, macro, geopolitics
-        </p>
-
-        <h1
-          className="rise"
-          style={{
-            fontSize: "clamp(2.7rem, 7.5vw, 5.4rem)",
-            maxWidth: "16ch",
-            marginBottom: "1.6rem",
-            animationDelay: "80ms",
-          }}
-        >
-          The structural imbalances most analysts miss.
-        </h1>
-
-        <p
-          className="rise"
-          style={{
-            fontSize: "clamp(1rem, 1.5vw, 1.15rem)",
-            color: "var(--muted)",
-            maxWidth: "52ch",
-            marginBottom: "2.4rem",
-            animationDelay: "160ms",
-          }}
-        >
-          Sanctions enforcement gaps, shipping routes that stop making sense, and the lag
-          between a policy taking effect and a barrel changing course — worked from primary
-          sources, before the price reflects any of it.
-        </p>
-
         <div
-          className="rise"
           style={{
-            display: "flex",
-            gap: "0.8rem",
-            flexWrap: "wrap",
-            animationDelay: "240ms",
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 27rem), 1fr))",
+            gap: "clamp(2rem, 5vw, 4rem)",
+            alignItems: "center",
           }}
         >
-          <a className="btn btn-solid" href="https://kardamow.substack.com">
-            Read the research
-          </a>
-          <a className="btn btn-ghost" href="https://data.kardamow.com">
-            Explore the data →
-          </a>
+          <div>
+            <p
+              className="rise"
+              style={{
+                fontSize: "0.78rem",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "var(--faint)",
+                marginBottom: "1.6rem",
+              }}
+            >
+              Independent research · Energy, macro, geopolitics
+            </p>
+
+            <h1
+              className="rise"
+              style={{
+                fontSize: "clamp(2.3rem, 4.4vw, 3.9rem)",
+                maxWidth: "17ch",
+                marginBottom: "1.6rem",
+                animationDelay: "80ms",
+              }}
+            >
+              The structural imbalances most analysts miss.
+            </h1>
+
+            <p
+              className="rise"
+              style={{
+                fontSize: "clamp(1rem, 1.5vw, 1.15rem)",
+                color: "var(--muted)",
+                maxWidth: "52ch",
+                marginBottom: "2.4rem",
+                animationDelay: "160ms",
+              }}
+            >
+              Sanctions enforcement gaps, shipping routes that stop making
+              sense, and the lag between a policy taking effect and a barrel
+              changing course — worked from primary sources, before the price
+              reflects any of it.
+            </p>
+
+            <div
+              className="rise"
+              style={{
+                display: "flex",
+                gap: "0.8rem",
+                flexWrap: "wrap",
+                animationDelay: "240ms",
+              }}
+            >
+              <a className="btn btn-solid" href="https://kardamow.substack.com">
+                Read the research
+              </a>
+              <a className="btn btn-ghost" href="https://data.kardamow.com">
+                Explore the data →
+              </a>
+            </div>
+          </div>
+
+          {/* The centrepiece: real vessel positions, turning. A rendered object would be
+              decoration; this is the same AIS capture the vessels page draws, so the image
+              is an argument rather than an illustration. */}
+          {vessels.length > 0 ? (
+            <div className="rise" style={{ animationDelay: "300ms" }}>
+              <Globe points={vessels} />
+            </div>
+          ) : null}
         </div>
 
-        {/* The floating figures. Real, current, and each one is a number the research
-            actually argues from. */}
+        {/* The figures. Real, current, and each one is a number the research argues from. */}
         {figures.length > 0 ? (
           <div
             className="rise"
@@ -178,10 +218,20 @@ export default async function Home() {
                 >
                   {f.label}
                 </div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "0.4rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "0.4rem",
+                  }}
+                >
                   <span
                     className="tabular"
-                    style={{ fontSize: "1.75rem", fontWeight: 600, letterSpacing: "-0.03em" }}
+                    style={{
+                      fontSize: "1.75rem",
+                      fontWeight: 600,
+                      letterSpacing: "-0.03em",
+                    }}
                   >
                     {formatNumber(f.value, f.digits)}
                   </span>
@@ -212,8 +262,16 @@ export default async function Home() {
           </div>
         ) : null}
 
-        <p style={{ marginTop: "1.1rem", fontSize: "0.76rem", color: "var(--faint)" }}>
-          Live from the same published data behind data.kardamow.com.
+        <p
+          style={{
+            marginTop: "1.1rem",
+            fontSize: "0.76rem",
+            color: "var(--faint)",
+          }}
+        >
+          {vessels.length > 0
+            ? `${vessels.length.toLocaleString("en-GB")} vessel positions from the latest AIS capture, and figures live from the same published data behind data.kardamow.com. Terrestrial AIS, so empty ocean means no receiver rather than no ships.`
+            : "Live from the same published data behind data.kardamow.com."}
         </p>
       </section>
 
@@ -233,7 +291,9 @@ export default async function Home() {
               marginBottom: "2rem",
             }}
           >
-            <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.1rem)" }}>Recent writing</h2>
+            <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.1rem)" }}>
+              Recent writing
+            </h2>
             <a
               href="https://kardamow.substack.com"
               style={{ fontSize: "0.86rem", color: "var(--muted)" }}
@@ -256,7 +316,9 @@ export default async function Home() {
                   gap: "1.5rem",
                 }}
               >
-                <span style={{ fontSize: "1.02rem", fontWeight: 500 }}>{post.title}</span>
+                <span style={{ fontSize: "1.02rem", fontWeight: 500 }}>
+                  {post.title}
+                </span>
                 <span
                   className="tabular"
                   style={{
@@ -279,12 +341,23 @@ export default async function Home() {
         className="measure"
         style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
       >
-        <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.1rem)", marginBottom: "1rem" }}>
+        <h2
+          style={{
+            fontSize: "clamp(1.5rem, 3vw, 2.1rem)",
+            marginBottom: "1rem",
+          }}
+        >
           What the work covers
         </h2>
-        <p style={{ color: "var(--muted)", maxWidth: "56ch", marginBottom: "2rem" }}>
-          Every claim is built from a source that can be checked, and the working data is
-          published rather than described.
+        <p
+          style={{
+            color: "var(--muted)",
+            maxWidth: "56ch",
+            marginBottom: "2rem",
+          }}
+        >
+          Every claim is built from a source that can be checked, and the
+          working data is published rather than described.
         </p>
 
         <div
@@ -296,15 +369,22 @@ export default async function Home() {
         >
           {CAPABILITIES.map((c) => (
             <div key={c.title} className="glass" style={{ padding: "1.4rem" }}>
-              <h3 style={{ fontSize: "1.05rem", marginBottom: "0.6rem" }}>{c.title}</h3>
-              <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>{c.body}</p>
+              <h3 style={{ fontSize: "1.05rem", marginBottom: "0.6rem" }}>
+                {c.title}
+              </h3>
+              <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+                {c.body}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       {/* -- Contact ------------------------------------------------------------ */}
-      <section className="measure" style={{ paddingTop: "3rem", paddingBottom: "5rem" }}>
+      <section
+        className="measure"
+        style={{ paddingTop: "3rem", paddingBottom: "5rem" }}
+      >
         <div
           className="glass"
           style={{
@@ -317,11 +397,17 @@ export default async function Home() {
           }}
         >
           <div>
-            <h2 style={{ fontSize: "clamp(1.4rem, 2.6vw, 1.9rem)", marginBottom: "0.6rem" }}>
+            <h2
+              style={{
+                fontSize: "clamp(1.4rem, 2.6vw, 1.9rem)",
+                marginBottom: "0.6rem",
+              }}
+            >
               Get in touch
             </h2>
             <p style={{ color: "var(--muted)", maxWidth: "42ch" }}>
-              For research, commissioned work, or a question about something published here.
+              For research, commissioned work, or a question about something
+              published here.
             </p>
           </div>
           <a className="btn btn-solid" href="https://kardamow.substack.com">
