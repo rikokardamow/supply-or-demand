@@ -40,17 +40,39 @@ const HEAT_SATURATION_PCT = 40;
  * On white, chroma came from how unevenly the channels sat BELOW white, where the old
  * navy #0f2a4a had a spread of 59 against red's 149 -- so the light UI swapped navy for
  * light blue and then gained the surplus alpha to close the rest of the gap. On this
- * ground the blend is onto near-black and chroma comes from the spread itself, which for
- * these two lifted colours is 178 apiece. Same defect, same diagnosis, different remedy,
- * because the arithmetic inverts with the ground.
+ * ground the blend is onto `--surface` (#0a0b0d, rgb(10,11,13)) -- close to black by eye,
+ * but not close enough to drop from the arithmetic: `washChroma` composites against the
+ * real ground channels below, and chroma turns out NOT to reduce to "the spread times
+ * alpha" the way it would against true black. See `washChroma` and the ramp comment
+ * below for what it actually takes to balance the two directions here.
  */
 const SURPLUS_RGB = "77, 159, 255";
 const DEFICIT_RGB = "255, 90, 77";
 
-// The light UI needed a SURPLUS_ALPHA_GAIN of 149/122 here, because even after swapping
-// navy for light blue the surplus still under-coloured against red on a white ground.
-// On this ground both lifted colours have a channel spread of 178, so the gain would be
-// exactly 1 and the constant is gone rather than left at a no-op value.
+/**
+ * The channels of `--surface` (#0a0b0d), the ground a heat wash actually composites onto.
+ * Close to black by eye, but `washChroma`'s arithmetic needs the real values: composited
+ * against true (0,0,0) the two wash colours would balance at equal alpha (their raw
+ * channel spreads are both 178), but composited against this slightly uneven ground they
+ * do not, which is what the retuned ramp below corrects for. Kept as a numeric triple
+ * for the same reason as SURPLUS_RGB/DEFICIT_RGB above -- arithmetic, not a `var()`
+ * reference -- and drift-guarded against `--surface` itself in HeatTable.test.ts.
+ */
+export const PANEL_GROUND_RGB = "10, 11, 13";
+
+// The light UI needed a SURPLUS_ALPHA_GAIN here because even after swapping navy for
+// light blue the surplus still under-coloured against red on a white ground. There is no
+// equivalent single constant here: composited against --surface (not pure black) the two
+// colours' chroma-per-unit-alpha is close but not equal, and the gap that matters most is
+// the constant offset at low alpha (see the ramp below) -- which a flat gain factor
+// cannot correct, so the surplus and deficit ramps are tuned independently instead.
+
+/** The intercept and slope (both signs) of the alpha ramp below. Named, not inlined, so
+ * the pair being re-tuned is visible at the definition rather than buried in a ternary. */
+const SURPLUS_INTERCEPT = 0.152;
+const SURPLUS_SLOPE = 0.352;
+const DEFICIT_INTERCEPT = 0.18;
+const DEFICIT_SLOPE = 0.34;
 
 /** The wash for a cell, or null where the distance is not worth the eye stopping on. */
 export function heatWash(
@@ -71,17 +93,32 @@ export function heatWash(
   // (spread 59) had to be swapped for light blue (122) and then gained by 149/122 to
   // match red's 149.
   //
-  // Here the blend is onto --surface (#0a0b0d, near enough to black that the composite is
-  // c * alpha), so chroma is (max - min) * alpha. The lifted palette makes that symmetric
-  // for free: --navy #4d9fff is rgb(77,159,255), spread 178; --red #ff5a4d is
-  // rgb(255,90,77), spread 178. Identical, so no gain factor is needed here.
-  //
-  // The small asymmetry that remains is not for chroma but for CONTRAST: the two colours
-  // differ in luminance, so equal alpha would leave the deficit reading heavier than the
-  // build. These ramps land the two extremes within 1% on contrast and 7.7% on chroma
-  // at the saturation cap (178*0.48 = 85.4 surplus against 178*0.52 = 92.6 deficit),
-  // measured against the panel ground rather than judged by eye.
-  const alpha = (pct > 0 ? 0.2 : 0.18) + scaled * (pct > 0 ? 0.28 : 0.34);
+  // Here the blend is onto --surface, rgb(10,11,13) -- not pure black, and the difference
+  // matters: washChroma composites `c*alpha + g*(1-alpha)` per channel against that real
+  // ground, not `c*alpha` against (0,0,0). Because the ground channels are uneven (10 <
+  // 11 < 13) and the two wash colours sit on opposite sides of that unevenness, the two
+  // directions do NOT produce equal chroma at equal alpha, even though their raw channel
+  // spreads are both 178. Composited by hand (not by calling washChroma -- see the pinned
+  // fixtures in HeatTable.test.ts, which exist precisely so this comment and the function
+  // cannot both drift the same way again):
+  //   surplus @ threshold (alpha 0.152): R 10+67*.152=20.18, G 11+148*.152=33.50,
+  //     B 13+242*.152=49.78 -> chroma 29.60
+  //   deficit @ threshold (alpha 0.18):  R 10+245*.18=54.10, G 11+79*.18=25.22,
+  //     B 13+64*.18=24.52   -> chroma 29.58
+  //   surplus @ cap       (alpha 0.504): R 10+67*.504=43.77, G 11+148*.504=85.59,
+  //     B 13+242*.504=134.97 -> chroma 91.20
+  //   deficit @ cap       (alpha 0.52):  R 10+245*.52=137.40, G 11+79*.52=52.08,
+  //     B 13+64*.52=46.28  -> chroma 91.12
+  // Chroma ratio is ~1.001 at both ends (and, because both sides are affine in `scaled`
+  // once past the threshold, at every point between). Contrast against the panel ground
+  // is NOT held equally tight: it lands within ~1% at the threshold (13.23:1 surplus,
+  // 13.06:1 deficit) but the two directions diverge to ~7% at the cap (6.14:1 surplus,
+  // 6.59:1 deficit) -- both comfortably clear the 4.5:1 floor, so the trade-off taken was
+  // to hold chroma parity exactly across the whole ramp (the property a reader scanning
+  // for outliers depends on) rather than squeeze contrast parity tighter at the cap.
+  const alpha =
+    (pct > 0 ? SURPLUS_INTERCEPT : DEFICIT_INTERCEPT) +
+    scaled * (pct > 0 ? SURPLUS_SLOPE : DEFICIT_SLOPE);
   return pct > 0
     ? { rgb: SURPLUS_RGB, alpha }
     : { rgb: DEFICIT_RGB, alpha };
@@ -91,15 +128,22 @@ export function heatWash(
  * The channel spread of a wash once blended onto the panel ground -- its perceived
  * colourfulness.
  *
- * **Ground-dependent, and silently wrong against a surface it was not written for.** On
- * the light UI this composited onto white (`255 - (255 - c) * alpha`); here it composites
- * onto --surface, which is dark enough to treat as black. Getting this wrong does not
- * throw -- it returns a plausible number for a colour nobody is looking at, which is the
- * one failure mode a function like this exists to prevent.
+ * **Ground-dependent, and previously wrong against the surface it was actually written
+ * for.** The table sits on `--surface` (#0a0b0d, rgb(10,11,13)), not pure black, so the
+ * true composite per channel is `c*alpha + g*(1-alpha)` -- not `c*alpha`, which is only
+ * the correct blend onto (0,0,0). The two are close enough by eye to look the same
+ * screenshot but far enough apart in the arithmetic to mis-balance the ramp below: this
+ * function got it wrong for a full task and a review before the true composite was
+ * measured. Getting this wrong does not throw -- it returns a plausible number for a
+ * colour nobody is looking at, which is the one failure mode a function like this exists
+ * to prevent.
  */
 export function washChroma(wash: { rgb: string; alpha: number }): number {
   const channels = wash.rgb.split(",").map((n) => Number(n.trim()));
-  const blended = channels.map((c) => c * wash.alpha);
+  const ground = PANEL_GROUND_RGB.split(",").map((n) => Number(n.trim()));
+  const blended = channels.map(
+    (c, i) => c * wash.alpha + ground[i] * (1 - wash.alpha),
+  );
   return Math.max(...blended) - Math.min(...blended);
 }
 
