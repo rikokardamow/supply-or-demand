@@ -45,6 +45,10 @@ export const SERIES_CYCLE = [
 export function baseLayout(unit?: string | null): Record<string, unknown> {
   return {
     font: { family: BODY_STACK, size: 10, color: MUTED },
+    // Plotly needs a real colour string here, not a var() reference, so these two are
+    // necessarily a second copy of --surface and --border rather than the tokens
+    // themselves. plotly.test.ts asserts they stay equal to tokens.css, so a retuned
+    // token cannot leave the chart ground behind and open a seam inside every `Panel`.
     paper_bgcolor: "#0a0b0d",
     plot_bgcolor: "#0a0b0d",
     margin: { l: 46, r: 12, t: 8, b: 28 },
