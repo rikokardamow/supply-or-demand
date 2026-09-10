@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
 import "@/theme/tokens.css";
 
 /**
- * One family, Inter, for headings and figures alike.
+ * Two families: mono for the terminal, Inter for running prose.
  *
- * The serif heading face is gone from this surface. A Lora heading over an Inter figure is
- * the signature of a document, and this is an interface -- it was the loudest single thing
- * making the site read as a newspaper someone had put charts in. `core/design.py` still
- * pairs Lora with Inter for the Streamlit app and the exported exhibits, which are
- * documents and should stay that way.
+ * JetBrains Mono carries every label, figure, heading and table cell -- the whole terminal
+ * chrome, matching `--font` in `theme/tokens.css`. Inter survives only for `.prose`: a page
+ * dek or a source note, where a paragraph set in mono is the one piece of the real thing
+ * not worth keeping. The serif heading face is gone from this surface entirely -- a Lora
+ * heading over an Inter figure is the signature of a document, and this is an interface.
+ * `core/design.py` still pairs Lora with Inter for the Streamlit app and the exported
+ * exhibits, which are documents and should stay that way.
  *
- * Self-hosted by `next/font`, so the app stays legible with Google Fonts blocked.
+ * Both self-hosted by `next/font`, so the app stays legible with Google Fonts blocked.
  */
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -28,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB" className={inter.variable}>
+    <html lang="en-GB" className={`${inter.variable} ${jetBrainsMono.variable}`}>
       <body>{children}</body>
     </html>
   );

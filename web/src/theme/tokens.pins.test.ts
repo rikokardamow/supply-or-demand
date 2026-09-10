@@ -60,8 +60,13 @@ describe("chrome tokens", () => {
     expect(token("red-rgb")).toBe(toRgbTriple(token("red")));
   });
 
-  it("is monospace at 11px", () => {
-    expect(token("font")).toContain("JetBrains Mono");
+  it("is monospace at 11px, wired to a loaded face rather than merely naming one", () => {
+    // Naming "JetBrains Mono" in the stack is not enough: nothing loads it unless --font
+    // also resolves through var(--font-mono), the variable next/font injects in
+    // app/layout.tsx. A stack that only names the face passes this test whether or not a
+    // visitor ever receives it -- exactly the gap that shipped a platform-fallback font to
+    // every reader while the 11px scale was measured against JetBrains Mono.
+    expect(token("font").startsWith("var(--font-mono)")).toBe(true);
     expect(token("base-font-px")).toBe("11px");
   });
 
