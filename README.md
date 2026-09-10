@@ -1,6 +1,6 @@
 <div align="center">
 
-# Kardamow
+# Supply or Demand? You build.
 
 **An open-source energy and macro research dashboard.**
 
@@ -15,8 +15,7 @@ Every figure is computed before it is served — nothing is estimated in the bro
 
 [**Screenshots**](#screenshots) ·
 [**Quick start**](#quick-start) ·
-[**Read API**](#read-api) ·
-[**The writing**](https://kardamow.substack.com)
+[**Read API**](#read-api)
 
 *The hosted demo is offline. Everything below runs locally — see [Quick start](#quick-start) —
 and the screenshots are of the running application.*
@@ -25,7 +24,7 @@ and the screenshots are of the running application.*
 
 ---
 
-![The Kardamow dashboard overview](docs/screenshots/data-overview.png)
+![The dashboard overview](docs/screenshots/data-overview.png)
 
 ## What this is
 
@@ -127,8 +126,8 @@ Three rules hold the shape together:
 ## Quick start
 
 ```bash
-git clone https://github.com/rikokardamow/energy-dashboard.git
-cd energy-dashboard
+git clone https://github.com/rikokardamow/supply-or-demand.git
+cd supply-or-demand
 
 uv sync --all-extras
 cp .env.example .env          # fill in API keys — git-ignored, never commit it
