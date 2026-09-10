@@ -189,7 +189,10 @@ export default async function Home() {
       <main>
         <section
           style={{
-            padding: "var(--space-12) 0 var(--space-8)",
+            // `main` is full-bleed for panels (see globals.css), so the hero -- the one
+            // thing in it that is not a panel -- has to carry its own horizontal gutter
+            // or its text sits flush against the viewport edge.
+            padding: "var(--space-12) var(--space-4) var(--space-8)",
             maxWidth: "52rem",
           }}
         >

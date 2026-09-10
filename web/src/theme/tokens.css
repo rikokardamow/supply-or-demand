@@ -234,7 +234,10 @@ a {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: var(--space-1) var(--space-3);
+  /* Vertical padding alone, not the label's font size, gets this to WCAG 2.2 SC 2.5.8's
+     24x24px minimum tap target -- at --base-font-px 11px the old --space-1 gave roughly
+     15px. Density stays in the type; the hit area does not. */
+  padding: var(--space-5) var(--space-3);
   white-space: nowrap;
   transition: color var(--duration) var(--ease);
 }
@@ -243,16 +246,43 @@ a {
   color: var(--text);
 }
 
-.term-key[aria-current="page"],
-.term-key[aria-pressed="true"] {
+/* The inverted amber block is spent on exactly one .term-key state: the active nav
+   item. A series chip or a range option never earns it, however it is pressed -- that
+   is the rationing rule this file states at the top, and both were briefly breaking it
+   by sharing this selector with aria-pressed. */
+.term-key[aria-current="page"] {
   background: var(--accent);
   color: #000000;
   font-weight: 700;
 }
 
-.term-key[aria-pressed="false"] {
+/* A series toggle: on/off, and the two states must read as different even to a reader
+   who cannot see colour, so "off" keeps the strike-through. "On" is just the swatch
+   plus normal text -- never a solid fill, which is reserved for the nav item and the
+   stale badge. */
+.term-key--series[aria-pressed="true"] {
+  color: var(--text);
+}
+
+.term-key--series[aria-pressed="false"] {
   color: var(--faint);
   text-decoration: line-through;
+}
+
+/* Hover must still register on a struck-through chip -- without this the equal-
+   specificity tie with .term-key:hover above is won by source order, and a hidden
+   chip gives no hover response at all. */
+.term-key--series[aria-pressed="false"]:hover {
+  color: var(--text);
+}
+
+/* A range switch: one-of-N, not on/off, so the unselected options are not "disabled"
+   and must not be struck through. The selected option reads as amber TYPE on a lifted
+   ground, not the solid amber block that .term-key[aria-current="page"] owns. */
+.term-key--range[aria-pressed="true"] {
+  background: var(--surface-2);
+  color: var(--accent);
+  font-weight: 700;
 }
 
 /* An inverted status bar. Amber for stale; red reserved for a genuine failure. */
