@@ -33,17 +33,22 @@ export async function PageHeader({
         style={{
           display: "flex",
           alignItems: "baseline",
+          flexWrap: "wrap",
           gap: "var(--space-4)",
           padding: "var(--space-3) var(--space-4)",
           borderBottom: "1px solid var(--border)",
         }}
       >
+        {/* flexShrink: 0 keeps the title at full size when the row wraps -- without it
+            the title compresses at phone width and the dek breaks into a ragged column
+            instead. Wide widths still read as one compact line. */}
         <h2
           style={{
             fontSize: "var(--size-page)",
             fontWeight: 700,
             letterSpacing: "0.08em",
             textTransform: "uppercase",
+            flexShrink: 0,
           }}
         >
           {title}

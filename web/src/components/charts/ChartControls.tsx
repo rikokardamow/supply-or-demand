@@ -153,7 +153,7 @@ export function ChartControls({
                     <button
                       key={line.name}
                       type="button"
-                      className="term-key"
+                      className="term-key term-key--series"
                       onClick={() => toggle(line.name)}
                       aria-pressed={!isHidden}
                     >
@@ -182,7 +182,7 @@ export function ChartControls({
                 <button
                   key={key}
                   type="button"
-                  className="term-key"
+                  className="term-key term-key--range"
                   onClick={() => setRange(key)}
                   aria-pressed={effectiveRange === key}
                 >
