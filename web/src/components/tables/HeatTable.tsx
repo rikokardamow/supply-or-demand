@@ -68,7 +68,16 @@ export function heatWash(
     : { rgb: DEFICIT_RGB, alpha: base };
 }
 
-/** The channel spread of a wash once blended onto white -- its perceived colourfulness. */
+/**
+ * The channel spread of a wash once blended onto white -- its perceived colourfulness.
+ *
+ * **This assumes a white ground, and silently returns wrong numbers on any other.** The
+ * blend below is an alpha composite against 255; on a dark surface the same wash sits on
+ * the source colour's own spread instead of its spread below white, and the two are not
+ * proportional. The whole point of this function is to be the thing you trust in place of
+ * your eyes, so a caller on a non-white surface must change the blend rather than the
+ * threshold it is compared against.
+ */
 export function washChroma(wash: { rgb: string; alpha: number }): number {
   const channels = wash.rgb.split(",").map((n) => Number(n.trim()));
   const blended = channels.map((c) => 255 - (255 - c) * wash.alpha);
