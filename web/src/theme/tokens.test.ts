@@ -22,6 +22,7 @@ import { describe, expect, it } from "vitest";
 
 const SRC = join(import.meta.dirname, "..");
 const TOKENS = join(SRC, "theme", "tokens.css");
+const LAYOUT = join(SRC, "app", "layout.tsx");
 
 /**
  * Tokens that are legitimately defined somewhere other than `tokens.css`.
@@ -33,10 +34,23 @@ const TOKENS = join(SRC, "theme", "tokens.css");
 const DEFINED_ELSEWHERE = new Set([
   // Injected on <html> by next/font in app/layout.tsx, which owns the self-hosted file.
   "--font-inter",
+  // Same mechanism, for the mono face --font is wired to in tokens.css.
+  "--font-mono",
   // Set inline per element by TickerRail, so the flash tints with the direction of the
   // move it is announcing. It has no sensible global value.
   "--flash-tone",
 ]);
+
+/**
+ * The entries above that claim to be a next/font variable, checked against the file that
+ * would actually declare them.
+ *
+ * An allowlist's real risk is becoming an escape hatch nobody re-examines, so this does
+ * not just trust the comment above each entry — it reads app/layout.tsx and confirms the
+ * name is genuinely passed as a font's `variable:`. `--flash-tone` is not a next/font
+ * variable and is deliberately not in this list.
+ */
+const NEXT_FONT_VARS = ["--font-inter", "--font-mono"];
 
 function walk(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -84,5 +98,12 @@ describe("design tokens", () => {
     }
 
     expect([...new Set(missing)]).toEqual([]);
+  });
+
+  it("only allowlists a next/font variable that layout.tsx actually declares", () => {
+    const layout = readFileSync(LAYOUT, "utf8");
+    for (const name of NEXT_FONT_VARS) {
+      expect(layout).toContain(`variable: "${name}"`);
+    }
   });
 });

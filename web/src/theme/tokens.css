@@ -71,9 +71,12 @@
 
   /* One family, monospace, for every label, figure, heading and table cell. Inter is
      kept for running prose only — page deks and source notes — because a paragraph set
-     in mono is the part of the real terminal worth leaving behind. */
-  --font: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo,
-    Consolas, monospace;
+     in mono is the part of the real terminal worth leaving behind.
+     Starts with var(--font-mono), the face `next/font` actually loads in app/layout.tsx —
+     the named strings after it are the fallback chain for a browser that has JS disabled
+     or has not yet hydrated, not the primary face. */
+  --font: var(--font-mono), "JetBrains Mono", "IBM Plex Mono", ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
   --font-prose: var(--font-inter), Inter, -apple-system, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   --base-font-px: 11px;
