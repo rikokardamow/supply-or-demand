@@ -699,6 +699,46 @@ along the way.
 
 ## [Unreleased]
 ### Added
+- **Terminal restyle (`design/terminal-ui-v2`) — `web/` (`data.kardamow.com`) rebuilt as
+  a Bloomberg-style terminal.** `tokens.css` rewritten wholesale: black ground, one
+  monospace family, amber `--accent` rationed to type on dark strips (never a fill), zero
+  radius, no shadow, an 11px root with the whole rem scale re-derived against it, and
+  `--measure` deleted outright so every page runs full-bleed. Inter survives only for
+  running prose (`.prose`) — every label, heading, figure and table cell is monospace. A
+  primitive layer (`.term-panel`, `.term-head`, `.term-grid`, `.term-cell`, `.term-key`,
+  `.term-bar`, `.term-table`) replaces the previous product-UI kit (`card()`/`.card-link`,
+  `nav-pill`, segmented controls, `.rise`) across all 14 routes; three files missed by the
+  earlier component passes (`app/flows/page.tsx`, `app/oil-math/page.tsx`,
+  `app/page.tsx`) still referenced the deleted `card`/`card-link` classes and were
+  rendering unstyled — caught by grepping for the dead class names and fixed by moving
+  them onto `.term-panel`. Every chart and the map now build their layout from
+  `theme/plotly.ts`'s `baseLayout()`, so exactly one function paints a chart ground.
+  - **Two tests guard the system.** `tokens.test.ts` (pre-existing) asserts every
+    `var(--x)` referenced under `src/` resolves against `tokens.css` — it caught five
+    dead-token references (`--rule`, `--heading-stack`, `--ink` and `--body-stack` among
+    them) that had been rendering as nothing on the live site. `tokens.pins.test.ts`
+    (new) pins every chrome and series token's literal value and enforces a 4.5:1
+    contrast floor against every ground it actually paints on; `--navy-rgb`/`--red-rgb`
+    are asserted as derived from their hex tokens rather than restated, so a retuned hex
+    cannot silently drift from its rgba triple.
+  - **The contrast floor caught two values that had been asserted by hand and were
+    wrong.** `--faint` at `#6b7280` was 4.34:1 and is now `#7d8590` (5.63:1); `--down` at
+    `#ea3943` was 4.4951:1 and is now `#ee4a56`.
+  - **The WPSR heat wash was rebalanced.** Deficit tints carried chroma 18–41 against
+    surplus's 5–9 at comparable contrast — navy greyed out at low alpha while red stayed
+    a hue. Both tints now read with equal weight, verified by measuring the blended pixel
+    against the panel ground rather than by eye.
+  - **The cross-surface colour contract with `core/design.py` is now broken, and
+    deliberately.** The two surfaces still agree on what each series *means* — navy is
+    always the primary series, orange is always the seasonal median — but no longer on
+    the *values*: navy at `#0f2a4a` is invisible on black, so every series here is
+    re-derived at a luminance that survives a dark ground (`--navy: #4d9fff`,
+    `--red: #ff5a4d`, etc). A chart drawn on `data.kardamow.com` and the same chart
+    exported from the Streamlit app now tell the same story in different colours.
+  - Local gate: `pnpm test` (38 passing), `pnpm lint` and `pnpm typecheck` all clean. The
+    production build could not be run on this machine (Turbopack OOMs under 1.5GB free of
+    7.79GB) — the production build is Vercel's. Branch not yet merged; per the plan's own
+    notes, the merge call is the user's, not this session's.
 - **UI restyle complete — masthead, section kit and Kardamow house type replace the
   bordered `card()` layout across all 16 pages (`2026-09-06-ui-design-system`).** Every
   page now opens with `page_header()` (a Lora `<h2>`, demoting the old bare `st.title()`)

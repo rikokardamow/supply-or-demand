@@ -60,7 +60,7 @@ export default async function OilMathPage() {
             arithmetic is worth doing at all, and the elasticities are the reason: they are
             what turns a weekly American survey into a global price signal. */}
         <section
-          className="card"
+          className="term-panel"
           style={{
             padding: "var(--space-5)",
             marginBottom: "var(--space-6)",

@@ -8,10 +8,11 @@ import type { VesselRow } from "@/types/database";
 /**
  * Latest vessel positions, coloured by reported ship class.
  *
- * Plotly's MapLibre trace with the free `open-street-map` style and no token — the same
- * choice `apps/dashboard` documents in root NOTES.md, which also records why
- * `Scattergeo` is not used: it renders a flat continent outline rather than a real map.
- * Keeping both front ends on one mapping stack means an exported exhibit matches.
+ * Plotly's MapLibre trace, tokenless like `apps/dashboard`'s Scattermapbox (root
+ * NOTES.md), which also records why `Scattergeo` is not used: it renders a flat
+ * continent outline rather than a real map. The basemap style is `carto-darkmatter` —
+ * `carto-positron` before this branch — to hold the black ground; `open-street-map` was
+ * never used here.
  *
  * Plotly is imported inside the effect for the same reason as every other chart here: it
  * touches `self` at module evaluation and would break the prerender.

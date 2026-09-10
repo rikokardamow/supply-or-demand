@@ -269,7 +269,7 @@ export default async function Home() {
             </Link>
             <Link
               href="/positioning"
-              className="card card-link"
+              className="term-panel"
               style={{
                 fontSize: "var(--size-small)",
                 fontWeight: 600,
@@ -287,7 +287,7 @@ export default async function Home() {
         {/* The exhibit. A data publication's product shot is a real chart with real numbers
             in it, and it is interactive here for the same reason: a reader can answer their
             own next question without leaving the front page. */}
-        <section className="card" style={{ marginBottom: "var(--space-8)" }}>
+        <section className="term-panel" style={{ marginBottom: "var(--space-8)" }}>
           <header
             style={{
               display: "flex",
@@ -354,7 +354,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="card">
+        <section className="term-panel">
           <header
             style={{
               padding: "var(--space-4) var(--space-5)",
