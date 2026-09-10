@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Kardamow — independent research on energy, macro and geopolitics",
+  title: "Supply or Demand? You build.",
   description:
-    "Independent, irreverent research on energy, macro and geopolitics, built on primary sources.",
+    "An open-source energy and macro research platform. Ingest from primary sources into a local lake, publish a serving copy, read it on the web — every figure computed before it is served.",
 };
 
 export default function RootLayout({

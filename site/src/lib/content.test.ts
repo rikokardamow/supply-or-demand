@@ -1,88 +1,56 @@
 import { describe, expect, it } from "vitest";
 
-import { decodeEntities, httpUrlOrNull } from "@/lib/content";
+import { formatNumber, formatSigned } from "@/lib/content";
 
 /**
- * The feed is not trusted input.
+ * These two decide how every live figure on the landing page reads.
  *
- * It is fetched over the network from a third party and rendered straight onto a public
- * page, so it has to be treated the way any other remote input is — even though the third
- * party is the author's own Substack. The threat is not that Substack turns hostile; it is
- * that a compromised account, a tampering proxy, or a CDN serving someone else's response
- * would put attacker-controlled strings into an `href`.
+ * They are worth pinning because both encode a house rule rather than a preference, and a
+ * plausible-looking "tidy-up" would quietly break either one: an en dash for a missing
+ * value is not the same as a zero, and a signed change must carry its sign even when a
+ * colour is already saying the same thing.
  */
 
-describe("httpUrlOrNull", () => {
-  it("accepts the real thing", () => {
-    expect(
-      httpUrlOrNull("https://kardamow.substack.com/p/nobody-built-that-diesel"),
-    ).toBe("https://kardamow.substack.com/p/nobody-built-that-diesel");
-    expect(httpUrlOrNull("http://example.com/x")).toBe("http://example.com/x");
-    expect(httpUrlOrNull("  https://example.com/x  ")).toBe(
-      "https://example.com/x",
-    );
+describe("formatNumber", () => {
+  it("holds the requested precision rather than trimming it", () => {
+    // Trailing zeros are significant on a price: 71.50 is a two-decimal quote, not 71.5.
+    expect(formatNumber(71.5, 2)).toBe("71.50");
+    expect(formatNumber(1234.567, 1)).toBe("1,234.6");
+    expect(formatNumber(0, 2)).toBe("0.00");
   });
 
-  it("rejects javascript: — the reason this function exists", () => {
-    // React escapes text content but does NOT block a javascript: URI in href; it logs a
-    // development warning and renders the attribute anyway. So a feed item carrying
-    // <link>javascript:...</link> would produce a link that executes script on click.
-    expect(httpUrlOrNull("javascript:alert(1)")).toBeNull();
-    expect(httpUrlOrNull("JavaScript:alert(1)")).toBeNull();
-    // Whitespace and control characters inside the scheme are ignored by browsers when
-    // they parse a URL, so they cannot be allowed to hide the scheme from this check.
-    expect(httpUrlOrNull("java\tscript:alert(1)")).toBeNull();
-    expect(httpUrlOrNull("java\nscript:alert(1)")).toBeNull();
-    expect(httpUrlOrNull(" javascript:alert(1)")).toBeNull();
+  it("distinguishes no data from zero", () => {
+    // An en dash, not "0" and not "" -- a missing observation is not a measured zero, and
+    // the whole project refuses to bridge that gap anywhere else either.
+    expect(formatNumber(null, 2)).toBe("–");
+    expect(formatNumber(Number.NaN, 2)).toBe("–");
   });
 
-  it("rejects every other scheme that can carry a payload", () => {
-    expect(httpUrlOrNull("data:text/html;base64,PHNjcmlwdD4=")).toBeNull();
-    expect(httpUrlOrNull("vbscript:msgbox(1)")).toBeNull();
-    expect(httpUrlOrNull("file:///etc/passwd")).toBeNull();
-    expect(httpUrlOrNull("//evil.example.com")).toBeNull();
-  });
-
-  it("rejects nothing-at-all rather than returning a broken href", () => {
-    expect(httpUrlOrNull("")).toBeNull();
-    expect(httpUrlOrNull("   ")).toBeNull();
-    expect(httpUrlOrNull(undefined)).toBeNull();
-    expect(httpUrlOrNull("not a url")).toBeNull();
+  it("groups in en-GB", () => {
+    expect(formatNumber(1000000, 0)).toBe("1,000,000");
   });
 });
 
-describe("decodeEntities", () => {
-  it("decodes the entities Substack actually emits", () => {
-    expect(decodeEntities("Europe&#8217;s winter")).toBe("Europe’s winter");
-    expect(decodeEntities("a build &#8212; not a draw")).toBe(
-      "a build — not a draw",
-    );
-    expect(decodeEntities("crude &amp; products")).toBe("crude & products");
-    expect(decodeEntities("&quot;quoted&quot;")).toBe('"quoted"');
+describe("formatSigned", () => {
+  it("always carries a sign, because direction is never colour alone", () => {
+    expect(formatSigned(1.2, 1)).toBe("+1.2");
+    expect(formatSigned(-1.2, 1)).toBe("−1.2");
   });
 
-  it("decodes the opening curly quote, not only its closing twin", () => {
-    // The earlier version handled &#8217; but not &#8216;, so an opening quote rendered
-    // as the literal text "&#8216;" on the public page.
-    expect(decodeEntities("&#8216;spot&#8217;")).toBe("‘spot’");
-    expect(decodeEntities("&lsquo;spot&rsquo;")).toBe("‘spot’");
+  it("uses a real minus sign, not a hyphen", () => {
+    // U+2212, which aligns with digits in a tabular font; a hyphen-minus does not.
+    expect(formatSigned(-3, 0)).toBe("−3");
+    expect(formatSigned(-3, 0)).not.toBe("-3");
   });
 
-  it("decodes any numeric entity rather than a hand-listed few", () => {
-    expect(decodeEntities("caf&#233;")).toBe("café");
-    expect(decodeEntities("&#x2014;")).toBe("—");
-    expect(decodeEntities("&#39;")).toBe("'");
+  it("leaves zero unsigned", () => {
+    // "+0.0" claims a rise that did not happen.
+    expect(formatSigned(0, 1)).toBe("0.0");
   });
 
-  it("decodes &amp; last, so &amp;lt; does not become a tag", () => {
-    // Decoding &amp; first would turn "&amp;lt;script&amp;gt;" into "<script>" — the
-    // classic double-decode mistake.
-    expect(decodeEntities("&amp;lt;script&amp;gt;")).toBe("&lt;script&gt;");
-  });
-
-  it("leaves ordinary text alone", () => {
-    expect(decodeEntities("Midwest plants ran at 101.8 per cent")).toBe(
-      "Midwest plants ran at 101.8 per cent",
-    );
+  it("returns nothing at all for no data", () => {
+    // Empty rather than an en dash: this sits beside a value that already shows one.
+    expect(formatSigned(null, 1)).toBe("");
+    expect(formatSigned(Number.NaN, 1)).toBe("");
   });
 });
