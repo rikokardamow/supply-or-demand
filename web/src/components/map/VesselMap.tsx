@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { PLOT_CONFIG, SERIES } from "@/theme/plotly";
+import { PLOT_CONFIG, SERIES, baseLayout } from "@/theme/plotly";
 import type { VesselRow } from "@/types/database";
 
 /**
@@ -98,15 +98,28 @@ export function VesselMap({
       })
       .filter(Boolean);
 
+    // A map has no y-axis, so no unit, and no cartesian axes at all -- baseLayout's
+    // xaxis/yaxis are meaningless for a MapLibre trace and are dropped rather than
+    // carried over unused.
+    const base = baseLayout();
+    delete base.xaxis;
+    delete base.yaxis;
+
     const layout = {
+      ...base,
+      // Map-specific: MapLibre style/centre/zoom for the fleet-wide view. Centred
+      // between the Gulf and the Malacca Strait, zoomed out far enough to show every
+      // monitored region at once.
       map: {
         style: "carto-darkmatter",
-        // Centred between the Gulf and the Malacca Strait, zoomed out far enough to show
-        // every monitored region at once.
         center: { lat: 25, lon: 40 },
         zoom: 1.4,
       },
+      // Map-specific: the trace fills the whole box, so there is no chart chrome to
+      // pad for -- the margin collapses to zero on every side.
       margin: { l: 0, r: 0, t: 0, b: 0 },
+      // Map-specific: with no plot area above it, the legend sits just under the map
+      // rather than above it, and stays smaller so it doesn't crowd the coastline.
       legend: {
         orientation: "h" as const,
         yanchor: "top" as const,
@@ -115,7 +128,6 @@ export function VesselMap({
         x: 0,
         font: { size: 11 },
       },
-      paper_bgcolor: "white",
     };
 
     void import("plotly.js-dist-min").then(({ default: Plotly }) => {
