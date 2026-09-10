@@ -202,7 +202,8 @@ Before opening a PR:
 uv run ruff check .
 uv run mypy core pipelines infra apps
 uv run pytest
-cd web && pnpm typecheck && pnpm lint && pnpm test
+(cd web  && pnpm typecheck && pnpm lint && pnpm test)
+(cd site && pnpm typecheck && pnpm lint && pnpm test)
 ```
 
 Adding a pipeline: scaffold under `pipelines/<source>/` with its own `NOTES.md`, a client,
