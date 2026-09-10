@@ -222,6 +222,17 @@ a {
   font-size: var(--size-micro);
 }
 
+/* Hover feedback for a cell or panel that is itself the link -- a StatStrip figure, a
+   ScreenCard -- so a reader gets some signal beyond the cursor that it is clickable.
+   Scoped to the `<a>` these primitives render as, not every .term-cell/.term-panel, so a
+   panel that is merely a container (the featured chart, the provenance table) stays
+   inert. Background only, matching .term-table tbody tr:hover below: this branch
+   deliberately removed the hover lift because a terminal does not move. */
+a.term-cell:hover,
+a.term-panel:hover {
+  background: var(--surface-2);
+}
+
 /* A key: nav item, range switch, series toggle. The active one is the inverted block. */
 .term-key {
   display: inline-flex;
