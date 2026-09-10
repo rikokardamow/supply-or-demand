@@ -2,7 +2,7 @@
 
 ## Design system — the terminal
 
-`data.kardamow.com` is a Bloomberg-style terminal: black ground, one monospace family,
+`web/` is a Bloomberg-style terminal: black ground, one monospace family,
 amber as the sole accent, zero radius, no shadow, full-bleed (`--measure` was deleted
 outright, not just unreferenced). `web/src/theme/tokens.css` is the only place chrome
 values live — components reference `var(--x)`, never a hardcoded colour, radius or
@@ -31,8 +31,8 @@ instead of silently drifting.
 **Every `var(--x)` referenced under `src/` must resolve against `tokens.css`.**
 `web/src/theme/tokens.test.ts` (pre-existing — do not edit it) walks the tree and fails
 on any token that isn't defined; it is what caught five tokens that had been rendering
-as nothing on the live site before this restyle. Adding or renaming a token without
-updating its callers fails this test, which is the point.
+as nothing on the site while it was hosted, before this restyle. Adding or renaming a
+token without updating its callers fails this test, which is the point.
 
 **Charts and the map extend `theme/plotly.ts`'s `baseLayout()` and never set their own
 ground.** Only `plotly.ts` sets `paper_bgcolor`/`plot_bgcolor`; a chart component that

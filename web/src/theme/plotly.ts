@@ -1,5 +1,6 @@
 /**
- * The Plotly house style for a black ground.
+ * The Plotly house style for a black ground, ported from `core/theme.py`'s "kardamow"
+ * template.
  *
  * **This no longer matches `core/theme.py` value-for-value, deliberately.** It matches it
  * *role*-for-role: navy is still the primary series, orange is still always the seasonal
