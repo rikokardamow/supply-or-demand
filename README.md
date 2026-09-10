@@ -1,6 +1,6 @@
 <div align="center">
 
-# Kardamow
+# Supply or Demand? You build.
 
 **An open-source energy and macro research dashboard.**
 
@@ -13,16 +13,18 @@ Every figure is computed before it is served — nothing is estimated in the bro
 [![DuckDB](https://img.shields.io/badge/DuckDB-lake-FFF000.svg?logo=duckdb&logoColor=black)](https://duckdb.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-serving-3ECF8E.svg?logo=supabase&logoColor=white)](https://supabase.com/)
 
-[**Live dashboard**](https://data.kardamow.com) ·
-[**Landing page**](https://kardamow.com) ·
-[**The writing**](https://kardamow.substack.com) ·
+[**Screenshots**](#screenshots) ·
+[**Quick start**](#quick-start) ·
 [**Read API**](#read-api)
+
+*The hosted demo is offline. Everything below runs locally — see [Quick start](#quick-start) —
+and the screenshots are of the running application.*
 
 </div>
 
 ---
 
-![The Kardamow dashboard overview](docs/screenshots/data-overview.png)
+![The dashboard overview](docs/screenshots/data-overview.png)
 
 ## What this is
 
@@ -91,14 +93,20 @@ took measurement rather than taste — see `web/src/components/tables/HeatTable.
 
 ![Balances](docs/screenshots/data-balances.png)
 
+**The landing page**, the second of the two Next.js surfaces — a rotating globe carrying real
+AIS vessel positions, drawn on a canvas with an orthographic projection rather than a 3D
+engine, so it costs no texture download and no WebGL context.
+
+![Landing page](docs/screenshots/site-landing.png)
+
 ## Architecture
 
 ```
   primary sources                lake                serving              surfaces
   ───────────────                ────                ───────              ────────
-  EIA · GIE · ENTSO-E                                                  ┌─ Next.js  data.kardamow.com
-  CFTC · OPEC · JODI    ──▶   DuckDB +      ──▶   Postgres      ──▶    ├─ Next.js  kardamow.com
-  OFAC · AIS · FRED           Parquet             (RLS, anon           └─ Streamlit  (local)
+  EIA · GIE · ENTSO-E                                                  ┌─ Next.js  data dashboard
+  CFTC · OPEC · JODI    ──▶   DuckDB +      ──▶   Postgres      ──▶    ├─ Next.js  landing page
+  OFAC · AIS · FRED           Parquet             (RLS, anon           └─ Streamlit  explorer
   Baker Hughes · …            (local)              read-only)
                                                         │
         pipelines/                core/                 └──▶ PostgREST read API
@@ -118,8 +126,8 @@ Three rules hold the shape together:
 ## Quick start
 
 ```bash
-git clone https://github.com/rikokardamow/energy-dashboard.git
-cd energy-dashboard
+git clone https://github.com/rikokardamow/supply-or-demand.git
+cd supply-or-demand
 
 uv sync --all-extras
 cp .env.example .env          # fill in API keys — git-ignored, never commit it
@@ -145,6 +153,14 @@ pnpm install && pnpm dev
 ```bash
 # then publish the lake into it
 uv run python -m pipelines.derived.publish_series
+```
+
+The landing page is a second, independent Next.js app on its own port:
+
+```bash
+cd site
+cp .env.example .env.local
+pnpm install && pnpm dev    # http://localhost:3100
 ```
 
 ## Read API
@@ -202,7 +218,8 @@ Before opening a PR:
 uv run ruff check .
 uv run mypy core pipelines infra apps
 uv run pytest
-cd web && pnpm typecheck && pnpm lint && pnpm test
+(cd web  && pnpm typecheck && pnpm lint && pnpm test)
+(cd site && pnpm typecheck && pnpm lint && pnpm test)
 ```
 
 Adding a pipeline: scaffold under `pipelines/<source>/` with its own `CLAUDE.md`, a client,

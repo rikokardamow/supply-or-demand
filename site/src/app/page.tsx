@@ -1,33 +1,26 @@
 import Image from "next/image";
 
 import { Globe } from "@/components/Globe";
-import {
-  fetchFigures,
-  fetchPosts,
-  formatDate,
-  formatNumber,
-  formatSigned,
-} from "@/lib/content";
+import { fetchFigures, formatNumber, formatSigned } from "@/lib/content";
 import { fetchVesselPoints } from "@/lib/vessels";
 
 /**
- * kardamow.com — the landing page.
+ * The landing page.
  *
- * Every line of copy here is the author's own, taken from the publication's About page
- * rather than written for it. That matters more than it sounds: a portfolio for a writer
- * whose whole argument is primary sources cannot open with copy invented by someone else,
- * and the About page already says it better than a rewrite would.
+ * A portfolio for the project rather than for a person: no byline, no subscription, no
+ * price. What it has to argue is that the method is real, so it argues it the only way
+ * that cannot be faked -- the figures and the vessel positions on this page are read live
+ * from the serving layer at request time. Nothing here is a placeholder or a mock.
  *
- * The figures, the vessel positions and the post list are all live. Nothing on the page is
- * a placeholder.
+ * The prose is deliberately kept: it states mechanisms rather than topics, which is the
+ * part a reader can actually judge.
  */
 export const revalidate = 3600;
 
-const EMAIL = "riko@kardamow.com";
-const SUBSCRIBE = "https://kardamow.substack.com/subscribe";
+const REPO = "https://github.com/rikokardamow/supply-or-demand";
 
 /**
- * The three areas, condensed from the About page's own descriptions.
+ * The three areas the work covers.
  *
  * Each keeps the line that states the mechanism rather than the subject, because that is
  * what distinguishes this from a topic list: "a refiner who pulls throughput has voted
@@ -51,52 +44,10 @@ const COVERAGE = [
   },
 ];
 
-/** Real, attributed, from the publication's own page. Nothing paraphrased. */
-const TESTIMONIALS = [
-  {
-    quote:
-      "Kardamow maps where energy, geopolitics, and finance intersect before the market prices it in. Riko tracks the structural imbalances most analysts miss — sanctions gaps, cargo routing decisions, the lag between policy and physical trade.",
-    name: "Quy Ma",
-    outlet: "The Marketplace by Quy Ma",
-  },
-  {
-    quote:
-      "Real primary-source work — built the Kharg loading data himself and got the corridor argument right before most people had the numbers.",
-    name: "William David",
-    outlet: "The Chokepoint",
-  },
-  {
-    quote:
-      "A sharp, independent Substack exploring the crossroads of energy markets, finance, and geopolitics. Clear-eyed analysis of how power, capital, and resources shape the global economic landscape.",
-    name: "Panda Perspectives",
-    outlet: "Panda Perspectives",
-  },
-];
-
-const TIERS = [
-  {
-    name: "Free",
-    price: "€0",
-    body: "Previews of every piece, and the occasional one unlocked in full — enough to judge the method on the mechanism rather than the marketing.",
-  },
-  {
-    name: "Kardamow Pro",
-    price: "€25/month",
-    note: "or €250/year",
-    body: "Every publication and the complete archive back to 2024, including the long-form synthesis behind the weekday work.",
-    featured: true,
-  },
-  {
-    name: "Kardamowians",
-    price: "€500/year",
-    body: "The founding tier. Everything in Pro, plus a direct line — one-to-one on the markets, and the questions that do not fit a comment thread.",
-  },
-];
 
 export default async function Home() {
-  const [figures, posts, vessels] = await Promise.all([
+  const [figures, vessels] = await Promise.all([
     fetchFigures(),
-    fetchPosts(5),
     fetchVesselPoints(),
   ]);
 
@@ -130,14 +81,12 @@ export default async function Home() {
               fontSize: "1.1rem",
             }}
           >
-            Kardamow
+            Supply or Demand?
           </span>
           <nav style={{ display: "flex", gap: "1.5rem", marginLeft: "auto" }}>
             {[
-              ["Writing", "#writing"],
               ["Coverage", "#coverage"],
               ["About", "#about"],
-              ["Data", "https://data.kardamow.com"],
             ].map(([label, href]) => (
               <a
                 key={label}
@@ -152,8 +101,8 @@ export default async function Home() {
               </a>
             ))}
           </nav>
-          <a className="btn btn-solid" href={SUBSCRIBE}>
-            Subscribe
+          <a className="btn btn-solid" href={REPO}>
+            View the code
           </a>
         </div>
       </header>
@@ -172,7 +121,7 @@ export default async function Home() {
               color: "var(--muted)",
             }}
           >
-            Energy, macro and geopolitics · published most days
+            Energy, macro and geopolitics · built from primary sources
           </span>
         </div>
 
@@ -185,7 +134,7 @@ export default async function Home() {
             animationDelay: "60ms",
           }}
         >
-          It writes the mechanism, not the event.
+          Supply or Demand? You build.
         </h1>
 
         <p
@@ -214,11 +163,11 @@ export default async function Home() {
             animationDelay: "180ms",
           }}
         >
-          <a className="btn btn-solid" href="https://kardamow.substack.com">
-            Read the research
+          <a className="btn btn-solid" href={REPO}>
+            View the code
           </a>
-          <a className="btn btn-ghost" href="https://data.kardamow.com">
-            Explore the data
+          <a className="btn btn-ghost" href="#about">
+            How it works
           </a>
         </div>
       </section>
@@ -330,8 +279,8 @@ export default async function Home() {
                 }}
               >
                 {vessels.length > 0
-                  ? `${vessels.length.toLocaleString("en-GB")} vessel positions from the latest AIS capture, and prices from the same published data behind data.kardamow.com. Terrestrial AIS, so empty ocean means no receiver rather than no ships.`
-                  : "Prices from the same published data behind data.kardamow.com."}
+                  ? `${vessels.length.toLocaleString("en-GB")} vessel positions from the latest AIS capture, and prices read live from the serving layer. Terrestrial AIS, so empty ocean means no receiver rather than no ships.`
+                  : "Prices read live from the serving layer."}
               </p>
             </div>
 
@@ -340,92 +289,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* -- Writing ------------------------------------------------------------ */}
-      {posts.length > 0 ? (
-        <section
-          id="writing"
-          className="measure"
-          style={{ paddingTop: "1rem", paddingBottom: "5rem" }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "baseline",
-              justifyContent: "space-between",
-              gap: "1rem",
-              marginBottom: "2rem",
-            }}
-          >
-            <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
-              Recent writing
-            </h2>
-            <a
-              href="https://kardamow.substack.com/archive"
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--accent)",
-                fontWeight: 500,
-              }}
-            >
-              Full archive →
-            </a>
-          </div>
-
-          <div>
-            {posts.map((post) => (
-              <a
-                key={post.url}
-                href={post.url}
-                className="row"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "minmax(0, 1fr) auto",
-                  gap: "1.5rem",
-                  alignItems: "start",
-                  padding: "1.3rem 0.6rem",
-                }}
-              >
-                <span>
-                  <span
-                    style={{
-                      display: "block",
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                      letterSpacing: "-0.02em",
-                      marginBottom: "0.35rem",
-                    }}
-                  >
-                    {post.title}
-                  </span>
-                  {post.dek ? (
-                    <span
-                      style={{
-                        display: "block",
-                        fontSize: "0.92rem",
-                        color: "var(--muted)",
-                        maxWidth: "78ch",
-                      }}
-                    >
-                      {post.dek}
-                    </span>
-                  ) : null}
-                </span>
-                <span
-                  className="tabular"
-                  style={{
-                    fontSize: "0.8rem",
-                    color: "var(--faint)",
-                    whiteSpace: "nowrap",
-                    paddingTop: "0.25rem",
-                  }}
-                >
-                  {formatDate(post.date)}
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       {/* -- Coverage ----------------------------------------------------------- */}
       <section
@@ -520,8 +383,8 @@ export default async function Home() {
               Who writes this
             </h2>
             <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
-              I write under a pen name, and I work the seam between two desks
-              that, in most institutions, barely speak to each other. I came up
+              This is written from the seam between two desks that, in most
+              institutions, barely speak to each other. I came up
               through fixed income — the whole life of a trade, from execution
               through settlement to the risk numbers behind it — and carried
               that into energy economics.
@@ -564,7 +427,7 @@ export default async function Home() {
             <p style={{ color: "var(--muted)" }}>
               Reflexivity with no contact with the molecule is a seminar. A flow
               desk with no model of why beliefs move is a price feed with no
-              memory. Kardamow lives at the join — close enough to know how a
+              memory. The work lives at the join — close enough to know how a
               barrel actually moves, far enough back to see the belief that is
               moving it.
             </p>
@@ -675,166 +538,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* -- Testimonials ------------------------------------------------------- */}
-      <section className="measure" style={{ paddingBottom: "5rem" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(min(100%, 19rem), 1fr))",
-            gap: "1rem",
-          }}
-        >
-          {TESTIMONIALS.map((t) => (
-            <figure
-              key={t.name}
-              className="card"
-              style={{ padding: "1.5rem", margin: 0 }}
-            >
-              <blockquote
-                style={{ margin: 0, fontSize: "0.95rem", lineHeight: 1.6 }}
-              >
-                &ldquo;{t.quote}&rdquo;
-              </blockquote>
-              <figcaption
-                style={{
-                  marginTop: "1.1rem",
-                  fontSize: "0.85rem",
-                  color: "var(--faint)",
-                }}
-              >
-                <span style={{ color: "var(--text)", fontWeight: 600 }}>
-                  {t.name}
-                </span>{" "}
-                · {t.outlet}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
 
-      {/* -- Tiers -------------------------------------------------------------- */}
-      <section
-        style={{
-          background: "var(--ground)",
-          borderTop: "1px solid var(--border)",
-        }}
-      >
-        <div
-          className="measure"
-          style={{ paddingTop: "5rem", paddingBottom: "5rem" }}
-        >
-          <h2
-            style={{
-              fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
-              marginBottom: "0.9rem",
-            }}
-          >
-            What it costs
-          </h2>
-          <p
-            style={{
-              color: "var(--muted)",
-              maxWidth: "58ch",
-              marginBottom: "2.5rem",
-            }}
-          >
-            Each note is built to do one thing: make the rest of your morning
-            feed redundant.
-          </p>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(min(100%, 17rem), 1fr))",
-              gap: "1rem",
-            }}
-          >
-            {TIERS.map((tier) => (
-              <a
-                key={tier.name}
-                href={SUBSCRIBE}
-                className="card card-link"
-                style={{
-                  padding: "1.6rem",
-                  display: "block",
-                  borderColor: tier.featured ? "var(--text)" : "var(--border)",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    marginBottom: "0.6rem",
-                  }}
-                >
-                  {tier.name}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <span
-                    className="tabular"
-                    style={{
-                      fontSize: "1.8rem",
-                      fontWeight: 600,
-                      letterSpacing: "-0.03em",
-                    }}
-                  >
-                    {tier.price}
-                  </span>
-                  {tier.note ? (
-                    <span style={{ fontSize: "0.8rem", color: "var(--faint)" }}>
-                      {tier.note}
-                    </span>
-                  ) : null}
-                </div>
-                <p
-                  style={{
-                    fontSize: "0.9rem",
-                    color: "var(--muted)",
-                    marginTop: "0.9rem",
-                  }}
-                >
-                  {tier.body}
-                </p>
-                <span
-                  style={{
-                    display: "inline-block",
-                    marginTop: "1rem",
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "var(--accent)",
-                  }}
-                >
-                  {tier.name === "Free" ? "Start reading" : "Subscribe"} &rarr;
-                </span>
-              </a>
-            ))}
-          </div>
-
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "var(--faint)",
-              marginTop: "1.5rem",
-            }}
-          >
-            Group access runs at twenty-five per cent off for four or more seats
-            — built for desks, funds and family offices. For institutional
-            terms,{" "}
-            <a href={`mailto:${EMAIL}`} style={{ color: "var(--accent)" }}>
-              {EMAIL}
-            </a>
-            .
-          </p>
-        </div>
-      </section>
 
       {/* -- Contact ------------------------------------------------------------ */}
       <section
@@ -856,15 +560,16 @@ export default async function Home() {
             marginBottom: "1.8rem",
           }}
         >
-          For inquiries, collaboration, or a good-faith exchange of ideas —
-          including a good-faith disagreement worth having.
+          For enquiries, collaboration, or a good-faith exchange of ideas —
+          including a good-faith disagreement worth having. Open an issue, or
+          start a discussion on the repository.
         </p>
         <div style={{ display: "flex", gap: "0.7rem", flexWrap: "wrap" }}>
-          <a className="btn btn-solid" href={`mailto:${EMAIL}`}>
-            {EMAIL}
+          <a className="btn btn-solid" href={REPO}>
+            View the code
           </a>
-          <a className="btn btn-ghost" href={SUBSCRIBE}>
-            Subscribe
+          <a className="btn btn-ghost" href={`${REPO}/issues`}>
+            Open an issue
           </a>
         </div>
 
@@ -881,11 +586,11 @@ export default async function Home() {
             color: "var(--faint)",
           }}
         >
-          <span>© {new Date().getFullYear()} Riko Kardamow</span>
+          <span>© {new Date().getFullYear()} · MIT licensed</span>
           <span style={{ display: "flex", gap: "1.4rem" }}>
-            <a href="https://kardamow.substack.com">Substack</a>
-            <a href="https://data.kardamow.com">Data</a>
-            <a href={`mailto:${EMAIL}`}>Email</a>
+            <a href={REPO}>Source</a>
+            <a href={`${REPO}#read-api`}>Read API</a>
+            <a href={`${REPO}/issues`}>Issues</a>
           </span>
         </footer>
 
@@ -898,8 +603,8 @@ export default async function Home() {
             lineHeight: 1.6,
           }}
         >
-          Everything published by Kardamow is for informational purposes only
-          and reflects the author&rsquo;s own views. Not a licensed investment
+          Everything published here is for informational purposes only and
+          reflects the author&rsquo;s own views. Not a licensed investment
           professional, a registered adviser or a broker-dealer; nothing here is
           financial advice, a recommendation to enter any trade, or a
           solicitation to buy or sell any asset.
