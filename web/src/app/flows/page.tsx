@@ -78,7 +78,7 @@ export default async function FlowsPage() {
         {/* The standfirst. The two lines in the first chart cross, and a reader should not
             have to infer why from the shapes alone. */}
         <section
-          className="card"
+          className="term-panel"
           style={{
             padding: "var(--space-5)",
             marginBottom: "var(--space-6)",
