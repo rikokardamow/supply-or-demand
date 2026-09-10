@@ -699,8 +699,8 @@ along the way.
 
 ## [Unreleased]
 ### Added
-- **Terminal restyle (`design/terminal-ui-v2`) — `web/` (`data.kardamow.com`) rebuilt as
-  a Bloomberg-style terminal.** `tokens.css` rewritten wholesale: black ground, one
+- **Terminal restyle (`design/terminal-ui-v2`) — `web/` rebuilt as a Bloomberg-style
+  terminal.** `tokens.css` rewritten wholesale: black ground, one
   monospace family, amber `--accent` rationed to type on dark strips (never a fill), zero
   radius, no shadow, an 11px root with the whole rem scale re-derived against it, and
   `--measure` deleted outright so every page runs full-bleed. Inter survives only for
@@ -733,7 +733,7 @@ along the way.
     always the primary series, orange is always the seasonal median — but no longer on
     the *values*: navy at `#0f2a4a` is invisible on black, so every series here is
     re-derived at a luminance that survives a dark ground (`--navy: #4d9fff`,
-    `--red: #ff5a4d`, etc). A chart drawn on `data.kardamow.com` and the same chart
+    `--red: #ff5a4d`, etc). A chart drawn in `web/` and the same chart
     exported from the Streamlit app now tell the same story in different colours.
   - Local gate: `pnpm test` (38 passing), `pnpm lint` and `pnpm typecheck` all clean. The
     production build could not be run on this machine (Turbopack OOMs under 1.5GB free of

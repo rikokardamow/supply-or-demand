@@ -2,11 +2,15 @@
 
 > **REINSTATED 2026-09-09.** Briefly superseded when the user chose to keep the light
 > product UI, then reinstated the same day — "blog page as magazine, data as Terminal",
-> confirmed directly. **The direction has moved four times; production is live.** So this
+> confirmed directly. **The direction has moved four times.** So this
 > builds on branch `design/terminal-ui` in a separate worktree, and **the merge to `main`
-> is the user's call, not the executor's** — merging is what switches a public site.
+> was the user's call, not the executor's.**
 >
-> Base: `cbea90f`. Revised against the live tree on reinstatement — see "Revisions on
+> **Update, 2026-09-10:** nothing is hosted — `data.kardamow.com` was removed from DNS
+> today and no longer resolves — the repo has since been renamed `supply-or-demand`, and
+> the user has chosen to merge this branch.
+>
+> Base: `cbea90f`. Revised against the tree on reinstatement — see "Revisions on
 > reinstatement" at the foot of this plan before starting Task 1. Three things changed
 > under this plan while it was shelved and the tasks below already account for them.
 
@@ -1286,11 +1290,11 @@ spec.
    compact `PageHeader` and Task 9's route walk must expect three. The vocabulary rule that
    came with it is binding: **no user-facing copy mentions "the lake."**
 
-5. **A sibling dark surface now exists.** `kardamow.com` (a separate app in `site/`, its own
-   Vercel project) is going dark with an indigo-on-black palette and a vessel globe. This
-   terminal is amber-on-black. Keep them visibly distinct; do not converge on a shared dark
-   treatment by accident.
+5. **A sibling dark surface existed in parallel.** `kardamow.com` (a separate app in
+   `site/`, its own Vercel project) was going dark with an indigo-on-black palette and a
+   vessel globe. This terminal is amber-on-black. Keep them visibly distinct; do not
+   converge on a shared dark treatment by accident.
 
-**Merge is not the executor's call.** The direction here has changed four times and
-data.kardamow.com is live serving the light UI. Task 9 ends with the branch ready and the
-user deciding.
+**Merge was not the executor's call.** The direction here changed four times. Task 9 ends
+with the branch ready and the user deciding — see the update note at the top of this plan
+for where that stands as of 2026-09-10.

@@ -3,9 +3,10 @@
 **Date:** 2026-09-09
 **Status:** REINSTATED 2026-09-09 and in build on `design/terminal-ui`. Briefly
 superseded the same day when the user chose to keep the light product UI, then reinstated
-— "blog page as magazine, data as Terminal", confirmed directly. The direction has moved
-four times and data.kardamow.com is live, so the work is branch-only and **the merge is
-the user's decision**. Plan: `docs/superpowers/plans/2026-09-09-terminal-ui.md`.
+— "blog page as magazine, data as Terminal", confirmed directly. The direction moved four
+times. **Update, 2026-09-10:** nothing is hosted — `data.kardamow.com` was removed from
+DNS today and no longer resolves; the repo has since been renamed `supply-or-demand` —
+and **the user has chosen to merge**. Plan: `docs/superpowers/plans/2026-09-09-terminal-ui.md`.
 **Surface:** `web/` (Next.js, data.kardamow.com) only
 **Does not touch:** `apps/dashboard/` (Streamlit), `core/design.py`
 

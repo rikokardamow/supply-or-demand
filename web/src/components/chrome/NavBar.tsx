@@ -61,7 +61,7 @@ export function NavBar({ active }: { active?: string }) {
             margin: 0,
           }}
         >
-          KARDAMOW
+          Kardamow
         </h1>
       </Link>
 
