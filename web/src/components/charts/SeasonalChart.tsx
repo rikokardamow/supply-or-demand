@@ -4,11 +4,10 @@ import { useEffect, useRef } from "react";
 import type PlotlyModule from "plotly.js-dist-min";
 
 import { formatDayOfYear } from "@/lib/format";
-import { GRID, MUTED, SERIES } from "@/theme/plotly";
+import { SERIES, baseLayout } from "@/theme/plotly";
 import type { SeasonalRow } from "@/types/database";
 
 type PlotlyData = Parameters<typeof PlotlyModule.newPlot>[1];
-type PlotlyLayout = Parameters<typeof PlotlyModule.newPlot>[2];
 
 /**
  * The seasonal band exhibit: a grey min-max band, an orange median, this year's track in
@@ -25,12 +24,14 @@ type PlotlyLayout = Parameters<typeof PlotlyModule.newPlot>[2];
  * the chart never queries anything itself (Spec 33 §6).
  *
  * The chart paints no title of its own: `Panel` owns the heading (root NOTES.md's chart
- * house style). Every in-chart string stays on the Inter body stack -- a number must
- * never render in the serif.
+ * house style). Every in-chart string stays on the shared body stack from `theme/plotly`
+ * -- a number must never render in the serif.
+ *
+ * The layout is `baseLayout(unit)` with only the genuinely seasonal-specific bits laid
+ * over it (the day-of-year tick positions below). It used to carry a full parallel copy
+ * of the layout instead, which is how its grounds went on rendering white after the rest
+ * of the site went dark -- a second copy of the theme is a second place for it to drift.
  */
-
-const BODY_STACK =
-  'Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
 export function SeasonalChart({
   rows,
@@ -104,34 +105,23 @@ export function SeasonalChart({
       },
     ];
 
-    const layout: PlotlyLayout = {
-      font: { family: BODY_STACK, size: 12, color: MUTED },
-      paper_bgcolor: "white",
-      plot_bgcolor: "white",
-      margin: { l: 56, r: 24, t: 12, b: 40 },
-      hovermode: "x unified",
-      legend: {
-        orientation: "h",
-        yanchor: "bottom",
-        y: 1.0,
-        xanchor: "left",
-        x: 0,
-      },
+    const base = baseLayout(unit);
+    const layout: Record<string, unknown> = {
+      ...base,
       xaxis: {
-        showgrid: false,
+        // Base grounds (showgrid/gridcolor/linecolor/zeroline) carried over; only the
+        // tick positions are seasonal-specific -- the x-axis is day-of-year, not a date
+        // range, so ticks are pinned to each month's first day rather than the default
+        // range ticks. One tick per month rather than per day: 365 categorical labels
+        // are unreadable.
+        ...(base.xaxis as Record<string, unknown>),
         tickmode: "array",
-        // One tick per month rather than per day: 365 categorical labels are unreadable.
         tickvals: rows
           .filter((r) => {
             const d = new Date(Date.UTC(2001, 0, r.doy ?? 1));
             return d.getUTCDate() === 1;
           })
           .map((r) => formatDayOfYear(r.doy ?? 1)),
-      },
-      yaxis: {
-        gridcolor: GRID,
-        zeroline: false,
-        title: unit ? { text: unit, font: { family: BODY_STACK } } : undefined,
       },
     };
 
