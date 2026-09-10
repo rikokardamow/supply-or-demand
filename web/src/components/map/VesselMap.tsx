@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { PLOT_CONFIG } from "@/theme/plotly";
+import { PLOT_CONFIG, SERIES } from "@/theme/plotly";
 import type { VesselRow } from "@/types/database";
 
 /**
@@ -23,12 +23,13 @@ import type { VesselRow } from "@/types/database";
 
 // Tanker red follows the convention marine traffic displays use, so a reader coming from
 // one of those recognises a crude carrier without consulting the legend. The rest stay on
-// the house palette.
+// the house palette, sourced from theme/plotly so the map's colours never drift from the
+// charts'.
 const CLASS_COLOUR: Record<string, string> = {
-  crude: "#c0392b",
-  lng: "#e67e22",
-  products: "#5b9bd5",
-  other: "#95a5a6",
+  crude: SERIES.red,
+  lng: SERIES.orange,
+  products: SERIES.lightBlue,
+  other: SERIES.grey,
 };
 
 const CLASS_LABEL: Record<string, string> = {
@@ -99,7 +100,7 @@ export function VesselMap({
 
     const layout = {
       map: {
-        style: "carto-positron",
+        style: "carto-darkmatter",
         // Centred between the Gulf and the Malacca Strait, zoomed out far enough to show
         // every monitored region at once.
         center: { lat: 25, lon: 40 },

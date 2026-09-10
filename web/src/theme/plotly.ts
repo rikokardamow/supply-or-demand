@@ -1,27 +1,30 @@
 /**
- * The Plotly house style, ported from `core/theme.py`'s "kardamow" template so a chart
- * exported from this app and one exported from the Python side are indistinguishable.
+ * The Plotly house style for a black ground.
  *
- * Kept in one module rather than repeated per chart: the colours encode meaning (navy is
- * the primary series, orange is always the seasonal median) and a chart that quietly
- * picked its own would break that reading across the site.
+ * **This no longer matches `core/theme.py` value-for-value, deliberately.** It matches it
+ * *role*-for-role: navy is still the primary series, orange is still always the seasonal
+ * median, and the cycle order is unchanged. But navy at #0f2a4a is invisible on black, so
+ * every series is re-derived at a luminance that survives the terminal ground. A chart
+ * here and the same chart exported from Python therefore read the same and are not the
+ * same colour. That is the trade the terminal restyle made; see
+ * specs/33_frontend-nextjs.md.
  */
 
 export const SERIES = {
-  navy: "#0f2a4a",
-  lightBlue: "#5b9bd5",
-  red: "#c0392b",
-  orange: "#e67e22",
-  grey: "#95a5a6",
-  band: "rgba(150,150,150,0.25)",
+  navy: "#4d9fff",
+  lightBlue: "#9fd8ff",
+  red: "#ff5a4d",
+  orange: "#ffa62b",
+  grey: "#99a3ad",
+  band: "rgba(160,170,185,0.18)",
 } as const;
 
-export const GRID = "#eaecf0";
-export const MUTED = "#667085";
+export const GRID = "#1e232b";
+export const MUTED = "#9aa2ad";
 
-/** Numbers never render in the serif — root NOTES.md's chart house style. */
+/** Every figure and axis tick is monospace, matching the chrome. */
 export const BODY_STACK =
-  'Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  '"JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 
 /**
  * The order additional series take when a chart draws several at once. Navy first
@@ -41,10 +44,10 @@ export const SERIES_CYCLE = [
  */
 export function baseLayout(unit?: string | null): Record<string, unknown> {
   return {
-    font: { family: BODY_STACK, size: 12, color: MUTED },
-    paper_bgcolor: "white",
-    plot_bgcolor: "white",
-    margin: { l: 60, r: 24, t: 12, b: 40 },
+    font: { family: BODY_STACK, size: 10, color: MUTED },
+    paper_bgcolor: "#0a0b0d",
+    plot_bgcolor: "#0a0b0d",
+    margin: { l: 46, r: 12, t: 8, b: 28 },
     hovermode: "x unified",
     legend: {
       orientation: "h",
@@ -53,10 +56,11 @@ export function baseLayout(unit?: string | null): Record<string, unknown> {
       xanchor: "left",
       x: 0,
     },
-    xaxis: { showgrid: false, gridcolor: GRID },
+    xaxis: { showgrid: false, gridcolor: GRID, linecolor: "#2a2f37", zeroline: false },
     yaxis: {
       gridcolor: GRID,
       zeroline: false,
+      linecolor: "#2a2f37",
       title: unit ? { text: unit, font: { family: BODY_STACK } } : undefined,
     },
   };

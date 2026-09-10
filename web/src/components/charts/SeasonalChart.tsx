@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type PlotlyModule from "plotly.js-dist-min";
 
 import { formatDayOfYear } from "@/lib/format";
+import { GRID, MUTED, SERIES } from "@/theme/plotly";
 import type { SeasonalRow } from "@/types/database";
 
 type PlotlyData = Parameters<typeof PlotlyModule.newPlot>[1];
@@ -28,12 +29,6 @@ type PlotlyLayout = Parameters<typeof PlotlyModule.newPlot>[2];
  * never render in the serif.
  */
 
-const NAVY = "#0f2a4a";
-const LIGHT_BLUE = "#5b9bd5";
-const ORANGE = "#e67e22";
-const BAND = "rgba(150,150,150,0.25)";
-const GRID = "#e6e6e6";
-const MUTED = "#757575";
 const BODY_STACK =
   'Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
@@ -65,7 +60,7 @@ export function SeasonalChart({
         name: bandLabel,
         type: "scatter",
         mode: "lines",
-        line: { width: 0, color: BAND },
+        line: { width: 0, color: SERIES.band },
         hoverinfo: "skip",
         showlegend: false,
       },
@@ -75,9 +70,9 @@ export function SeasonalChart({
         name: bandLabel,
         type: "scatter",
         mode: "lines",
-        line: { width: 0, color: BAND },
+        line: { width: 0, color: SERIES.band },
         fill: "tonexty",
-        fillcolor: BAND,
+        fillcolor: SERIES.band,
         hoverinfo: "skip",
       },
       {
@@ -86,7 +81,7 @@ export function SeasonalChart({
         name: "Median",
         type: "scatter",
         mode: "lines",
-        line: { color: ORANGE, width: 1.5, dash: "dot" },
+        line: { color: SERIES.orange, width: 1.5, dash: "dot" },
       },
       {
         x,
@@ -94,7 +89,7 @@ export function SeasonalChart({
         name: "Last year",
         type: "scatter",
         mode: "lines",
-        line: { color: LIGHT_BLUE, width: 1.5 },
+        line: { color: SERIES.lightBlue, width: 1.5 },
       },
       {
         // `current` is null for days that have not happened yet -- Plotly breaks the
@@ -104,7 +99,7 @@ export function SeasonalChart({
         name: "This year",
         type: "scatter",
         mode: "lines",
-        line: { color: NAVY, width: 2.5 },
+        line: { color: SERIES.navy, width: 2.5 },
         connectgaps: false,
       },
     ];
