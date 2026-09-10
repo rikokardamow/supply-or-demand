@@ -3,7 +3,7 @@ import { servingClient } from "@/lib/supabase";
 /**
  * Vessel positions for the hero globe.
  *
- * These are the real latest AIS fixes behind data.kardamow.com's vessel map, not a
+ * These are the real latest AIS fixes behind the data dashboard's vessel map, not a
  * decorative scatter. That is the whole reason the globe is worth drawing: a template can
  * have a rendered sphere, but it cannot have this evening's tanker positions on it.
  *

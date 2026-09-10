@@ -1,5 +1,5 @@
 /**
- * kardamow.com — the portfolio and brand page.
+ * The landing page — the project's portfolio.
  *
  * Minimalist, on white, in the idiom of the fintech and SaaS marketing sites the author
  * pointed at (Amplitude, Mercury): a white ground, everything left-aligned to one column
@@ -13,7 +13,8 @@
  * attention with the writing and the figures on it, so the design's job is to get out of
  * their way and be unmistakably current while doing it.
  *
- * data.kardamow.com is a separate app with its own palette; nothing is imported either way.
+ * The data dashboard in web/ is a separate app with its own palette; nothing is imported
+ * either way.
  */
 
 :root {

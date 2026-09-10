@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * The same read-only serving schema data.kardamow.com uses.
+ * The same read-only serving schema the data dashboard in web/ uses.
  *
  * Anon key only, and every `serving.*` table grants SELECT to anon under RLS -- this page
  * shows figures that are already public on the data site, so there is nothing here that
