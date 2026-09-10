@@ -86,11 +86,28 @@ describe("heat wash", () => {
       join(import.meta.dirname, "..", "..", "theme", "tokens.css"),
       "utf8",
     );
+    const pattern = (name: string): RegExp =>
+      // `\\s`, not `\s`: inside a template literal the single-backslash form is an
+      // unrecognised escape, so JS drops the backslash and the compiled pattern becomes
+      // `--navy-rgb:s*([^;]+);`. That matched tokens.css's real declarations only by
+      // accident -- there is always a space after the colon, so `s*` matches zero
+      // occurrences and `[^;]+` absorbs the space instead, which `.trim()` then removes.
+      // It breaks the instant a value's first character sits flush against the colon: see
+      // the round-trip check below. The sibling in tokens.pins.test.ts already gets this
+      // right with `\\s`.
+      new RegExp(`--${name}:\\s*([^;]+);`);
     const token = (name: string): string => {
-      const match = new RegExp(`--${name}:\s*([^;]+);`).exec(css);
+      const match = pattern(name).exec(css);
       if (!match) throw new Error(`token --${name} is not defined in tokens.css`);
       return match[1].trim();
     };
+
+    // Prove the matcher itself is correct, not merely that it happens to work on today's
+    // tokens.css: a value with no space after the colon, whose first character is "s" --
+    // exactly what the broken `s*` pattern would eat -- must still round-trip exactly.
+    const roundTrip = pattern("foo").exec("--foo:sans-serif;")?.[1].trim();
+    expect(roundTrip).toBe("sans-serif");
+
     expect(heatWash(45)!.rgb).toBe(token("navy-rgb"));
     expect(heatWash(-45)!.rgb).toBe(token("red-rgb"));
   });

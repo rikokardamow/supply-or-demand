@@ -78,7 +78,8 @@ export function heatWash(
   //
   // The small asymmetry that remains is not for chroma but for CONTRAST: the two colours
   // differ in luminance, so equal alpha would leave the deficit reading heavier than the
-  // build. These ramps land the two extremes within 1% on contrast and 4.5% on chroma,
+  // build. These ramps land the two extremes within 1% on contrast and 7.7% on chroma
+  // at the saturation cap (178*0.48 = 85.4 surplus against 178*0.52 = 92.6 deficit),
   // measured against the panel ground rather than judged by eye.
   const alpha = (pct > 0 ? 0.2 : 0.18) + scaled * (pct > 0 ? 0.28 : 0.34);
   return pct > 0
