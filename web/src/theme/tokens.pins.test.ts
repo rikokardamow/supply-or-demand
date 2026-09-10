@@ -96,4 +96,17 @@ describe("contrast floor", () => {
       expect(contrastRatio(token(name), "#0a0b0d")).toBeGreaterThanOrEqual(4.5);
     },
   );
+
+  // The GROUNDS above are the neutral chrome ordinarily behind text, but --up, --down
+  // and --accent are also each painted on their own tinted -soft ground -- StatStrip's
+  // change pill, page.tsx's dataset badge -- and none of those grounds is in GROUNDS. A
+  // -soft token retuned in isolation would not be caught above, so read each pairing
+  // straight out of tokens.css rather than restating the hex here.
+  it.each([
+    ["up", "up-soft"],
+    ["down", "down-soft"],
+    ["accent", "accent-soft"],
+  ])("--%s clears 4.5:1 on its own --%s ground", (name, softName) => {
+    expect(contrastRatio(token(name), token(softName))).toBeGreaterThanOrEqual(4.5);
+  });
 });
