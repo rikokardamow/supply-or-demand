@@ -40,3 +40,53 @@ def test_get_steo_series_reads_steos_own_field_names() -> None:
     assert df["value"].notna().all()
     assert pd.api.types.is_datetime64_any_dtype(df["ts"])
     assert df["ts"].max() >= pd.Timestamp("2027-01-01"), "STEO must carry its forward path"
+
+
+_SYNTHETIC_KEY = "SYNTHETIC-KEY-0123456789"
+
+
+def _connection_error(*_args: object, **_kwargs: object) -> None:
+    import requests
+
+    raise requests.ConnectionError(
+        "HTTPSConnectionPool(host='api.eia.gov', port=443): Max retries exceeded with url: "
+        f"/v2/steo/data/?api_key={_SYNTHETIC_KEY}&frequency=monthly (Caused by "
+        "NewConnectionError('Failed to establish a new connection'))"
+    )
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda c: c.get_steo_series(["MGTCPUSX"], "monthly"),
+        lambda c: c.get_series("petroleum/stoc/wstk", ["WCESTUS1"], "weekly"),
+        lambda c: c.get_operational_series(
+            "electricity/electric-power-operational-data", ["cost-per-btu"], "NG", "98",
+            ["US"], "monthly"),
+        lambda c: c.get_facet_series(
+            route="electricity/rto/region-data", data_key="value",
+            facets={"respondent": ["PJM"]}, frequency="hourly",
+            series_id=lambda r: "x", geo=lambda r: "y"),
+        lambda c: c.list_series("petroleum/stoc/wstk"),
+    ],
+    ids=["steo", "series", "operational", "facet", "list_series"],
+)
+def test_a_transport_error_never_leaks_the_api_key(
+    monkeypatch: pytest.MonkeyPatch, call: object
+) -> None:
+    """requests.ConnectionError/Timeout messages embed the full URL, api_key included.
+    Every fetch path must convert them, not only HTTPError from raise_for_status."""
+    import requests
+    from pipelines.eia.client import EIAClient
+
+    monkeypatch.setattr(requests, "get", _connection_error)
+    client = EIAClient(api_key=_SYNTHETIC_KEY)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        call(client)  # type: ignore[operator]
+
+    assert _SYNTHETIC_KEY not in str(excinfo.value)
+    assert excinfo.value.__cause__ is None
+    # `from None` suppresses the chained original from any traceback; __context__ itself
+    # is still populated by Python, so what is asserted is that it is suppressed.
+    assert excinfo.value.__suppress_context__ is True

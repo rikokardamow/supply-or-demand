@@ -60,10 +60,10 @@ class EIAClient:
                 "offset": offset,
                 "length": PAGE_SIZE,
             }
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -110,10 +110,10 @@ class EIAClient:
                 "offset": offset,
                 "length": PAGE_SIZE,
             }
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -223,10 +223,10 @@ class EIAClient:
             if end is not None:
                 params["end"] = end
 
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -254,10 +254,10 @@ class EIAClient:
                 "offset": offset,
                 "length": PAGE_SIZE,
             }
-            response = requests.get(f"{BASE_URL}/steo/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/steo/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -375,10 +375,10 @@ class EIAClient:
         """List every series id/name available under a route, via its facet endpoint.
         Use this to discover series codes instead of guessing them."""
         params = {"api_key": self._api_key}
-        response = requests.get(f"{BASE_URL}/{route}/facet/series", params=params, timeout=30)
         try:
+            response = requests.get(f"{BASE_URL}/{route}/facet/series", params=params, timeout=30)
             response.raise_for_status()
-        except requests.HTTPError as exc:
+        except requests.RequestException as exc:
             raise_sanitised(exc)
         result: list[dict[str, str]] = response.json()["response"]["facets"]
         return result
