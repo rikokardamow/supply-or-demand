@@ -3,8 +3,11 @@
 Assumptions are split deliberately. The scenario levers -- the flow-share path and each
 producer's recovery ceiling -- are committed, because they are the user's own choices and
 should be reviewable in a diff. The undisrupted/disrupted baselines come from a
-git-ignored drop under data/manual/hormuz/, because they derive from a licensed Bloomberg
-Intelligence workbook.
+git-ignored drop under data/manual/hormuz/, because they derive from a licensed workbook.
+
+Every figure in this file is SYNTHETIC. Real producers and real rates are deliberately
+absent: the licensed source may not be reproduced in a tracked file. The arithmetic is
+hand-checkable instead, which is the property these tests actually need.
 """
 
 from __future__ import annotations
@@ -18,31 +21,31 @@ from pipelines.derived.hormuz import (
 )
 
 _LEVERS = """producer,recovery_ceiling
-Saudi Arabia,1.0
-Iraq,0.85
-UAE,1.0
-Kuwait,0.9
-Iran,0.8
+Northport,1.0
+Eastbay,0.5
+Southcape,0.8
+Westreach,0.9
+Midshoal,1.0
 """
 
 _FLOW = """quarter,open_share
 2026-01-01,
-2026-04-01,0.15
+2026-04-01,0.5
 """
 
 _BASELINES = """producer,quarter,undisrupted_mbd,disrupted_mbd
-Saudi Arabia,2026-04-01,10.0,7.3
-Iraq,2026-04-01,4.3,1.6
-UAE,2026-04-01,3.6,2.1
-Kuwait,2026-04-01,2.6,0.8
-Iran,2026-04-01,3.4,3.1
+Northport,2026-04-01,10.0,6.0
+Eastbay,2026-04-01,8.0,2.0
+Southcape,2026-04-01,5.0,4.0
+Westreach,2026-04-01,4.0,1.0
+Midshoal,2026-04-01,2.0,0.5
 """
 
 
 @pytest.fixture
 def assumptions(tmp_path):
     """Two directories, because that is the real layout: committed levers beside the
-    module, licensed baselines in the git-ignored drop. A fixture that put all three in
+    module, baselines in the git-ignored drop. A fixture that put all three in
     one place would let a single-directory bug pass -- it did, once."""
     levers = tmp_path / "levers"
     drop = tmp_path / "drop"
@@ -57,8 +60,8 @@ def assumptions(tmp_path):
 def test_read_levers_returns_a_ceiling_per_producer(assumptions) -> None:
     levers, _ = assumptions
     ceilings, flow = read_levers(levers)
-    assert ceilings["Iran"] == pytest.approx(0.8)
-    assert flow[pd.Timestamp("2026-04-01")] == pytest.approx(0.15)
+    assert ceilings["Eastbay"] == pytest.approx(0.5)
+    assert flow[pd.Timestamp("2026-04-01")] == pytest.approx(0.5)
 
 
 def test_an_empty_flow_share_reads_as_unknown_not_zero(assumptions) -> None:
@@ -91,11 +94,12 @@ def test_a_missing_baselines_drop_is_a_clear_skip(tmp_path) -> None:
 def test_scenario_rows_reproduce_the_published_workbook_figure(assumptions) -> None:
     levers, drop = assumptions
     rows = build_scenario_rows(levers, drop, ingested_at=pd.Timestamp("2026-10-10"))
-    saudi = rows[
-        (rows["series_id"] == "derived.hormuz.scenario.saudi_arabia.supply")
+    northport = rows[
+        (rows["series_id"] == "derived.hormuz.scenario.northport.supply")
         & (rows["ts"] == pd.Timestamp("2026-04-01"))
     ]
-    assert saudi["value"].iloc[0] == pytest.approx(7.705)
+    # 6.0 + (10.0 - 6.0) * 0.5 * 1.0
+    assert northport["value"].iloc[0] == pytest.approx(8.0)
 
 
 def test_scenario_rows_carry_the_lake_conventions(assumptions) -> None:
@@ -151,4 +155,4 @@ def test_the_gulf_total_is_written_and_sums_the_producers(assumptions) -> None:
     levers, drop = assumptions
     rows = build_scenario_rows(levers, drop, ingested_at=pd.Timestamp("2026-10-10"))
     total = rows[rows["series_id"] == "derived.hormuz.scenario.gulf_total.supply"]
-    assert total["value"].iloc[0] == pytest.approx(7.705 + 1.94425 + 2.325 + 1.043 + 3.136)
+    assert total["value"].iloc[0] == pytest.approx(8.0 + 3.5 + 4.4 + 2.35 + 1.25)

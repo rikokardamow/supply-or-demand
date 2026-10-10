@@ -1,9 +1,20 @@
 """Hormuz supply overlay (core/hormuz.py).
 
-The acceptance cases are the source workbook's own published numbers: with 2Q 2026's
-flow share of 0.15, ~/Desktop/skill-pdfs/oil_demand.xlsx rows 9-13 read
-7.705 / 2.325 / 3.136 / 1.94425 / 1.043 for Saudi Arabia, the UAE, Iran, Iraq and
-Kuwait. A port that does not reproduce those to the digit has changed the model.
+**Every figure in this file is synthetic.** The real producers and their undisrupted,
+disrupted and recovery-ceiling values are licensed content from the source workbook and
+live only in the git-ignored drop at `data/manual/hormuz/baselines.csv`; reproducing them
+in a tracked file would defeat the reason that file is ignored.
+
+Nothing is lost by the substitution. The workbook's own published scenario figures are
+algebraically determined by its inputs and the formula, so asserting them could never
+distinguish a correct port from a recomputation — it only ever tested the arithmetic, which
+these round numbers test more legibly. The real validation of the port lives elsewhere: the
+cell-by-cell comparison against the workbook's own `Scenario` columns recorded in
+`pipelines/derived/hormuz/README.md`, and the corroboration against OPEC's public
+`momr.doc_crude_secondary.*` production series in the lake.
+
+The arithmetic here is hand-checkable: at a flow share of 0.5, Northport recovers
+6.0 + (10.0 - 6.0) x 0.5 x 1.0 = 8.0.
 """
 
 from __future__ import annotations
@@ -14,56 +25,67 @@ import pandas as pd
 import pytest
 from core.hormuz import ProducerDisruption, scenario_path, scenario_supply, total_supply
 
-SAUDI = ProducerDisruption(
-    "Saudi Arabia", undisrupted_mbd=10.0, disrupted_mbd=7.3, recovery_ceiling=1.0
+NORTHPORT = ProducerDisruption(
+    "Northport", undisrupted_mbd=10.0, disrupted_mbd=6.0, recovery_ceiling=1.0
 )
-IRAQ = ProducerDisruption("Iraq", undisrupted_mbd=4.3, disrupted_mbd=1.6, recovery_ceiling=0.85)
-UAE = ProducerDisruption("UAE", undisrupted_mbd=3.6, disrupted_mbd=2.1, recovery_ceiling=1.0)
-KUWAIT = ProducerDisruption("Kuwait", undisrupted_mbd=2.6, disrupted_mbd=0.8, recovery_ceiling=0.9)
-IRAN = ProducerDisruption("Iran", undisrupted_mbd=3.4, disrupted_mbd=3.1, recovery_ceiling=0.8)
+EASTBAY = ProducerDisruption(
+    "Eastbay", undisrupted_mbd=8.0, disrupted_mbd=2.0, recovery_ceiling=0.5
+)
+SOUTHCAPE = ProducerDisruption(
+    "Southcape", undisrupted_mbd=5.0, disrupted_mbd=4.0, recovery_ceiling=0.8
+)
+WESTREACH = ProducerDisruption(
+    "Westreach", undisrupted_mbd=4.0, disrupted_mbd=1.0, recovery_ceiling=0.9
+)
+MIDSHOAL = ProducerDisruption(
+    "Midshoal", undisrupted_mbd=2.0, disrupted_mbd=0.5, recovery_ceiling=1.0
+)
 
-GULF = [SAUDI, IRAQ, UAE, KUWAIT, IRAN]
+GULF = [NORTHPORT, EASTBAY, SOUTHCAPE, WESTREACH, MIDSHOAL]
 
 
 def test_total_closure_leaves_only_the_disrupted_floor() -> None:
-    assert scenario_supply(SAUDI, 0.0) == pytest.approx(7.3)
+    assert scenario_supply(NORTHPORT, 0.0) == pytest.approx(6.0)
 
 
 def test_full_reopening_with_a_complete_ceiling_restores_the_undisrupted_rate() -> None:
-    assert scenario_supply(SAUDI, 1.0) == pytest.approx(10.0)
+    assert scenario_supply(NORTHPORT, 1.0) == pytest.approx(10.0)
 
 
 def test_a_ceiling_below_one_never_restores_the_whole_loss() -> None:
-    """Iran's 0.8 is a cap on recovery, not a speed: even at fully reopened flows it
-    regains 80% of the barrels it lost, and that is the model's intent."""
-    recovered = scenario_supply(IRAN, 1.0)
-    assert recovered == pytest.approx(3.1 + 0.8 * (3.4 - 3.1))
-    assert recovered < IRAN.undisrupted_mbd
+    """A ceiling is a cap on recovery, not a speed: even at fully reopened flows Eastbay
+    regains only half the barrels it lost, and that is the model's intent."""
+    recovered = scenario_supply(EASTBAY, 1.0)
+    assert recovered == pytest.approx(2.0 + 0.5 * (8.0 - 2.0))
+    assert recovered < EASTBAY.undisrupted_mbd
 
 
-def test_reproduces_every_published_workbook_figure_for_2q_2026() -> None:
+def test_every_producer_interpolates_between_its_two_bounds() -> None:
+    """At a half-open strait each producer recovers half of its loss, scaled by its own
+    ceiling. Hand-computed, so a change to the formula is visible here first."""
     expected = {
-        "Saudi Arabia": 7.705,
-        "UAE": 2.325,
-        "Iran": 3.136,
-        "Iraq": 1.94425,
-        "Kuwait": 1.043,
+        "Northport": 8.0,  # 6.0 + 4.0 * 0.5 * 1.0
+        "Eastbay": 3.5,  # 2.0 + 6.0 * 0.5 * 0.5
+        "Southcape": 4.4,  # 4.0 + 1.0 * 0.5 * 0.8
+        "Westreach": 2.35,  # 1.0 + 3.0 * 0.5 * 0.9
+        "Midshoal": 1.25,  # 0.5 + 1.5 * 0.5 * 1.0
     }
     for producer in GULF:
-        assert scenario_supply(producer, 0.15) == pytest.approx(
+        assert scenario_supply(producer, 0.5) == pytest.approx(
             expected[producer.producer]
         ), producer.producer
 
 
 def test_an_unknown_flow_share_is_not_treated_as_a_closure() -> None:
-    """The workbook writes 1Q 2026 as "-", meaning not applicable. Read as 0.0 it would
-    assert a total closure -- the inversion of its meaning. Absent stays absent."""
-    assert math.isnan(scenario_supply(SAUDI, None))
+    """The source writes a pre-disruption quarter as "-", meaning not applicable. Read as
+    0.0 it would assert a total closure -- the inversion of its meaning. Absent stays
+    absent."""
+    assert math.isnan(scenario_supply(NORTHPORT, None))
 
 
 def test_a_flow_share_outside_zero_to_one_is_refused() -> None:
     with pytest.raises(ValueError, match="flow share"):
-        scenario_supply(SAUDI, 1.4)
+        scenario_supply(NORTHPORT, 1.4)
 
 
 def test_a_recovery_ceiling_outside_zero_to_one_is_refused() -> None:
@@ -82,16 +104,16 @@ def test_a_disrupted_rate_above_the_undisrupted_rate_is_refused() -> None:
 
 def test_scenario_path_returns_one_row_per_producer_per_quarter() -> None:
     quarters = {
-        pd.Timestamp("2026-04-01"): 0.15,
-        pd.Timestamp("2026-07-01"): 0.60,
+        pd.Timestamp("2026-04-01"): 0.5,
+        pd.Timestamp("2026-07-01"): 0.75,
     }
     path = scenario_path(GULF, quarters)
     assert list(path.columns) == ["ts", "producer", "supply_mbd", "open_share"]
     assert len(path) == len(GULF) * len(quarters)
-    saudi_q2 = path[
-        (path["producer"] == "Saudi Arabia") & (path["ts"] == pd.Timestamp("2026-04-01"))
+    northport_q2 = path[
+        (path["producer"] == "Northport") & (path["ts"] == pd.Timestamp("2026-04-01"))
     ]
-    assert saudi_q2["supply_mbd"].iloc[0] == pytest.approx(7.705)
+    assert northport_q2["supply_mbd"].iloc[0] == pytest.approx(8.0)
 
 
 def test_scenario_path_keeps_an_unknown_quarter_as_missing_not_zero() -> None:
@@ -100,16 +122,16 @@ def test_scenario_path_keeps_an_unknown_quarter_as_missing_not_zero() -> None:
 
 
 def test_total_supply_sums_the_producers_for_each_quarter() -> None:
-    quarters = {pd.Timestamp("2026-04-01"): 0.15}
+    quarters = {pd.Timestamp("2026-04-01"): 0.5}
     totals = total_supply(scenario_path(GULF, quarters))
     assert totals.loc[pd.Timestamp("2026-04-01")] == pytest.approx(
-        7.705 + 1.94425 + 2.325 + 1.043 + 3.136
+        8.0 + 3.5 + 4.4 + 2.35 + 1.25
     )
 
 
 def test_total_supply_refuses_to_sum_across_a_missing_producer() -> None:
     """A quarter where one producer is unknown has no known total. Summing the rest
-    would publish a number that looks like a global figure and is not one."""
+    would publish a number that looks like a regional figure and is not one."""
     quarters = {pd.Timestamp("2026-01-01"): None}
     totals = total_supply(scenario_path(GULF, quarters))
     assert math.isnan(totals.loc[pd.Timestamp("2026-01-01")])
