@@ -101,6 +101,12 @@ where the two overlap they must agree, and `core/design.py` stays the token sour
   percent.
 - **No boxes.** Heading over a hairline rule, as `components.section` does; no cards,
   shadows or rounded panels.
+- **One spec, every surface.** An exhibit is defined once in `apps/artifacts/exhibits.py`.
+  `static/charts.js` draws it on the pages, `office.py` on slides and sheets, and
+  `apps/artifacts/figures.py` as a Plotly figure for the Streamlit app. In the app, use
+  `components.exhibit.exhibit(spec)` (heading, stale flag, takeaway, chart, source line)
+  with specs from `components.exhibit.load_book()`; the Briefing page shows them all.
+  Change a chart in `charts.js` and `figures.py` together.
 
 ## Dashboard layout — institutional look
 Explicit light theme locked via `.streamlit/config.toml` (white canvas, Inter font) —
