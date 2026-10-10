@@ -204,7 +204,10 @@ def test_closes_to_ts_long_uses_the_projects_unit_convention() -> None:
 
 def test_closes_to_ts_long_carries_the_source_through_the_frame() -> None:
     """A reused transform that hardcodes its source column silently misclassifies rows on
-    read-back -- the gotcha pipelines/weather/degree_days.py hit for real."""
+    read-back -- the gotcha pipelines/weather/degree_days.py hit for real. Exercised with
+    two different `source` values: a test that only ever passes "ibkr" would still pass
+    if the column were hardcoded to that same literal, so a second, different value is
+    required to catch that regression."""
     rows = closes_to_ts_long(
         {"z2026": _bars()}, root="cl",
         revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="ibkr",
@@ -213,6 +216,12 @@ def test_closes_to_ts_long_carries_the_source_through_the_frame() -> None:
     assert set(rows["geo"]) == {"CL"}
     assert set(rows["freq"]) == {"D"}
     assert rows["value"].dtype == "float64"
+
+    manual_rows = closes_to_ts_long(
+        {"z2026": _bars()}, root="cl",
+        revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="manual",
+    )
+    assert set(manual_rows["source"]) == {"manual"}
 
 
 def test_closes_to_ts_long_rejects_a_contract_code_that_looks_like_a_rank() -> None:
