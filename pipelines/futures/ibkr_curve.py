@@ -54,6 +54,21 @@ rejected bar is counted exactly once. A zero-volume bar whose open, high, low an
 all equal is a `stale_print`, which is the more informative of the two reasons."""
 
 
+def _required_array(history: dict[str, Any], key: str) -> Any:
+    """Fetch a required OHLCV array from a history response, or raise naming it.
+
+    A response that carries `time` but omits one of the OHLCV keys entirely is a
+    malformed capture, not an absent reading -- 00_TRADING_CONVENTIONS.md's "degenerate
+    inputs fail loudly" rule argues for naming the gap here rather than silently filling
+    a fabricated NaN column (a fill is exactly what that rule forbids), or letting it
+    surface downstream as an opaque pandas "All arrays must be of the same length" error.
+    """
+    value = history.get(key)
+    if value is None:
+        raise ValueError(f"get_price_history response has no {key!r} array")
+    return value
+
+
 def bars_from_history(history: dict[str, Any]) -> pd.DataFrame:
     """A get_price_history response's parallel arrays -> one row per bar.
 
@@ -70,11 +85,11 @@ def bars_from_history(history: dict[str, Any]) -> pd.DataFrame:
     frame = pd.DataFrame(
         {
             "ts": pd.to_datetime(times, utc=True).tz_localize(None).normalize(),
-            "open": pd.to_numeric(history.get("open", []), errors="coerce"),
-            "high": pd.to_numeric(history.get("high", []), errors="coerce"),
-            "low": pd.to_numeric(history.get("low", []), errors="coerce"),
-            "close": pd.to_numeric(history.get("close", []), errors="coerce"),
-            "volume": pd.to_numeric(history.get("volume", []), errors="coerce"),
+            "open": pd.to_numeric(_required_array(history, "open"), errors="coerce"),
+            "high": pd.to_numeric(_required_array(history, "high"), errors="coerce"),
+            "low": pd.to_numeric(_required_array(history, "low"), errors="coerce"),
+            "close": pd.to_numeric(_required_array(history, "close"), errors="coerce"),
+            "volume": pd.to_numeric(_required_array(history, "volume"), errors="coerce"),
         }
     )
     return frame.astype({column: "float64" for column in _BAR_COLUMNS if column != "ts"})

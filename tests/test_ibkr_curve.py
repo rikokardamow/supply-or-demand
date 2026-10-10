@@ -64,6 +64,21 @@ def test_bars_from_history_tolerates_an_empty_response() -> None:
     assert list(bars.columns) == ["ts", "open", "high", "low", "close", "volume"]
 
 
+def test_bars_from_history_raises_on_a_history_missing_an_ohlcv_key() -> None:
+    """`time` present but `volume` entirely absent is a malformed capture, not an absent
+    reading: it must fail loudly and name the gap, not silently become a NaN-filled
+    column or surface as an opaque pandas length-mismatch error."""
+    history = {
+        "time": ["2026-09-10T13:30:00Z"],
+        "open": [92.39],
+        "high": [94.87],
+        "low": [91.04],
+        "close": [93.93],
+    }
+    with pytest.raises(ValueError, match="volume"):
+        bars_from_history(history)
+
+
 def test_liquid_bars_rejects_the_real_zero_volume_stale_print() -> None:
     """CLZ7's 2021-12 bar is 57.31 four times on volume 0 -- a carried reference price,
     not a market. Confirmed live 2026-10-10."""
