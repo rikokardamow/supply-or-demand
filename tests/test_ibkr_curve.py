@@ -4,12 +4,15 @@ HTTP stack. The fixture under tests/fixtures/futures/ is a trimmed real response
 
 from __future__ import annotations
 
+from datetime import date
+
 import pandas as pd
 import pytest
-from pipelines.futures.client import looks_like_rank_code
+from pipelines.futures.client import ContractMeta, looks_like_rank_code
 from pipelines.futures.ibkr_curve import (
     REJECTION_REASONS,
     bars_from_history,
+    closes_to_ts_long,
     contract_code_from_month,
     liquid_bars,
 )
@@ -158,3 +161,102 @@ def test_every_rejection_reason_is_reported_even_when_zero() -> None:
     _, rejected = liquid_bars(bars)
     assert set(rejected) == set(REJECTION_REASONS)
     assert sum(rejected.values()) == 0
+
+
+_CL_Z2026 = ContractMeta(
+    root="cl", contract="z2026", expiry=date(2026, 11, 20),
+    tick_size=0.01, contract_unit="1000 bbl", currency="USD",
+)
+
+
+def _bars() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "ts": pd.to_datetime(["2026-10-08", "2026-10-09"]),
+            "open": [90.78, 89.87], "high": [92.14, 91.22],
+            "low": [89.50, 89.79], "close": [90.75, 91.01],
+            "volume": [54091.0, 36647.0],
+        }
+    )
+
+
+def test_closes_to_ts_long_writes_close_and_volume_but_never_oi() -> None:
+    rows = closes_to_ts_long(
+        {"z2026": _bars()}, root="cl",
+        revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="ibkr",
+    )
+    suffixes = {series_id.rsplit(".", 1)[1] for series_id in rows["series_id"]}
+    assert suffixes == {"close", "volume"}
+    assert not any(series_id.endswith(".oi") for series_id in rows["series_id"])
+    assert not any(series_id.endswith(".settle") for series_id in rows["series_id"])
+
+
+def test_closes_to_ts_long_uses_the_projects_unit_convention() -> None:
+    rows = closes_to_ts_long(
+        {"z2026": _bars()}, root="cl",
+        revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="ibkr",
+    )
+    close_rows = rows[rows["series_id"] == "fut.cl.z2026.close"]
+    assert set(close_rows["unit"]) == {"USD/1000 bbl"}
+    volume_rows = rows[rows["series_id"] == "fut.cl.z2026.volume"]
+    assert set(volume_rows["unit"]) == {"contracts"}
+
+
+def test_closes_to_ts_long_carries_the_source_through_the_frame() -> None:
+    """A reused transform that hardcodes its source column silently misclassifies rows on
+    read-back -- the gotcha pipelines/weather/degree_days.py hit for real."""
+    rows = closes_to_ts_long(
+        {"z2026": _bars()}, root="cl",
+        revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="ibkr",
+    )
+    assert set(rows["source"]) == {"ibkr"}
+    assert set(rows["geo"]) == {"CL"}
+    assert set(rows["freq"]) == {"D"}
+    assert rows["value"].dtype == "float64"
+
+
+def test_closes_to_ts_long_rejects_a_contract_code_that_looks_like_a_rank() -> None:
+    bad = ContractMeta(
+        root="cl", contract="f27", expiry=date(2027, 1, 20),
+        tick_size=0.01, contract_unit="1000 bbl", currency="USD",
+    )
+    with pytest.raises(ValueError, match=r"f01\.\.f36"):
+        closes_to_ts_long(
+            {"f27": _bars()}, root="cl",
+            revision_date=pd.Timestamp("2026-10-10"), contracts=[bad], source="ibkr",
+        )
+
+
+def test_a_sub_dollar_value_survives_the_round_trip(tmp_path, monkeypatch) -> None:
+    """The v0.11 lesson: a 0.35 spread must not read back as 0. Written alongside a
+    deliberately int64-typed sibling source, reproducing the original bug's conditions."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from core import storage
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+
+    sibling = tmp_path / "ts_long" / "source=rigs" / "year=2026"
+    sibling.mkdir(parents=True)
+    pq.write_table(
+        pa.table(
+            {
+                "series_id": ["rigs.us.total"], "source": ["rigs"],
+                "ts": [pd.Timestamp("2026-10-09")], "value": pa.array([588], type=pa.int64()),
+                "unit": ["rigs"], "geo": ["US"], "freq": ["W"],
+                "revision_date": [pd.Timestamp("2026-10-10")],
+            }
+        ),
+        sibling / "part-0.parquet",
+    )
+
+    bars = _bars()
+    bars.loc[:, "close"] = [0.35, 0.35]
+    rows = closes_to_ts_long(
+        {"z2026": bars}, root="cl",
+        revision_date=pd.Timestamp("2026-10-10"), contracts=[_CL_Z2026], source="ibkr",
+    )
+    storage.write_ts_long(rows, source="ibkr")
+
+    back = storage.read_ts_long(series_ids=["fut.cl.z2026.close"])
+    assert set(back["value"]) == {0.35}

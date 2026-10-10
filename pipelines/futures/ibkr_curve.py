@@ -15,6 +15,9 @@ import re
 from typing import Any, Final
 
 import pandas as pd
+from core.schemas import TS_LONG_SCHEMA
+
+from pipelines.futures.client import ContractMeta, looks_like_rank_code
 
 MONTH_CODES: Final[dict[int, str]] = {
     1: "f", 2: "g", 3: "h", 4: "j", 5: "k", 6: "m",
@@ -122,3 +125,65 @@ def liquid_bars(bars: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
 
     keep = ~(no_close | non_positive | stale | zero_volume)
     return bars[keep].reset_index(drop=True), rejected
+
+
+_METRICS: Final[tuple[str, ...]] = ("close", "volume")
+"""No `oi`. The connector was asked for `future_open_interest` on three contracts and
+returned it on none; absent is not zero."""
+
+
+def closes_to_ts_long(
+    bars_by_contract: dict[str, pd.DataFrame],
+    root: str,
+    revision_date: pd.Timestamp,
+    contracts: list[ContractMeta],
+    source: str,
+) -> pd.DataFrame:
+    """Per-contract liquid bars -> `ts_long` rows at `fut.<root>.<contract>.close/.volume`.
+
+    `source` is passed explicitly, never hardcoded: the DataFrame's own `source` column is a
+    real parquet value that every read filters on, and a shared transform that hardcodes it
+    misclassifies rows on read-back.
+    """
+    ambiguous = sorted(code for code in bars_by_contract if looks_like_rank_code(code))
+    if ambiguous:
+        raise ValueError(
+            f"contract codes collide with the nearby-rank namespace f01..f36: {ambiguous}. "
+            f"Use a four-digit year (e.g. 'f2027', not 'f27')."
+        )
+
+    unit_by_contract = {
+        meta.contract: f"{meta.currency}/{meta.contract_unit}" for meta in contracts
+    }
+
+    frames: list[pd.DataFrame] = []
+    for contract, bars in sorted(bars_by_contract.items()):
+        if bars.empty:
+            continue
+        for metric in _METRICS:
+            values = pd.to_numeric(bars[metric], errors="coerce").dropna()
+            if values.empty:
+                continue
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "series_id": f"fut.{root}.{contract}.{metric}",
+                        "source": source,
+                        "ts": bars.loc[values.index, "ts"],
+                        "value": values.astype("float64"),
+                        "unit": (
+                            unit_by_contract.get(contract, "unknown")
+                            if metric == "close"
+                            else "contracts"
+                        ),
+                        "geo": root.upper(),
+                        "freq": "D",
+                        "revision_date": revision_date,
+                    }
+                )
+            )
+
+    if not frames:
+        empty: pd.DataFrame = TS_LONG_SCHEMA.empty_table().to_pandas()
+        return empty
+    return pd.concat(frames, ignore_index=True)
