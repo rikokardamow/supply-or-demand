@@ -44,3 +44,4 @@ build fails if a page exceeds 4 MiB or any output contains a `.env` value.
 | Date | What | Lake state |
 |---|---|---|
 | 2026-10-10 | First publish of all three pages and both exports | Most sources last pulled 2026-09-09; 16 of 18 exhibits flagged stale |
+| 2026-10-10 | Republish of all three pages and both exports after a full lake refresh (dashboard v6, briefing v4, motion v3) | All five cadences run; failed: news (GDELT 429), opec_momr (403), baker_hughes (403), social (Reddit 429). 4 of 18 exhibits flagged stale |
