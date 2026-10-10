@@ -197,14 +197,17 @@ def storage_by_country() -> pd.DataFrame:
     for series_id, sub in _fullness().groupby("series_id"):
         latest = sub.iloc[-1]
         target = latest["ts"] - pd.Timedelta(days=364)
-        prior = sub.loc[(sub["ts"] - target).abs() <= pd.Timedelta(days=3), "value"]
+        # The nearest observation to the target, not merely the last one inside the window.
+        distance = (sub["ts"] - target).abs()
+        near = distance.idxmin()
+        year_ago = float(sub.loc[near, "value"]) if distance[near] <= pd.Timedelta(days=3) else None
         rows.append(
             {
                 "series_id": series_id,
                 "geo": latest["geo"],
                 "through": latest["ts"],
                 "full_pct": float(latest["value"]),
-                "year_ago_pct": float(prior.iloc[-1]) if len(prior) else None,
+                "year_ago_pct": year_ago,
             }
         )
     # Explicit columns so a lake with no AGSI+ rows gives an empty table, not a KeyError.
