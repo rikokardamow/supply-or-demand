@@ -168,3 +168,45 @@ Bai-Perron with one break finds 2005-03 (+23 months); Andrews sup-F finds 2004-0
 The 2004-05 crude run-up is a far larger level shift and dominates the search. Allowing two
 breaks surfaces 2003-01, three months from the paper's date — partial recovery obtained by
 relaxing the break count, not a clean replication. Recorded as a miss in the spec.
+
+## `hormuz.py` — a ported scenario, and an error found in its source (2026-10-10)
+
+Ports the `Hormuz Scenarios` sheet of a Bloomberg Intelligence supply-demand workbook. The
+mechanism is the workbook's own:
+
+    scenario = disrupted + (undisrupted - disrupted) * open_share * recovery_ceiling
+
+**Assumptions are split deliberately.** `pipelines/derived/hormuz/recovery_ceilings.csv`
+and `flow_share.csv` are committed -- they are the owner's scenario choices and belong in a
+diff. `data/manual/hormuz/baselines.csv` is the git-ignored drop, because the
+undisrupted/disrupted rates derive from licensed BI content. See that directory's README.
+
+**"Ramp factor" is a recovery ceiling, not a speed.** Iran's 0.8 means it permanently
+regains only 80% of its lost rate even at a fully reopened strait. Named
+`recovery_ceiling` for what the formula does rather than what the sheet calls it.
+
+**A blank flow share is `None`, never `0.0`.** The source writes its pre-disruption quarter
+as `-`; read as zero that asserts a total closure, the inversion of its meaning. Quarters
+with no known share write no rows.
+
+**Real error in the source, found by porting it.** Checked against the workbook's own
+`Scenario` columns -- outputs, not inputs here. 30 of 35 cells match at 0.00e+00. All five
+mismatches sit in 1Q 2027: the sheet's formulas reference flow-share cells
+`$E$4,$F$4,$G$4,$G$4,$I$4,$J$4,$K$4`, skipping `$H$4`, so that quarter is computed with
+4Q 2026's 0.8 against its own stated 0.9. The Gulf total is understated by ~0.92 mb/d, and
+it feeds `Surplus / (Deficit)`. This module uses each quarter's own share and therefore
+disagrees there deliberately.
+
+**Not registered in `infra/run_scheduled.py`.** A scenario changes when its assumptions
+change, not on a clock; a nightly rerun would rewrite identical rows and imply the numbers
+had been refreshed from a source. Run `python -m pipelines.derived.hormuz` by hand.
+
+Every series id carries `scenario` (`derived.hormuz.scenario.*`) so no reader mistakes
+conditional output for an observation. The Gulf total is NaN wherever any producer is
+unknown rather than summing around the gap.
+
+**A test lesson worth keeping.** The first version passed all its tests and failed on the
+first real run: `build_scenario_rows` took one directory for both readers while the real
+layout has two. The fixture had put every file in one tmp directory, so it encoded the
+wrong design and went green. The fixture now builds two directories, and a test asserts the
+baselines are not found beside the committed levers.
