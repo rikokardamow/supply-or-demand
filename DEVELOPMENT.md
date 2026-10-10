@@ -70,6 +70,44 @@ light grid `#e6e6e6`; horizontal legend top-left; direct annotations near last p
 ("Latest / YoY / vs median") instead of relying on legends; dual axes navy-left / light-blue-right.
 Charts use the Inter font (`template.layout.font`) to match the app's own typography.
 
+## Design system (published pages, slides and workbooks)
+Applies to everything `apps/artifacts/` produces — the claude.ai artifact pages, the
+PowerPoint briefing and the Excel workbook — and extends the chart house style above;
+where the two overlap they must agree, and `core/design.py` stays the token source.
+- **Ground and ink.** Navy `#0f2a4a` on white. Light theme only, as in the Streamlit app.
+  Headings on the Lora stack, everything else (and every number) on the Inter stack;
+  pages fall back to Georgia / Segoe UI because artifacts cannot load those webfonts.
+- **Series.** Navy is the primary series, light blue `#5b9bd5` the secondary. A third
+  series is grey; red is for stale flags only, never a data series.
+- **Two units, two axes.** When an exhibit compares two units it is dual-axis: navy left,
+  light blue right, each axis titled and tinted to its series. PowerPoint has no second
+  axis through python-pptx, so the deck stacks two charts on one date axis instead.
+- **Seasonal range bands.** Five-year minimum to maximum as a grey band, dotted orange
+  median, prior year in light blue, current year in navy drawn last so it sits on top.
+  The window is the five calendar years before the current one, passed to
+  `core.seasonal.seasonal_stats` (golden rule 4 — 2020 is still dropped, and the label
+  says "ex-2020" when the window reaches it). This is narrower than the Streamlit app's
+  default 2018-onwards band; the two will show different medians for the same series.
+- **Annotated turning points.** Each time-series exhibit labels its window high and low
+  with value and date, and seasonal charts also label the latest point with its distance
+  from the median. Labels are computed, never typed.
+- **Takeaway.** Two lines above every chart, generated from the same rows the chart draws.
+- **Source line.** Under every chart: provider · lake table and series · last observation
+  · pipeline run (`ts_long.revision_date`, or the Parquet write time for `flows`).
+- **Stale flag.** `No data since <date>` in red once the last observation is more than
+  two release cycles old. A gap is shown, never filled or hidden.
+- **Numerals.** All quantities as numerals with units (`424.5 million barrels`, `7 Sep
+  2026`); thousands separators; shares compared in percentage points, not percent of a
+  percent.
+- **No boxes.** Heading over a hairline rule, as `components.section` does; no cards,
+  shadows or rounded panels.
+- **One spec, every surface.** An exhibit is defined once in `apps/artifacts/exhibits.py`.
+  `static/charts.js` draws it on the pages, `office.py` on slides and sheets, and
+  `apps/artifacts/figures.py` as a Plotly figure for the Streamlit app. In the app, use
+  `components.exhibit.exhibit(spec)` (heading, stale flag, takeaway, chart, source line)
+  with specs from `components.exhibit.load_book()`; the Briefing page shows them all.
+  Change a chart in `charts.js` and `figures.py` together.
+
 ## Dashboard layout — institutional look
 Explicit light theme locked via `.streamlit/config.toml` (white canvas, Inter font) —
 never rely on the viewer's OS/browser dark-mode preference. The navy sidebar is gone:

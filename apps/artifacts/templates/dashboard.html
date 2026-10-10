@@ -1,0 +1,169 @@
+<title>Energy Desk Dashboard</title>
+<style>
+/*__BASE_CSS__*/
+</style>
+<div class="wrap">
+  <header class="masthead">
+    <h1>Energy desk dashboard</h1>
+    <p class="meta" id="meta"></p>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Dashboard sections"></nav>
+  <main id="panels"></main>
+</div>
+<script type="application/json" id="payload">/*__DATA__*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.1.0/plotly-basic.min.js" integrity="sha384-7U7ehGKdL5gsFu89O1kYrHLPKpTf6BJ1bIe+nke+R5+CpdiuJCH2K/TG9JuNqq5l" crossorigin="anonymous"></script>
+<script>
+/*__CHARTS_JS__*/
+</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("payload").textContent);
+  const { el } = KD;
+  KD.metaLine(document.getElementById("meta"), D.meta);
+
+  /* A titled block: heading over a hairline rule, then its content. */
+  function block(title) {
+    const section = el("section", "exhibit");
+    const head = el("header");
+    head.append(el("h3", null, title));
+    section.append(head);
+    return section;
+  }
+
+  function table(columns, rows) {
+    const wrap = el("div", "scroll");
+    const t = el("table");
+    const thead = el("thead");
+    const head = el("tr");
+    columns.forEach((c) => head.append(el("th", c.num ? "num" : null, c.label)));
+    thead.append(head);
+    const body = el("tbody");
+    rows.forEach((r) => {
+      const tr = el("tr");
+      columns.forEach((c) => {
+        const td = el("td", c.num ? "num" : null);
+        const v = c.get(r);
+        if (v instanceof Node) td.append(v);
+        else td.textContent = v === null || v === undefined ? "–" : v;
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+    t.append(thead, body);
+    wrap.append(t);
+    return wrap;
+  }
+
+  const num = (v, d) => v === null || v === undefined ? "–"
+    : Number(v).toLocaleString("en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const signed = (v, d) => v === null || v === undefined ? "–" : (v > 0 ? "+" : "") + num(v, d);
+
+  function overview(panel) {
+    if (D.meta.stale) {
+      panel.append(el("p", "banner",
+        `${D.meta.stale} of ${D.meta.exhibits} exhibits are past two release cycles. ` +
+        "Each carries a red flag with the date of its last observation; Data status lists every source."));
+    }
+    const kpis = el("section", "kpis");
+    D.kpis.forEach((k) => {
+      const tile = el("div", "kpi");
+      tile.append(el("span", "label", k.label));
+      const value = el("span", "value", k.value + " ");
+      value.append(el("span", "unit", k.unit));
+      tile.append(value);
+      tile.append(el("span", "delta", (k.delta ? `${k.delta} ${k.delta_label} · ` : "") + k.date));
+      kpis.append(tile);
+    });
+    panel.append(kpis);
+
+    const wpsr = block("Weekly Petroleum Status Report at a glance");
+    wpsr.append(table([
+      { label: "Line", get: (r) => r.label },
+      { label: "Week ending", get: (r) => r.week_ending },
+      { label: "Value", num: true, get: (r) => num(r.value, r.unit === "%" ? 1 : 0) },
+      { label: "Unit", get: (r) => r.unit },
+      { label: "Week on week", num: true, get: (r) => signed(r.wow, r.unit === "%" ? 1 : 0) },
+      { label: "Year on year, %", num: true, get: (r) => signed(r.yoy_pct, 1) },
+      { label: "Against median, %", num: true, get: (r) => signed(r.vs_median_pct, 1) },
+    ], D.wpsr));
+    wpsr.append(el("p", "source",
+      "Source: EIA Weekly Petroleum Status Report · lake table ts_long/eia, built by pipelines.eia.wpsr_lines · " +
+      "the median here uses the repo's default seasonal window (2018 onwards, 2020 excluded), not the 5-year band on the charts."));
+    panel.append(wpsr);
+  }
+
+  function status(panel) {
+    const fresh = block("Source freshness");
+    fresh.append(table([
+      { label: "Lake table", get: (r) => r.dataset },
+      { label: "Source", get: (r) => r.source },
+      { label: "Last observation", get: (r) => r.last_seen },
+      { label: "Pipeline run", get: (r) => r.pulled_at },
+      { label: "Days stale", num: true, get: (r) => num(r.days_stale, 1) },
+      { label: "Status", get: (r) => el("span", "pill " + r.status, r.status) },
+    ], D.status));
+    fresh.append(el("p", "source",
+      "Source: core.freshness.staleness_report · thresholds follow each source's release cadence."));
+    panel.append(fresh);
+
+    const gaps = block("Outputs with nothing to chart");
+    gaps.append(table([
+      { label: "Output", get: (r) => r.output },
+      { label: "State", get: (r) => r.state },
+    ], D.gaps));
+    panel.append(gaps);
+
+    if (D.issues.length) {
+      const issues = block("Data issues found by this build");
+      const list = el("ul", "plain");
+      D.issues.forEach((i) => list.append(el("li", null, i)));
+      issues.append(list);
+      panel.append(issues);
+    }
+  }
+
+  const tabs = document.getElementById("tabs");
+  const panels = document.getElementById("panels");
+  const drawn = new Set();
+
+  D.tabs.forEach((tab) => {
+    const button = el("button", null, tab.label);
+    button.id = "tab-" + tab.id;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-controls", tab.id);
+    button.addEventListener("click", () => show(tab.id, true));
+    tabs.append(button);
+
+    const panel = el("section", "panel");
+    panel.id = tab.id;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", button.id);
+    panel.hidden = true;
+    if (tab.id === "overview") overview(panel);
+    else if (tab.id === "status") status(panel);
+    else {
+      const grid = el("div", "grid");
+      D.exhibits.filter((e) => e.tab === tab.id).forEach((e) => grid.append(KD.card(e)));
+      panel.append(grid);
+    }
+    panels.append(panel);
+  });
+
+  function show(id, push) {
+    const target = D.tabs.some((t) => t.id === id) ? id : "overview";
+    D.tabs.forEach((t) => {
+      const on = t.id === target;
+      document.getElementById(t.id).hidden = !on;
+      document.getElementById("tab-" + t.id).setAttribute("aria-selected", String(on));
+    });
+    if (!drawn.has(target)) {
+      document.getElementById(target).querySelectorAll(".exhibit").forEach((box) => box.draw && box.draw());
+      drawn.add(target);
+    }
+    if (push) history.replaceState(null, "", "#" + target);
+  }
+
+  window.addEventListener("hashchange", () => show(location.hash.slice(1), false));
+  show(location.hash.slice(1) || "overview", false);
+})();
+</script>
