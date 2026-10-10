@@ -37,6 +37,9 @@ def test_contract_panel_for_reads_close_when_no_settle_exists(tmp_path, monkeypa
     panel, expiries = contract_panel_for("lco", meta)
     assert sorted(panel.columns) == ["f2027", "z2026"]
     assert len(expiries) == 2
+    ts = pd.Timestamp("2026-10-09")
+    assert panel.loc[ts, "z2026"] == 104.43
+    assert panel.loc[ts, "f2027"] == 103.80
 
 
 def test_contract_panel_for_prefers_settle_and_does_not_blend_within_a_contract(
@@ -69,3 +72,49 @@ def test_contract_panel_for_prefers_settle_and_does_not_blend_within_a_contract(
     panel, _, provenance = contract_panel_for("cl", meta, return_provenance=True)
     assert panel.loc[pd.Timestamp("2026-10-09"), "z2026"] == 90.80
     assert provenance["z2026"] == "settle"
+
+
+def test_contract_panel_for_chooses_metric_per_contract_not_per_root(tmp_path, monkeypatch) -> None:
+    """Discriminates per-contract selection from a root-global variant ("if this root has
+    any settle rows anywhere, keep only settle rows"). Contract a1 has settle rows (so a
+    root-global rule would keep settle only, root-wide); contract b1 has close rows only.
+    The correct per-contract rule keeps BOTH columns -- a1 from its settle rows, b1 from
+    its close rows -- while the root-global mutant would drop b1 entirely, since b1 has no
+    settle rows anywhere to survive a root-wide settle-only filter."""
+    from core import storage
+    from pipelines.derived.curve import contract_panel_for
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+    rows = [
+        # a1: 3 settle rows outnumber its 1 close row -- settle wins for a1.
+        ("fut.ng.a1.settle", 3.10, "manual", "2026-10-05"),
+        ("fut.ng.a1.settle", 3.20, "manual", "2026-10-06"),
+        ("fut.ng.a1.settle", 3.30, "manual", "2026-10-07"),
+        ("fut.ng.a1.close", 3.25, "ibkr", "2026-10-08"),
+        # b1: close rows only, no settle rows at all anywhere for this contract.
+        ("fut.ng.b1.close", 4.10, "ibkr", "2026-10-05"),
+        ("fut.ng.b1.close", 4.20, "ibkr", "2026-10-06"),
+    ]
+    for series_id, value, source, ts in rows:
+        storage.write_ts_long(
+            pd.DataFrame(
+                {
+                    "series_id": [series_id], "source": [source],
+                    "ts": [pd.Timestamp(ts)], "value": [value],
+                    "unit": "USD/MMBtu", "geo": "NG", "freq": "D",
+                    "revision_date": [pd.Timestamp("2026-10-10")],
+                }
+            ),
+            source=source,
+        )
+    meta = pd.DataFrame(
+        {
+            "root": ["ng", "ng"],
+            "contract": ["a1", "b1"],
+            "expiry": [pd.Timestamp("2026-11-20"), pd.Timestamp("2026-12-20")],
+        }
+    )
+    panel, _, provenance = contract_panel_for("ng", meta, return_provenance=True)
+    assert sorted(panel.columns) == ["a1", "b1"]
+    assert provenance["a1"] == "settle"
+    assert provenance["b1"] == "close"

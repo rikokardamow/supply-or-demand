@@ -7,6 +7,7 @@ pipelines/futures/pull.py::pull_root."""
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import datetime
 from typing import Final, Literal, overload
 
@@ -29,9 +30,17 @@ _SPREAD_COLUMNS = ("s12", "s13", "s16", "s1_12", "s23")
 
 
 _METRICS_BY_PREFERENCE: Final[tuple[str, ...]] = ("settle", "close")
-"""Settle first: an exchange settlement is the better number where one exists. `.close` is
-last-trade data, from sources like the IBKR MCP connector -- see
-pipelines/futures/CLAUDE.md for the measured difference between the two."""
+"""Settle first on a tie: an exchange settlement is the better number where one exists in
+comparable volume. `.close` is last-trade data, from sources like the IBKR MCP connector --
+see pipelines/futures/CLAUDE.md for the measured difference between the two.
+
+Selection is NOT "settle if the contract has any settle rows at all" -- that wording was
+tried and broken by the real lake. `lco` holds a settle row for all ~89 contracts, but
+exactly ONE row each (2026-09-04, the Barchart reconstruction, source="manual"); IBKR's
+`contract_code_from_month` emits the identical contract-code format, so "any settle rows"
+would resolve every lco contract to that single stale settle and silently discard the
+whole IBKR daily close history, pinning the lco curve to one date forever. The rule is
+instead: per contract, whichever metric has MORE rows wins; ties go to settle."""
 
 
 @overload
@@ -49,10 +58,11 @@ def contract_panel_for(
     pivot logic directly, matching pipelines/eia/transforms.py's own "page imports a
     pipeline's transform helper" precedent.
 
-    Reads both `.settle` and `.close` and picks ONE metric per contract -- settle if that
-    contract has any settle rows, close otherwise. Per contract, never per row: a settlement
-    and a last trade are different quantities, and blending them inside one column would
-    leave every spread downstream measuring something nobody chose.
+    Reads both `.settle` and `.close` and picks ONE metric per contract -- whichever has
+    more rows for that contract, ties going to settle (see `_METRICS_BY_PREFERENCE`'s own
+    docstring for why "any settle rows" is wrong). Per contract, never per row: a
+    settlement and a last trade are different quantities, and blending them inside one
+    column would leave every spread downstream measuring something nobody chose.
     """
     root_meta = meta[meta["root"] == root]
     empty: tuple[pd.DataFrame, pd.Series] = (
@@ -77,10 +87,12 @@ def contract_panel_for(
     long_df["contract"] = parts.str[2]
     long_df["metric"] = parts.str[3]
 
-    available = long_df.groupby("contract")["metric"].agg(set)
+    # Row counts per (contract, metric) -- the selection is by volume, not mere presence.
+    counts = long_df.groupby(["contract", "metric"]).size().unstack(fill_value=0)
+    counts = counts.reindex(columns=list(_METRICS_BY_PREFERENCE), fill_value=0)
     chosen: dict[str, str] = {
-        str(contract): next(m for m in _METRICS_BY_PREFERENCE if m in metrics)
-        for contract, metrics in available.items()
+        str(contract): ("settle" if row["settle"] >= row["close"] else "close")
+        for contract, row in counts.iterrows()
     }
     picked = long_df[
         [chosen.get(c) == m for c, m in zip(long_df["contract"], long_df["metric"], strict=True)]
@@ -119,10 +131,16 @@ def _write_derived(
 
 
 def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
-    contract_panel, expiries = contract_panel_for(root, meta)
+    contract_panel, expiries, provenance = contract_panel_for(root, meta, return_provenance=True)
     if contract_panel.empty or len(expiries) < 2:
         print(f"{root}: not enough contracts for a curve yet", flush=True)
         return 0
+
+    # A mixed panel (some contracts settle, some close) blends two different quantities
+    # across columns of the same panel -- not within one, but still worth stating in the
+    # run output rather than leaving silent. See contract_panel_for's own docstring.
+    metric_mix = Counter(provenance.values())
+    print(f"{root}: per-contract metric mix {dict(metric_mix)}", flush=True)
 
     _adjusted, unadj, _roll_dates = nearby_panel(contract_panel, expiries)
     spreads = time_spreads(unadj)
