@@ -283,3 +283,25 @@ first real run: `build_scenario_rows` took one directory for both readers while 
 layout has two. The fixture had put every file in one tmp directory, so it encoded the
 wrong design and went green. The fixture now builds two directories, and a test asserts the
 baselines are not found beside the committed levers.
+
+## `rin.py` — implied RFS mandate from the STEO baseline (2026-10-10)
+
+Series id, fixed once: `derived.rin.mandate.<category>.<observed|projected>.<final|proposed>`,
+unit `billion RINs`, monthly. Both labels are in the id because a row must say what it rests on:
+
+- **observed / projected.** `projected` if EITHER demand input for the month is projected.
+- **final / proposed.** Read from the `status` of the EPA reference row, never hard-coded
+  (today every committed standard is `final`; a test exercises `proposed` with a synthetic frame).
+
+Rulings: observed beats projected where STEO's moving history boundary leaves a month under
+both labels (`prefer_observed`); the denominator is the `_P` pair from
+`RFS_DENOMINATOR_CODES`, never the headline `MGTCPUSX`/`DFTCPUS`; days per month are derived
+from each row's own period (leap Februaries included); a missing demand leg or missing
+standard writes no row (no data is not zero); an empty lake, or an input set yielding no row,
+fails loudly via `fails_loudly` and writes nothing. No volume-target comparison is made, so
+the `requirement`/`applicable` basis is not used here (use `applicable` if one is added).
+
+**Not registered in `infra/run_scheduled.py`**: it follows a manual STEO pull. Scenario-style
+rule from `hormuz.py` applies: no licensed workbook figure and no derived output in a tracked
+file; tests use synthetic demand only.
+
