@@ -34,6 +34,7 @@ SEASONAL_COLUMNS: Final = [
     "unit",
 ]
 FLOW_COLUMNS: Final = ["source", "mode", "corridor", "through", "latest", "year_ago", "unit"]
+STORAGE_COLUMNS: Final = ["series_id", "geo", "through", "full_pct", "year_ago_pct"]
 
 _MONTH_CODES: Final = "FGHJKMNQUVXZ"
 
@@ -206,7 +207,9 @@ def storage_by_country() -> pd.DataFrame:
                 "year_ago_pct": float(prior.iloc[-1]) if len(prior) else None,
             }
         )
-    return pd.DataFrame(rows).sort_values(by="full_pct", ascending=False).reset_index(drop=True)
+    # Explicit columns so a lake with no AGSI+ rows gives an empty table, not a KeyError.
+    out = pd.DataFrame(rows, columns=STORAGE_COLUMNS)
+    return out.sort_values(by="full_pct", ascending=False).reset_index(drop=True)
 
 
 def storage_weekly() -> pd.DataFrame:

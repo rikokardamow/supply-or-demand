@@ -26,6 +26,13 @@ from each page's Share menu; the build and the skill never change it.
 | `exports/kardamow_data.xlsx` | README sheet (source, units, rows, data-through and as-of per sheet) plus `series_long`, `seasonal`, `wpsr_lines`, `curve_settles`, `flows`, `storage_by_country`, `freshness`. Real Excel dates and numbers, no merged cells. |
 | `exports/kardamow_briefing.pptx` | Cover plus one slide per briefing exhibit, each a native PowerPoint chart with embedded data. Seasonal bands are min/max lines and dual-axis exhibits are two stacked charts (see "Design system" in `CLAUDE.md`). |
 
+## In the Streamlit app
+
+| Surface | Source file | Notes |
+|---|---|---|
+| Briefing page (`/briefing`, Overview menu) | `apps/dashboard/pages/22_briefing.py` | Every exhibit, grouped under the dashboard page's tabs. Reads the lake live (cached one hour), so it needs no republish. |
+| `exhibit(spec)` component | `apps/dashboard/components/exhibit.py` | Drop one exhibit into any page. Charts come from `apps/artifacts/figures.py`, the Python twin of `static/charts.js`. |
+
 ## Constraints the pages are built to
 
 Self-contained static HTML: data is inlined at build time, the only external script is
