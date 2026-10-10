@@ -103,6 +103,41 @@ Neither has been confirmed live yet. Per this project's own standing rule, confi
 and the real series before planning against it — `pipelines/macro/CLAUDE.md` records two
 plausible-looking FRED IDs that turned out to be a zinc index and a stale series.
 
+## BP Statistical Review (DataHub) — checked live 2026-10-10
+
+`https://datahub.io/energy-and-commodities/bp-statistical-review-world-energy`, 14 CSV
+resources, 1.35 MB. The `_r/-/` links 302-redirect to `r2.datahub.io`; fetch the redirect
+target, do not assume the first URL serves bytes. Licence: "free to use with attribution" to
+BP. Schema confirmed from the real `datapackage.json`, not from the listing page.
+
+**It does not solve this model's blocker.** Every resource is **annual**, and the latest year
+is **2019** (BP Statistical Review 2020, 69th edition). The regressions need quarterly
+observations through 2026. BP covers 2013–2019 of a 2013–2026 panel at the wrong frequency,
+so it cannot fit them. Use it for long-run context and cross-checks, not for the panel.
+
+Note also that BP discontinued this publication: the Energy Institute has published the
+successor *Statistical Review of World Energy* since 2023, free, with more recent data. If
+fresher annual coverage is wanted, that is the place to look — not confirmed live here.
+
+**What it does close**, all annual and historical, all genuinely absent from this lake today:
+
+| Resource | Why it matters here |
+|---|---|
+| `coal-prices.csv` — `northwest_europe_usd_tonne`, 1987–2019 | `pipelines/coal/CLAUDE.md` records API2/API4 as *"never published by EIA at all — a vendor gap, not a backlog item. No amount of EIA-side work closes it."* The NW Europe steam marker is the closest free proxy to API2, and the lake has nothing of the kind |
+| `gas-prices.csv` — `netherlands_ttf_usd_mmbtu`, `uk_nbp_usd_mmbtu`, `jkm_usd_mmbtu`, `german_import_usd_mmbtu`, `lng_japan_cif_usd_mmbtu`, 1984–2019 | The lake holds exactly one gas price, `fred.dhhngsp` (Henry Hub). No TTF, no NBP, no JKM anywhere — while SKILL.md §9 and Spec 26 are built on precisely those hubs |
+| `oil-spot-prices.csv` — `dubai_usd_bbl`, 1972–2019 | No Dubai series exists anywhere in this project. `manual_physical`'s `SERIES_META` declares Dubai M1/M3 and the Brent–Dubai EFS, all with no data |
+| `oil-consumption.csv` — country and regional, kb/d, 1965–2019 | A long-run annual cross-check on MOMR and JODI levels, and a second, independent elasticity fit over six decades rather than twelve years |
+
+**Binding caveats if any of it is ingested.** These are annual averages ending 2019. They are
+historical context, never a current reading, and the freshness surface must say so rather
+than showing them as stale. Never join an annual average to a daily or weekly series without
+running SKILL.md §4's join checklist first — an annual mean and a spot assessment are not the
+same quantity. Country naming uses BP's own conventions with regional aggregates
+(`Total North America`, `Total CIS`, `USSR`) mixed in beside individual countries, so any
+pull must filter aggregates out explicitly, the same discipline `GENERATOR_FUEL_LOCATIONS`
+already applies for EIA. Whether China appears under that exact name was **not** confirmed —
+the fetch returned a truncated view, so check before relying on it.
+
 ## The forward path needs a decision, not a connector
 
 GDP *forecasts* are the model's engine, and no market connector supplies them. Three honest
