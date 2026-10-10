@@ -283,3 +283,21 @@ first real run: `build_scenario_rows` took one directory for both readers while 
 layout has two. The fixture had put every file in one tmp directory, so it encoded the
 wrong design and went green. The fixture now builds two directories, and a test asserts the
 baselines are not found beside the committed levers.
+
+## `oil_demand.py` — observed series and a scenario, never mixed
+
+Reads `jodi.total_demand.*` and `oecd.gdp_real_yoy.*`; writes
+`derived.oil_demand.<block>.{level,yoy}` (observed) and `.yoy.scenario` (driven by the
+owner's GDP assumptions in `oil_demand/gdp_assumptions.csv`, which ships empty). An
+assumption dated inside observed history is refused, so a scenario row can never sit beside
+a measurement of the same quarter.
+
+The fitted elasticities are **not** in the lake — `apps/dashboard/pages/23_oil_demand.py`
+recomputes the model card through `core.oil_demand.model_card` from the same rows.
+
+The euro-area block is nineteen members, without Malta
+(`core.oil_demand.EURO_AREA_BASKET`), and a quarter with any basket member missing any month
+writes nothing. Expect the latest quarter to be absent for `ea` while present for `us` and
+`cn`: smaller members report a month late.
+
+Rest of World is not built. Russia is absent from JODI and no world GDP series exists.
