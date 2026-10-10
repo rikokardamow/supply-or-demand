@@ -28,6 +28,10 @@ Rules
 * The day count is the calendar length of each row's own month (leap years included).
 * No data is not zero: a month missing either demand input, or in a year with no standard for
   a category, gets no row. Nothing is filled, carried forward or zeroed.
+* Twins across runs. The lake has no delete path and the id carries the label and the status,
+  so a month first written as ``...projected.final`` survives beside the ``...observed.final``
+  a later run writes once STEO's boundary moves (likewise proposed then final). Read
+  ``derived.rin.mandate.*`` through :func:`resolve_mandate_twins`, never raw.
 * Standards are an argument, not discovered by path (the hormuz lesson).
 
 No volume comparison is made, so the ``requirement`` / ``applicable`` basis of EPA's volume
@@ -47,21 +51,33 @@ from core.failures import fails_loudly, record_failure
 from core.rin import implied_mandate_billion_rins, rfs_denominator_gallons
 from core.storage import read_ts_long, write_ts_long
 
-from pipelines.eia.steo_series import RFS_DENOMINATOR_CODES
+from pipelines.eia.steo_series import RFS_DENOMINATOR_CODES, lake_series_id
 from pipelines.epa.reference import load_percentage_standards
 
 ID_PREFIX = "derived.rin.mandate"
 UNIT = "billion RINs"
 GASOLINE_CODE, DISTILLATE_CODE = RFS_DENOMINATOR_CODES
-# Lake ids are `steo.<lowercased code>.<label>` (pipelines/eia/pull_steo.py).
-GASOLINE_SERIES, DISTILLATE_SERIES = (f"steo.{code.lower()}" for code in RFS_DENOMINATOR_CODES)
+GASOLINE_SERIES, DISTILLATE_SERIES = (lake_series_id(code) for code in RFS_DENOMINATOR_CODES)
 DENOMINATOR_SERIES = (GASOLINE_SERIES, DISTILLATE_SERIES)
 _LABELS = ("observed", "projected")
+_LABEL_RANK = {"observed": 0, "projected": 1}
+_STATUSES = ("final", "proposed")
+_STATUS_RANK = {"final": 0, "proposed": 1}
 
 
 def days_in_period(period_start: pd.Timestamp) -> int:
     """Calendar length of the month starting at ``period_start`` (29 for February 2028)."""
     return int(period_start.days_in_month)
+
+
+def _best_per(frame: pd.DataFrame, keys: list[str], ranks: list[pd.Series]) -> pd.DataFrame:
+    """First row per ``keys`` after ordering by each rank (lower wins), then latest
+    ``revision_date``. The one ranking both readers share."""
+    cols = {f"_rank{i}": r for i, r in enumerate(ranks)}
+    ordered = frame.assign(**cols).sort_values(
+        [*cols, "revision_date"], ascending=[*[True] * len(cols), False], kind="stable"
+    )
+    return ordered.drop_duplicates(keys, keep="first").drop(columns=list(cols))
 
 
 def prefer_observed(steo: pd.DataFrame) -> pd.DataFrame:
@@ -77,12 +93,46 @@ def prefer_observed(steo: pd.DataFrame) -> pd.DataFrame:
     split = steo["series_id"].str.rsplit(".", n=1, expand=True)
     frame = steo.assign(series=split[0], label=split[1])
     frame = frame[frame["label"].isin(_LABELS)]
-    frame = frame.sort_values("revision_date").drop_duplicates(
-        ["series", "label", "ts"], keep="last"
-    )
-    frame = frame.assign(_rank=frame["label"].map({"observed": 0, "projected": 1}))
-    frame = frame.sort_values("_rank").drop_duplicates(["series", "ts"], keep="first")
+    frame = _best_per(frame, ["series", "ts"], [frame["label"].map(_LABEL_RANK)])
     return frame[["series_id", "series", "label", "ts", "value"]].reset_index(drop=True)
+
+
+_MANDATE_COLUMNS = ["category", "ts", "value", "unit", "label", "status"]
+
+
+def resolve_mandate_twins(rows: pd.DataFrame) -> pd.DataFrame:
+    """One row per (category, month) from raw ``derived.rin.mandate.*`` lake rows.
+
+    READ ``derived.rin.mandate.*`` THROUGH THIS FUNCTION, NEVER RAW. The id carries both the
+    observed/projected label and the final/proposed status and the lake has no delete path, so
+    once STEO's history boundary moves, or a standard moves from proposed to final, a later
+    run writes the month under a new id and the old row stays: the same month then exists
+    twice. This resolves each pair to the winner:
+
+    1. ``observed`` beats ``projected``, FIRST. An observed-but-proposed row therefore beats a
+       projected-but-final one: what the demand rests on outranks which standard was applied.
+    2. Then ``final`` beats ``proposed``.
+    3. Ties go to the latest ``revision_date``.
+
+    Takes a ``ts_long`` frame (other series and malformed ids are ignored). Returns
+    ``category``, ``ts``, ``value``, ``unit`` and the winner's own ``label`` (observed or
+    projected) and ``status`` (final or proposed), so a caller can still show "projected" or
+    "proposed".
+    """
+    if rows.empty:
+        return pd.DataFrame(columns=_MANDATE_COLUMNS)
+    frame = rows[rows["series_id"].str.startswith(f"{ID_PREFIX}.")]
+    parts = frame["series_id"].str[len(ID_PREFIX) + 1 :].str.rsplit(".", n=2, expand=True)
+    if frame.empty or parts.shape[1] != 3:
+        return pd.DataFrame(columns=_MANDATE_COLUMNS)
+    frame = frame.assign(category=parts[0], label=parts[1], status=parts[2])
+    frame = frame[frame["label"].isin(_LABELS) & frame["status"].isin(_STATUSES)]
+    frame = _best_per(
+        frame,
+        ["category", "ts"],
+        [frame["label"].map(_LABEL_RANK), frame["status"].map(_STATUS_RANK)],
+    )
+    return frame[_MANDATE_COLUMNS].sort_values(["category", "ts"]).reset_index(drop=True)
 
 
 def build_mandate_rows(

@@ -305,3 +305,13 @@ the `requirement`/`applicable` basis is not used here (use `applicable` if one i
 rule from `hormuz.py` applies: no licensed workbook figure and no derived output in a tracked
 file; tests use synthetic demand only.
 
+**Twin rows across runs: read `derived.rin.mandate.*` through `resolve_mandate_twins`, never
+raw.** The id carries the observed/projected label and the final/proposed status, and the lake
+has no delete path, so after STEO's boundary moves (or a standard goes proposed to final) the
+old `...projected.final` row survives beside the new `...observed.final` one for the same month.
+`prefer_observed` protects only the STEO inputs. `resolve_mandate_twins(rows)` returns one row
+per (category, month): observed beats projected FIRST (so observed-proposed beats
+projected-final), then final beats proposed, then latest `revision_date`; it keeps the winner's
+`label` and `status` columns so a page can still say "projected" or "proposed". Both readers
+share `_best_per`. The STEO code-to-lake-id rule is `pipelines.eia.steo_series.lake_series_id`,
+used by `pull_steo` (writer) and this module (reader).

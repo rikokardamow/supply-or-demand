@@ -19,13 +19,9 @@ from core.storage import write_ts_long
 
 from pipelines.eia.client import EIAClient
 from pipelines.eia.steo_boundary import history_end, split_observed_projected
-from pipelines.eia.steo_series import STEO_SERIES
+from pipelines.eia.steo_series import STEO_SERIES, lake_series_id
 
 SOURCE = "eia_steo"
-
-
-def _lake_series_id(code: str) -> str:
-    return f"steo.{code.lower()}"
 
 
 def main() -> None:
@@ -49,7 +45,7 @@ def main() -> None:
             raise ValueError(f"steo: {int(raw['ts'].isna().sum())} row(s) have no period (NaT)")
 
         raw = raw.copy()
-        raw["series_id"] = raw["series_id"].map(_lake_series_id)
+        raw["series_id"] = raw["series_id"].map(lake_series_id)
         labelled = split_observed_projected(raw, boundary)
 
         write_ts_long(labelled, source=SOURCE)

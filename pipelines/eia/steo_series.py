@@ -38,3 +38,11 @@ STEO_SERIES: dict[str, SteoMeta] = {
 }
 
 RFS_DENOMINATOR_CODES: tuple[str, str] = ("MGTCPUSX_P", "DFTCPUS_P")
+
+
+def lake_series_id(code: str) -> str:
+    """Lake series id (without the observed/projected label) for a STEO code.
+
+    The one place the mapping lives: ``pull_steo`` writes ``steo.<code>.<label>`` with it and
+    ``derived.rin`` reads with it, so the two cannot drift apart."""
+    return f"steo.{code.lower()}"
