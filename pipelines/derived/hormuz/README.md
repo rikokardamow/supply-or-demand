@@ -70,3 +70,37 @@ Run it by hand after editing an assumption.
 chart can state what it is conditional on). Every id carries `scenario` so no reader can
 mistake these for observations. The Gulf total is NaN wherever any producer is unknown —
 summing around a gap would publish a number that looks regional and is not.
+
+## The baselines, checked against real production (2026-10-10)
+
+The `disrupted_mbd` column is not a guess. Checked against OPEC's own per-country
+secondary-source production, restored into the lake from the June 2026 MOMR PDF
+(`python -m pipelines.opec_momr.pull_doc_crude <pdf>` — 176 rows, 22 countries; that
+pipeline has no automated download, see `pipelines/opec_momr/CLAUDE.md`).
+
+Observed production, mb/d, against the workbook's 2Q 2026 assumptions:
+
+| Producer | Undisrupted | Disrupted | MOMR Mar | Apr | May | May − disrupted |
+|---|---|---|---|---|---|---|
+| Saudi Arabia | 10.00 | 7.30 | 7.626 | 6.755 | 6.912 | **−0.388** |
+| Iraq | 4.30 | 1.60 | 1.679 | 1.406 | 1.481 | −0.119 |
+| UAE | 3.60 | 2.10 | 1.892 | 2.023 | 2.110 | **+0.010** |
+| Kuwait | 2.60 | 0.80 | 1.160 | 0.556 | 0.573 | −0.227 |
+| Iran | 3.40 | 3.10 | 3.054 | 2.875 | 2.330 | **−0.770** |
+
+Two readings, both worth keeping:
+
+**The disrupted floors are real, not invented.** Observed May production sits near the
+workbook's disrupted column for every producer, and the UAE matches it to 0.01 mb/d. The
+undisrupted column is the counterfactual, and comparing actuals against *it* — as a first
+pass of this check wrongly did — produces nonsense gaps of up to 354%.
+
+**But every floor is optimistic against the latest observed month.** All five actuals come
+in at or below their assumed disrupted rate, Iran by 0.77 mb/d and Saudi Arabia by 0.39. A
+scenario anchored on these floors therefore starts from a slightly better position than the
+market was actually in as of May 2026. Recorded, not adjusted: the baselines are the
+workbook's, and changing them silently would make this port something other than a port.
+
+The three-month trajectory also shows the disruption still deepening through the window
+(Saudi 7.626 → 6.755 → 6.912; Kuwait 1.160 → 0.556 → 0.573), which is worth knowing before
+treating any single month as the floor.
