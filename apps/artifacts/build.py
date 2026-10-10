@@ -48,7 +48,7 @@ class SecretLeakError(RuntimeError):
 
 
 class NoSecretsToCheckError(RuntimeError):
-    """No `.env` was found, so the leak check would have compared against nothing."""
+    """No credential was found, so the leak check would have compared against nothing."""
 
 
 class PageTooLargeError(RuntimeError):
@@ -142,10 +142,14 @@ def render(page: str, payload: dict[str, Any]) -> str:
     )
 
 
-def env_secrets(paths: list[Path]) -> dict[str, bytes]:
-    """`.env` values long enough to be credentials, keyed by variable name. The values
-    are only ever compared against output bytes -- never printed or logged."""
-    found: dict[str, bytes] = {}
+def env_secrets(paths: list[Path]) -> dict[str, set[bytes]]:
+    """Every credential-length value a variable holds, across each `.env` and the shell.
+
+    All of a name's values are kept, not one: the shell overrides `.env` for
+    `core.settings`, so the live credential may be the exported one while `.env` still
+    holds a rotated-out value, and two `.env` files may disagree. Values are only ever
+    compared against output bytes -- never printed or logged."""
+    found: dict[str, set[bytes]] = {}
     for path in paths:
         if not path.is_file():
             continue
@@ -153,14 +157,14 @@ def env_secrets(paths: list[Path]) -> dict[str, bytes]:
             name, sep, value = line.partition("=")
             value = value.strip().strip("'\"")
             if sep and not name.lstrip().startswith("#") and len(value) >= MIN_SECRET_LENGTH:
-                found[name.strip()] = value.encode("utf-8")
+                found.setdefault(name.strip(), set()).add(value.encode("utf-8"))
     for name, value in os.environ.items():
         # Credentials exported into the shell rather than written to .env.
         if (
             any(part in name.upper() for part in SECRET_NAME_PARTS)
             and len(value) >= MIN_SECRET_LENGTH
         ):
-            found.setdefault(name, value.encode("utf-8"))
+            found.setdefault(name, set()).add(value.encode("utf-8"))
     return found
 
 
@@ -171,10 +175,14 @@ def _contents(path: Path) -> list[bytes]:
     return [path.read_bytes()]
 
 
-def assert_no_secrets(outputs: list[Path], secrets: dict[str, bytes]) -> None:
+def assert_no_secrets(outputs: list[Path], secrets: dict[str, set[bytes]]) -> None:
     for path in outputs:
         blobs = _contents(path)
-        leaked = sorted(n for n, v in secrets.items() if any(v in b for b in blobs))
+        leaked = sorted(
+            name
+            for name, values in secrets.items()
+            if any(value in blob for value in values for blob in blobs)
+        )
         if leaked:
             path.unlink()
             raise SecretLeakError(f"{path.name} contained the value of {leaked}; file deleted")
@@ -220,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--allow-missing-env",
         action="store_true",
-        help="build even when no .env exists to check outputs against (CI, keyless checkouts)",
+        help="build even when no credential is found to check outputs against (CI)",
     )
     args = parser.parse_args(argv)
 
@@ -255,15 +263,18 @@ def main(argv: list[str] | None = None) -> int:
         outputs.append(office.write_workbook(book, built["dashboard"]["meta"], EXPORTS))
         outputs.append(office.write_deck(built["briefing"], EXPORTS))
 
-    env_files = [Path(".env"), lake.parent.parent / ".env"]
-    if not any(p.is_file() for p in env_files) and not args.allow_missing_env:
+    # Judged on what there is to compare against, not on a file merely existing: an
+    # empty or all-placeholder .env would otherwise wave every output through.
+    secrets = env_secrets([Path(".env"), lake.parent.parent / ".env"])
+    if not secrets and not args.allow_missing_env:
         for path in outputs:
             path.unlink(missing_ok=True)
         raise NoSecretsToCheckError(
-            "no .env found beside the working directory or the lake; outputs deleted. "
-            "Pass --allow-missing-env if this checkout genuinely holds no credentials."
+            "no credential found in .env (working directory or beside the lake) or the "
+            "shell, so the leak check had nothing to compare; outputs deleted. Pass "
+            "--allow-missing-env if this checkout genuinely holds no credentials."
         )
-    assert_no_secrets(outputs, env_secrets(env_files))
+    assert_no_secrets(outputs, secrets)
 
     changes = write_manifest(built, book)
     print(f"{len(book.exhibits)} exhibits, {built['dashboard']['meta']['stale']} stale", flush=True)
