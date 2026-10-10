@@ -284,6 +284,10 @@ def _bars(e: Exhibit) -> go.Figure:
 _BUILDERS: Final = {"seasonal": _seasonal, "dual": _dual, "lines": _lines, "bars": _bars}
 
 
-def figure(exhibit: Exhibit) -> go.Figure:
-    """The chart for one exhibit dict from `exhibits.build`."""
-    return _BUILDERS[exhibit["kind"]](exhibit)
+def figure(exhibit: Exhibit, indicators: bool = False) -> go.Figure:
+    """The chart for one exhibit dict from `exhibits.build`.
+
+    The moving averages are optional and drawn only when `indicators` is set, as on the
+    published pages; the five-year average is a reference level and always drawn."""
+    kept = [o for o in exhibit.get("overlays", []) if indicators or o["style"] == "avg5"]
+    return _BUILDERS[exhibit["kind"]]({**exhibit, "overlays": kept})

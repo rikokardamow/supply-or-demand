@@ -57,8 +57,29 @@ const KD = (() => {
     ma20: { color: C.maShort, dash: "dot" }, ma100: { color: C.maMid, dash: "dash" },
     ma200: { color: C.maLong, dash: "longdash" }, avg5: { color: C.orange, dash: "dashdot" },
   };
+  /* The moving averages are optional and off until the reader asks for them; the
+     five-year average is a reference level and always drawn. The choice is remembered
+     per browser where storage is available. */
+  let indicators = false;
+  try { indicators = localStorage.getItem("kd-indicators") === "1"; } catch (error) { /* no storage */ }
+
+  function indicatorSwitch(redraw) {
+    const label = el("label", "switch");
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.id = "indicators";
+    box.checked = indicators;
+    box.addEventListener("change", () => {
+      indicators = box.checked;
+      try { localStorage.setItem("kd-indicators", indicators ? "1" : "0"); } catch (error) { /* no storage */ }
+      redraw();
+    });
+    label.append(box, "Moving averages (MA20, MA100, MA200)");
+    return label;
+  }
+
   function overlays(e) {
-    return (e.overlays || []).map((o) => ({
+    return (e.overlays || []).filter((o) => indicators || o.style === "avg5").map((o) => ({
       x: o.x, y: o.y, mode: "lines", name: esc(o.name), connectgaps: true,
       line: { color: OVERLAY[o.style].color, width: 1.2, dash: OVERLAY[o.style].dash },
       hovertemplate: `%{y:${fmt(o.digits)}}`,
@@ -186,5 +207,5 @@ const KD = (() => {
     });
   }
 
-  return { C, FONT, CONFIG, el, esc, layout, axisTitle, render, card, metaLine };
+  return { C, FONT, CONFIG, el, esc, layout, axisTitle, render, card, metaLine, indicatorSwitch };
 })();

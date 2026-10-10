@@ -20,6 +20,11 @@
   const D = JSON.parse(document.getElementById("payload").textContent);
   const { el } = KD;
   KD.metaLine(document.getElementById("meta"), D.meta);
+  document.querySelector(".masthead").append(KD.indicatorSwitch(() => {
+    document.querySelectorAll(".exhibit").forEach((box) => {
+      if (box.draw && box.offsetParent !== null) box.draw();
+    });
+  }));
 
   /* A titled block: heading over a hairline rule, then its content. */
   function block(title) {

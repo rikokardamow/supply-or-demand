@@ -53,7 +53,7 @@ def _seasonal() -> dict[str, Any]:
 
 
 def test_seasonal_draws_the_current_year_last_in_navy() -> None:
-    fig = figures.figure(_seasonal())
+    fig = figures.figure(_seasonal(), indicators=True)
     assert [t.name for t in fig.data[1:]] == [
         "5-year range",
         "Median",
@@ -133,7 +133,22 @@ def test_overlays_sit_behind_the_lead_series_on_its_axis() -> None:
             {**_track("5-year average", "USD/bbl", points=2), "style": "avg5"},
         ],
     }
-    fig = figures.figure(exhibit)
+    fig = figures.figure(exhibit, indicators=True)
     assert [t.name for t in fig.data] == ["MA200", "5-year average", "Brent", "Spread"]
     assert fig.data[0].yaxis is None and fig.data[0].line.width == 1.2
     assert fig.data[1].line.color == ORANGE
+
+
+def test_moving_averages_are_off_until_asked_for_but_the_five_year_average_stays() -> None:
+    exhibit = {
+        "kind": "lines",
+        "annotations": [],
+        "series": [_track("US 3-2-1", "USD/bbl")],
+        "overlays": [
+            {**_track("MA20", "USD/bbl"), "style": "ma20"},
+            {**_track("5-year average", "USD/bbl", points=2), "style": "avg5"},
+        ],
+    }
+    assert [t.name for t in figures.figure(exhibit).data] == ["5-year average", "US 3-2-1"]
+    assert "MA20" not in [t.name for t in figures.figure(_seasonal()).data]
+    assert len(exhibit["overlays"]) == 2  # the spec itself is left untouched

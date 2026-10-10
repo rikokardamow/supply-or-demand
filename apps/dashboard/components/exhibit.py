@@ -58,8 +58,10 @@ def tab_groups(specs: list[dict[str, Any]]) -> list[tuple[str, list[dict[str, An
     return [(label, members) for label, members in groups if members]
 
 
-def exhibit(spec: dict[str, Any]) -> None:
-    """One exhibit: heading, stale flag, takeaway, chart, source line."""
+def exhibit(spec: dict[str, Any], indicators: bool = False) -> None:
+    """One exhibit: heading, stale flag, takeaway, chart, source line.
+
+    `indicators` adds the optional MA20, MA100 and MA200 lines to the chart."""
     with section(spec["title"]):
         if spec["gap"]:
             st.markdown(
@@ -77,7 +79,7 @@ def exhibit(spec: dict[str, Any]) -> None:
             unsafe_allow_html=True,
         )
         st.plotly_chart(
-            figures.figure(spec),
+            figures.figure(spec, indicators=indicators),
             key=f"exhibit-{spec['id']}",
             config={"displayModeBar": False},
         )
