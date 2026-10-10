@@ -1,7 +1,7 @@
 # Mapping — `oil_demand.xlsx` onto this repo's connectors
 
 **Date:** 2026-10-10
-**Status:** analysis complete; routes confirmed live 2026-10-10 (see that section); no plan yet
+**Status:** analysis complete; routes confirmed live 2026-10-10 (see that section); plan in `docs/superpowers/plans/2026-10-10-oil-demand-elasticity.md`
 **Source workbook:** `~/Desktop/skill-pdfs/oil_demand.xlsx` (Bloomberg Intelligence, 12 sheets)
 **Related:** `specs/06_opec-supply.md`, `specs/33_frontend-nextjs.md` (33.01 is the Hormuz screen)
 
@@ -179,6 +179,23 @@ Consequences for the model:
 - **A euro-area quarter is only as complete as its slowest member.** The latest month is
   missing three members; summing the seventeen would understate demand and read as a fall.
   An aggregate with a missing member is no observation, not a smaller one.
+- **The euro-area basket is nineteen members, without Malta.** Measured over the whole
+  2012-2026 panel after the samples above: Malta is missing 2015-09 to 2016-01, 2017-05 and
+  2026-07, and is 0.29 % of the twenty-member sum. With it, the completeness rule costs
+  eight quarters of regression panel (46 of 54); without it, none.
+
+First fit on the real panel, 2013-Q1 to 2026-Q2, year-on-year percentage change on both
+sides. These are this repo's estimates on public data, not workbook figures.
+
+| Block | n | Slope, full panel | R-squared | Slope, ex 2020-2021 | R-squared |
+|---|---|---|---|---|---|
+| US | 54 | 2.43 | 0.88 | 1.70 | 0.26 |
+| China | 54 | 0.52 (p = 0.17) | 0.04 | 0.97 (p = 0.20) | 0.04 |
+| Euro area ex Malta | 54 | 1.40 | 0.78 | 1.73 | 0.48 |
+
+The spec's fourth observation is borne out: most of the US fit is the pandemic. And China
+has no statistically significant elasticity on public data in either panel, which is
+stronger than "the weakest link" and has to be said on the page.
 - **The fitted coefficients will not equal the workbook's**, and are not meant to. Different
   demand source, different GDP source, and the workbook's USA block regresses on a level
   change in US$bn where this would use a percentage. Shown side by side they are a
