@@ -23,7 +23,9 @@ def test_manual_csv_client_reads_the_synthetic_fixture() -> None:
     assert z2026.contract_unit == "1000 bbl"
     assert z2026.currency == "USD"
 
-    settles = client.get_settles("cl", ["z2026", "f2027"], date(2026, 8, 1), date(2026, 8, 3))
+    settles = client.get_settles(
+        "cl", ["z2026", "f2027"], date(2026, 8, 1), date(2026, 8, 3)
+    )
     assert len(settles) == 6
     assert set(settles.columns) == {"date", "root", "contract", "settle", "oi", "volume"}
     z2026_settles = settles[settles["contract"] == "z2026"].sort_values("date")
@@ -142,11 +144,7 @@ class _FakeIB:
         self.disconnected = False
 
     def connect(
-        self,
-        host: str,
-        port: int,
-        clientId: int,
-        timeout: float,  # noqa: N803
+        self, host: str, port: int, clientId: int, timeout: float  # noqa: N803
     ) -> None:
         self.connected = True
 

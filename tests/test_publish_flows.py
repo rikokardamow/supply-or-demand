@@ -56,7 +56,9 @@ def test_to_serving_flows_returns_the_serving_schema_columns() -> None:
 
 
 def test_to_serving_flows_assigns_each_source_its_own_period_in_one_frame() -> None:
-    mixed = pd.concat([_flows("eia", "pipeline"), _flows("entsog", "pipeline")], ignore_index=True)
+    mixed = pd.concat(
+        [_flows("eia", "pipeline"), _flows("entsog", "pipeline")], ignore_index=True
+    )
 
     rows = to_serving_flows(mixed)
 

@@ -27,14 +27,7 @@ def test_fetch_reddit_returns_typed_posts_with_the_query_attached() -> None:
     assert posts, "cassette should carry at least one entry"
     first = posts[0]
     assert set(first) == {
-        "post_id",
-        "url",
-        "title",
-        "ts",
-        "platform",
-        "query",
-        "score",
-        "num_comments",
+        "post_id", "url", "title", "ts", "platform", "query", "score", "num_comments"
     }
     assert first["platform"] == "reddit"
     assert first["query"] == "Henry Hub"

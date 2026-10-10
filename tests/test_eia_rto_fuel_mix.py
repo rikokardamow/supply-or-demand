@@ -67,7 +67,9 @@ def test_pull_fuel_mix_requests_the_bounded_window_and_correct_facets(
         captured.update(kwargs)
         return pd.DataFrame()
 
-    monkeypatch.setattr(pull_rto_fuel_mix.EIAClient, "get_facet_series", _fake_get_facet_series)
+    monkeypatch.setattr(
+        pull_rto_fuel_mix.EIAClient, "get_facet_series", _fake_get_facet_series
+    )
 
     pull_rto_fuel_mix.pull_fuel_mix(pull_rto_fuel_mix.EIAClient(), days=3)
 

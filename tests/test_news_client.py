@@ -13,6 +13,8 @@ def test_search_returns_real_tagged_rows_for_a_crude_outage_query() -> None:
         maxrecords=10,
     )
 
-    assert {"url", "title", "seendate", "domain", "language", "sourcecountry"}.issubset(df.columns)
+    assert {"url", "title", "seendate", "domain", "language", "sourcecountry"}.issubset(
+        df.columns
+    )
     assert not df.empty
     assert pd.api.types.is_datetime64_any_dtype(df["seendate"])

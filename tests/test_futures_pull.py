@@ -17,14 +17,9 @@ def test_trailing_window_covers_exactly_n_calendar_days_including_today() -> Non
 
     assert start == date(2026, 8, 31)  # Aug 31 .. Sep 4 inclusive = 5 days, not 6
 
-
 _CONTRACT = ContractMeta(
-    root="cl",
-    contract="z26",
-    expiry=date(2026, 11, 20),
-    tick_size=0.01,
-    contract_unit="1000 bbl",
-    currency="USD",
+    root="cl", contract="z26", expiry=date(2026, 11, 20),
+    tick_size=0.01, contract_unit="1000 bbl", currency="USD",
 )
 
 
@@ -46,7 +41,9 @@ class _FakeClient:
     def list_contracts(self, root: str) -> list[ContractMeta]:
         return [c for c in self._contracts if c.root == root]
 
-    def get_settles(self, root: str, contracts: list[str], start: date, end: date) -> pd.DataFrame:
+    def get_settles(
+        self, root: str, contracts: list[str], start: date, end: date
+    ) -> pd.DataFrame:
         return self._settles[self._settles["root"] == root].reset_index(drop=True)
 
 

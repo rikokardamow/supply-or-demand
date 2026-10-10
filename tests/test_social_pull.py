@@ -10,14 +10,8 @@ from pipelines.social.client import Post
 
 def _post(title: str, url: str, platform: str, query: str) -> Post:
     return Post(
-        post_id=url,
-        url=url,
-        title=title,
-        ts=pd.Timestamp("2026-09-01T10:00Z"),
-        platform=platform,
-        query=query,
-        score=None,
-        num_comments=None,
+        post_id=url, url=url, title=title, ts=pd.Timestamp("2026-09-01T10:00Z"),
+        platform=platform, query=query, score=None, num_comments=None,
     )
 
 
@@ -32,8 +26,7 @@ def test_pull_ticker_one_platform_failing_never_aborts_the_other(
         raise requests.exceptions.ConnectionError("stocktwits down")
 
     monkeypatch.setattr(
-        pull_social,
-        "fetch_reddit",
+        pull_social, "fetch_reddit",
         lambda query, **kw: [_post("great news", "https://x.test/1", "reddit", query)],
     )
     monkeypatch.setattr(pull_social, "fetch_stocktwits", boom)
@@ -77,8 +70,7 @@ def test_pull_polymarket_tag_uses_the_tag_slug_as_subject(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        pull_social,
-        "fetch_polymarket",
+        pull_social, "fetch_polymarket",
         lambda tag_slug, **kw: [
             _post("Will there be a grid emergency?", "https://pm.test/1", "polymarket", tag_slug)
         ],
@@ -117,13 +109,9 @@ def test_main_raises_when_every_fetch_fails(monkeypatch: pytest.MonkeyPatch) -> 
     # Scheduler would show green for a run that ingested nothing. Now backed by
     # core.failures: every _safe_fetch failure is record_failure'd, and main's
     # failure_scope raises PartialFailureError once at the end if any were.
-    monkeypatch.setattr(
-        pull_social,
-        "TOPIC_QUERIES",
-        [
-            {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
-        ],
-    )
+    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
+        {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
+    ])
     monkeypatch.setattr(pull_social, "TICKER_QUERIES", ["XOM"])
     monkeypatch.setattr(pull_social, "POLYMARKET_TAGS", ["energy"])
 
@@ -146,13 +134,9 @@ def test_main_raises_on_any_failure_even_if_other_data_was_written(
     # where other, unrelated fetches succeeded and real data got written. This
     # is stricter than "raise only if nothing was written" -- and deliberately
     # so, matching every other adopted pipeline.
-    monkeypatch.setattr(
-        pull_social,
-        "TOPIC_QUERIES",
-        [
-            {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
-        ],
-    )
+    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
+        {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
+    ])
     monkeypatch.setattr(pull_social, "TICKER_QUERIES", ["XOM"])
     monkeypatch.setattr(pull_social, "POLYMARKET_TAGS", [])
 
@@ -170,8 +154,7 @@ def test_main_raises_on_any_failure_even_if_other_data_was_written(
 
     written_ts_long = []
     monkeypatch.setattr(
-        pull_social,
-        "write_ts_long",
+        pull_social, "write_ts_long",
         lambda df, source: written_ts_long.append((source, df)),
     )
     monkeypatch.setattr(pull_social, "write_events", lambda df, source: None)
@@ -189,13 +172,9 @@ def test_main_does_not_raise_on_a_genuinely_quiet_run_with_no_failures(
     # Reddit's confirmed ~1-request/60s pace makes an all-empty-but-no-errors
     # run a real outcome (see pipelines/social/NOTES.md), not a bug -- this
     # must NOT be indistinguishable from a total failure by raising.
-    monkeypatch.setattr(
-        pull_social,
-        "TOPIC_QUERIES",
-        [
-            {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
-        ],
-    )
+    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
+        {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
+    ])
     monkeypatch.setattr(pull_social, "TICKER_QUERIES", ["XOM"])
     monkeypatch.setattr(pull_social, "POLYMARKET_TAGS", ["energy"])
 
@@ -209,13 +188,9 @@ def test_main_does_not_raise_on_a_genuinely_quiet_run_with_no_failures(
 def test_main_writes_per_source_and_dedupes_events_when_posts_are_found(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(
-        pull_social,
-        "TOPIC_QUERIES",
-        [
-            {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
-        ],
-    )
+    monkeypatch.setattr(pull_social, "TOPIC_QUERIES", [
+        {"slug": "henry_hub", "query": "Henry Hub", "commodity": "gas", "theme": "gas_lng"},
+    ])
     monkeypatch.setattr(pull_social, "TICKER_QUERIES", ["XOM"])
     monkeypatch.setattr(pull_social, "POLYMARKET_TAGS", ["energy"])
 
@@ -237,13 +212,11 @@ def test_main_writes_per_source_and_dedupes_events_when_posts_are_found(
     written_ts_long = []
     written_events = []
     monkeypatch.setattr(
-        pull_social,
-        "write_ts_long",
+        pull_social, "write_ts_long",
         lambda df, source: written_ts_long.append((source, df)),
     )
     monkeypatch.setattr(
-        pull_social,
-        "write_events",
+        pull_social, "write_events",
         lambda df, source: written_events.append((source, df)),
     )
 

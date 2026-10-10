@@ -37,7 +37,9 @@ def _isolated_lake(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
 
 
-def test_read_ts_long_is_not_corrupted_by_an_int64_typed_value_column_in_another_source() -> None:
+def test_read_ts_long_is_not_corrupted_by_an_int64_typed_value_column_in_another_source() -> (
+    None
+):
     """Regression test for a real, confirmed-live incident: `pipelines/opec_momr`'s
     Baker Hughes rig counts are genuinely whole numbers, and a DataFrame column of
     only whole-number floats can end up written with a physically int64-typed
