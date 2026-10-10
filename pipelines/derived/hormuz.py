@@ -29,6 +29,13 @@ BASELINES_DIR = Path("data/manual/hormuz")
 
 UNIT_MBD = "mb/d"
 
+# `open_share` is a fraction of normal Hormuz flows, 0.15 ... 1.0 -- the very number the
+# scenario formula multiplies by. It was written as "%", so any exhibit honouring the unit
+# rendered a 90% reopening as "0.9%". Fixed on the unit side, not by rescaling the values
+# to 0-100: the published series must stay the quantity the maths actually used, and
+# `derived.cushing.util` already establishes "ratio" as this lake's unit for a 0-1 share.
+UNIT_RATIO = "ratio"
+
 
 def _slug(producer: str) -> str:
     return producer.strip().lower().replace(" ", "_")
@@ -126,7 +133,7 @@ def build_scenario_rows(
                 "series_id": "derived.hormuz.scenario.open_share",
                 "ts": [quarter],
                 "value": [float(open_share)],
-                "unit": "%",
+                "unit": UNIT_RATIO,
             }
         )
         frames.extend([per_producer, gulf_total, assumed_share])

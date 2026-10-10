@@ -57,7 +57,20 @@ def main() -> None:
                 for contract, counts in rejections.items()
                 if any(counts.values())
             }
-            print(f"{path.name}: wrote {len(rows)} rows across {len(meta)} contracts", flush=True)
+            # `meta` is the whole ladder, written or not, so it overstates coverage: the
+            # real 2026-10-10 run printed "across 36 contracts" for captures that wrote 35
+            # and 34. Count the contracts actually present in the rows instead, and state
+            # the ladder, the skips (ragged arrays) and the contracts whose every bar
+            # failed the liquidity gate as the three separate things they are.
+            contracts_written = rows["series_id"].str.split(".").str[2] if not rows.empty else None
+            written = 0 if contracts_written is None else int(contracts_written.nunique())
+            no_bars_kept = len(meta) - written - len(skipped)
+            print(
+                f"{path.name}: wrote {len(rows)} rows across {written} contract(s) -- "
+                f"{len(meta)} in the ladder, {len(skipped)} skipped, "
+                f"{no_bars_kept} with no bars kept",
+                flush=True,
+            )
             for contract, counts in sorted(refused.items()):
                 print(f"  {contract}: refused {counts}", flush=True)
             # A ragged/unparseable contract is a recorded skip, never a reason to lose the

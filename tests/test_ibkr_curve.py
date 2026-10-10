@@ -461,17 +461,48 @@ def test_the_real_fixtures_mid_dated_contract_demonstrates_left_trim() -> None:
 
 
 def test_parsing_the_fixture_twice_is_idempotent(tmp_path, monkeypatch) -> None:
+    """Row count alone cannot see this. `core.storage` de-dups on `["series_id", "ts"]`
+    only and keeps the LAST row, so a `revision_date` of `pd.Timestamp.now()` on each
+    pass would leave the count identical while quietly restamping every row -- the exact
+    mutation this test used to pass under. Idempotent means the lake's *content* is
+    unchanged by a re-ingest, `revision_date` included, which is only true because
+    `parse_envelope` takes it from the capture's own `captured_at`."""
     from core import storage
 
     monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
     envelope = load_envelope(_FIXTURE)
+    captured_at = pd.Timestamp(str(envelope["captured_at"])).tz_localize(None)
 
+    passes = []
     for _ in range(2):
         rows, _, _, _ = parse_envelope(envelope, specs=load_contract_specs())
         storage.write_ts_long(rows, source="ibkr")
+        passes.append(
+            storage.read_ts_long().sort_values(["series_id", "ts"]).reset_index(drop=True)
+        )
 
     first_pass = len(parse_envelope(envelope, specs=load_contract_specs())[0])
-    assert len(storage.read_ts_long()) == first_pass
+    assert len(passes[0]) == first_pass
+    assert len(passes[1]) == first_pass
+    assert set(passes[1]["revision_date"]) == {captured_at}
+    pd.testing.assert_frame_equal(passes[0], passes[1])
+
+
+def test_revision_date_is_the_captures_own_captured_at(tmp_path, monkeypatch) -> None:
+    """The property the idempotence test above rests on, pinned on its own against the
+    real fixture: nothing in the write path may stamp the ingest's wall clock."""
+    from core import storage
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+    envelope = load_envelope(_FIXTURE)
+    rows, _, _, _ = parse_envelope(envelope, specs=load_contract_specs())
+
+    expected = pd.Timestamp(str(envelope["captured_at"])).tz_localize(None)
+    assert expected == pd.Timestamp("2026-10-10 12:22:00")  # the fixture's own capture
+    assert set(rows["revision_date"]) == {expected}
+
+    storage.write_ts_long(rows, source="ibkr")
+    assert set(storage.read_ts_long()["revision_date"]) == {expected}
 
 
 def test_main_writes_rows_and_reports_rejections_per_contract(
@@ -518,6 +549,13 @@ def test_main_writes_rows_and_reports_rejections_per_contract(
     assert "cl-20261010.json: wrote" in out
     assert "f2027: refused {'stale_print': 1}" in out
     assert not storage.read_ts_long().empty
+    # The count must be the contracts actually WRITTEN, not the ladder: this capture
+    # ladders two contracts and writes one, f2027's only bar being a stale print. The
+    # real run printed "across 36 contracts" for captures that wrote 35 and 34.
+    assert "across 1 contract" in out
+    assert "2 in the ladder" in out
+    assert "0 skipped" in out
+    assert "1 with no bars kept" in out
 
 
 def test_main_continues_past_a_malformed_capture_but_still_exits_non_zero(

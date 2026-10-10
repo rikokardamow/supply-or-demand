@@ -24,7 +24,7 @@ difference 2.61, only 0.3% agreeing to within a cent -- these are not the same
 instrument.
 
 `valid_rank_window` below is the fix: ranks are only trustworthy from
-`min(expiries) - median_gap_between_consecutive_expiries` onward, because before that
+`min(expiries) - smallest_gap_between_consecutive_expiries` onward, because before that
 date a contract nearer than anything the panel holds would have been live and is the
 one actually missing. `pull_root` suppresses every rank-based write (`s12`/`s13`/`s16`/
 `s1_12`/`s23`/`cv123`/`regime`) before that date and prints the window plus how many
@@ -66,18 +66,21 @@ from pipelines.futures.series_meta import read_series_meta
 _SPREAD_COLUMNS = ("s12", "s13", "s16", "s1_12", "s23")
 
 
-_METRICS_BY_PREFERENCE: Final[tuple[str, ...]] = ("settle", "close")
-"""Settle first on a tie: an exchange settlement is the better number where one exists in
-comparable volume. `.close` is last-trade data, from sources like the IBKR MCP connector --
-see pipelines/futures/CLAUDE.md for the measured difference between the two.
+_METRIC_SUFFIXES: Final[tuple[str, ...]] = ("settle", "close")
+"""The metric suffixes a futures price series can carry in this lake -- the two series ids
+`contract_panel_for` reads per contract (`fut.<root>.<contract>.settle` and `.close`).
 
-Selection is NOT "settle if the contract has any settle rows at all" -- that wording was
-tried and broken by the real lake. `lco` holds a settle row for all ~89 contracts, but
-exactly ONE row each (2026-09-04, the Barchart reconstruction, source="manual"); IBKR's
-`contract_code_from_month` emits the identical contract-code format, so "any settle rows"
-would resolve every lco contract to that single stale settle and silently discard the
-whole IBKR daily close history, pinning the lco curve to one date forever. The rule is
-instead: per contract, whichever metric has MORE rows wins; ties go to settle."""
+Order is the tie-break order, and nothing more: settle first, because an exchange
+settlement is the better number where one exists in comparable volume. `.close` is
+last-trade data, from sources like the IBKR MCP connector -- see
+pipelines/futures/CLAUDE.md for the measured difference between the two.
+
+This was called `_METRICS_BY_PREFERENCE`, and its docstring described a preference order
+the code had stopped implementing: the selection sat in a hardcoded
+`row["settle"] >= row["close"]`, which would have raised KeyError had an entry been
+removed here. `contract_panel_for` now drives the comparison off this tuple (`idxmax`
+over the row-count columns, in this order), so the name, the docstring and the code say
+the same thing and adding or removing a suffix needs no second edit."""
 
 
 @overload
@@ -96,10 +99,18 @@ def contract_panel_for(
     pipeline's transform helper" precedent.
 
     Reads both `.settle` and `.close` and picks ONE metric per contract -- whichever has
-    more rows for that contract, ties going to settle (see `_METRICS_BY_PREFERENCE`'s own
-    docstring for why "any settle rows" is wrong). Per contract, never per row: a
-    settlement and a last trade are different quantities, and blending them inside one
-    column would leave every spread downstream measuring something nobody chose.
+    more rows for that contract, ties going to settle (`_METRIC_SUFFIXES` is both the list
+    of suffixes read and the tie-break order). Per contract, never per row: a settlement
+    and a last trade are different quantities, and blending them inside one column would
+    leave every spread downstream measuring something nobody chose.
+
+    Selection is deliberately NOT "settle if the contract has any settle rows at all" --
+    that wording was tried and broken by the real lake. `lco` holds a settle row for all
+    ~89 contracts, but exactly ONE row each (2026-09-04, the Barchart reconstruction,
+    source="manual"); IBKR's `contract_code_from_month` emits the identical contract-code
+    format, so "any settle rows" would resolve every lco contract to that single stale
+    settle and silently discard the whole IBKR daily close history, pinning the lco curve
+    to one date forever.
     """
     root_meta = meta[meta["root"] == root]
     empty: tuple[pd.DataFrame, pd.Series] = (
@@ -113,7 +124,7 @@ def contract_panel_for(
     series_ids = [
         f"fut.{root}.{contract}.{metric}"
         for contract in contracts
-        for metric in _METRICS_BY_PREFERENCE
+        for metric in _METRIC_SUFFIXES
     ]
     long_df = read_ts_long(series_ids=series_ids)
     if long_df.empty:
@@ -125,11 +136,13 @@ def contract_panel_for(
     long_df["metric"] = parts.str[3]
 
     # Row counts per (contract, metric) -- the selection is by volume, not mere presence.
+    # `idxmax` returns the FIRST maximum and the columns are in _METRIC_SUFFIXES order, so
+    # "more rows wins, ties go to settle" falls out of the tuple itself rather than being
+    # restated as a hardcoded comparison between two named metrics.
     counts = long_df.groupby(["contract", "metric"]).size().unstack(fill_value=0)
-    counts = counts.reindex(columns=list(_METRICS_BY_PREFERENCE), fill_value=0)
+    counts = counts.reindex(columns=list(_METRIC_SUFFIXES), fill_value=0)
     chosen: dict[str, str] = {
-        str(contract): ("settle" if row["settle"] >= row["close"] else "close")
-        for contract, row in counts.iterrows()
+        str(contract): str(row.idxmax()) for contract, row in counts.iterrows()
     }
     picked = long_df[
         [chosen.get(c) == m for c, m in zip(long_df["contract"], long_df["metric"], strict=True)]
@@ -151,16 +164,26 @@ def valid_rank_window(expiries: pd.Series) -> pd.Timestamp:
     an IBKR-captured panel needs this at all.
 
     `expiries` sorted ascending gives the gaps between consecutive contracts actually
-    present in the panel; before `min(expiries) - median(gaps)`, a contract that has
-    since expired and was never captured would have been nearer than the panel's own
-    earliest-expiry contract, so whatever the panel calls f01 on that date is not
-    really the front month. Needs at least two contracts to have a gap to measure from
-    at all -- callers (`pull_root`) already require that before computing a panel."""
+    present in the panel; before `min(expiries) - min(gaps)`, a contract that has since
+    expired and was never captured would have been nearer than the panel's own
+    earliest-expiry contract, so whatever the panel calls f01 on that date is not really
+    the front month. Needs at least two contracts to have a gap to measure from at all --
+    callers (`pull_root`) already require that before computing a panel.
+
+    **The smallest gap, not the median.** The median was tried first and is unsound for
+    any panel that is not evenly spaced: a ladder that is monthly at the front and annual
+    behind it (perfectly ordinary once a capture reaches far out, and the direction cl's
+    own real panel already leans -- its gaps run min 28 / median 31 / max 63 days) has a
+    median gap of roughly a year, which would open the window a year before the panel's
+    earliest expiry and declare nearly twelve months of mislabelled f01 rows trustworthy.
+    The smallest observed gap is the tightest spacing the panel itself evidences, so it
+    errs in the safe direction: the window can only be too narrow, never too wide, and a
+    narrow window suppresses real rows rather than publishing wrong ones."""
     if len(expiries) < 2:
         raise ValueError("valid_rank_window needs at least two contracts to measure a gap")
     sorted_expiries = pd.Series(pd.to_datetime(expiries.to_numpy())).sort_values()
-    median_gap = sorted_expiries.diff().dropna().median()
-    return pd.Timestamp(sorted_expiries.iloc[0]) - median_gap
+    smallest_gap = sorted_expiries.diff().dropna().min()
+    return pd.Timestamp(sorted_expiries.iloc[0]) - smallest_gap
 
 
 def _suppress_before_window(
@@ -172,6 +195,30 @@ def _suppress_before_window(
     in_window = series.index >= window_start
     suppressed = int((~in_window & series.notna()).sum())
     return series.where(in_window), suppressed
+
+
+def _determined_regime_codes(regime: pd.DataFrame, s12: pd.Series) -> pd.Series:
+    """`REGIME_CODES` values for the rows whose state its inputs actually determine, NaN
+    for the rest -- so `_write_derived`'s own `dropna()` simply never writes them.
+
+    `core.curve.curve_regime` classifies with `np.select(..., default="flat")`. Each of
+    the six named states comes from a condition over `s12`/`cv`/`s1_12`, and a comparison
+    against NaN is False, so a named state can only fire on inputs that are really there.
+    The default cannot: a row reaches `"flat"` either on the genuine `s12 == 0` knife edge
+    the state was added for, or because nothing could be evaluated at all -- `s12` absent,
+    or `cv` absent on a panel with fewer than three ranks. The second kind is not a flat
+    curve; it is an unknown one, and publishing it as code 6.0 states a definite market
+    structure on a date with no curve to measure. It is also invisible to every NaN guard
+    downstream, because 6.0 is an ordinary number: the real lake holds 8 such rows for
+    `lco` on dates where `derived.spread.lco.s12` and `derived.curve.lco.cv123` have no
+    rows at all.
+
+    Masking here rather than in `core.curve.curve_regime` keeps that module pure and
+    unchanged -- which state a classifier returns is its own business; whether a row is
+    fit to write into the lake is this package's (see pipelines/derived/CLAUDE.md)."""
+    codes = regime["state"].map(REGIME_CODES).astype(float)
+    determined = regime["state"].ne("flat") | s12.eq(0.0)
+    return codes.where(determined)
 
 
 def _write_derived(
@@ -218,7 +265,9 @@ def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
     # history below, unaffected by any of this. See the module docstring for why this
     # window exists at all.
     window_start = valid_rank_window(expiries)
-    regime_codes = regime["state"].map(REGIME_CODES).astype(float)
+    # Before the window is applied: a regime row whose own inputs are absent is dropped
+    # outright, not suppressed by date -- see _determined_regime_codes.
+    regime_codes = _determined_regime_codes(regime, spreads["s12"])
     suppressed = 0
     for col in _SPREAD_COLUMNS:
         spreads[col], col_suppressed = _suppress_before_window(spreads[col], window_start)

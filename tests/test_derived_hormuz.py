@@ -103,8 +103,33 @@ def test_scenario_rows_carry_the_lake_conventions(assumptions) -> None:
     rows = build_scenario_rows(levers, drop, ingested_at=pd.Timestamp("2026-10-10"))
     assert set(rows["source"]) == {"derived"}
     assert set(rows["freq"]) == {"Q"}
-    assert set(rows["unit"]) <= {"mb/d", "%"}
+    assert set(rows["unit"]) == {"mb/d", "ratio"}
     assert rows["value"].dtype == "float64"
+
+
+def test_every_series_carries_the_unit_its_own_values_are_in(assumptions) -> None:
+    """A unit a reader cannot trust is worse than no unit. `open_share` was written as
+    "%" while holding 0.15 ... 1.0, so any exhibit honouring the unit rendered a 90%
+    reopening as "0.9%". The share is stored as the fraction the scenario formula
+    actually multiplies by, so the unit must say `ratio`, and nothing here may claim "%"
+    unless its values really run 0-100."""
+    levers, drop = assumptions
+    rows = build_scenario_rows(levers, drop, ingested_at=pd.Timestamp("2026-10-10"))
+
+    units = rows.groupby("series_id")["unit"].agg(lambda values: set(values))
+    assert units["derived.hormuz.scenario.open_share"] == {"ratio"}
+    assert all(
+        unit == {"mb/d"}
+        for series_id, unit in units.items()
+        if series_id != "derived.hormuz.scenario.open_share"
+    )
+
+    ratios = rows[rows["unit"] == "ratio"]
+    assert not ratios.empty
+    assert ratios["value"].between(0.0, 1.0).all()
+    # The inverted form of the same mistake: a percentage-labelled fraction.
+    percentages = rows[rows["unit"] == "%"]
+    assert percentages.empty or percentages["value"].abs().max() > 1.0
 
 
 def test_every_series_id_says_scenario_so_no_reader_mistakes_it_for_an_observation(

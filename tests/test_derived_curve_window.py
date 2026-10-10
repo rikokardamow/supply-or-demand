@@ -44,13 +44,14 @@ def test_valid_rank_window_matches_the_suggested_criterion() -> None:
         ],
         index=["a1", "a2", "a3", "a4"],
     )
-    # Gaps are 30, 30, 30 days -- median 30. min(expiries) - 30d = 2025-12-21.
+    # Gaps are 30, 30, 30 days -- smallest 30. min(expiries) - 30d = 2025-12-21.
     assert valid_rank_window(expiries) == pd.Timestamp("2025-12-21")
 
 
 def test_valid_rank_window_against_the_real_cl_shape_from_the_task() -> None:
     """The task's own worked example: earliest expiry 2026-10-20, monthly contracts,
-    yields roughly 2026-09-20."""
+    yields 2026-09-20. Gaps here are 31, 31, 30 days -- the smallest (30) is the one the
+    window uses, so the start is 2026-09-20, one day later than the median (31) gave."""
     from pipelines.derived.curve import valid_rank_window
 
     expiries = pd.Series(
@@ -63,7 +64,42 @@ def test_valid_rank_window_against_the_real_cl_shape_from_the_task() -> None:
         index=["x2026", "z2026", "f2027", "g2027"],
     )
     window_start = valid_rank_window(expiries)
-    assert window_start == pd.Timestamp("2026-09-19")
+    assert window_start == pd.Timestamp("2026-09-20")
+
+
+def test_valid_rank_window_uses_the_smallest_gap_not_the_median_on_a_sparse_ladder() -> None:
+    """A median gap is unsound in general. This ladder is monthly at the front and
+    annual behind it -- exactly the shape that defeats the median: two of its three gaps
+    are about a year, so median(gaps) is ~335 days and the window would open on
+    2025-02-19, admitting nearly a year of dates on which a monthly contract nearer than
+    anything the panel holds was live and uncaptured. Every one of those dates would
+    label a deferred contract `f01`.
+
+    The smallest gap is the conservative choice: it is the tightest spacing the panel
+    itself evidences, so it never claims a rank is supported further back than the
+    panel's own densest region justifies."""
+    from pipelines.derived.curve import valid_rank_window
+
+    expiries = pd.Series(
+        [
+            pd.Timestamp("2026-01-20"),
+            pd.Timestamp("2026-02-19"),  # 30 days on -- the front of the ladder
+            pd.Timestamp("2027-01-20"),  # 335 days on
+            pd.Timestamp("2028-01-20"),  # 365 days on
+        ],
+        index=["a1", "a2", "a3", "a4"],
+    )
+
+    sorted_expiries = expiries.sort_values()
+    gaps = sorted_expiries.diff().dropna()
+    median_window = sorted_expiries.iloc[0] - gaps.median()
+    assert median_window == pd.Timestamp("2025-02-19")
+
+    window_start = valid_rank_window(expiries)
+    assert window_start == pd.Timestamp("2025-12-21")  # 2026-01-20 minus the 30-day gap
+
+    mislabelled = pd.Timestamp("2025-06-02")  # a real monthly expiry cycle, uncaptured
+    assert median_window < mislabelled < window_start
 
 
 def test_pull_root_suppresses_rank_series_rows_before_the_valid_window(
@@ -187,3 +223,38 @@ def test_dec_dec_is_unaffected_even_when_the_entire_panel_is_outside_the_window(
     dec_dec = storage.read_ts_long(series_ids=["derived.spread.xx.dec_dec_4025_4026"])
     assert len(dec_dec) == len(dates)
     assert dec_dec.set_index("ts")["value"].round(6).eq(-3.0).all()  # 70 - 73
+
+
+def test_pull_root_does_not_write_the_rows_a_median_gap_would_have_admitted(
+    tmp_path, monkeypatch
+) -> None:
+    """The sparse-ladder criterion, end to end. Every date in this panel sits inside the
+    window a median gap would have opened (2025-02-19) and outside the one the smallest
+    gap opens (2025-12-21), so the whole rank-based output must be suppressed rather than
+    written as mislabelled f01-f02 spreads."""
+    from core import storage
+    from pipelines.derived.curve import pull_root
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+
+    dates = pd.bdate_range("2025-06-02", "2025-11-28")
+    expiries = {
+        "a1": pd.Timestamp("2026-01-20"),
+        "a2": pd.Timestamp("2026-02-19"),
+        "a3": pd.Timestamp("2027-01-20"),
+        "a4": pd.Timestamp("2028-01-20"),
+    }
+    for i, contract in enumerate(expiries):
+        _write_contract(storage, "xx", contract, 70.0 + i, dates)
+    meta = pd.DataFrame(
+        {
+            "root": ["xx"] * 4,
+            "contract": list(expiries),
+            "expiry": list(expiries.values()),
+        }
+    )
+
+    pull_root("xx", meta, pd.Timestamp("2026-10-10"))
+
+    assert storage.read_ts_long(series_ids=["derived.spread.xx.s12"]).empty
+    assert storage.read_ts_long(series_ids=["derived.curve.xx.cv123"]).empty
