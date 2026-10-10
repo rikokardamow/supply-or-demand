@@ -45,8 +45,7 @@ def test_feedstocks_return_valid_ts_long_for_every_series() -> None:
     # publishing no real data for these categories, not a bug in this pull or a truncated
     # FEEDSTOCKS list. See pipelines/eia/CLAUDE.md's Task 2 (31C) entry.
     assert (
-        set(df["series_id"])
-        == set(pull_biofuels.FEEDSTOCKS) - pull_biofuels.ALWAYS_NULL_FEEDSTOCKS
+        set(df["series_id"]) == set(pull_biofuels.FEEDSTOCKS) - pull_biofuels.ALWAYS_NULL_FEEDSTOCKS
     )
 
 
@@ -58,8 +57,13 @@ def test_feedstock_list_is_the_full_set_and_has_no_duplicates() -> None:
 def _fake_row(series_id: str, frequency: str = "monthly") -> pd.DataFrame:
     return pd.DataFrame(
         {
-            "series_id": [series_id], "source": ["eia"], "ts": [pd.Timestamp("2026-01-01")],
-            "value": [1.0], "unit": ["MMGL"], "geo": ["US"], "freq": [frequency],
+            "series_id": [series_id],
+            "source": ["eia"],
+            "ts": [pd.Timestamp("2026-01-01")],
+            "value": [1.0],
+            "unit": ["MMGL"],
+            "geo": ["US"],
+            "freq": [frequency],
             "revision_date": [pd.Timestamp("2026-01-02")],
         }
     )
@@ -81,9 +85,7 @@ def test_a_failing_capacity_route_does_not_abort_feedstocks(
 
     def fake_pull_feedstocks(client: object) -> pd.DataFrame:
         calls.append("feedstocks")
-        return pd.concat(
-            [_fake_row(sid) for sid in pull_biofuels.FEEDSTOCKS], ignore_index=True
-        )
+        return pd.concat([_fake_row(sid) for sid in pull_biofuels.FEEDSTOCKS], ignore_index=True)
 
     monkeypatch.setattr(pull_biofuels, "pull_capacity", fake_pull_capacity)
     monkeypatch.setattr(pull_biofuels, "pull_feedstocks", fake_pull_feedstocks)
@@ -137,9 +139,7 @@ def test_a_missing_series_in_a_healthy_route_still_raises(
         )
 
     def fake_pull_feedstocks(client: object) -> pd.DataFrame:
-        return pd.concat(
-            [_fake_row(sid) for sid in pull_biofuels.FEEDSTOCKS], ignore_index=True
-        )
+        return pd.concat([_fake_row(sid) for sid in pull_biofuels.FEEDSTOCKS], ignore_index=True)
 
     monkeypatch.setattr(pull_biofuels, "pull_capacity", fake_pull_capacity)
     monkeypatch.setattr(pull_biofuels, "pull_feedstocks", fake_pull_feedstocks)

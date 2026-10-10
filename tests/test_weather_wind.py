@@ -14,9 +14,7 @@ def test_wind_forecast_to_ts_long_returns_ts_long_conformant_dataframe() -> None
             "wind_max_kmh": [18.5, 22.0, 30.1, 28.4],
         }
     )
-    locations_df = pd.DataFrame(
-        {"city": ["berlin", "copenhagen"], "country": ["DE", "DK"]}
-    )
+    locations_df = pd.DataFrame({"city": ["berlin", "copenhagen"], "country": ["DE", "DK"]})
     revision_date = pd.Timestamp("2026-09-01")
 
     df = wind_forecast_to_ts_long(daily_df, locations_df, revision_date)

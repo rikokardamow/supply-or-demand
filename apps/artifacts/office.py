@@ -342,7 +342,17 @@ def _seasonal(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None
     keep = sorted({*range(0, len(exhibit["x"]), 7), reported[-1]})
 
     def pick(key: str) -> list[float | None]:
-        return [exhibit[key][i] for i in keep]
+        # The spec holds a value only where a report or weekly sample landed; a slide
+        # samples its own days, so each takes the latest value at or before it.
+        values = exhibit[key]
+        last = reported[-1] if key == "current" else len(values) - 1
+        out: list[float | None] = []
+        for i in keep:
+            held = next(
+                (values[j] for j in range(min(i, last), -1, -1) if values[j] is not None), None
+            )
+            out.append(held if i <= last else None)
+        return out
 
     chart = _line_chart(
         slide,

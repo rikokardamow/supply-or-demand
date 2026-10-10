@@ -183,9 +183,7 @@ def test_publish_dedups_rows_sharing_a_key_before_upserting(
 
     assert fake_conn.cur.copied_data[0].count("\n") == 2  # 2 unique keys, not 3 rows
     log_params = next(
-        params
-        for sql, params in fake_conn.cur.executed
-        if "insert into serving.publish_log" in sql
+        params for sql, params in fake_conn.cur.executed if "insert into serving.publish_log" in sql
     )
     assert log_params is not None
     assert log_params[3] == 2  # row_count reflects what was actually published
@@ -299,9 +297,7 @@ def test_publish_calls_the_revalidate_hook_after_a_successful_publish(
     monkeypatch.setattr("core.publish.settings.vercel_url", "https://data.example.com")
     monkeypatch.setattr("core.publish.settings.revalidate_secret", "s3cret")
 
-    publish(
-        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
-    )
+    publish("series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"])
 
     assert len(calls) == 1
     url, kwargs = calls[0]
@@ -348,9 +344,7 @@ def test_publish_skips_the_revalidate_hook_when_it_is_not_configured(
     monkeypatch.setattr("core.publish.settings.vercel_url", None)
     monkeypatch.setattr("core.publish.settings.revalidate_secret", None)
 
-    publish(
-        "series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"]
-    )
+    publish("series_long", _df(), as_of=datetime.now(UTC), source_note="t", key=["series_id", "ts"])
 
     assert called is False
 
@@ -364,9 +358,7 @@ def test_publish_clamps_a_future_as_of_to_now(
     # data was permanently newer than now. Confirmed live 2026-09-09.
     future = datetime.now(UTC) + timedelta(days=400)
 
-    publish(
-        "series_long", _df(), as_of=future, source_note="t", key=["series_id", "ts"]
-    )
+    publish("series_long", _df(), as_of=future, source_note="t", key=["series_id", "ts"])
 
     params = next(
         p for sql, p in fake_conn.cur.executed if "insert into serving.publish_log" in sql

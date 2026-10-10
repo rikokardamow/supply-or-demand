@@ -9,16 +9,28 @@ from pipelines.futures.client import ContractMeta
 from pipelines.futures.to_ts_long import settles_to_ts_long
 
 _CL_Z26 = ContractMeta(
-    root="cl", contract="z26", expiry=date(2026, 11, 20),
-    tick_size=0.01, contract_unit="1000 bbl", currency="USD",
+    root="cl",
+    contract="z26",
+    expiry=date(2026, 11, 20),
+    tick_size=0.01,
+    contract_unit="1000 bbl",
+    currency="USD",
 )
 _CL_F27 = ContractMeta(
-    root="cl", contract="f27", expiry=date(2026, 12, 19),
-    tick_size=0.01, contract_unit="1000 bbl", currency="USD",
+    root="cl",
+    contract="f27",
+    expiry=date(2026, 12, 19),
+    tick_size=0.01,
+    contract_unit="1000 bbl",
+    currency="USD",
 )
 _TFM_Z26 = ContractMeta(
-    root="tfm", contract="z26", expiry=date(2026, 11, 20),
-    tick_size=0.001, contract_unit="1000 MWh", currency="EUR",
+    root="tfm",
+    contract="z26",
+    expiry=date(2026, 11, 20),
+    tick_size=0.001,
+    contract_unit="1000 MWh",
+    currency="EUR",
 )
 
 

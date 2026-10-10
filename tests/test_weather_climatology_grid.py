@@ -27,9 +27,9 @@ def test_climatology_grid_averages_across_years(monkeypatch: pytest.MonkeyPatch)
     2022) via a fake fetch_archive -- the mean across (2022, 2023, 2024) must be 23.0
     at every point, regardless of how many grid points there are."""
     monkeypatch.setattr(
-        climatology_grid_module, "build_region_grid", lambda region: pd.DataFrame(
-            [{"lat": 50.0, "lon": 10.0}, {"lat": 53.0, "lon": 13.0}]
-        )
+        climatology_grid_module,
+        "build_region_grid",
+        lambda region: pd.DataFrame([{"lat": 50.0, "lon": 10.0}, {"lat": 53.0, "lon": 13.0}]),
     )
 
     def _fake_fetch_archive(cities: pd.DataFrame, start: date, end: date) -> pd.DataFrame:

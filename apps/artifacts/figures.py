@@ -123,6 +123,9 @@ def _seasonal(e: Exhibit) -> go.Figure:
             hovertemplate=hover,
         ),
     ]
+    # Weekly series arrive with a value only on report days; the line joins them.
+    for trace in data:
+        trace.connectgaps = True
     return _figure(
         data,
         xaxis={

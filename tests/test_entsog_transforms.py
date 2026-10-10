@@ -30,14 +30,14 @@ def test_corridor_aggregate_sums_points_within_a_corridor() -> None:
 
     result = corridor_aggregate(flows_df, corridors)
 
-    no_exports_day1 = result[
-        (result["corridor"] == "NO_EXPORTS") & (result["ts"] == "2024-01-01")
-    ]["value"].iloc[0]
-    assert no_exports_day1 == 150.0
-
-    tap_day1 = result[(result["corridor"] == "TAP") & (result["ts"] == "2024-01-01")][
+    no_exports_day1 = result[(result["corridor"] == "NO_EXPORTS") & (result["ts"] == "2024-01-01")][
         "value"
     ].iloc[0]
+    assert no_exports_day1 == 150.0
+
+    tap_day1 = result[(result["corridor"] == "TAP") & (result["ts"] == "2024-01-01")]["value"].iloc[
+        0
+    ]
     assert tap_day1 == 10.0
 
 
@@ -144,9 +144,7 @@ def test_physical_vs_nomination_gap_is_nomination_minus_physical() -> None:
             "from_node": ["NO", "NO", "NO", "NO"],
             "to_node": ["DE", "DE", "DE", "DE"],
             "value": [80.0, 100.0, 90.0, 100.0],
-            "ts": pd.to_datetime(
-                ["2024-01-01", "2024-01-01", "2024-01-02", "2024-01-02"]
-            ),
+            "ts": pd.to_datetime(["2024-01-01", "2024-01-01", "2024-01-02", "2024-01-02"]),
             "mode": ["pipeline", "nomination", "pipeline", "nomination"],
         }
     )

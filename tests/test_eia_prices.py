@@ -121,9 +121,7 @@ def test_generator_fuel_series_id_helper_matches_the_client_minted_id() -> None:
         pull_prices.GENERATOR_FUEL,
         "monthly",
     )
-    us_cost_row = df[
-        (df["geo"] == "US") & (df["unit"].str.contains("dollar", case=False))
-    ].iloc[0]
+    us_cost_row = df[(df["geo"] == "US") & (df["unit"].str.contains("dollar", case=False))].iloc[0]
 
     assert (
         pull_prices.generator_fuel_series_id(pull_prices.GENERATOR_FUEL_COST_KEY, "US")
@@ -150,8 +148,13 @@ def test_one_failing_route_does_not_abort_the_others(monkeypatch: pytest.MonkeyP
             raise requests.exceptions.ConnectionError("gnd down")
         return pd.DataFrame(
             {
-                "series_id": ["X"], "source": ["eia"], "ts": [pd.Timestamp("2026-01-01")],
-                "value": [1.0], "unit": ["$/bbl"], "geo": ["US"], "freq": [frequency],
+                "series_id": ["X"],
+                "source": ["eia"],
+                "ts": [pd.Timestamp("2026-01-01")],
+                "value": [1.0],
+                "unit": ["$/bbl"],
+                "geo": ["US"],
+                "freq": [frequency],
                 "revision_date": [pd.Timestamp("2026-01-02")],
             }
         )
@@ -190,9 +193,13 @@ def test_a_revised_value_replaces_its_predecessor(tmp_path, monkeypatch) -> None
     def row(value: float, revised: str) -> pd.DataFrame:
         return pd.DataFrame(
             {
-                "series_id": ["R0000____3"], "source": ["eia"],
-                "ts": [pd.Timestamp("2026-01-01")], "value": [value],
-                "unit": ["$/bbl"], "geo": ["US"], "freq": ["monthly"],
+                "series_id": ["R0000____3"],
+                "source": ["eia"],
+                "ts": [pd.Timestamp("2026-01-01")],
+                "value": [value],
+                "unit": ["$/bbl"],
+                "geo": ["US"],
+                "freq": ["monthly"],
                 "revision_date": [pd.Timestamp(revised)],
             }
         )

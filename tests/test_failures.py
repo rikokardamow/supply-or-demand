@@ -62,9 +62,7 @@ def test_redact_replaces_a_known_settings_value_anywhere_in_the_text(
 ) -> None:
     # A key echoed in a JSON body or a header dump has no `key=` for the regex to find --
     # exact replacement of the real value is what catches it.
-    monkeypatch.setattr(
-        "core.failures._known_secrets", lambda: ["supersecretkeyvalue1234"]
-    )
+    monkeypatch.setattr("core.failures._known_secrets", lambda: ["supersecretkeyvalue1234"])
 
     result = redact('{"error": "invalid credential supersecretkeyvalue1234"}')
 
@@ -190,7 +188,9 @@ def test_redact_strips_a_password_from_a_database_uri() -> None:
 
 
 def test_redact_strips_a_password_from_a_well_formed_postgres_uri() -> None:
-    cleaned = redact("postgresql://postgres.ref:hunter2hunter2@aws-0.pooler.example.com:6543/postgres")
+    cleaned = redact(
+        "postgresql://postgres.ref:hunter2hunter2@aws-0.pooler.example.com:6543/postgres"
+    )
 
     assert "hunter2hunter2" not in cleaned
     # The non-secret parts stay legible -- a redactor that mangles the host makes the
@@ -199,7 +199,10 @@ def test_redact_strips_a_password_from_a_well_formed_postgres_uri() -> None:
 
 
 def test_redact_leaves_a_uri_with_no_password_alone() -> None:
-    assert redact("https://agsi.gie.eu/api?from=2026-01-01") == "https://agsi.gie.eu/api?from=2026-01-01"
+    assert (
+        redact("https://agsi.gie.eu/api?from=2026-01-01")
+        == "https://agsi.gie.eu/api?from=2026-01-01"
+    )
 
 
 def test_known_secrets_also_yields_the_password_inside_a_connection_uri(
@@ -221,9 +224,9 @@ def test_known_secrets_also_yields_the_password_inside_a_connection_uri(
                 "ibkr_host": "127.0.0.1",
             }
 
-    monkeypatch.setitem(__import__("sys").modules, "core.settings", type(
-        "M", (), {"settings": _FakeSettings()}
-    ))
+    monkeypatch.setitem(
+        __import__("sys").modules, "core.settings", type("M", (), {"settings": _FakeSettings()})
+    )
 
     secrets = _known_secrets()
 
