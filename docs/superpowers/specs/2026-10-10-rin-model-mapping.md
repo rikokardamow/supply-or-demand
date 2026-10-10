@@ -104,3 +104,83 @@ The Hormuz port is the pattern to follow: pure arithmetic in `core/`, assumption
 and attributed files, licensed inputs in the git-ignored drop, and the port checked cell by
 cell against the workbook's own published outputs — which is what found the 1Q 2027 error
 there.
+
+---
+
+## Routes confirmed live, 2026-10-10
+
+The Sequencing section above says nothing can be planned until the demand baseline is real.
+It now is. Everything below was read from a live response, not inferred from a series name.
+
+### EIA STEO — confirmed, and it carries the forward path for free
+
+`GET /v2/steo` returns 200. **1,469 series codes**, frequencies annual/quarterly/monthly,
+`startPeriod` 1974-01 and `endPeriod` **2027-12**. The route needs no new key: it is the
+same `settings.eia_api_key` every other EIA pipeline uses.
+
+The real codes, read off the `seriesId` facet by description. Three of the seven I guessed
+from the workbook's own labels do not exist, which is the whole reason for this step:
+
+| Code | Description | Confirmed range (monthly) |
+|---|---|---|
+| `MGTCPUSX` | Motor Gasoline Product Supplied | 456 obs, 1990-01 → 2027-12 |
+| `DFTCPUS` | Distillate Fuel Oil Product Supplied | → 2027-12 |
+| `JFTCPUS` | Jet Fuel Product Supplied | → 2027-12 |
+| `EOTCPUS` | Fuel Ethanol Consumption | 419 obs, 1993-02 → 2027-12 |
+| `BDTCPUS_PS` | Biodiesel Product Supplied | → 2027-12 |
+| `RDTCPUS_PS` | Renewable Diesel Product Supplied | 216 obs, 2010-01 → 2027-12 |
+| `PATCPUSX` | Total Petroleum and Other Liquids Product Supplied | → 2027-12 |
+
+`MGTCPUS`, `JKTCPUS` and `COTCPUS` are **not published**. Units are
+`million barrels per day` on every row.
+
+**The find that changes the arithmetic.** STEO also publishes `MGTCPUSX_P`
+("Petroleum-based Gasoline Consumption") and `DFTCPUS_P` ("Petroleum-based Distillate
+Consumption"). The RFS percentage standards apply to *non-renewable* gasoline and diesel, so
+these `_P` series are the correct denominator and the headline `MGTCPUSX`/`DFTCPUS` are not —
+using the totals double-counts the renewable volume already blended in. This was not visible
+from the workbook's labels and would have been an easy, invisible error.
+
+### A projection is not an observation, and the API does not say which is which
+
+STEO rows carry only `period`, `seriesId`, `seriesDescription`, `value`, `unit`. There is **no
+per-row forecast flag**, no vintage field, and no `lastUpdated` on the route metadata — only
+the route description's "Monthly short term (18 month) projections". So a naive ingest writes
+EIA's 18-month model output into the lake wearing the same clothes as measured history.
+
+The boundary is nonetheless groundable, and from an authoritative EIA route rather than an
+assumption: `GET /v2/petroleum/sum/snd/data/` with `facets[series][]=MGFUPUS1` (US Product
+Supplied of Finished Motor Gasoline, monthly, MBBL) returns actuals whose **last period is
+2026-07**. That is where STEO's history ends; 2026-08 → 2027-12 is model output. The lake also
+already holds the weekly cross-checks — `WGFUPUS2`, `WDIUPUS2`, `WKJUPUS2`, `WRPUPUS2`, all
+running to 2026-10-02.
+
+### The existing `get_series` cannot be reused for STEO
+
+`EIAClient.get_series` builds `facets[series][]` and reads `row["series"]`, `row["units"]` and
+`row["area-name"]`. STEO takes `facets[seriesId][]` and returns `seriesId`, `unit` (singular)
+and `seriesDescription`, with **no `area-name` at all**. Pointing the existing method at the
+route fails on the facet name and then on every field. The client already carries three fetch
+variants (`_fetch_rows`, `_fetch_operational_rows`, `_fetch_facet_rows`) for exactly this
+reason; STEO needs a fourth, not a widened third.
+
+### EPA EMTS — live, but the shape is still unknown
+
+The hub is `https://www.epa.gov/fuels-registration-reporting-and-compliance-help/public-data-renewable-fuel-standard`
+(200). The two URLs this spec's own input map implied are both 404 — EPA has restructured. The
+real sub-pages exist (`rins-generated-transactions`, `available-rins`,
+`rin-trades-and-price-information`, `annual-compliance-data-obligated-parties-and`,
+`spreadsheet-available-rins-date-renewable-fuel`) and all return 200, but **none exposes a
+direct `.csv`/`.xlsx` link in its HTML** — the data is served through embedded tables or a
+JS-driven viewer.
+
+So EMTS is not plannable yet and is **out of the first plan**. It needs its own scoped
+investigation of what those pages actually serve. This is a clean seam: EMTS supplies *actual*
+RIN generation, while the mandate arithmetic needs only the STEO baseline and the EPA
+rulemaking reference figures. The mandate half can be built, tested and checked against the
+workbook with no EMTS at all; generation-versus-mandate is the half that waits.
+
+### Consequence for sequencing
+
+Steps 1 and 3 of the Sequencing section are unblocked and are the first plan. Step 2 becomes a
+spike. Step 4 is unchanged — last, and dependent on the balance.
