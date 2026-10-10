@@ -8,6 +8,7 @@ pipelines/futures/pull.py::pull_root."""
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Final, Literal, overload
 
 import pandas as pd
 from core.curve import (
@@ -27,27 +28,71 @@ from pipelines.futures.series_meta import read_series_meta
 _SPREAD_COLUMNS = ("s12", "s13", "s16", "s1_12", "s23")
 
 
-def contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+_METRICS_BY_PREFERENCE: Final[tuple[str, ...]] = ("settle", "close")
+"""Settle first: an exchange settlement is the better number where one exists. `.close` is
+last-trade data, from sources like the IBKR MCP connector -- see
+pipelines/futures/CLAUDE.md for the measured difference between the two."""
+
+
+@overload
+def contract_panel_for(
+    root: str, meta: pd.DataFrame, return_provenance: Literal[False] = False
+) -> tuple[pd.DataFrame, pd.Series]: ...
+@overload
+def contract_panel_for(
+    root: str, meta: pd.DataFrame, return_provenance: Literal[True]
+) -> tuple[pd.DataFrame, pd.Series, dict[str, str]]: ...
+def contract_panel_for(
+    root: str, meta: pd.DataFrame, return_provenance: bool = False
+) -> tuple[pd.DataFrame, pd.Series] | tuple[pd.DataFrame, pd.Series, dict[str, str]]:
     """Public (not module-private) so apps/dashboard/pages/18_curve.py can reuse this same
-    settle-pivot logic directly, matching pipelines/eia/transforms.py's own
-    "page imports a pipeline's transform helper" precedent."""
+    pivot logic directly, matching pipelines/eia/transforms.py's own "page imports a
+    pipeline's transform helper" precedent.
+
+    Reads both `.settle` and `.close` and picks ONE metric per contract -- settle if that
+    contract has any settle rows, close otherwise. Per contract, never per row: a settlement
+    and a last trade are different quantities, and blending them inside one column would
+    leave every spread downstream measuring something nobody chose.
+    """
     root_meta = meta[meta["root"] == root]
+    empty: tuple[pd.DataFrame, pd.Series] = (
+        pd.DataFrame(),
+        pd.Series(dtype="datetime64[ns]"),
+    )
     if root_meta.empty:
-        return pd.DataFrame(), pd.Series(dtype="datetime64[ns]")
+        return (*empty, {}) if return_provenance else empty
 
     contracts = root_meta["contract"].tolist()
-    series_ids = [f"fut.{root}.{c}.settle" for c in contracts]
+    series_ids = [
+        f"fut.{root}.{contract}.{metric}"
+        for contract in contracts
+        for metric in _METRICS_BY_PREFERENCE
+    ]
     long_df = read_ts_long(series_ids=series_ids)
     if long_df.empty:
-        return pd.DataFrame(), pd.Series(dtype="datetime64[ns]")
+        return (*empty, {}) if return_provenance else empty
 
     long_df = long_df.copy()
-    long_df["contract"] = long_df["series_id"].str.split(".").str[2]
-    contract_panel = long_df.pivot_table(index="ts", columns="contract", values="value")
+    parts = long_df["series_id"].str.split(".")
+    long_df["contract"] = parts.str[2]
+    long_df["metric"] = parts.str[3]
+
+    available = long_df.groupby("contract")["metric"].agg(set)
+    chosen: dict[str, str] = {
+        str(contract): next(m for m in _METRICS_BY_PREFERENCE if m in metrics)
+        for contract, metrics in available.items()
+    }
+    picked = long_df[
+        [chosen.get(c) == m for c, m in zip(long_df["contract"], long_df["metric"], strict=True)]
+    ]
+
+    contract_panel = picked.pivot_table(index="ts", columns="contract", values="value")
     expiries = root_meta.set_index("contract")["expiry"]
-    # Only contracts that actually have settle rows in the lake -- series_meta can list a
-    # contract before any real settle data for it has landed.
+    # Only contracts that actually have rows in the lake -- series_meta can list a contract
+    # before any real price data for it has landed.
     expiries = expiries.loc[expiries.index.intersection(contract_panel.columns)]
+    if return_provenance:
+        return contract_panel, expiries, chosen
     return contract_panel, expiries
 
 
