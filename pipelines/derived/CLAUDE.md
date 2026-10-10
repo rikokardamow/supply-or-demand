@@ -181,9 +181,10 @@ and `flow_share.csv` are committed -- they are the owner's scenario choices and 
 diff. `data/manual/hormuz/baselines.csv` is the git-ignored drop, because the
 undisrupted/disrupted rates derive from licensed BI content. See that directory's README.
 
-**"Ramp factor" is a recovery ceiling, not a speed.** Iran's 0.8 means it permanently
-regains only 80% of its lost rate even at a fully reopened strait. Named
-`recovery_ceiling` for what the formula does rather than what the sheet calls it.
+**"Ramp factor" is a recovery ceiling, not a speed.** A producer whose ceiling is below 1
+permanently regains only that fraction of its lost rate, even at a fully reopened strait.
+Named `recovery_ceiling` for what the formula does rather than what the sheet calls it. The
+per-producer values are licensed BI figures and live only in the git-ignored drop.
 
 **A blank flow share is `None`, never `0.0`.** The source writes its pre-disruption quarter
 as `-`; read as zero that asserts a total closure, the inversion of its meaning. Quarters
@@ -193,8 +194,9 @@ with no known share write no rows.
 `Scenario` columns -- outputs, not inputs here. 30 of 35 cells match at 0.00e+00. All five
 mismatches sit in 1Q 2027: the sheet's formulas reference flow-share cells
 `$E$4,$F$4,$G$4,$G$4,$I$4,$J$4,$K$4`, skipping `$H$4`, so that quarter is computed with
-4Q 2026's 0.8 against its own stated 0.9. The Gulf total is understated by ~0.92 mb/d, and
-it feeds `Surplus / (Deficit)`. This module uses each quarter's own share and therefore
+the previous quarter's reopening share against its own stated one for that quarter. Every
+Gulf producer is understated for 1Q 2027 as a result, and the error feeds
+`Surplus / (Deficit)` directly. This module uses each quarter's own share and therefore
 disagrees there deliberately.
 
 **Not registered in `infra/run_scheduled.py`.** A scenario changes when its assumptions

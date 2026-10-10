@@ -23,27 +23,25 @@ They have very different refreshability, and conflating them is the main risk in
 
 ## The regressions, as actually fitted
 
-| Region | n | R² | Intercept | β | p(β) | Regressor label present? |
-|---|---|---|---|---|---|---|
-| USA | 48 | 0.9006 | −1.0121 | **0.002284** | 1.1e−24 | yes — "Y/Y Change in GDP" |
-| China | 47 | **0.3704** | −0.0191 | **1.0570** | 5.7e−06 | no — cell holds `0.07501…` |
-| EU | 47 | 0.8213 | −0.0223 | **1.4989** | 1.9e−18 | no — cell holds `0.01638…` |
-| RofW | 46 | 0.8618 | −0.0272 | **1.1876** | 1.6e−20 | no — cell holds `0.03598…` |
+The fitted coefficients, R² values and p-values are BI's analytical output and are not
+reproduced here. Open the workbook's four `OLS.*` sheets to read them. What follows is the
+structural analysis, which is ours.
 
 Four observations that matter before any of this is reproduced:
 
-1. **The USA block is not in the same units as the other three.** Its β is 0.0023 against
-   1.06–1.50 elsewhere, and the panel confirms why: `For_OLS` column E carries a GDP *level*
-   change (291.57, i.e. US$bn) while the others carry a *percentage* change. A β of 0.0023
-   and a β of 1.06 are different quantities and must never be tabled side by side as if they
-   were comparable elasticities.
+1. **The USA block is not in the same units as the other three.** Its slope coefficient is
+   three orders of magnitude smaller, and the panel confirms why: `For_OLS` column E carries
+   a GDP *level* change in US$bn while the other three carry a *percentage* change. Those are
+   different quantities and must never be tabled side by side as if they were comparable
+   elasticities.
 2. **Three of the four blocks lost their regressor label** — cell A18 holds a number rather
    than a name, which is what Excel's regression tool produces when the "labels in first row"
    box is left unticked. The specification therefore has to be inferred from the panel rather
    than read off the output.
-3. **China's R² is 0.37.** That single relationship is what converts a GDP forecast into a
-   Chinese demand projection, and it explains roughly a third of the variance. It is the
-   weakest link in the model and belongs on the model card, not in a footnote.
+3. **China's fit is far weaker than the other three** — well under half their R². That
+   single relationship is what converts a GDP forecast into a Chinese demand projection, and
+   it explains only a minority of the variance. It is the weakest link in the model and
+   belongs on the model card, not in a footnote.
 4. **The panel spans 1Q 2013 onward, so it contains 2020.** Oil demand and GDP collapsed
    together that year, and a single extreme observation pair can carry most of an R² in a
    changes-on-changes regression. The repo already excludes 2020 from every seasonal
