@@ -174,6 +174,9 @@ def seasonal_exhibit(
         book.issues.append(f"{title}: series {series_id} is missing from the lake.")
         return
     band = tables.seasonal_table(series, series_id)
+    if band.empty or band["current"].isna().all() or band["median"].isna().all():
+        book.issues.append(f"{title}: {series_id} has too little history for a seasonal band.")
+        return
     book.seasonal.append(band)
     book.series_long.append(raw[raw["ts"] >= HISTORY_START])
 
@@ -206,7 +209,7 @@ def seasonal_exhibit(
     this_year = series[series["ts"].dt.year == year].assign(value=lambda d: d["value"] * scale)
     annotations = [
         {
-            "x": x[int(at_doy["doy"]) - 1],
+            "x": x[list(band["doy"]).index(at_doy["doy"])],
             "y": _num(latest),
             "axis": "y",
             "text": f"Latest {_fmt(latest, digits)} · {vs_text} vs median",
@@ -216,7 +219,8 @@ def seasonal_exhibit(
     for point in _turning_points(this_year, digits):
         if point["y"] != _num(latest):
             stamp = pd.Timestamp(point["x"])
-            point["x"] = _iso(stamp.replace(year=REFERENCE_YEAR, day=min(stamp.day, 28)))
+            leap_day = stamp.month == 2 and stamp.day == 29
+            point["x"] = _iso(stamp.replace(year=REFERENCE_YEAR, day=28 if leap_day else stamp.day))
             annotations.append(point)
 
     change_text = "" if change is None else f", {_signed(change, digits)} on the week"
@@ -271,13 +275,25 @@ def pair_exhibit(
     run: str | None,
     note: str,
     cadence_days: int,
+    forward_dated: bool = False,
 ) -> None:
-    """A one- or two-series chart: `dual` when the units differ, `lines` when they share one."""
+    """A one- or two-series chart: `dual` when the units differ, `lines` when they share one.
+
+    The exhibit is only as fresh as its oldest series, so that one sets the stale flag and
+    the source line's date. A `forward_dated` series (forecast or scenario quarters) says
+    nothing about freshness through its last timestamp; its pipeline run is judged instead.
+    """
     tracks = [t for t in tracks if not t[1].empty]
     if not tracks:
         book.issues.append(f"{title}: no rows in the lake for this exhibit.")
         return
-    through = max(t[1]["ts"].iloc[-1] for t in tracks)
+    through = min(t[1]["ts"].iloc[-1] for t in tracks)
+    if not forward_dated:
+        gap = stale_flag(through, cadence_days, book.today)
+    elif run is None:
+        gap = "No pipeline run recorded"
+    else:
+        gap = stale_flag(run, cadence_days, book.today)
     lines = []
     for name, frame, unit, digits in tracks:
         last = frame.iloc[-1]
@@ -309,7 +325,7 @@ def pair_exhibit(
             },
             "source": _source(provider, table, through, run),
             "note": note,
-            "gap": stale_flag(through, cadence_days, book.today),
+            "gap": gap,
             "sheets": ["series_long"],
         }
     )
@@ -340,6 +356,15 @@ def bars_exhibit(
         book.issues.append(f"{title}: no rows in the lake for this exhibit.")
         return
     through = frame["through"].max()
+    # A row that stopped reporting is not "latest": ranked beside live rows it would hide
+    # its own gap, so it is left out of the chart and listed instead.
+    dead = frame["through"] < through - pd.Timedelta(days=cadence_days * 2)
+    if dead.any():
+        names = ", ".join(
+            f"{row[category]} (to {day(row['through'])})" for _, row in frame[dead].iterrows()
+        )
+        book.issues.append(f"{title}: left out, no data in the latest window: {names}.")
+        frame = frame[~dead].reset_index(drop=True)
     top, bottom = frame.iloc[0], frame.iloc[-1]
     movers = frame.dropna(subset=[compare]).assign(delta=lambda d: d[value] - d[compare])
     second = "No year-ago comparison available."
@@ -635,6 +660,7 @@ def _supply(book: Book) -> None:
         note="Quarterly, dated at quarter start; forecast quarters included as OPEC publishes "
         "them. Latest vintage in the lake is the August 2026 report.",
         cadence_days=31,
+        forward_dated=True,
     )
 
     share_id = "derived.hormuz.scenario.open_share"
@@ -655,6 +681,7 @@ def _supply(book: Book) -> None:
         note="A scenario, not a forecast; quarters dated at quarter start. "
         "open_share is stored as a fraction and shown × 100.",
         cadence_days=120,
+        forward_dated=True,
     )
     stored = scenario.loc[scenario["series_id"] == share_id]
     if not stored.empty and stored["unit"].iloc[0] == "%" and float(stored["value"].max()) <= 1.0:

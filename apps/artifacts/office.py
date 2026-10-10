@@ -11,6 +11,7 @@ exhibit becomes two stacked charts sharing a date axis.
 
 from __future__ import annotations
 
+import re
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Final
@@ -31,6 +32,7 @@ from pptx.slide import Slide
 from pptx.util import Inches, Pt
 
 from .exhibits import Book, Exhibit
+from .tables import SEASONAL_COLUMNS
 
 WORKBOOK_NAME: Final = "kardamow_data.xlsx"
 DECK_NAME: Final = "kardamow_briefing.pptx"
@@ -40,6 +42,28 @@ DATE_FORMAT: Final = "yyyy-mm-dd"
 DATETIME_FORMAT: Final = "yyyy-mm-dd hh:mm"
 NUMBER_FORMAT: Final = "#,##0.00"
 FORMULA_PREFIXES: Final = ("=", "+", "-", "@", "\t", "\r")
+# xlsxwriter, which python-pptx uses for a chart's embedded workbook, turns these into
+# live hyperlinks.
+LINK_PREFIXES: Final = (
+    "http://",
+    "https://",
+    "ftp://",
+    "ftps://",
+    "mailto:",
+    "internal:",
+    "external:",
+)
+_CONTROL: Final = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def safe_text(value: str) -> str:
+    """Lake text made safe for a cell: control characters (which the Office XML writers
+    reject) removed, and anything Excel would evaluate or link kept as text by a leading
+    apostrophe."""
+    value = _CONTROL.sub("", value)
+    return f"'{value}" if value.startswith(FORMULA_PREFIXES + LINK_PREFIXES) else value
+
+
 INTEGER_FORMAT: Final = "#,##0"
 
 SHEET_NOTES: Final[dict[str, tuple[str, str, str]]] = {
@@ -110,8 +134,7 @@ def _cell(value: Any) -> Any:
     if isinstance(value, datetime):
         return value.replace(tzinfo=None)
     if isinstance(value, str):
-        # Excel would evaluate these as formulas; the apostrophe keeps them text.
-        return f"'{value}" if value.startswith(FORMULA_PREFIXES) else value
+        return safe_text(value)
     if isinstance(value, (date, bool, int, float)):
         return value
     if hasattr(value, "item"):
@@ -158,7 +181,9 @@ def workbook_tables(book: Book) -> dict[str, pd.DataFrame]:
     )
     tables = {
         "series_long": series.sort_values(["series_id", "ts"]).reset_index(drop=True),
-        "seasonal": pd.concat(book.seasonal, ignore_index=True),
+        "seasonal": pd.concat(book.seasonal, ignore_index=True)
+        if book.seasonal
+        else pd.DataFrame(columns=SEASONAL_COLUMNS),
     }
     for name in ("wpsr_lines", "curve_settles", "flows", "storage_by_country", "freshness"):
         tables[name] = book.sheets[name]
@@ -286,7 +311,7 @@ def _line_chart(
     data = CategoryChartData()
     data.categories = categories
     for name, values in series:
-        data.add_series(name, values)
+        data.add_series(safe_text(name), values)
     frame = slide.shapes.add_chart(
         XL_CHART_TYPE.LINE,
         Inches(0.6),
@@ -305,7 +330,10 @@ def _dates(values: list[str], keep: list[int]) -> list[date]:
 
 
 def _seasonal(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
-    keep = list(range(0, len(exhibit["x"]), 7))
+    # Weekly samples, plus the latest observation so the slide's last point is the one
+    # its takeaway quotes.
+    reported = [i for i, value in enumerate(exhibit["current"]) if value is not None]
+    keep = sorted({*range(0, len(exhibit["x"]), 7), reported[-1]})
 
     def pick(key: str) -> list[float | None]:
         return [exhibit[key][i] for i in keep]
@@ -377,9 +405,11 @@ def _dual(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
 
 def _bars(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
     data = CategoryChartData()
-    data.categories = list(reversed(exhibit["categories"]))
-    data.add_series(exhibit["compare_name"], list(reversed(exhibit["compare"])))
-    data.add_series(exhibit["value_name"], list(reversed(exhibit["values"])))
+    # Categories are lake text (corridor and country names) and land in the chart's
+    # embedded workbook, so they get the same guard as worksheet cells.
+    data.categories = [safe_text(str(c)) for c in reversed(exhibit["categories"])]
+    data.add_series(safe_text(exhibit["compare_name"]), list(reversed(exhibit["compare"])))
+    data.add_series(safe_text(exhibit["value_name"]), list(reversed(exhibit["values"])))
     frame = slide.shapes.add_chart(
         XL_CHART_TYPE.BAR_CLUSTERED,
         Inches(0.6),

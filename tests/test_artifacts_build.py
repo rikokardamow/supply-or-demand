@@ -6,6 +6,7 @@ build against it (see .claude/skills/refresh-artifacts).
 
 from __future__ import annotations
 
+import io
 import json
 import zipfile
 from datetime import date
@@ -69,7 +70,9 @@ def test_env_secrets_skips_comments_and_short_values(
     env.write_text(
         "# NOTE=commented-out-value\nKEY='long-secret-value'\nFLAG=1\n", encoding="utf-8"
     )
-    assert build.env_secrets([env, tmp_path / "missing"]) == {"KEY": {b"long-secret-value"}}
+    found = build.env_secrets([env, tmp_path / "missing"])
+    assert found == {"KEY": build.needles("long-secret-value")}
+    assert b"long-secret-value" in found["KEY"]
 
 
 def test_a_leaked_secret_fails_the_build_and_removes_the_file(tmp_path: Path) -> None:
@@ -110,7 +113,7 @@ def test_shell_credentials_are_checked_as_well_as_dotenv(monkeypatch: pytest.Mon
     monkeypatch.setenv("SOME_API_TOKEN", "exported-secret-value")
     monkeypatch.setenv("HOME_DIRECTORY", "not-a-credential-path")
     found = build.env_secrets([])
-    assert found["SOME_API_TOKEN"] == {b"exported-secret-value"}
+    assert b"exported-secret-value" in found["SOME_API_TOKEN"]
     assert "HOME_DIRECTORY" not in found
 
 
@@ -130,7 +133,7 @@ def test_a_stale_dotenv_value_does_not_hide_the_live_shell_credential(
     env.write_text("EIA_API_KEY=rotated-out-value\n", encoding="utf-8")
     monkeypatch.setattr(build.os, "environ", {"EIA_API_KEY": "live-exported-value"})
     secrets = build.env_secrets([env])
-    assert secrets["EIA_API_KEY"] == {b"rotated-out-value", b"live-exported-value"}
+    assert secrets["EIA_API_KEY"] >= {b"rotated-out-value", b"live-exported-value"}
     page = tmp_path / "page.html"
     page.write_text("<p>live-exported-value</p>", encoding="utf-8")
     with pytest.raises(build.SecretLeakError, match="EIA_API_KEY"):
@@ -144,3 +147,206 @@ def test_a_dotenv_with_no_credentials_yields_nothing_to_check(
     env.write_text("# keys go here\nDEBUG=1\n", encoding="utf-8")
     monkeypatch.setattr(build.os, "environ", {})
     assert build.env_secrets([env]) == {}
+
+
+def _daily(start: str, end: str) -> pd.DataFrame:
+    ts = pd.date_range(start, end, freq="D")
+    return pd.DataFrame({"ts": ts, "value": [float(i) for i in range(len(ts))]})
+
+
+def _pair(
+    book: exhibits.Book, tracks: list[tuple[str, pd.DataFrame, str, int]], **extra: object
+) -> None:
+    exhibits.pair_exhibit(
+        book,
+        exhibit_id="x",
+        tab="prices",
+        title="Pair",
+        kind="dual",
+        tracks=tracks,
+        provider="P",
+        table="t",
+        note="",
+        cadence_days=7,
+        **{"run": None, **extra},  # type: ignore[arg-type]
+    )
+
+
+def test_a_pair_is_only_as_fresh_as_its_oldest_series() -> None:
+    book = exhibits.Book(today=date(2026, 10, 10))
+    stale = ("Net long", _daily("2026-01-01", "2026-03-31"), "contracts", 0)
+    live = ("WTI", _daily("2026-01-01", "2026-10-09"), "USD/bbl", 2)
+    _pair(book, [stale, live])
+    assert book.exhibits[0]["gap"] == "No data since 31 Mar 2026"
+    assert "data to 31 Mar 2026" in book.exhibits[0]["source"]
+
+
+def test_a_forward_dated_series_is_judged_on_its_pipeline_run() -> None:
+    forecast = ("Call on crude", _daily("2026-01-01", "2027-10-01"), "mb/d", 2)
+    old = exhibits.Book(today=date(2026, 10, 10))
+    _pair(old, [forecast], forward_dated=True, run="2026-06-01")
+    assert old.exhibits[0]["gap"] == "No data since 1 Jun 2026"
+    fresh = exhibits.Book(today=date(2026, 10, 10))
+    _pair(fresh, [forecast], forward_dated=True, run="2026-10-05")
+    assert fresh.exhibits[0]["gap"] is None
+
+
+def test_bars_leave_out_a_row_that_stopped_reporting() -> None:
+    frame = pd.DataFrame(
+        {
+            "corridor": ["Dead", "Live"],
+            "through": pd.to_datetime(["2024-12-31", "2026-10-08"]),
+            "latest": [900.0, 100.0],
+            "year_ago": [None, 90.0],
+        }
+    )
+    book = exhibits.Book(today=date(2026, 10, 10))
+    exhibits.bars_exhibit(
+        book,
+        exhibit_id="b",
+        tab="flows",
+        title="Flows",
+        frame=frame,
+        category="corridor",
+        value="latest",
+        compare="year_ago",
+        unit="GWh/d",
+        value_name="Latest",
+        compare_name="Year ago",
+        provider="P",
+        table="t",
+        sheet="flows",
+        run=None,
+        note="",
+        cadence_days=7,
+    )
+    assert book.exhibits[0]["categories"] == ["Live"]
+    assert "Dead (to 31 Dec 2024)" in book.issues[0]
+
+
+def test_storage_year_ago_is_the_nearest_day_to_the_target(monkeypatch: pytest.MonkeyPatch) -> None:
+    daily = _daily("2025-09-01", "2026-09-10").assign(series_id="agsi.DE.full_pct", geo="DE")
+    monkeypatch.setattr(tables, "_fullness", lambda: daily)
+    row = tables.storage_by_country().iloc[0]
+    target = pd.Timestamp("2026-09-10") - pd.Timedelta(days=364)
+    assert row["year_ago_pct"] == daily.loc[daily["ts"] == target, "value"].iloc[0]
+
+
+def test_an_unbuildable_motion_page_fails_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(build.tables, "storage_weekly", lambda: pd.DataFrame())
+    with pytest.raises(build.NothingToPublishError, match="AGSI"):
+        build.motion_payload({}, date(2026, 10, 10))
+
+
+def test_a_leak_removes_every_output_not_just_the_first(tmp_path: Path) -> None:
+    data, page, clean = tmp_path / "p.json", tmp_path / "p.html", tmp_path / "other.html"
+    data.write_text('{"k":"long-secret-value"}', encoding="utf-8")
+    page.write_text("<p>long-secret-value</p>", encoding="utf-8")
+    clean.write_text("<p>nothing</p>", encoding="utf-8")
+    with pytest.raises(build.SecretLeakError, match=r"p\.html"):
+        build.assert_no_secrets([data, page, clean], {"KEY": {b"long-secret-value"}})
+    assert not data.exists() and not page.exists() and not clean.exists()
+
+
+def test_a_dotenv_value_is_read_without_its_quotes_or_trailing_comment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(build.os, "environ", {})
+    env = tmp_path / ".env"
+    env.write_text(
+        'EIA_API_KEY=plain-secret-value # rotated\nFRED_API_KEY="quoted-secret-value" # note\n',
+        encoding="utf-8",
+    )
+    found = build.env_secrets([env])
+    assert b"plain-secret-value" in found["EIA_API_KEY"]
+    assert b"quoted-secret-value" in found["FRED_API_KEY"]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        json.dumps('pa"ss\\word-99'),
+        "pa&quot;ss\\word-99",
+        "pa%22ss%5Cword-99",
+    ],
+)
+def test_an_escaped_credential_is_still_found(tmp_path: Path, written: str) -> None:
+    page = tmp_path / "page.html"
+    page.write_text(written, encoding="utf-8")
+    with pytest.raises(build.SecretLeakError):
+        build.assert_no_secrets([page], {"KEY": build.needles('pa"ss\\word-99')})
+
+
+def test_a_connection_string_password_is_found_on_its_own(tmp_path: Path) -> None:
+    page = tmp_path / "page.html"
+    page.write_text("<p>hunter2-hunter2</p>", encoding="utf-8")
+    secrets = {
+        "SUPABASE_DB_URL": build.needles("postgresql://user:hunter2-hunter2@db.example:5432/x")
+    }
+    with pytest.raises(build.SecretLeakError, match="SUPABASE_DB_URL"):
+        build.assert_no_secrets([page], secrets)
+
+
+def test_a_secret_in_a_workbook_embedded_in_a_deck_is_found(tmp_path: Path) -> None:
+    inner = io.BytesIO()
+    with zipfile.ZipFile(inner, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("xl/sharedStrings.xml", "<t>long-secret-value</t>")
+    deck = tmp_path / "deck.pptx"
+    with zipfile.ZipFile(deck, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("ppt/embeddings/sheet1.xlsx", inner.getvalue())
+    with pytest.raises(build.SecretLeakError):
+        build.assert_no_secrets([deck], {"KEY": {b"long-secret-value"}})
+
+
+def test_only_the_projects_own_credentials_arm_the_leak_check() -> None:
+    assert "EIA_API_KEY" in build.PROJECT_CREDENTIALS
+    assert "CLAUDE_CODE_MESSAGING_TOKEN" not in build.PROJECT_CREDENTIALS
+
+
+@pytest.mark.parametrize("page", build.PAGES)
+def test_render_survives_a_comment_and_script_opener_in_lake_text(page: str) -> None:
+    payload = {"meta": {}, "title": "<!--<script>", "unit": "a & b " + chr(0x2028)}
+    html = build.render(page, payload)
+    embedded = html.split('id="payload">', 1)[1].split("</script>", 1)[0]
+    assert "<" not in embedded and "&" not in embedded and chr(0x2028) not in embedded
+    assert json.loads(embedded) == payload
+
+
+@pytest.mark.parametrize(
+    "text", ["https://example.com/x", "external:\\\\host\\share\\a.xlsx", "mailto:a@example.com"]
+)
+def test_link_like_text_is_stored_as_text(text: str) -> None:
+    from apps.artifacts import office
+
+    assert office.safe_text(text) == "'" + text
+
+
+def test_deck_bar_categories_cannot_become_formulas_or_links(tmp_path: Path) -> None:
+    from apps.artifacts import office
+
+    exhibit = {
+        "id": "b",
+        "kind": "bars",
+        "title": "Flows",
+        "takeaway": ["a", "b"],
+        "source": "s",
+        "note": "",
+        "gap": None,
+        "unit": "GWh/d",
+        "digits": 1,
+        "categories": ['=HYPERLINK("http://example.com")', "https://example.com", "A\x0bB"],
+        "values": [1.0, 2.0, 3.0],
+        "compare": [1.0, 2.0, 3.0],
+        "value_name": "Latest",
+        "compare_name": "Year ago",
+    }
+    meta = {"built_at": "x", "newest_run": None, "oldest_run": None, "stale": 0, "exhibits": 1}
+    deck = office.write_deck({"meta": meta, "slides": [exhibit]}, tmp_path)
+    with zipfile.ZipFile(deck) as archive:
+        for name in archive.namelist():
+            if name.startswith("ppt/embeddings/"):
+                with zipfile.ZipFile(io.BytesIO(archive.read(name))) as book:
+                    sheets = b"".join(
+                        book.read(n) for n in book.namelist() if n.startswith("xl/worksheets/")
+                    )
+                assert sheets and b"<f>" not in sheets and b"<hyperlink" not in sheets

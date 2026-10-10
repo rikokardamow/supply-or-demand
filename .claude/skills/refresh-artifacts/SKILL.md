@@ -58,8 +58,9 @@ when a single source fails; continue with the next.
 This writes `apps/artifacts/dist/{dashboard,briefing,motion}.{json,html}`,
 `exports/kardamow_data.xlsx` and `exports/kardamow_briefing.pptx`, and prints one
 `changed:` line per page or exhibit whose data moved and one `issue:` line per data
-problem it found. It exits non-zero, and deletes the offending file, if an output
-contains a `.env` value or a page is over 4 MiB - stop and report if that happens.
+problem it found. If it exits non-zero for any reason - a credential value in an
+output, a page over 4 MiB, a crash, a traceback - it deletes everything it wrote. Stop
+and report; do not republish or hand over any file from a failed build.
 
 ## 4. Republish
 
