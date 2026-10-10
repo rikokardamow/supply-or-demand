@@ -21,6 +21,8 @@ from . import tables
 Exhibit = dict[str, Any]
 
 HISTORY_START: Final = "2018-01-01"
+# A daily series silent for longer than this has stopped and restarted, not paused.
+SERIES_BREAK_DAYS: Final = 90
 
 TABS: Final = [
     ("overview", "Overview"),
@@ -562,19 +564,37 @@ def _prices(book: Book) -> None:
             }
         )
 
-    dead = tables.read_series(["derived.spread.cl.s12"], start="2021-01-01")
-    book.series_long.append(dead)
+    series_id = "derived.spread.cl.s12"
+    stored = tables.read_series([series_id], start="2021-01-01")
+    book.series_long.append(stored)
+    spread = _window(stored, series_id, "2021-01-01")
+    # The id holds two measures: EIA's rank-based settlements to 5 Apr 2024, then the
+    # contract panel's closes. Joining them draws a move that never happened, so only
+    # the run after the last long break is charted.
+    breaks = spread.index[spread["ts"].diff() > pd.Timedelta(days=SERIES_BREAK_DAYS)]
+    if len(breaks):
+        before = spread.loc[: breaks[-1] - 1, "ts"].iloc[-1]
+        spread = spread.loc[breaks[-1] :].reset_index(drop=True)
+        provider = "Futures closes, contract panel (pipelines.derived.curve)"
+        note = (
+            f"Shown from {day(spread['ts'].iloc[0])}. The same series id holds EIA's rank-based "
+            f"spread to {day(before)}, a different measure, which is not joined to this one. "
+            "Legs are daily closes, not exchange settlements."
+        )
+    else:
+        provider = "EIA NYMEX futures ranks 1–4 (route discontinued by EIA)"
+        note = "EIA stopped publishing this route on 5 Apr 2024."
     pair_exhibit(
         book,
         exhibit_id="wti_prompt_spread",
         tab="prices",
         title="WTI prompt spread, first minus second month",
         kind="lines",
-        tracks=[("WTI M1–M2", _window(dead, "derived.spread.cl.s12", "2021-01-01"), "USD/bbl", 2)],
-        provider="EIA NYMEX futures ranks 1–4 (route discontinued by EIA)",
-        table="ts_long/derived (derived.spread.cl.s12)",
-        run=_run(dead),
-        note="EIA stopped publishing this route on 5 Apr 2024; IBKR ingestion is not connected.",
+        tracks=[("WTI M1–M2", spread, "USD/bbl", 2)],
+        provider=provider,
+        table=f"ts_long/derived ({series_id})",
+        run=_run(stored),
+        note=note,
         cadence_days=4,
     )
 
