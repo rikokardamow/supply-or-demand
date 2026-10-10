@@ -50,10 +50,10 @@ from typing import Final, Literal, overload
 
 import pandas as pd
 from core.curve import (
-    REGIME_CODES,
     convexity,
     curve_regime,
     dec_dec,
+    determined_regime_codes,
     nearby_panel,
     time_spreads,
 )
@@ -197,30 +197,6 @@ def _suppress_before_window(
     return series.where(in_window), suppressed
 
 
-def _determined_regime_codes(regime: pd.DataFrame, s12: pd.Series) -> pd.Series:
-    """`REGIME_CODES` values for the rows whose state its inputs actually determine, NaN
-    for the rest -- so `_write_derived`'s own `dropna()` simply never writes them.
-
-    `core.curve.curve_regime` classifies with `np.select(..., default="flat")`. Each of
-    the six named states comes from a condition over `s12`/`cv`/`s1_12`, and a comparison
-    against NaN is False, so a named state can only fire on inputs that are really there.
-    The default cannot: a row reaches `"flat"` either on the genuine `s12 == 0` knife edge
-    the state was added for, or because nothing could be evaluated at all -- `s12` absent,
-    or `cv` absent on a panel with fewer than three ranks. The second kind is not a flat
-    curve; it is an unknown one, and publishing it as code 6.0 states a definite market
-    structure on a date with no curve to measure. It is also invisible to every NaN guard
-    downstream, because 6.0 is an ordinary number: the real lake holds 8 such rows for
-    `lco` on dates where `derived.spread.lco.s12` and `derived.curve.lco.cv123` have no
-    rows at all.
-
-    Masking here rather than in `core.curve.curve_regime` keeps that module pure and
-    unchanged -- which state a classifier returns is its own business; whether a row is
-    fit to write into the lake is this package's (see pipelines/derived/CLAUDE.md)."""
-    codes = regime["state"].map(REGIME_CODES).astype(float)
-    determined = regime["state"].ne("flat") | s12.eq(0.0)
-    return codes.where(determined)
-
-
 def _write_derived(
     root: str, series_id_suffix: str, values: pd.Series, ingested_at: pd.Timestamp
 ) -> int:
@@ -266,8 +242,8 @@ def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
     # window exists at all.
     window_start = valid_rank_window(expiries)
     # Before the window is applied: a regime row whose own inputs are absent is dropped
-    # outright, not suppressed by date -- see _determined_regime_codes.
-    regime_codes = _determined_regime_codes(regime, spreads["s12"])
+    # outright, not suppressed by date -- see core.curve.determined_regime_codes.
+    regime_codes = determined_regime_codes(regime, spreads["s12"])
     suppressed = 0
     for col in _SPREAD_COLUMNS:
         spreads[col], col_suppressed = _suppress_before_window(spreads[col], window_start)

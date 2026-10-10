@@ -47,6 +47,7 @@ from core.curve import (
     REGIME_CODES,
     convexity,
     curve_regime,
+    determined_regime_codes,
     nearby_panel,
     physical_bands,
     roll_window_offset_grid,
@@ -252,17 +253,40 @@ with tab_convexity:
             _rank_data_message()
         else:
             regime = curve_regime(unadj, storage_cost_m1m2=storage_cost)
-            state_codes = regime["state"].map(REGIME_CODES)
+            # The same mask pipelines/derived/curve.py applies before writing this series:
+            # curve_regime's default is "flat", which a row also reaches when nothing could
+            # be evaluated at all. Undetermined rows are dropped here rather than painted,
+            # so the ribbon shows exactly the dates derived.curve.<root>.regime holds -- the
+            # caption below cites that series, and a page claiming a state the lake
+            # withholds is worse than a gap in the ribbon.
+            state_codes = determined_regime_codes(regime, time_spreads(unadj)["s12"]).dropna()
+            determined = regime.loc[state_codes.index]
             state_labels = {code: name for name, code in REGIME_CODES.items()}
 
-            fig = regime_ribbon_chart(
-                unadj["f01"], state_codes, state_labels, unit="USD",
-            )
-            st.plotly_chart(fig)
-            st.caption(f"Source: derived.curve.{root}.regime (states: {', '.join(REGIME_CODES)}).")
-            st.caption(_rank_window_caption())
+            if state_codes.empty:
+                st.info(
+                    f"{root.upper()}'s regime is undetermined on every date in the rank "
+                    "window: its state comes from s12, convexity and s1_12, and convexity "
+                    "needs three ranks. The lake holds no "
+                    f"derived.curve.{root}.regime row for this panel either."
+                )
+            else:
+                fig = regime_ribbon_chart(
+                    unadj.loc[state_codes.index, "f01"], state_codes, state_labels, unit="USD",
+                )
+                st.plotly_chart(fig)
+                st.caption(
+                    f"Source: derived.curve.{root}.regime (states: {', '.join(REGIME_CODES)})."
+                )
+                st.caption(_rank_window_caption())
+                if len(state_codes) < len(regime):
+                    st.caption(
+                        f"{len(regime) - len(state_codes)} of {len(regime)} dates in the "
+                        "window are omitted: their inputs determined no state, and "
+                        "\"flat\" there would assert a structure nothing measured."
+                    )
 
-            st.dataframe(transition_matrix(regime["state"]))
+                st.dataframe(transition_matrix(determined["state"]))
 
 with tab_storage:
     util_df = read_ts_long(series_ids=["derived.cushing.util", "derived.cushing.util_decile"])

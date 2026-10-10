@@ -188,3 +188,68 @@ def test_the_no_data_message_does_not_claim_settlements_are_the_only_input(
     messages = " ".join(element.value for element in _run_page_output.info)
 
     assert "close" in messages
+
+
+# --- The regime ribbon must not publish what the lake withholds -------------------------
+#
+# `pipelines/derived/curve.py` masks `curve_regime`'s `default="flat"` rows whose inputs
+# never determined a state: a row reaches "flat" either on the genuine s12 == 0 knife edge
+# or because nothing could be evaluated at all. The page recomputed the regime from its own
+# panel with no such mask, so on a panel with fewer than three ranks -- cv is NaN
+# everywhere, so none of the six named conditions can fire -- the lake wrote no rows at all
+# while the page painted code 6, "flat", under a caption citing that same lake series.
+
+_TWO_CONTRACTS = {"x2026": pd.Timestamp("2026-10-20"), "z2026": pd.Timestamp("2026-11-20")}
+_THREE_CONTRACTS = {**_TWO_CONTRACTS, "f2027": pd.Timestamp("2026-12-21")}
+_TWO_CONTRACT_WINDOW = pd.Timestamp("2026-09-19")  # 2026-10-20 - 31d, the only gap
+
+
+def _regime_codes_plotted(at: AppTest) -> list[float]:
+    """The z row of the regime ribbon's heatmap. Identified by its single unnamed y
+    category, which the GSCI roll-offset heatmap on the same page does not share."""
+    codes: list[float] = []
+    for chart in at.get("plotly_chart"):
+        for trace in json.loads(chart.proto.spec)["data"]:
+            if trace.get("type") == "heatmap" and trace.get("y") == [""]:
+                codes.extend(value for row in trace["z"] for value in row)
+    return codes
+
+
+def test_the_regime_ribbon_withholds_states_its_inputs_never_determined(
+    isolated_lake,
+) -> None:
+    """Two contracts: convexity needs three ranks, so cv is NaN on every date and no named
+    state can fire. The lake writes zero regime rows for exactly this panel. A ribbon
+    painting code 6 states a definite market structure on a curve it could not measure."""
+    storage = isolated_lake
+    for contract in _TWO_CONTRACTS:
+        _write_close(storage, contract, _PRICES[contract], _DATES)
+    _write_meta(_TWO_CONTRACTS)
+
+    at = _run_page()
+
+    assert _regime_codes_plotted(at) == [], (
+        "the page painted a regime ribbon for a panel whose every state is undetermined; "
+        "the lake writes no derived.curve.cl.regime rows for this panel at all"
+    )
+    said = " ".join([element.value for element in at.info] + [c.value for c in at.caption])
+    assert "undetermined" in said.lower(), "the page dropped the ribbon without saying why"
+
+
+def test_a_determined_regime_is_still_drawn(isolated_lake) -> None:
+    """The discriminating half: the same shape with a third rank makes cv computable, so
+    the state is real and must still be plotted. A mask that blanks the ribbon outright
+    would pass the test above and fail here."""
+    storage = isolated_lake
+    for contract in _THREE_CONTRACTS:
+        _write_close(storage, contract, _PRICES[contract], _DATES)
+    _write_meta(_THREE_CONTRACTS)
+
+    at = _run_page()
+    codes = _regime_codes_plotted(at)
+
+    assert codes, "a panel with a computable convexity has real regime states to plot"
+    # 70 / 71 / 72: s12 = -1 < 0 and cv = 70 - 142 + 72 = 0, so cv <= 0 -- concave contango.
+    from core.curve import REGIME_CODES
+
+    assert set(codes) == {float(REGIME_CODES["concave_contango"])}
