@@ -44,10 +44,18 @@ The workbook's scenario formulas reference flow-share cells `$E$4, $F$4, $G$4, $
 $J$4, $K$4` across the seven quarters. The fourth should be `$H$4`. `H4` is skipped, so
 1Q 2027 is computed with 4Q 2026's 0.8 while its own stated assumption is **0.9**.
 
-Effect, per producer, in mb/d: Saudi Arabia 9.46 published against 9.73 correct; Iraq 3.436
-against 3.6655; UAE 3.94 against 4.17; Kuwait 2.096 against 2.258; Iran 3.292 against 3.316.
-The Gulf total is understated by roughly **0.92 mb/d** for that quarter, and it feeds
-`Surplus / (Deficit)` directly.
+Every one of the five producers is understated for that quarter as a result, and the error
+feeds `Surplus / (Deficit)` directly.
+
+The per-producer magnitudes are deliberately not printed here, and neither is the Gulf
+total. **A scenario output is a licensed figure in disguise.** `recovery_ceilings.csv` and
+`flow_share.csv` are tracked, so anyone holding this repo has every term of
+`scenario = disrupted + (undisrupted - disrupted) * open_share * ceiling` except the two
+baselines. Two scenario figures for the same producer at different shares -- exactly what a
+published-against-correct pair is -- leave two equations in those two unknowns and invert to
+the licensed rates exactly. Reproduce the comparison yourself from
+`data/manual/hormuz/baselines.csv`; the finding is the skipped cell reference, which needs
+no numbers to state.
 
 This pipeline uses each quarter's own share. It therefore disagrees with the workbook in
 1Q 2027 deliberately. Recorded here rather than reconciled, per

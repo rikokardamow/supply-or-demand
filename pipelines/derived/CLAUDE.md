@@ -183,8 +183,24 @@ undisrupted/disrupted rates derive from licensed BI content. See that directory'
 
 **"Ramp factor" is a recovery ceiling, not a speed.** A producer whose ceiling is below 1
 permanently regains only that fraction of its lost rate, even at a fully reopened strait.
-Named `recovery_ceiling` for what the formula does rather than what the sheet calls it. The
-per-producer values are licensed BI figures and live only in the git-ignored drop.
+Named `recovery_ceiling` for what the formula does rather than what the sheet calls it.
+
+**Where the licence line actually falls, and why it is not where it first looks.** The five
+per-producer ceilings in the tracked `recovery_ceilings.csv` do reproduce the workbook's
+ramp factors. They stay tracked: they are the active scenario choices, bounded scalars in
+[0, 1] that assert nothing about anyone's production, and a scenario whose levers are not
+in the diff cannot be reviewed or reproduced. The licensed quantities are the per-producer
+**rates** -- `undisrupted_mbd` and `disrupted_mbd` -- and those live only in
+`data/manual/hormuz/baselines.csv`.
+
+The consequence is a rule that is easy to miss and was missed once already: **never put a
+scenario output in a tracked file.** With the ceilings and flow shares tracked, every term
+of the formula is public except the two baselines, so two scenario figures for one producer
+at different shares invert to those baselines exactly. A table of published-against-correct
+1Q 2027 values is precisely such a pair, and the first scrub of this port left one in
+`pipelines/derived/hormuz/README.md` while deleting the baselines from the prose beside it.
+The structural findings -- which cell the sheet skips, how many cells matched -- carry the
+analysis without any figure at all.
 
 **A blank flow share is `None`, never `0.0`.** The source writes its pre-disruption quarter
 as `-`; read as zero that asserts a total closure, the inversion of its meaning. Quarters
