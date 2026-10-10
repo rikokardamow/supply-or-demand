@@ -42,6 +42,22 @@ CSV schema.
 `drop_duplicates(subset=["root", "contract"], keep="last")`, so a corrected contract spec
 simply overwrites the earlier one on the next write.
 
+### Its directory comes from `core.storage.LAKE_ROOT`, resolved per call (2026-10-10)
+
+`series_meta.py` held its own module-level `SERIES_META_DIR` built from a relative path at
+import time. Two consequences, both found by a test that had been passing for the wrong
+reason: the manifest's location depended on the process's working directory, and patching
+`core.storage.LAKE_ROOT` — the one knob every other test uses to isolate the lake — did not
+move it, so a test that believed it was writing to `tmp_path` was writing to the real
+manifest and only `chdir` was saving it.
+
+It now does `from core import storage` and reads `storage.LAKE_ROOT` inside each function,
+so the directory resolves when the call happens rather than when the module is imported.
+Call-time resolution is the whole point: `from core.storage import LAKE_ROOT` would rebind a
+copy at import and defeat `monkeypatch.setattr` exactly as the old constant did. Verified by
+checking the real manifest's mtime across a full `AppTest` run that patched only
+`LAKE_ROOT`.
+
 ## `contract_specs.csv` — well-known public exchange specs, not fetched live
 
 Per-root `tick_size`/`contract_unit`/`currency` for the 7 roots (`cl`/`rb`/`ho`/`ng` on
