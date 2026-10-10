@@ -6,6 +6,7 @@ not a document dump — the source PDFs stay outside the repo in `~/Desktop/skil
 | Skill | Covers |
 |---|---|
 | `energy-analyst` | Single consolidated domain reference for the petroleum, gas and power complex |
+| `refresh-artifacts` | Procedure, not reference: run the pipelines, rebuild and republish the pages in `artifacts.md`, rebuild the Office exports (`/refresh-artifacts`) |
 
 ## What `energy-analyst` covers
 

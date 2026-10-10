@@ -1,0 +1,130 @@
+<title>EU Gas Storage in Motion</title>
+<style>
+/*__BASE_CSS__*/
+</style>
+<div class="stage">
+  <header class="masthead">
+    <h1>EU gas storage in motion</h1>
+    <p class="meta" id="meta"></p>
+  </header>
+  <div class="exhibit" style="flex:none">
+    <header>
+      <h2 id="headline"></h2>
+      <span class="gap-flag" id="gap" hidden></span>
+    </header>
+  </div>
+  <main class="split">
+    <div class="chart" id="bars" role="img" aria-label="Storage fullness by country on the selected date"></div>
+    <div class="chart" id="line" role="img" aria-label="EU storage fullness through time"></div>
+  </main>
+  <div class="controls">
+    <button id="play" type="button">Play</button>
+    <input id="scrub" type="range" min="0" step="1" aria-label="Date">
+    <span class="now" id="now"></span>
+    <label for="speed">Speed
+      <select id="speed">
+        <option value="1">1×</option>
+        <option value="2" selected>2×</option>
+        <option value="4">4×</option>
+      </select>
+    </label>
+  </div>
+  <p class="source" id="source"></p>
+</div>
+<script type="application/json" id="payload">/*__DATA__*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.1.0/plotly-basic.min.js" integrity="sha384-7U7ehGKdL5gsFu89O1kYrHLPKpTf6BJ1bIe+nke+R5+CpdiuJCH2K/TG9JuNqq5l" crossorigin="anonymous"></script>
+<script>
+/*__CHARTS_JS__*/
+</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("payload").textContent);
+  const { C } = KD;
+  KD.metaLine(document.getElementById("meta"), D.meta);
+  document.getElementById("source").textContent = D.source + " · " + D.note;
+  if (D.gap) {
+    const flag = document.getElementById("gap");
+    flag.textContent = D.gap;
+    flag.hidden = false;
+  }
+
+  const last = D.dates.length - 1;
+  const bars = document.getElementById("bars");
+  const line = document.getElementById("line");
+  const scrub = document.getElementById("scrub");
+  const play = document.getElementById("play");
+  const speed = document.getElementById("speed");
+  const now = document.getElementById("now");
+  const headline = document.getElementById("headline");
+  scrub.max = String(last);
+
+  const label = (iso) => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB",
+    { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+  function draw(i) {
+    const rows = D.countries
+      .map((c) => ({ c, v: D.values[c][i] }))
+      .filter((r) => r.v !== null)
+      .sort((a, b) => a.v - b.v);
+    Plotly.react(bars, [{
+      type: "bar", orientation: "h", y: rows.map((r) => r.c), x: rows.map((r) => r.v),
+      marker: { color: C.navy }, text: rows.map((r) => r.v.toFixed(0)), textposition: "outside",
+      cliponaxis: false, hovertemplate: "%{x:.1f}% full<extra>%{y}</extra>",
+    }], KD.layout({
+      hovermode: "closest", showlegend: false, bargap: 0.3,
+      xaxis: { range: [0, 112], title: KD.axisTitle("% full, by country"), gridcolor: C.grid, zeroline: false },
+      yaxis: { type: "category", automargin: true, tickfont: { size: 11.5 } },
+      margin: { l: 40, r: 16, t: 10, b: 44 },
+    }), KD.CONFIG);
+
+    const eu = D.eu[i];
+    Plotly.react(line, [
+      { x: D.dates, y: D.eu, mode: "lines", name: "Full history", line: { color: C.blue, width: 1.2 },
+        hoverinfo: "skip" },
+      { x: D.dates.slice(0, i + 1), y: D.eu.slice(0, i + 1), mode: "lines", name: "EU to date",
+        line: { color: C.navy, width: 2.4 }, hovertemplate: "%{y:.1f}% full" },
+      { x: [D.dates[i]], y: [eu], mode: "markers", marker: { color: C.navy, size: 9 }, hoverinfo: "skip" },
+    ], KD.layout({
+      showlegend: false,
+      xaxis: { type: "date", gridcolor: C.grid, range: [D.dates[0], D.dates[last]] },
+      yaxis: { range: [0, 105], title: KD.axisTitle("EU, % full"), gridcolor: C.grid, zeroline: false },
+      margin: { l: 52, r: 16, t: 10, b: 36 },
+    }), KD.CONFIG);
+
+    now.textContent = label(D.dates[i]);
+    headline.textContent = eu === null ? `No EU figure for ${label(D.dates[i])}`
+      : `EU storage ${eu.toFixed(1)}% full on ${label(D.dates[i])}`;
+    scrub.value = String(i);
+  }
+
+  let at = last;
+  let timer = null;
+
+  function stop() {
+    clearInterval(timer);
+    timer = null;
+    play.textContent = "Play";
+  }
+
+  function start() {
+    if (at >= last) at = 0;
+    play.textContent = "Pause";
+    timer = setInterval(() => {
+      at += 1;
+      draw(at);
+      if (at >= last) stop();
+    }, 160 / Number(speed.value));
+  }
+
+  play.addEventListener("click", () => (timer ? stop() : start()));
+  speed.addEventListener("change", () => { if (timer) { stop(); start(); } });
+  scrub.addEventListener("input", () => { stop(); at = Number(scrub.value); draw(at); });
+  document.addEventListener("keydown", (event) => {
+    if (event.target === scrub || event.target === speed) return;
+    if (event.key === " ") { event.preventDefault(); play.click(); }
+    else if (event.key === "ArrowRight") { stop(); at = Math.min(last, at + 1); draw(at); }
+    else if (event.key === "ArrowLeft") { stop(); at = Math.max(0, at - 1); draw(at); }
+  });
+  draw(at);
+})();
+</script>

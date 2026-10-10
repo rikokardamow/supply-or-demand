@@ -1,0 +1,53 @@
+<title>Energy Desk Briefing</title>
+<style>
+/*__BASE_CSS__*/
+.slide .exhibit { flex: 1; min-height: 0; gap: 10px; }
+.slide .exhibit header { border-bottom: 0; padding-bottom: 0; }
+</style>
+<div class="stage">
+  <header class="masthead">
+    <h1>Energy desk briefing</h1>
+    <p class="meta" id="meta"></p>
+  </header>
+  <main class="slide" id="slide" aria-live="polite"></main>
+  <nav class="controls" aria-label="Slides">
+    <button id="prev" type="button">← Previous</button>
+    <span class="now" id="count"></span>
+    <button id="next" type="button">Next →</button>
+    <span>Left and right arrow keys move between exhibits.</span>
+  </nav>
+</div>
+<script type="application/json" id="payload">/*__DATA__*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.1.0/plotly-basic.min.js" integrity="sha384-7U7ehGKdL5gsFu89O1kYrHLPKpTf6BJ1bIe+nke+R5+CpdiuJCH2K/TG9JuNqq5l" crossorigin="anonymous"></script>
+<script>
+/*__CHARTS_JS__*/
+</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("payload").textContent);
+  KD.metaLine(document.getElementById("meta"), D.meta);
+  const stage = document.getElementById("slide");
+  const count = document.getElementById("count");
+  const total = D.slides.length;
+  let at = Math.min(Math.max(parseInt(location.hash.slice(1), 10) - 1 || 0, 0), total - 1);
+
+  function show(index) {
+    at = (index + total) % total;
+    const card = KD.card(D.slides[at], { heading: "h2" });
+    stage.replaceChildren(card);
+    card.draw();
+    count.textContent = `Exhibit ${at + 1} of ${total}`;
+    history.replaceState(null, "", "#" + (at + 1));
+  }
+
+  document.getElementById("prev").addEventListener("click", () => show(at - 1));
+  document.getElementById("next").addEventListener("click", () => show(at + 1));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "PageDown") show(at + 1);
+    else if (event.key === "ArrowLeft" || event.key === "PageUp") show(at - 1);
+    else if (event.key === "Home") show(0);
+    else if (event.key === "End") show(total - 1);
+  });
+  show(at);
+})();
+</script>
