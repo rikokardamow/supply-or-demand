@@ -45,3 +45,4 @@ build fails if a page exceeds 4 MiB or any output contains a `.env` value.
 |---|---|---|
 | 2026-10-10 | First publish of all three pages and both exports | Most sources last pulled 2026-09-09; 16 of 18 exhibits flagged stale |
 | 2026-10-10 | Republish of all three pages and both exports after a full lake refresh (dashboard v6, briefing v4, motion v3) | All five cadences run; failed: news (GDELT 429), opec_momr (403), baker_hughes (403), social (Reddit 429). 4 of 18 exhibits flagged stale |
+| 2026-10-10 | Dashboard v9 and briefing v7: weekly series drawn through their reports, five-year averages, optional MA20/MA100/MA200 switch; exports rebuilt | Retried baker_hughes and opec_momr (both still 403), entsog (272 rows, chart still one corridor), news (one GDELT query failed). 4 of 18 exhibits flagged stale |
