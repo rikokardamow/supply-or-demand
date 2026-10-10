@@ -46,7 +46,9 @@ def test_to_monthly_takes_the_last_business_day_of_each_month() -> None:
 
     January 2026 has exactly 22 business days, the last being Friday 30 January.
     """
-    daily = pd.Series(range(1, 23), index=pd.bdate_range("2026-01-01", periods=22)).astype(float)
+    daily = pd.Series(
+        range(1, 23), index=pd.bdate_range("2026-01-01", periods=22)
+    ).astype(float)
     monthly = to_monthly(daily)
     assert monthly.index[-1] == pd.Timestamp("2026-01-30")
     assert monthly.iloc[-1] == pytest.approx(22.0)

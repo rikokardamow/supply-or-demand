@@ -61,7 +61,10 @@ def _title_offenders(path: Path) -> list[str]:
 
 
 def test_no_builder_paints_its_own_title() -> None:
-    offenders = [offender for path in _scan_paths() for offender in _title_offenders(path)]
+    offenders = [
+        offender for path in _scan_paths() for offender in _title_offenders(path)
+    ]
     assert offenders == [], (
-        "these set layout.title, which duplicates the section header: " + ", ".join(offenders)
+        "these set layout.title, which duplicates the section header: "
+        + ", ".join(offenders)
     )

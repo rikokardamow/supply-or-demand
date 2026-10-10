@@ -83,7 +83,9 @@ def test_country_deviation_ranks_by_deviation_descending() -> None:
 
     def _make_df(latest_value: float) -> pd.DataFrame:
         values = [50.0] * 6 + [latest_value]
-        return pd.DataFrame({"ts": pd.to_datetime([f"{y}-06-15" for y in years]), "value": values})
+        return pd.DataFrame(
+            {"ts": pd.to_datetime([f"{y}-06-15" for y in years]), "value": values}
+        )
 
     fill_by_country = {
         "DE": _make_df(70.0),  # +20 vs median

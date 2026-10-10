@@ -49,15 +49,8 @@ def test_read_manifest_fills_missing_model_column_as_ecmwf(tmp_path: Path) -> No
     ECMWF's) has no `model` column at all -- confirm it's filled in rather than
     requiring a manual migration of the existing on-disk file."""
     legacy = pd.DataFrame(
-        [
-            {
-                "region": "eu",
-                "step_hours": 72,
-                "valid_time": pd.Timestamp("2026-09-04"),
-                "rendered_at": pd.Timestamp("2026-09-04"),
-                "path": "a.png",
-            }
-        ]
+        [{"region": "eu", "step_hours": 72, "valid_time": pd.Timestamp("2026-09-04"),
+          "rendered_at": pd.Timestamp("2026-09-04"), "path": "a.png"}]
     )
     anomaly_maps.MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     legacy.to_parquet(anomaly_maps.MANIFEST_PATH, index=False)
@@ -93,7 +86,9 @@ def test_append_manifest_row_keeps_distinct_models_separate() -> None:
 
 
 def test_render_anomaly_map_writes_png_and_manifest_row(monkeypatch: pytest.MonkeyPatch) -> None:
-    clim = pd.DataFrame({"lat": [50.0, 53.0], "lon": [10.0, 13.0], "climatology_c": [15.0, 15.0]})
+    clim = pd.DataFrame(
+        {"lat": [50.0, 53.0], "lon": [10.0, 13.0], "climatology_c": [15.0, 15.0]}
+    )
     monkeypatch.setattr(anomaly_maps, "climatology_grid", lambda region, target_date: clim)
 
     path = anomaly_maps.render_anomaly_map(

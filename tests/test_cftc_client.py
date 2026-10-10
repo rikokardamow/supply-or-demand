@@ -13,13 +13,7 @@ def test_get_disaggregated_returns_real_columns_and_dtypes() -> None:
 
     assert not df.empty
     assert list(df.columns) == [
-        "date",
-        "root",
-        "mm_long",
-        "mm_short",
-        "prod_merc_long",
-        "prod_merc_short",
-        "oi",
+        "date", "root", "mm_long", "mm_short", "prod_merc_long", "prod_merc_short", "oi",
     ]
     assert (df["root"] == "cl").all()
     for col in ("mm_long", "mm_short", "prod_merc_long", "prod_merc_short", "oi"):

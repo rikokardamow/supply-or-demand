@@ -265,12 +265,16 @@ def test_main_publishes_both_tables_without_touching_a_real_database(
     conn = _FakeConnection()
     monkeypatch.setattr("core.publish.psycopg.connect", lambda *a, **k: conn)
     monkeypatch.setattr("core.publish.settings.supabase_db_url", "postgresql://fake")
-    monkeypatch.setattr("pipelines.futures.publish_curve.read_futures_settles", lambda: _lake())
+    monkeypatch.setattr(
+        "pipelines.futures.publish_curve.read_futures_settles", lambda: _lake()
+    )
 
     main()
 
     logged = [
-        params for sql, params in conn.cur.executed if "insert into serving.publish_log" in sql
+        params
+        for sql, params in conn.cur.executed
+        if "insert into serving.publish_log" in sql
     ]
     assert [p[0] for p in logged if p is not None] == ["curve_settles", "spreads"]
     assert all(p is not None and p[4] == "curve" for p in logged)

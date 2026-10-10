@@ -58,7 +58,9 @@ def _text(at: AppTest) -> str:
 
 def test_section_renders_its_title_once() -> None:
     at = _run(
-        "from components.section import section\nwith section('Cushing Crude Stocks'):\n    pass\n"
+        "from components.section import section\n"
+        "with section('Cushing Crude Stocks'):\n"
+        "    pass\n"
     )
     assert not at.exception
     assert "Cushing Crude Stocks" in _text(at)
@@ -66,7 +68,8 @@ def test_section_renders_its_title_once() -> None:
 
 def test_empty_state_names_the_source_and_its_cadence() -> None:
     at = _run(
-        "from components.section import empty_state\nempty_state('entsog', 'daily', '2026-08-30')\n"
+        "from components.section import empty_state\n"
+        "empty_state('entsog', 'daily', '2026-08-30')\n"
     )
     assert not at.exception
     rendered = _text(at)
@@ -77,7 +80,8 @@ def test_empty_state_names_the_source_and_its_cadence() -> None:
 
 def test_empty_state_says_not_tracked_rather_than_none_when_a_source_has_no_data() -> None:
     at = _run(
-        "from components.section import empty_state\nempty_state('aisstream', 'hourly', None)\n"
+        "from components.section import empty_state\n"
+        "empty_state('aisstream', 'hourly', None)\n"
     )
     assert not at.exception
     rendered = _text(at)
@@ -98,7 +102,10 @@ def test_page_header_renders_title_and_meta() -> None:
 
 
 def test_page_header_omits_the_meta_line_when_there_is_no_meta() -> None:
-    at = _run("from components.section import page_header\npage_header('Supply')\n")
+    at = _run(
+        "from components.section import page_header\n"
+        "page_header('Supply')\n"
+    )
     assert not at.exception
     assert "Supply" in _text(at)
 
@@ -138,7 +145,8 @@ def test_source_note_renders_its_text() -> None:
         ),
         (
             "h2",
-            "from components.section import page_header\npage_header('Some Title')\n",
+            "from components.section import page_header\n"
+            "page_header('Some Title')\n",
         ),
     ],
     ids=["section-h3", "page_header-h2"],

@@ -17,62 +17,10 @@ _HEADER = [
 
 _SAMPLE_ROWS = [
     # Country, County, Basin, GOM, DrillFor, Location, State, Trajectory, Year, Month, Date, Value
-    [
-        "UNITED STATES",
-        "Midland",
-        "Permian",
-        "No",
-        "Oil",
-        "Land",
-        "TEXAS",
-        "Horizontal",
-        2026,
-        8,
-        "2026-08-28",
-        250,
-    ],  # noqa: E501
-    [
-        "UNITED STATES",
-        "Reeves",
-        "Permian",
-        "No",
-        "Oil",
-        "Land",
-        "TEXAS",
-        "Horizontal",
-        2026,
-        8,
-        "2026-08-28",
-        100,
-    ],  # noqa: E501
-    [
-        "UNITED STATES",
-        "Weld",
-        "DJ-Niobrara",
-        "No",
-        "Gas",
-        "Land",
-        "COLORADO",
-        "Horizontal",
-        2026,
-        8,
-        "2026-08-28",
-        5,
-    ],  # noqa: E501
-    [
-        "CANADA",
-        "Central Alberta",
-        "Other",
-        "No",
-        "Oil",
-        "Land",
-        "ALBERTA",
-        "Horizontal",
-        2026,
-        8,
-        "2026-08-28",
-        30,
-    ],  # noqa: E501
+    ["UNITED STATES", "Midland", "Permian", "No", "Oil", "Land", "TEXAS", "Horizontal", 2026, 8, "2026-08-28", 250],  # noqa: E501
+    ["UNITED STATES", "Reeves", "Permian", "No", "Oil", "Land", "TEXAS", "Horizontal", 2026, 8, "2026-08-28", 100],  # noqa: E501
+    ["UNITED STATES", "Weld", "DJ-Niobrara", "No", "Gas", "Land", "COLORADO", "Horizontal", 2026, 8, "2026-08-28", 5],  # noqa: E501
+    ["CANADA", "Central Alberta", "Other", "No", "Oil", "Land", "ALBERTA", "Horizontal", 2026, 8, "2026-08-28", 30],  # noqa: E501
 ]
 
 

@@ -58,7 +58,9 @@ def test_run_cadence_returns_0_when_everything_succeeds(monkeypatch: pytest.Monk
     monkeypatch.setattr(
         "infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("first", "ok.module")]}
     )
-    monkeypatch.setattr("infra.run_scheduled.importlib.import_module", lambda path: _OkModule)
+    monkeypatch.setattr(
+        "infra.run_scheduled.importlib.import_module", lambda path: _OkModule
+    )
 
     assert run_cadence("test_cadence") == 0
 
@@ -82,7 +84,9 @@ def test_run_cadence_fails_when_every_item_inside_a_pipeline_failed(
                     record_failure(root, exc)
             print("pull_daily: 0 total rows written", flush=True)
 
-    monkeypatch.setattr("infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("futures", "x")]})
+    monkeypatch.setattr(
+        "infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("futures", "x")]}
+    )
     monkeypatch.setattr(
         "infra.run_scheduled.importlib.import_module", lambda path: _AllItemsFailedModule
     )
@@ -105,8 +109,12 @@ def test_run_cadence_still_succeeds_when_a_pipeline_had_no_item_failures(
         def main() -> None:
             pass
 
-    monkeypatch.setattr("infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("futures", "x")]})
-    monkeypatch.setattr("infra.run_scheduled.importlib.import_module", lambda path: _HealthyModule)
+    monkeypatch.setattr(
+        "infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("futures", "x")]}
+    )
+    monkeypatch.setattr(
+        "infra.run_scheduled.importlib.import_module", lambda path: _HealthyModule
+    )
 
     assert run_cadence("test_cadence") == 0
 
@@ -127,8 +135,12 @@ def test_run_cadence_never_prints_a_credential_from_a_pipeline_exception(
             response.url = f"https://api.eia.gov/v2/x/data/?api_key={key}"
             response.raise_for_status()
 
-    monkeypatch.setattr("infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("eia_wpsr", "x")]})
-    monkeypatch.setattr("infra.run_scheduled.importlib.import_module", lambda path: _LeakyModule)
+    monkeypatch.setattr(
+        "infra.run_scheduled.CADENCE_GROUPS", {"test_cadence": [("eia_wpsr", "x")]}
+    )
+    monkeypatch.setattr(
+        "infra.run_scheduled.importlib.import_module", lambda path: _LeakyModule
+    )
 
     assert run_cadence("test_cadence") == 1
     printed = capsys.readouterr().out

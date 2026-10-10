@@ -71,8 +71,12 @@ class _ReadTsLongSpy:
         return result
 
 
-def test_build_climatology_excludes_2020(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(climatology_module, "read_ts_long", _ReadTsLongSpy(_synthetic_long_df()))
+def test_build_climatology_excludes_2020(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        climatology_module, "read_ts_long", _ReadTsLongSpy(_synthetic_long_df())
+    )
     monkeypatch.setattr(climatology_module, "CLIMATOLOGY_YEARS", range(2018, 2022))
     cache_path = tmp_path / "climatology.parquet"
 

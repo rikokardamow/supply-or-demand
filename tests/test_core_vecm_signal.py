@@ -91,7 +91,8 @@ def test_momentum_gate_flattens_positions_that_fight_3m_crack_momentum() -> None
     crack momentum."""
     out = _signal().dropna(subset=["position"])
     fighting = out[
-        (out["raw_position"] != 0) & (np.sign(out["raw_position"]) != np.sign(out["momentum"]))
+        (out["raw_position"] != 0)
+        & (np.sign(out["raw_position"]) != np.sign(out["momentum"]))
     ]
     assert (fighting["position"] == 0).all()
 

@@ -9,27 +9,12 @@ from pipelines.eia.client import EIAClient
 
 def _fake_rows() -> list[dict[str, Any]]:
     return [
-        {
-            "period": "2026-09-01T00",
-            "respondent": "ERCO",
-            "type": "D",
-            "value": 45000,
-            "value-units": "megawatthours",
-        },
-        {
-            "period": "2026-09-01T01",
-            "respondent": "ERCO",
-            "type": "D",
-            "value": None,
-            "value-units": "megawatthours",
-        },
-        {
-            "period": "2026-09-01T01",
-            "respondent": "PJM",
-            "type": "D",
-            "value": 88000,
-            "value-units": "megawatthours",
-        },
+        {"period": "2026-09-01T00", "respondent": "ERCO", "type": "D",
+         "value": 45000, "value-units": "megawatthours"},
+        {"period": "2026-09-01T01", "respondent": "ERCO", "type": "D",
+         "value": None, "value-units": "megawatthours"},
+        {"period": "2026-09-01T01", "respondent": "PJM", "type": "D",
+         "value": 88000, "value-units": "megawatthours"},
     ]
 
 
@@ -68,20 +53,10 @@ def test_get_facet_flows_builds_flows_rows_from_fromba_toba(
         EIAClient,
         "_fetch_facet_rows",
         lambda *a, **k: [
-            {
-                "period": "2026-09-01T00",
-                "fromba": "ERCO",
-                "toba": "SWPP",
-                "value": 120,
-                "value-units": "megawatthours",
-            },
-            {
-                "period": "2026-09-01T01",
-                "fromba": "ERCO",
-                "toba": "SWPP",
-                "value": None,
-                "value-units": "megawatthours",
-            },
+            {"period": "2026-09-01T00", "fromba": "ERCO", "toba": "SWPP",
+             "value": 120, "value-units": "megawatthours"},
+            {"period": "2026-09-01T01", "fromba": "ERCO", "toba": "SWPP",
+             "value": None, "value-units": "megawatthours"},
         ],
     )
 

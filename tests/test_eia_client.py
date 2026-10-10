@@ -181,20 +181,10 @@ def test_get_series_skips_rows_with_null_value(monkeypatch: pytest.MonkeyPatch) 
         client,
         "_fetch_rows",
         lambda route, series, frequency: [
-            {
-                "series": "N3050US3",
-                "area-name": "U.S.",
-                "period": "1973-01",
-                "value": None,
-                "units": "$/MCF",
-            },
-            {
-                "series": "N3050US3",
-                "area-name": "U.S.",
-                "period": "1983-10",
-                "value": "3.50",
-                "units": "$/MCF",
-            },
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1973-01",
+             "value": None, "units": "$/MCF"},
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1983-10",
+             "value": "3.50", "units": "$/MCF"},
         ],
     )
 
@@ -215,20 +205,10 @@ def test_get_series_prints_when_null_rows_are_dropped(
         client,
         "_fetch_rows",
         lambda route, series, frequency: [
-            {
-                "series": "N3050US3",
-                "area-name": "U.S.",
-                "period": "1973-01",
-                "value": None,
-                "units": "$/MCF",
-            },
-            {
-                "series": "N3050US3",
-                "area-name": "U.S.",
-                "period": "1983-10",
-                "value": "3.50",
-                "units": "$/MCF",
-            },
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1973-01",
+             "value": None, "units": "$/MCF"},
+            {"series": "N3050US3", "area-name": "U.S.", "period": "1983-10",
+             "value": "3.50", "units": "$/MCF"},
         ],
     )
 
@@ -247,13 +227,8 @@ def test_get_series_prints_nothing_when_no_rows_are_dropped(
         client,
         "_fetch_rows",
         lambda route, series, frequency: [
-            {
-                "series": "WCESTUS1",
-                "area-name": "U.S.",
-                "period": "2026-08-01",
-                "value": "1.0",
-                "units": "MBBL",
-            },
+            {"series": "WCESTUS1", "area-name": "U.S.", "period": "2026-08-01",
+             "value": "1.0", "units": "MBBL"},
         ],
     )
 
@@ -270,18 +245,10 @@ def test_get_operational_series_prints_when_null_rows_are_dropped(
         client,
         "_fetch_operational_rows",
         lambda route, data_key, fueltypeid, sectorid, locations, frequency: [
-            {
-                "location": "FL",
-                "period": "2026-06",
-                "cost-per-btu": None,
-                "cost-per-btu-units": "dollars per million Btu",
-            },
-            {
-                "location": "TX",
-                "period": "2026-06",
-                "cost-per-btu": "3.175",
-                "cost-per-btu-units": "dollars per million Btu",
-            },
+            {"location": "FL", "period": "2026-06", "cost-per-btu": None,
+             "cost-per-btu-units": "dollars per million Btu"},
+            {"location": "TX", "period": "2026-06", "cost-per-btu": "3.175",
+             "cost-per-btu-units": "dollars per million Btu"},
         ],
     )
 
@@ -307,12 +274,8 @@ def test_get_operational_series_prints_nothing_when_no_rows_are_dropped(
         client,
         "_fetch_operational_rows",
         lambda route, data_key, fueltypeid, sectorid, locations, frequency: [
-            {
-                "location": "TX",
-                "period": "2026-06",
-                "cost-per-btu": "3.175",
-                "cost-per-btu-units": "dollars per million Btu",
-            },
+            {"location": "TX", "period": "2026-06", "cost-per-btu": "3.175",
+             "cost-per-btu-units": "dollars per million Btu"},
         ],
     )
 

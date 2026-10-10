@@ -68,7 +68,9 @@ def test_pull_demand_requests_the_bounded_window_and_correct_facets(
         captured.update(kwargs)
         return pd.DataFrame()
 
-    monkeypatch.setattr(pull_rto_demand.EIAClient, "get_facet_series", _fake_get_facet_series)
+    monkeypatch.setattr(
+        pull_rto_demand.EIAClient, "get_facet_series", _fake_get_facet_series
+    )
 
     pull_rto_demand.pull_demand(pull_rto_demand.EIAClient(), days=3)
 

@@ -54,7 +54,9 @@ def test_zero_return_on_roll_day() -> None:
     correctly ratio-adjusted series must show exactly 0.0 return on the roll day, since
     the adjusted return crossing a roll equals the new contract's own real return, never
     an artificial cross-contract jump."""
-    expiries = pd.Series({"f26": pd.Timestamp("2026-01-30"), "g26": pd.Timestamp("2026-02-27")})
+    expiries = pd.Series(
+        {"f26": pd.Timestamp("2026-01-30"), "g26": pd.Timestamp("2026-02-27")}
+    )
     dates = pd.bdate_range("2026-01-01", "2026-02-28")
     f26_prices = pd.Series(np.linspace(50.0, 55.0, len(dates)), index=dates)
     g26_prices = pd.Series(51.0, index=dates)  # flat

@@ -20,7 +20,9 @@ def test_get_operator_point_directions_returns_full_directory() -> None:
 @pytest.mark.vcr
 def test_get_physical_flow_returns_raw_kwh_values() -> None:
     client = ENTSOGClient()
-    df = client.get_physical_flow("ITP-00105", "entry", date(2026, 8, 25), date(2026, 8, 28))
+    df = client.get_physical_flow(
+        "ITP-00105", "entry", date(2026, 8, 25), date(2026, 8, 28)
+    )
 
     assert not df.empty
     assert set(df.columns) == {"ts", "value_kwh_d"}
@@ -36,7 +38,9 @@ def test_get_physical_flow_returns_empty_for_a_point_with_no_data() -> None:
     # directory marking it hasData=True — ENTSOG returns 404 {"message": "No result
     # found"} rather than 200 with an empty array. Confirmed live; must not raise.
     client = ENTSOGClient()
-    df = client.get_physical_flow("ITP-00075", "entry", date(2026, 1, 1), date(2026, 8, 28))
+    df = client.get_physical_flow(
+        "ITP-00075", "entry", date(2026, 1, 1), date(2026, 8, 28)
+    )
 
     assert df.empty
     assert list(df.columns) == ["ts", "value_kwh_d"]
@@ -47,7 +51,9 @@ def test_get_physical_flow_drops_rows_with_empty_string_value() -> None:
     # ITP-00519 (Dunkerque DKB, entry) returns a row per day but with value="" for
     # every day in a real 31-day range — confirmed live. Must not crash on float("").
     client = ENTSOGClient()
-    df = client.get_physical_flow("ITP-00519", "entry", date(2026, 7, 30), date(2026, 8, 29))
+    df = client.get_physical_flow(
+        "ITP-00519", "entry", date(2026, 7, 30), date(2026, 8, 29)
+    )
 
     assert df.empty
     assert list(df.columns) == ["ts", "value_kwh_d"]
