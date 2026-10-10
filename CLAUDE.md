@@ -88,6 +88,14 @@ where the two overlap they must agree, and `core/design.py` stays the token sour
   `core.seasonal.seasonal_stats` (golden rule 4 — 2020 is still dropped, and the label
   says "ex-2020" when the window reaches it). This is narrower than the Streamlit app's
   default 2018-onwards band; the two will show different medians for the same series.
+- **Averages.** Every time-series exhibit carries MA20, MA100 and MA200 of its lead series
+  (means of the last 20, 100 and 200 observations, computed over the whole lake history,
+  not the chart window) and a five-year average: a flat line on a time axis, the mean of
+  the band's years on a seasonal chart. Thin dashed lines behind the data: slate ramp
+  `MA_SHORT`/`MA_MID`/`MA_LONG` from `core/design.py`, the five-year average in orange.
+  A window the history cannot fill is left out, never drawn from fewer observations.
+  Bar charts, forecast or scenario series and the forward curve get none. Every point is
+  in the workbook's `moving_averages` sheet.
 - **Annotated turning points.** Each time-series exhibit labels its window high and low
   with value and date, and seasonal charts also label the latest point with its distance
   from the median. Labels are computed, never typed.

@@ -23,6 +23,10 @@ Exhibit = dict[str, Any]
 HISTORY_START: Final = "2018-01-01"
 # A daily series silent for longer than this has stopped and restarted, not paused.
 SERIES_BREAK_DAYS: Final = 90
+# Moving averages count observations (trading days or reports), not calendar days.
+MA_WINDOWS: Final = (20, 100, 200)
+AVERAGE_YEARS: Final = 5
+OVERLAY_COLUMNS: Final = ["exhibit_id", "measure", "ts", "value", "unit"]
 
 TABS: Final = [
     ("overview", "Overview"),
@@ -73,6 +77,7 @@ class Book:
     seasonal: list[pd.DataFrame] = field(default_factory=list)
     sheets: dict[str, pd.DataFrame] = field(default_factory=dict)
     issues: list[str] = field(default_factory=list)
+    overlays: list[pd.DataFrame] = field(default_factory=list)
 
 
 def day(ts: Any) -> str:
@@ -150,6 +155,49 @@ def _turning_points(frame: pd.DataFrame, digits: int, axis: str = "y") -> list[d
     return out
 
 
+def _overlays(
+    book: Book,
+    exhibit_id: str,
+    history: pd.DataFrame,
+    start: Any,
+    unit: str,
+    digits: int,
+    flat_average: bool = True,
+) -> list[dict[str, Any]]:
+    """Moving averages of a series, and its five-year mean, cut to the chart window.
+
+    `history` is the whole series, not the window, so an average is complete from the
+    window's first day. A window the history cannot fill is left out rather than drawn
+    from fewer observations. Every row is also kept for the workbook, so a point on a
+    chart can be traced to a cell."""
+    history = history.dropna(subset=["value"]).sort_values("ts").reset_index(drop=True)
+    if history.empty:
+        return []
+    start = pd.Timestamp(start)
+    rows: list[tuple[str, str, pd.DataFrame]] = []
+    for window in MA_WINDOWS:
+        averaged = history.assign(value=history["value"].rolling(window).mean())
+        averaged = averaged.dropna(subset=["value"])
+        averaged = averaged.loc[averaged["ts"] >= start, ["ts", "value"]]
+        if len(averaged) >= 2:
+            rows.append((f"MA{window}", f"ma{window}", averaged))
+    last = history["ts"].iloc[-1]
+    since = last - pd.DateOffset(years=AVERAGE_YEARS)
+    if flat_average and history["ts"].iloc[0] <= since + pd.Timedelta(days=31):
+        mean = float(history.loc[history["ts"] > since, "value"].mean())
+        ends = pd.DataFrame({"ts": [max(start, history["ts"].iloc[0]), last], "value": mean})
+        rows.append((f"{AVERAGE_YEARS}-year average", "avg5", ends))
+    for name, _, frame in rows:
+        book.overlays.append(
+            frame.assign(exhibit_id=exhibit_id, measure=name, unit=unit)[OVERLAY_COLUMNS]
+        )
+    return [{**_track(name, frame, unit, digits), "style": style} for name, style, frame in rows]
+
+
+def _overlay_note(overlays: list[dict[str, Any]]) -> str:
+    return " MA lines are means of the last 20, 100 and 200 observations." if overlays else ""
+
+
 def _prior_value(frame: pd.DataFrame, days: int) -> float | None:
     cutoff = frame["ts"].iloc[-1] - pd.Timedelta(days=days)
     earlier = frame.loc[frame["ts"] <= cutoff, "value"]
@@ -173,7 +221,7 @@ def _drawn(band: pd.DataFrame, series: pd.DataFrame, year: int, last_doy: int) -
     drawn = band.copy()
     ends = drawn.index.isin([drawn.index[0], drawn.index[-1]])
     weekly = ((drawn["doy"] - last_doy) % 7 == 0) | ends
-    drawn.loc[~weekly, ["band_min", "band_max", "median"]] = float("nan")
+    drawn.loc[~weekly, ["band_min", "band_max", "median", "mean"]] = float("nan")
     for column, which in (("current", year), ("prior", year - 1)):
         reported = set(_reference_doy(series.loc[series["ts"].dt.year == which, "ts"]))
         drawn.loc[~drawn["doy"].isin(reported), column] = float("nan")
@@ -215,6 +263,23 @@ def seasonal_exhibit(
     drawn = _drawn(band, series, year, int(at_doy["doy"]))
     median = float(at_doy["median"]) * scale
     low, high = float(at_doy["band_min"]) * scale, float(at_doy["band_max"]) * scale
+    # Averages run over every report in the lake, then only this year's points are
+    # drawn, on the chart's day-of-year axis. The five-year mean here is the band's own.
+    overlays = _overlays(
+        book,
+        exhibit_id,
+        series.assign(value=series["value"] * scale),
+        pd.Timestamp(year=year, month=1, day=1),
+        unit,
+        digits,
+        flat_average=False,
+    )
+    for overlay in overlays:
+        stamps = pd.to_datetime(pd.Series(overlay["x"]))
+        overlay["x"] = [
+            _iso(pd.Timestamp(year=REFERENCE_YEAR, month=1, day=1) + pd.Timedelta(days=int(d) - 1))
+            for d in _reference_doy(stamps)
+        ]
     # A share is compared in percentage points; a percentage of a percentage misleads.
     is_share = unit.startswith("%")
     vs_median = latest - median if is_share else (latest / median - 1.0) * 100.0
@@ -265,6 +330,8 @@ def seasonal_exhibit(
             "band_min": _values(drawn["band_min"] * scale),
             "band_max": _values(drawn["band_max"] * scale),
             "median": _values(drawn["median"] * scale),
+            "mean": _values(drawn["mean"] * scale),
+            "overlays": overlays,
             "prior": _values(drawn["prior"] * scale),
             "current": _values(drawn["current"] * scale),
             "annotations": annotations,
@@ -283,7 +350,7 @@ def seasonal_exhibit(
             "source": _source(provider, f"ts_long/{source} ({series_id})", latest_ts, _run(raw)),
             "note": (f"Lake unit {series['unit'].iloc[-1]} × {scale:g}. " if scale != 1.0 else "")
             + "Band from core.seasonal. Lines join the reports themselves; the band is sampled "
-            "once a week.",
+            "once a week." + _overlay_note(overlays),
             "gap": stale_flag(latest_ts, cadence_days, book.today),
             "sheets": ["seasonal", "series_long"],
         }
@@ -304,6 +371,7 @@ def pair_exhibit(
     note: str,
     cadence_days: int,
     forward_dated: bool = False,
+    history: pd.DataFrame | None = None,
 ) -> None:
     """A one- or two-series chart: `dual` when the units differ, `lines` when they share one.
 
@@ -329,6 +397,13 @@ def pair_exhibit(
     lead_name, lead, lead_unit, lead_digits = tracks[0]
     first, last_value = float(lead["value"].iloc[0]), float(lead["value"].iloc[-1])
     peak = lead.loc[lead["value"].idxmax()]
+    # Averages belong to the lead series only, and only where its whole history was
+    # passed in; a forecast or scenario series gets none.
+    overlays = (
+        []
+        if history is None
+        else _overlays(book, exhibit_id, history, lead["ts"].iloc[0], lead_unit, lead_digits)
+    )
     book.exhibits.append(
         {
             "id": exhibit_id,
@@ -337,6 +412,7 @@ def pair_exhibit(
             "kind": kind,
             "series": [_track(n, f, u, d) for n, f, u, d in tracks],
             "annotations": _turning_points(lead, lead_digits),
+            "overlays": overlays,
             "takeaway": [
                 "; ".join(lines) + ".",
                 f"{lead_name} {_signed(last_value - first, lead_digits)} {lead_unit} since "
@@ -352,7 +428,7 @@ def pair_exhibit(
                 "date": day(lead["ts"].iloc[-1]),
             },
             "source": _source(provider, table, through, run),
-            "note": note,
+            "note": note + _overlay_note(overlays),
             "gap": gap,
             "sheets": ["series_long"],
         }
@@ -430,6 +506,11 @@ def bars_exhibit(
     )
 
 
+def _history(series_id: str, scale: float = 1.0) -> pd.DataFrame:
+    """A series' whole history from the lake, for averages that outrun a chart window."""
+    return _window(tables.read_series([series_id]), series_id, "1900-01-01", scale)
+
+
 def _window(frame: pd.DataFrame, series_id: str, start: str, scale: float = 1.0) -> pd.DataFrame:
     out = frame.loc[
         (frame["series_id"] == series_id) & (frame["ts"] >= start), ["ts", "value"]
@@ -479,6 +560,7 @@ def _us_oil(book: Book) -> None:
         run=_run(weekly),
         note="Production: lake unit MBBL/D × 0.001.",
         cadence_days=7,
+        history=_history("WCRFPUS2", 0.001),
     )
 
 
@@ -551,6 +633,7 @@ def _prices(book: Book) -> None:
         run=_run(prices),
         note="Spread = Brent close minus WTI close on days both traded.",
         cadence_days=4,
+        history=_history("fut.lco.f01.close"),
     )
 
     curve = tables.brent_curve()
@@ -644,6 +727,7 @@ def _refining(book: Book) -> None:
         run=_run(cracks),
         note="Spot legs, not futures; see Spec 20.",
         cadence_days=7,
+        history=_history(us),
     )
     seasonal_exhibit(
         book,
@@ -666,6 +750,10 @@ def _positioning(book: Book) -> None:
         _window(cot, "cftc.cl.mm_short", "2023-01-01"), on="ts", suffixes=("", "_short")
     )
     net["value"] = (net["value"] - net["value_short"]) / 1000.0
+    net_history = _history("cftc.cl.mm_long").merge(
+        _history("cftc.cl.mm_short"), on="ts", suffixes=("", "_short")
+    )
+    net_history["value"] = (net_history["value"] - net_history["value_short"]) / 1000.0
     wti = tables.read_series(["fut.cl.f01.close"], start="2023-01-01")
     pair_exhibit(
         book,
@@ -682,6 +770,7 @@ def _positioning(book: Book) -> None:
         run=_run(cot),
         note="Net long = mm_long minus mm_short, contracts ÷ 1,000.",
         cadence_days=7,
+        history=net_history.loc[:, ["ts", "value"]],
     )
 
 
@@ -787,6 +876,11 @@ def build(today: date) -> Book:
     book = Book(today=today)
     for section in (_us_oil, _gas, _prices, _refining, _positioning, _supply, _flows):
         section(book)
+    book.sheets["moving_averages"] = (
+        pd.concat(book.overlays, ignore_index=True)
+        if book.overlays
+        else pd.DataFrame(columns=OVERLAY_COLUMNS)
+    )
     book.sheets["wpsr_lines"] = tables.wpsr_lines()
     book.sheets["freshness"] = tables.freshness()
     return book
