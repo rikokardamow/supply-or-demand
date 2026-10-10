@@ -1,7 +1,7 @@
 # Mapping — `oil_demand.xlsx` onto this repo's connectors
 
 **Date:** 2026-10-10
-**Status:** analysis complete, no design yet
+**Status:** analysis complete; routes confirmed live 2026-10-10 (see that section); no plan yet
 **Source workbook:** `~/Desktop/skill-pdfs/oil_demand.xlsx` (Bloomberg Intelligence, 12 sheets)
 **Related:** `specs/06_opec-supply.md`, `specs/33_frontend-nextjs.md` (33.01 is the Hormuz screen)
 
@@ -70,7 +70,7 @@ and this model runs on consumption volumes and macro aggregates.
 | US GDP | Bloomberg / BE | FRED `fred.gdpc1` | **in the lake**, 318 rows, 1947 → 2026-04, chained 2017 $bn |
 | Supply by producer, quarterly from 2013 | Bloomberg + analyst overlay | OPEC MOMR + EIA | **partial** — see below |
 | Global / China / EU / RofW oil consumption, quarterly from 2013 | Bloomberg | — | **gap, and the real blocker** |
-| China / EU / RofW GDP | Bloomberg Economics | FRED, IDs to be confirmed live | one-line addition to `FRED_SERIES` |
+| China / EU / RofW GDP | Bloomberg Economics | OECD Quarterly National Accounts — **confirmed live**, see below. Not FRED: it carries no quarterly real China GDP at all | new keyless pipeline |
 | GDP **forecasts** | Bloomberg Economics | — | **not a price; no connector supplies it** |
 | IEA projection columns | IEA | — | paywalled; drop and label as absent |
 | Hormuz % of normal flows, recovery factors | user assumption | user assumption | **no data needed** |
@@ -97,9 +97,92 @@ Two routes out, both free and neither Bloomberg:
 2. **EIA international energy statistics**, country-level consumption, on the API client the
    repo already has.
 
-Neither has been confirmed live yet. Per this project's own standing rule, confirm the route
+Route 1 is now confirmed live — see "Routes confirmed live, 2026-10-10" below. Route 2 was not
+needed and was not probed. Per this project's own standing rule, confirm the route
 and the real series before planning against it — `pipelines/macro/CLAUDE.md` records two
 plausible-looking FRED IDs that turned out to be a zinc index and a stale series.
+
+## Routes confirmed live, 2026-10-10
+
+Both halves of every regression — demand and GDP — now have a real, free, keyless route with
+history covering the 1Q 2013 panel. Every figure below was read from a live response on this
+date, not inferred.
+
+### GDP — OECD Quarterly National Accounts, keyless SDMX
+
+`https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAMAIN1@DF_QNA,1.1/{key}?format=csvfile`
+No key, CSV out (`application/vnd.sdmx.data+csv`). The key that returns seasonally adjusted
+real GDP growth on a year earlier, quarterly, is:
+
+`Q.Y.{REF_AREA}...B1GQ.....L.GY.`
+
+`FREQ=Q`, `ADJUSTMENT=Y`, `TRANSACTION=B1GQ` (GDP), `PRICE_BASE=L` (chain-linked volume, so
+**real**), `TRANSFORMATION=GY` (growth on the same quarter a year earlier), unit `PC`
+(percent). Join several areas with `+`. Columns used: `REF_AREA`, `TIME_PERIOD` (`yyyy-Qn`),
+`OBS_VALUE`, `OBS_STATUS`.
+
+| `REF_AREA` | Range | Obs from 2013-Q1 | Gaps | Independent check |
+|---|---|---|---|---|
+| `CHN` | 1993-Q1 → 2026-Q2 | 54 | 0 | Equals China NBS's own index (preceding year = 100) for all six quarters DBnomics mirrors, 2024-Q3 → 2025-Q4 |
+| `USA` | 1948-Q1 → 2026-Q2 | 54 | 0 | Equals the year-on-year change of `fred.gdpc1` already in the lake for all 54 quarters, max difference 0.000 pp |
+| `EA` | 1996-Q1 → 2026-Q2 | 54 | 0 | not cross-checked — FRED's public CSV timed out on this date |
+| `G20` | 1998-Q1 → 2026-Q2 | 54 | 0 | none |
+
+The panel needs roughly 48 quarters; all four areas give 54. **This unblocks the China
+elasticity**, which was blocked on GDP and not on demand.
+
+Traps, each of which cost a probe to find:
+
+- **The euro area is `EA` and the EU is `EU`.** `EA19`, `EA20` and `EU27_2020` — the codes
+  Eurostat and FRED use — return nothing on this dataflow, silently. A first pass that
+  guessed them concluded the euro area was not published here. It is.
+- **China publishes growth rates, not a real level.** For `CHN` the dataflow carries only
+  nominal levels (`PRICE_BASE` `V` and `Q`, national currency) and the two growth
+  transformations (`G1`, `GY`). There is no chain-linked level, so a China regressor can only
+  be a percentage change — which is what three of the workbook's four blocks use anyway.
+- **2021-Q1 reads 18.9 % for China** — the base effect of 2020-Q1's −6.8 %. Excluding 2020
+  alone leaves its echo in the panel. The with/without-2020 refit must drop the base-effect
+  quarters too, or it does not test what it claims to.
+- 57 areas are published. There is **no world aggregate**; `G20` is the widest. It is a
+  proxy for world GDP, not world GDP, and must be labelled as such wherever it is used.
+- The legacy IMF SDMX host is dead and DBnomics' NBS mirror keeps only a rolling six
+  quarters. Neither is a route.
+
+### Demand — JODI secondary table
+
+`https://www.jodidata.org/_resources/files/downloads/oil-data/annual-csv/secondary/{year}.csv`
+for closed years and `secondaryyear{year}.csv` for the current one — the same filename split
+`pipelines/jodi/client.py` documents for the primary table, and the same seven columns. About
+27 MB per closed year.
+
+`FLOW_BREAKDOWN=TOTDEMO`, `ENERGY_PRODUCT=TOTPRODS`, `UNIT_MEASURE=KBD` is total oil product
+demand per country per **month**. The only non-numeric marker seen in that slice is `-`.
+
+Sampled across the panel (three files, this date):
+
+| File | Months | US | China | Euro-area 20 members |
+|---|---|---|---|---|
+| `2013.csv` | 12 | 12/12, mean 19,118 kb/d | 12/12, mean 9,562 kb/d | 20/20 complete, sum 10,043 kb/d |
+| `2020.csv` | 12 | 12/12, mean 18,051 kb/d | 12/12, mean 14,574 kb/d | 20/20 complete, sum 8,792 kb/d |
+| `secondaryyear2026.csv` | 7 (→ 2026-07) | 7/7, mean 20,773 kb/d | 7/7, mean 14,780 kb/d | 17/20 complete — Croatia, Greece and Malta lag one month |
+
+The eleven years between the samples were not opened here. An earlier session on this date
+reported 2002 → 2025 with no missing year files, Russia reporting nothing at all and 55 of
+118 countries fully complete; that is consistent with the above but was not re-measured.
+
+Consequences for the model:
+
+- **Three blocks are fittable on public data: USA, China, euro area.**
+- **Rest of World is not.** Russia is absent from JODI and no world GDP series exists, so a
+  residual cannot be summed honestly on either side. A G20 proxy is possible on the GDP side
+  only. Leave it out and say so on the model card.
+- **A euro-area quarter is only as complete as its slowest member.** The latest month is
+  missing three members; summing the seventeen would understate demand and read as a fall.
+  An aggregate with a missing member is no observation, not a smaller one.
+- **The fitted coefficients will not equal the workbook's**, and are not meant to. Different
+  demand source, different GDP source, and the workbook's USA block regresses on a level
+  change in US$bn where this would use a percentage. Shown side by side they are a
+  diagnostic; they are not a reconciliation target.
 
 ## BP Statistical Review (DataHub) — checked live 2026-10-10
 
