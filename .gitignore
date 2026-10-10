@@ -78,3 +78,7 @@ site/site.log
 # Business planning — pricing, tiers and roadmap targets. Kept locally and out of the
 # public repository; a copy is in ../kardamow-private/.
 PROJECT_BRIEF.md
+
+# Publishing-layer Office exports (apps/artifacts/office.py) -- rebuilt from the lake by
+# `python -m apps.artifacts.build`; binary, and they embed lake data.
+exports/

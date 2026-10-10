@@ -70,6 +70,7 @@ dependencies = [
     # Yahoo changes shape, which is why nothing downstream may depend on it for a curve.
     # Confirmed with the user before adding (root NOTES.md rule 7).
     "yfinance>=1.7",
+    "python-pptx>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -127,6 +128,8 @@ ignore = []
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["B011"]
 "apps/dashboard/pages/*.py" = ["N999"]  # numbered Streamlit page filenames
+# Reader-facing chart text: en dashes in ranges, a real minus and multiplication sign.
+"apps/artifacts/*.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -162,6 +165,11 @@ module = [
     "yfinance.*",
 ]
 ignore_missing_imports = true
+
+# python-pptx types only part of its chart API.
+[[tool.mypy.overrides]]
+module = ["artifacts.office"]
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
