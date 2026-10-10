@@ -4,6 +4,7 @@ HTTP stack. The fixture under tests/fixtures/futures/ is a trimmed real response
 
 from __future__ import annotations
 
+import json
 from datetime import date
 from pathlib import Path
 
@@ -362,6 +363,25 @@ def test_the_real_fixture_parses_and_its_stale_print_is_refused() -> None:
     assert sum(counts["stale_print"] + counts["zero_volume"] for counts in rejections.values()) >= 1
 
 
+def test_the_real_fixtures_mid_dated_contract_demonstrates_left_trim() -> None:
+    """CLZ7 (z2027) carries two real stale prints (2024-07-17/18, volume 0, flat OHLC)
+    immediately followed by six real liquid bars (2024-07-19 onward, real volume). This
+    is the fixture's partial-rejection case -- the design spec requires the gate to be
+    exercised "rejecting the stale print while keeping the liquid tail" against real
+    bars, not only against the synthetic shape in test_liquid_bars_left_trims_rather_
+    than_dropping_the_contract. z2030 (CLZ30) is the fixture's other case: a contract
+    whose whole captured window is stale, rejected in full."""
+    envelope = load_envelope(_FIXTURE)
+    rows, _, rejections = parse_envelope(envelope, specs=load_contract_specs())
+
+    assert rejections["z2027"]["stale_print"] == 2
+    assert rejections["z2030"]["stale_print"] == 8  # the whole window, rejected in full
+
+    z2027_closes = rows[rows["series_id"] == "fut.cl.z2027.close"]
+    assert len(z2027_closes) == 6  # fewer rows kept than the contract's 8 captured bars
+    assert z2027_closes["ts"].min() == pd.Timestamp("2024-07-19")  # the later bars only
+
+
 def test_parsing_the_fixture_twice_is_idempotent(tmp_path, monkeypatch) -> None:
     from core import storage
 
@@ -374,3 +394,95 @@ def test_parsing_the_fixture_twice_is_idempotent(tmp_path, monkeypatch) -> None:
 
     first_pass = len(parse_envelope(envelope, specs=load_contract_specs())[0])
     assert len(storage.read_ts_long()) == first_pass
+
+
+def test_main_writes_rows_and_reports_rejections_per_contract(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """main()'s own wiring -- failure_scope, write_ts_long, write_series_meta and the
+    per-contract refusal print -- was previously verified only by inspection. chdir
+    isolates series_meta's own relative SERIES_META_DIR (same precedent as
+    tests/test_futures_series_meta.py), alongside the explicit LAKE_ROOT and ARCHIVE_DIR
+    monkeypatches, so this cannot touch the real lake or archive."""
+    from core import storage
+    from pipelines.futures import pull_ibkr_curve
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path / "lake")
+    archive_dir = tmp_path / "archive"
+    archive_dir.mkdir()
+    monkeypatch.setattr(pull_ibkr_curve, "ARCHIVE_DIR", archive_dir)
+
+    envelope = {
+        "captured_at": "2026-10-10T10:39:00Z",
+        "root": "cl",
+        "exchange": "NYMEX",
+        "ladder": _LADDER,
+        "history": {
+            "296574787": {
+                "time": ["2026-10-08T13:30:00Z", "2026-10-09T13:30:00Z"],
+                "open": [90.78, 89.87], "high": [92.14, 91.22],
+                "low": [89.50, 89.79], "close": [90.75, 91.01],
+                "volume": [54091, 36647],
+            },
+            "304037396": {
+                "time": ["2026-10-09T13:30:00Z"],
+                "open": [57.31], "high": [57.31], "low": [57.31], "close": [57.31],
+                "volume": [0],
+            },
+        },
+    }
+    (archive_dir / "cl-20261010.json").write_text(json.dumps(envelope), encoding="utf-8")
+
+    pull_ibkr_curve.main()
+
+    out = capsys.readouterr().out
+    assert "cl-20261010.json: wrote" in out
+    assert "f2027: refused {'stale_print': 1}" in out
+    assert not storage.read_ts_long().empty
+
+
+def test_main_continues_past_a_malformed_capture_but_still_exits_non_zero(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """A bad capture must not cost a good one (core.failures' whole point), but the run
+    must still fail loudly overall -- raising PartialFailureError, exactly like any other
+    pipeline wrapped in failure_scope, is what makes Task Scheduler's exit code honest."""
+    from core import storage
+    from core.failures import PartialFailureError
+    from pipelines.futures import pull_ibkr_curve
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path / "lake")
+    archive_dir = tmp_path / "archive"
+    archive_dir.mkdir()
+    monkeypatch.setattr(pull_ibkr_curve, "ARCHIVE_DIR", archive_dir)
+
+    good_envelope = {
+        "captured_at": "2026-10-10T10:39:00Z",
+        "root": "cl",
+        "exchange": "NYMEX",
+        "ladder": _LADDER,
+        "history": {
+            "296574787": {
+                "time": ["2026-10-08T13:30:00Z", "2026-10-09T13:30:00Z"],
+                "open": [90.78, 89.87], "high": [92.14, 91.22],
+                "low": [89.50, 89.79], "close": [90.75, 91.01],
+                "volume": [54091, 36647],
+            },
+            "304037396": {
+                "time": [], "open": [], "high": [], "low": [], "close": [], "volume": [],
+            },
+        },
+    }
+    (archive_dir / "cl-20261010.json").write_text(json.dumps(good_envelope), encoding="utf-8")
+    # Not a capture envelope at all -- load_envelope rejects a bare JSON list.
+    (archive_dir / "ng-20261010.json").write_text(json.dumps(["not", "an", "envelope"]))
+
+    with pytest.raises(PartialFailureError):
+        pull_ibkr_curve.main()
+
+    out = capsys.readouterr().out
+    assert "ng-20261010.json: FAILED" in out
+    assert "cl-20261010.json: wrote" in out
+    assert not storage.read_ts_long().empty
