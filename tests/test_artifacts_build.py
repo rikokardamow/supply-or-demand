@@ -61,7 +61,10 @@ def test_stale_flag_names_the_last_observation() -> None:
     assert exhibits.stale_flag("2026-10-02", 7, date(2026, 10, 10)) is None
 
 
-def test_env_secrets_skips_comments_and_short_values(tmp_path: Path) -> None:
+def test_env_secrets_skips_comments_and_short_values(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(build.os, "environ", {})
     env = tmp_path / ".env"
     env.write_text(
         "# NOTE=commented-out-value\nKEY='long-secret-value'\nFLAG=1\n", encoding="utf-8"
@@ -101,3 +104,20 @@ def test_render_inlines_data_without_breaking_out_of_the_script_tag(page: str) -
     assert "</script><script>alert(1)" not in html
     embedded = html.split('id="payload">', 1)[1].split("</script>", 1)[0]
     assert json.loads(embedded) == payload
+
+
+def test_shell_credentials_are_checked_as_well_as_dotenv(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SOME_API_TOKEN", "exported-secret-value")
+    monkeypatch.setenv("HOME_DIRECTORY", "not-a-credential-path")
+    found = build.env_secrets([])
+    assert found["SOME_API_TOKEN"] == b"exported-secret-value"
+    assert "HOME_DIRECTORY" not in found
+
+
+@pytest.mark.parametrize("text", ["=HYPERLINK(1)", "+1", "-2+3", "@SUM(A1)", "\tx"])
+def test_formula_like_text_is_stored_as_text(text: str) -> None:
+    from apps.artifacts import office
+
+    assert office._cell(text) == "'" + text
+    assert office._cell("PADD2 to PADD3") == "PADD2 to PADD3"
+    assert office._cell(-4.4) == -4.4

@@ -39,6 +39,7 @@ MAX_CHART_POINTS: Final = 160
 DATE_FORMAT: Final = "yyyy-mm-dd"
 DATETIME_FORMAT: Final = "yyyy-mm-dd hh:mm"
 NUMBER_FORMAT: Final = "#,##0.00"
+FORMULA_PREFIXES: Final = ("=", "+", "-", "@", "\t", "\r")
 INTEGER_FORMAT: Final = "#,##0"
 
 SHEET_NOTES: Final[dict[str, tuple[str, str, str]]] = {
@@ -108,11 +109,14 @@ def _cell(value: Any) -> Any:
         return value.tz_localize(None).to_pydatetime() if value.tzinfo else value.to_pydatetime()
     if isinstance(value, datetime):
         return value.replace(tzinfo=None)
-    if isinstance(value, (date, str, bool, int, float)):
+    if isinstance(value, str):
+        # Excel would evaluate these as formulas; the apostrophe keeps them text.
+        return f"'{value}" if value.startswith(FORMULA_PREFIXES) else value
+    if isinstance(value, (date, bool, int, float)):
         return value
     if hasattr(value, "item"):
-        return value.item()
-    return str(value)
+        return _cell(value.item())
+    return _cell(str(value))
 
 
 def _format(value: Any) -> str | None:

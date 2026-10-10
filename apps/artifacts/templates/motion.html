@@ -67,7 +67,7 @@
       .filter((r) => r.v !== null)
       .sort((a, b) => a.v - b.v);
     Plotly.react(bars, [{
-      type: "bar", orientation: "h", y: rows.map((r) => r.c), x: rows.map((r) => r.v),
+      type: "bar", orientation: "h", y: rows.map((r) => KD.esc(r.c)), x: rows.map((r) => r.v),
       marker: { color: C.navy }, text: rows.map((r) => r.v.toFixed(0)), textposition: "outside",
       cliponaxis: false, hovertemplate: "%{x:.1f}% full<extra>%{y}</extra>",
     }], KD.layout({
