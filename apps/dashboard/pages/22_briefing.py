@@ -37,13 +37,14 @@ else:
         ]
     )
 
+    indicators = st.toggle("Moving averages (MA20, MA100, MA200)", value=False)
     groups = tab_groups(specs)
     for tab, (_, members) in zip(st.tabs([label for label, _ in groups]), groups, strict=True):
         with tab:
             columns = st.columns(2, gap="large")
             for i, spec in enumerate(members):
                 with columns[i % 2]:
-                    exhibit(spec)
+                    exhibit(spec, indicators=indicators)
 
 if book["issues"]:
     with section("Not built"):

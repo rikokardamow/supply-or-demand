@@ -195,7 +195,9 @@ def _overlays(
 
 
 def _overlay_note(overlays: list[dict[str, Any]]) -> str:
-    return " MA lines are means of the last 20, 100 and 200 observations." if overlays else ""
+    return (
+        " Optional MA lines are means of the last 20, 100 and 200 observations." if overlays else ""
+    )
 
 
 def _prior_value(frame: pd.DataFrame, days: int) -> float | None:

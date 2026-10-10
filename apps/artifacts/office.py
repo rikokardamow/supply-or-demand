@@ -404,9 +404,15 @@ def _aligned(tracks: list[dict[str, Any]]) -> tuple[list[date], list[list[float 
     return _dates(calendar, keep), columns
 
 
+def _reference_lines(exhibit: Exhibit) -> list[dict[str, Any]]:
+    """A slide cannot be switched, so it carries the five-year average only; the optional
+    moving averages stay on the pages and in the workbook's moving_averages sheet."""
+    return [o for o in exhibit.get("overlays", []) if o["style"] == "avg5"]
+
+
 def _lines(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
     tracks = exhibit["series"]
-    extras = exhibit.get("overlays", [])
+    extras = _reference_lines(exhibit)
     categories, columns = _aligned([*tracks, *extras])
     palette = [NAVY, LIGHT_BLUE, GREY]
     _line_chart(
@@ -429,7 +435,7 @@ def _dual(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
     half = height / len(exhibit["series"])
     for index, track in enumerate(exhibit["series"]):
         # The averages are of the lead series, so they sit on its chart only.
-        extras = exhibit.get("overlays", []) if index == 0 else []
+        extras = _reference_lines(exhibit) if index == 0 else []
         categories, columns = _aligned([track, *extras])
         names = [f"{track['name']}, {track['unit']}"] + [o["name"] for o in extras]
         chart = _line_chart(
