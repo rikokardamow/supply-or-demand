@@ -8,13 +8,16 @@ from datetime import date
 
 import pandas as pd
 import pytest
-from pipelines.futures.client import ContractMeta, looks_like_rank_code
+from pipelines.futures.client import ContractMeta, load_contract_specs, looks_like_rank_code
 from pipelines.futures.ibkr_curve import (
     REJECTION_REASONS,
     bars_from_history,
     closes_to_ts_long,
     contract_code_from_month,
+    contracts_from_ladder,
     liquid_bars,
+    parse_envelope,
+    series_meta_rows,
 )
 
 
@@ -269,3 +272,75 @@ def test_a_sub_dollar_value_survives_the_round_trip(tmp_path, monkeypatch) -> No
 
     back = storage.read_ts_long(series_ids=["fut.cl.z2026.close"])
     assert set(back["value"]) == {0.35}
+
+
+_LADDER = [
+    {"contract_id": 296574787, "contract_month": "202612", "last_trading_date": "20261120"},
+    {"contract_id": 304037396, "contract_month": "202701", "last_trading_date": "20261221"},
+]
+
+
+def test_contracts_from_ladder_derives_codes_and_real_expiries() -> None:
+    contracts = contracts_from_ladder(_LADDER, root="cl", specs=load_contract_specs())
+    assert [meta.contract for meta in contracts] == ["z2026", "f2027"]
+    assert [meta.expiry for meta in contracts] == [date(2026, 11, 20), date(2026, 12, 21)]
+    assert all(meta.root == "cl" for meta in contracts)
+    assert all(meta.currency for meta in contracts)
+
+
+def test_series_meta_rows_carry_every_column_the_manifest_requires() -> None:
+    from pipelines.futures.series_meta import ROLL_RULE
+
+    contracts = contracts_from_ladder(_LADDER, root="cl", specs=load_contract_specs())
+    rows = series_meta_rows(contracts, source="ibkr")
+    required = {
+        "root", "contract", "expiry", "tick_size",
+        "contract_unit", "currency", "roll_rule", "source",
+    }
+    assert required <= set(rows.columns)
+    assert set(rows["source"]) == {"ibkr"}
+    assert set(rows["roll_rule"]) == {ROLL_RULE}
+
+
+def test_parse_envelope_maps_contract_ids_to_codes_and_reports_rejections() -> None:
+    envelope = {
+        "captured_at": "2026-10-10T10:39:00Z",
+        "root": "cl",
+        "exchange": "NYMEX",
+        "ladder": _LADDER,
+        "history": {
+            "296574787": {
+                "time": ["2026-10-08T13:30:00Z", "2026-10-09T13:30:00Z"],
+                "open": [90.78, 89.87], "high": [92.14, 91.22],
+                "low": [89.50, 89.79], "close": [90.75, 91.01],
+                "volume": [54091, 36647],
+            },
+            "304037396": {
+                "time": ["2026-10-09T13:30:00Z"],
+                "open": [57.31], "high": [57.31], "low": [57.31], "close": [57.31],
+                "volume": [0],
+            },
+        },
+    }
+    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+
+    assert set(rows["series_id"]) == {"fut.cl.z2026.close", "fut.cl.z2026.volume"}
+    assert set(rows["revision_date"]) == {pd.Timestamp("2026-10-10 10:39:00")}
+    assert rejections["f2027"]["stale_print"] == 1
+    assert rejections["z2026"]["stale_print"] == 0
+    # series_meta lists every laddered contract, even one with no liquid bars.
+    assert set(meta["contract"]) == {"z2026", "f2027"}
+
+
+def test_parse_envelope_records_a_contract_with_no_history_as_a_skip() -> None:
+    envelope = {
+        "captured_at": "2026-10-10T10:39:00Z",
+        "root": "cl",
+        "exchange": "NYMEX",
+        "ladder": _LADDER[:1],
+        "history": {"296574787": {}},
+    }
+    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+    assert rows.empty
+    assert set(meta["contract"]) == {"z2026"}
+    assert rejections["z2026"] == dict.fromkeys(REJECTION_REASONS, 0)

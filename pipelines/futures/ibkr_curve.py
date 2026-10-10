@@ -12,12 +12,14 @@ pipelines/futures/CLAUDE.md for what that difference is worth, measured.
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import Any, Final
 
 import pandas as pd
 from core.schemas import TS_LONG_SCHEMA
 
 from pipelines.futures.client import ContractMeta, looks_like_rank_code
+from pipelines.futures.series_meta import ROLL_RULE
 
 MONTH_CODES: Final[dict[int, str]] = {
     1: "f", 2: "g", 3: "h", 4: "j", 5: "k", 6: "m",
@@ -187,3 +189,89 @@ def closes_to_ts_long(
         empty: pd.DataFrame = TS_LONG_SCHEMA.empty_table().to_pandas()
         return empty
     return pd.concat(frames, ignore_index=True)
+
+
+def contracts_from_ladder(
+    ladder: list[dict[str, Any]], root: str, specs: pd.DataFrame
+) -> list[ContractMeta]:
+    """A capture's ladder rows -> ContractMeta, sorted by delivery month.
+
+    `symbol` is deliberately ignored: the connector's own documentation says it must not be
+    surfaced, and the contract code is derived from `contract_month` instead.
+    """
+    spec = specs[specs["root"] == root]
+    if spec.empty:
+        raise ValueError(f"no contract_specs.csv row for root {root!r}")
+    row = spec.iloc[0]
+
+    contracts = [
+        ContractMeta(
+            root=root,
+            contract=contract_code_from_month(str(entry["contract_month"])),
+            expiry=datetime.strptime(str(entry["last_trading_date"]), "%Y%m%d").date(),
+            tick_size=float(row["tick_size"]),
+            contract_unit=str(row["contract_unit"]),
+            currency=str(row["currency"]),
+        )
+        for entry in ladder
+    ]
+    return sorted(contracts, key=lambda meta: meta.expiry)
+
+
+def series_meta_rows(contracts: list[ContractMeta], source: str) -> pd.DataFrame:
+    """ContractMeta -> rows for series_meta.parquet. Its de-dup key is (root, contract)
+    without source, so a real exchange expiry here replaces an earlier NULL one."""
+    return pd.DataFrame(
+        {
+            "root": [meta.root for meta in contracts],
+            "contract": [meta.contract for meta in contracts],
+            "expiry": [meta.expiry for meta in contracts],
+            "tick_size": [meta.tick_size for meta in contracts],
+            "contract_unit": [meta.contract_unit for meta in contracts],
+            "currency": [meta.currency for meta in contracts],
+            "roll_rule": ROLL_RULE,
+            "source": source,
+        }
+    )
+
+
+def parse_envelope(
+    envelope: dict[str, Any], specs: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, dict[str, int]]]:
+    """An archived capture -> (ts_long rows, series_meta rows, rejections by contract).
+
+    `revision_date` is the capture's own `captured_at`, so re-parsing the same archive is
+    idempotent under write_ts_long's (series_id, ts) de-dup and a later capture supersedes
+    an earlier one.
+    """
+    root = str(envelope["root"])
+    revision_date = pd.Timestamp(str(envelope["captured_at"])).tz_localize(None)
+    ladder = list(envelope.get("ladder") or [])
+    contracts = contracts_from_ladder(ladder, root=root, specs=specs)
+
+    code_by_id = {
+        str(entry["contract_id"]): contract_code_from_month(str(entry["contract_month"]))
+        for entry in ladder
+    }
+
+    bars_by_contract: dict[str, pd.DataFrame] = {}
+    rejections: dict[str, dict[str, int]] = {}
+    for contract_id, history in (envelope.get("history") or {}).items():
+        code = code_by_id.get(str(contract_id))
+        if code is None:
+            raise ValueError(
+                f"history carries contract_id {contract_id!r} absent from the ladder"
+            )
+        kept, rejected = liquid_bars(bars_from_history(history or {}))
+        rejections[code] = rejected
+        if not kept.empty:
+            bars_by_contract[code] = kept
+
+    rows = closes_to_ts_long(
+        bars_by_contract,
+        root=root,
+        revision_date=revision_date,
+        contracts=contracts,
+        source="ibkr",
+    )
+    return rows, series_meta_rows(contracts, source="ibkr"), rejections
