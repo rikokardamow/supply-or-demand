@@ -1251,3 +1251,22 @@ with two series of wildly different magnitude specifically to catch a regression
 
 The lesson is the one this file keeps relearning: a green suite is not a verified number.
 The fix was confirmed by reading the real published table back out of Supabase.
+
+## STEO (Short-Term Energy Outlook) - pull_steo.py
+Route `steo`, filtered on the **`seriesId`** facet (not `series`), with a value field named
+differently from the petroleum routes; `EIAClient.get_steo_series` hides both. Series live in
+`steo_series.py`. Three codes the workbook labels imply (`MGTCPUS`, `JKTCPUS`, `COTCPUS`) are
+NOT published by EIA - do not re-guess them.
+
+- **Denominator rule**: the RFS percentage standards apply to non-renewable fuel, so use
+  `MGTCPUSX_P` and `DFTCPUS_P`. The un-suffixed totals include renewable volume already
+  blended in and inflate the implied mandate.
+- **Observed vs projected**: STEO rows carry no forecast flag. The boundary is the last
+  monthly period of the actuals route (`history_end` in `steo_boundary.py`), read before any
+  STEO fetch. Neither today's date (the vintage lags by a variable amount) nor the STEO series
+  maximum (the forecast horizon) can serve. Rows are written as
+  `steo.<lowercase code>.observed` / `.projected`.
+- `source="eia_steo"` marks these rows as an outlook, distinct from `source="eia"` actuals.
+- **Stale labels**: when the boundary advances, the old `.projected` row for a now-measured
+  month stays (no lake delete path); readers prefer `.observed` where both exist.
+- Run by hand after a release: `python -m pipelines.eia.pull_steo`. Not in `run_scheduled.py`.
