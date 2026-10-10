@@ -509,10 +509,11 @@ def test_main_writes_rows_and_reports_rejections_per_contract(
     tmp_path, monkeypatch, capsys
 ) -> None:
     """main()'s own wiring -- failure_scope, write_ts_long, write_series_meta and the
-    per-contract refusal print -- was previously verified only by inspection. chdir
-    isolates series_meta's own relative SERIES_META_DIR (same precedent as
-    tests/test_futures_series_meta.py), alongside the explicit LAKE_ROOT and ARCHIVE_DIR
-    monkeypatches, so this cannot touch the real lake or archive."""
+    per-contract refusal print -- was previously verified only by inspection. The explicit
+    LAKE_ROOT and ARCHIVE_DIR monkeypatches are what isolate this: series_meta derives its
+    own directory from core.storage.LAKE_ROOT at call time, so patching that moves the
+    manifest too. The chdir is belt-and-braces against a relative path anywhere else in the
+    entrypoint -- it is no longer load-bearing for the manifest itself."""
     from core import storage
     from pipelines.futures import pull_ibkr_curve
 
