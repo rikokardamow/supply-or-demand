@@ -5,6 +5,7 @@ HTTP stack. The fixture under tests/fixtures/futures/ is a trimmed real response
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -19,6 +20,9 @@ from pipelines.futures.ibkr_curve import (
     parse_envelope,
     series_meta_rows,
 )
+from pipelines.futures.pull_ibkr_curve import load_envelope
+
+_FIXTURE = Path("tests/fixtures/futures/ibkr_curve_cl_20261010.json")
 
 
 def test_contract_code_from_month_covers_every_month_letter() -> None:
@@ -344,3 +348,29 @@ def test_parse_envelope_records_a_contract_with_no_history_as_a_skip() -> None:
     assert rows.empty
     assert set(meta["contract"]) == {"z2026"}
     assert rejections["z2026"] == dict.fromkeys(REJECTION_REASONS, 0)
+
+
+def test_the_real_fixture_parses_and_its_stale_print_is_refused() -> None:
+    envelope = load_envelope(_FIXTURE)
+    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+
+    assert not rows.empty
+    assert set(rows["source"]) == {"ibkr"}
+    assert all(sid.endswith((".close", ".volume")) for sid in rows["series_id"])
+    assert not meta.empty
+    # The fixture deliberately retains a real zero-volume bar.
+    assert sum(counts["stale_print"] + counts["zero_volume"] for counts in rejections.values()) >= 1
+
+
+def test_parsing_the_fixture_twice_is_idempotent(tmp_path, monkeypatch) -> None:
+    from core import storage
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+    envelope = load_envelope(_FIXTURE)
+
+    for _ in range(2):
+        rows, _, _ = parse_envelope(envelope, specs=load_contract_specs())
+        storage.write_ts_long(rows, source="ibkr")
+
+    first_pass = len(parse_envelope(envelope, specs=load_contract_specs())[0])
+    assert len(storage.read_ts_long()) == first_pass
