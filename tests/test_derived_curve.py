@@ -118,3 +118,41 @@ def test_contract_panel_for_chooses_metric_per_contract_not_per_root(tmp_path, m
     assert sorted(panel.columns) == ["a1", "b1"]
     assert provenance["a1"] == "settle"
     assert provenance["b1"] == "close"
+
+
+def test_contract_panel_for_prefers_close_when_settle_is_outnumbered(tmp_path, monkeypatch) -> None:
+    """The real lco shape this change exists for: one stale settle row (the Barchart
+    reconstruction, source="manual") against many real IBKR close rows must resolve to
+    close, not settle -- presence alone is not enough to win, it must also have the rows.
+    A rule that reverts to "settle if any settle rows exist" passes every other test in
+    this file but fails this one, by both selection and value: the lone settle value must
+    not merely lose the vote, it must not appear anywhere in the resulting column."""
+    from core import storage
+    from pipelines.derived.curve import contract_panel_for
+
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path)
+    stale_settle = 999.99
+    rows = [
+        ("fut.lco.z2027.settle", stale_settle, "manual", "2026-09-04"),
+        ("fut.lco.z2027.close", 80.10, "ibkr", "2026-10-05"),
+        ("fut.lco.z2027.close", 80.20, "ibkr", "2026-10-06"),
+        ("fut.lco.z2027.close", 80.30, "ibkr", "2026-10-07"),
+    ]
+    for series_id, value, source, ts in rows:
+        storage.write_ts_long(
+            pd.DataFrame(
+                {
+                    "series_id": [series_id], "source": [source],
+                    "ts": [pd.Timestamp(ts)], "value": [value],
+                    "unit": "USD/1000 bbl", "geo": "LCO", "freq": "D",
+                    "revision_date": [pd.Timestamp("2026-10-10")],
+                }
+            ),
+            source=source,
+        )
+    meta = pd.DataFrame(
+        {"root": ["lco"], "contract": ["z2027"], "expiry": [pd.Timestamp("2027-01-20")]}
+    )
+    panel, _, provenance = contract_panel_for("lco", meta, return_provenance=True)
+    assert provenance["z2027"] == "close"
+    assert stale_settle not in panel["z2027"].to_numpy()
