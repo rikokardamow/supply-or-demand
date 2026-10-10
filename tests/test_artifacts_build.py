@@ -69,14 +69,14 @@ def test_env_secrets_skips_comments_and_short_values(
     env.write_text(
         "# NOTE=commented-out-value\nKEY='long-secret-value'\nFLAG=1\n", encoding="utf-8"
     )
-    assert build.env_secrets([env, tmp_path / "missing"]) == {"KEY": b"long-secret-value"}
+    assert build.env_secrets([env, tmp_path / "missing"]) == {"KEY": {b"long-secret-value"}}
 
 
 def test_a_leaked_secret_fails_the_build_and_removes_the_file(tmp_path: Path) -> None:
     page = tmp_path / "page.html"
     page.write_text("<p>token long-secret-value</p>", encoding="utf-8")
     with pytest.raises(build.SecretLeakError, match="KEY") as raised:
-        build.assert_no_secrets([page], {"KEY": b"long-secret-value"})
+        build.assert_no_secrets([page], {"KEY": {b"long-secret-value"}})
     assert "long-secret-value" not in str(raised.value)
     assert not page.exists()
 
@@ -86,13 +86,13 @@ def test_a_secret_inside_an_office_file_is_found(tmp_path: Path) -> None:
     with zipfile.ZipFile(deck, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("ppt/slides/slide1.xml", "<a:t>long-secret-value</a:t>")
     with pytest.raises(build.SecretLeakError):
-        build.assert_no_secrets([deck], {"KEY": b"long-secret-value"})
+        build.assert_no_secrets([deck], {"KEY": {b"long-secret-value"}})
 
 
 def test_clean_outputs_pass(tmp_path: Path) -> None:
     page = tmp_path / "page.html"
     page.write_text("<p>424.5 million barrels</p>", encoding="utf-8")
-    build.assert_no_secrets([page], {"KEY": b"long-secret-value"})
+    build.assert_no_secrets([page], {"KEY": {b"long-secret-value"}})
     assert page.exists()
 
 
@@ -110,7 +110,7 @@ def test_shell_credentials_are_checked_as_well_as_dotenv(monkeypatch: pytest.Mon
     monkeypatch.setenv("SOME_API_TOKEN", "exported-secret-value")
     monkeypatch.setenv("HOME_DIRECTORY", "not-a-credential-path")
     found = build.env_secrets([])
-    assert found["SOME_API_TOKEN"] == b"exported-secret-value"
+    assert found["SOME_API_TOKEN"] == {b"exported-secret-value"}
     assert "HOME_DIRECTORY" not in found
 
 
@@ -121,3 +121,26 @@ def test_formula_like_text_is_stored_as_text(text: str) -> None:
     assert office._cell(text) == "'" + text
     assert office._cell("PADD2 to PADD3") == "PADD2 to PADD3"
     assert office._cell(-4.4) == -4.4
+
+
+def test_a_stale_dotenv_value_does_not_hide_the_live_shell_credential(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    env = tmp_path / ".env"
+    env.write_text("EIA_API_KEY=rotated-out-value\n", encoding="utf-8")
+    monkeypatch.setattr(build.os, "environ", {"EIA_API_KEY": "live-exported-value"})
+    secrets = build.env_secrets([env])
+    assert secrets["EIA_API_KEY"] == {b"rotated-out-value", b"live-exported-value"}
+    page = tmp_path / "page.html"
+    page.write_text("<p>live-exported-value</p>", encoding="utf-8")
+    with pytest.raises(build.SecretLeakError, match="EIA_API_KEY"):
+        build.assert_no_secrets([page], secrets)
+
+
+def test_a_dotenv_with_no_credentials_yields_nothing_to_check(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    env = tmp_path / ".env"
+    env.write_text("# keys go here\nDEBUG=1\n", encoding="utf-8")
+    monkeypatch.setattr(build.os, "environ", {})
+    assert build.env_secrets([env]) == {}
