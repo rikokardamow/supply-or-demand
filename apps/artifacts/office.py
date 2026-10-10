@@ -59,9 +59,15 @@ _CONTROL: Final = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 def safe_text(value: str) -> str:
     """Lake text made safe for a cell: control characters (which the Office XML writers
     reject) removed, and anything Excel would evaluate or link kept as text by a leading
-    apostrophe."""
+    apostrophe.
+
+    Judged the way the least careful reader of the cell would: leading whitespace is
+    ignored, link schemes match in any case, and `{=...}` counts, because xlsxwriter
+    writes that as an array formula."""
     value = _CONTROL.sub("", value)
-    return f"'{value}" if value.startswith(FORMULA_PREFIXES + LINK_PREFIXES) else value
+    head = value.lstrip().lower()
+    risky = head.startswith(("=", "+", "-", "@", "{=", *LINK_PREFIXES))
+    return f"'{value}" if risky or value.startswith(FORMULA_PREFIXES) else value
 
 
 INTEGER_FORMAT: Final = "#,##0"

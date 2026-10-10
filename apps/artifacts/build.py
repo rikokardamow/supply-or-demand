@@ -238,12 +238,24 @@ def _unzipped(blob: bytes) -> list[bytes]:
         return [inner for name in archive.namelist() for inner in _unzipped(archive.read(name))]
 
 
-def discard(outputs: list[Path]) -> None:
-    """Remove this build's outputs. A file held open elsewhere (a workbook in Excel) cannot
-    be removed and is left; it is then the previous, already-checked build's file."""
+def discard(outputs: list[Path]) -> list[Path]:
+    """Remove this build's outputs and return any that could not be removed (a file held
+    open elsewhere, such as a workbook in Excel). A survivor has not passed the leak
+    check, so callers must name it rather than let the failure pass quietly."""
+    survivors = []
     for path in outputs:
-        with suppress(OSError):
+        try:
             path.unlink(missing_ok=True)
+        except OSError:
+            survivors.append(path)
+    return survivors
+
+
+def _left_behind(survivors: list[Path]) -> str:
+    if not survivors:
+        return "every output of this build was deleted"
+    names = ", ".join(str(path) for path in survivors)
+    return f"COULD NOT DELETE {names} -- close and delete by hand; do not publish or share"
 
 
 def assert_no_secrets(outputs: list[Path], secrets: dict[str, set[bytes]]) -> None:
@@ -260,9 +272,8 @@ def assert_no_secrets(outputs: list[Path], secrets: dict[str, set[bytes]]) -> No
         if leaked:
             hits[path.name] = leaked
     if hits:
-        discard(outputs)
         raise SecretLeakError(
-            f"outputs contained credential values {hits}; every output of this build deleted"
+            f"outputs contained credential values {hits}; {_left_behind(discard(outputs))}"
         )
 
 
@@ -365,7 +376,7 @@ def main(argv: list[str] | None = None) -> int:
         assert_no_secrets(outputs, secrets)
     except BaseException:
         # Whatever stopped the build, nothing it wrote has passed the leak check.
-        discard(outputs)
+        print(f"build failed: {_left_behind(discard(outputs))}", file=sys.stderr, flush=True)
         raise
 
     changes = write_manifest(built, book)

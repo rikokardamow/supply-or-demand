@@ -350,3 +350,24 @@ def test_deck_bar_categories_cannot_become_formulas_or_links(tmp_path: Path) -> 
                         book.read(n) for n in book.namelist() if n.startswith("xl/worksheets/")
                     )
                 assert sheets and b"<f>" not in sheets and b"<hyperlink" not in sheets
+
+
+@pytest.mark.parametrize("text", [" =1+1", "{=SUM(1)}", "HTTPS://example.com", "  External:x"])
+def test_text_a_looser_reader_would_evaluate_is_also_guarded(text: str) -> None:
+    from apps.artifacts import office
+
+    assert office.safe_text(text) == "'" + text
+
+
+def test_an_output_that_cannot_be_deleted_is_named(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    page = tmp_path / "page.html"
+    page.write_text("<p>long-secret-value</p>", encoding="utf-8")
+
+    def locked(self: Path, missing_ok: bool = False) -> None:
+        raise PermissionError("in use")
+
+    monkeypatch.setattr(Path, "unlink", locked)
+    with pytest.raises(build.SecretLeakError, match="COULD NOT DELETE"):
+        build.assert_no_secrets([page], {"KEY": {b"long-secret-value"}})
