@@ -84,3 +84,12 @@ def test_filter_and_transform_returns_an_empty_conformant_frame_when_nothing_mat
     assert list(df.columns) == [
         "series_id", "source", "ts", "value", "unit", "geo", "freq", "revision_date"
     ]  # fmt: skip
+
+
+def test_filter_and_transform_drops_a_blank_value_rather_than_writing_nan() -> None:
+    raw = pd.DataFrame([_row("AT", None), _row("BE", "1200.0000")])
+
+    df = filter_and_transform(raw, REVISION_DATE)
+
+    assert list(df["series_id"]) == ["jodi.total_demand.be"]
+    assert df["value"].notna().all()

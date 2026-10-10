@@ -45,7 +45,7 @@ def filter_and_transform(raw: pd.DataFrame, revision_date: datetime) -> pd.DataF
     """One year's raw secondary-table CSV -> ts_long rows of total product demand.
 
     `-` (not reported) and `x` (confidential / not applicable) are dropped, never zeroed:
-    a zero would read as a country consuming no oil that month.
+    a zero would read as a country consuming no oil that month. A blank cell is dropped too.
     """
     keep = (
         raw["REF_AREA"].isin(DEMAND_COUNTRIES)
@@ -53,6 +53,7 @@ def filter_and_transform(raw: pd.DataFrame, revision_date: datetime) -> pd.DataF
         & (raw["ENERGY_PRODUCT"] == "TOTPRODS")
         & (raw["UNIT_MEASURE"] == "KBD")
         & ~raw["OBS_VALUE"].isin(["-", "x"])
+        & raw["OBS_VALUE"].notna()
     )
     subset = raw[keep]
     if subset.empty:
