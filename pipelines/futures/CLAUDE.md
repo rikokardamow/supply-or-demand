@@ -332,3 +332,31 @@ restrict redistribution, which is a live question for `data.kardamow.com` — th
 are published into an anon-readable `serving.series_long`. The per-symbol pull is wrapped
 in `core.failures`, so one broken symbol does not cost the other four, but a run where
 every symbol failed still exits non-zero rather than reporting success.
+
+## IBKR MCP connector — daily-bar history limit, confirmed live 2026-10-10
+
+`get_price_history(security_type="FUT", exchange="NYMEX", step="ONE_DAY", outside_rth=false)`
+on CL Dec 2026 (contract_id 296574787):
+
+| period | result |
+|---|---|
+| `ONE_YEAR` | 251 bars, 2025-10-10 -> 2026-10-09 |
+| `FIVE_YEARS` | **1,255 bars, 2021-10-11 -> 2026-10-09** |
+
+`FIVE_YEARS` is the largest value the tool's own enum offers, so there is no deeper period
+to test -- five years of daily bars per contract is the ceiling. Every response carries
+`delayed: 600` and `source: "Last"`, which is why these are `.close` series and never
+`.settle`.
+
+Not the same as the monthly-bar limit: `step="ONE_MONTH", period="FIVE_YEARS"` on CLZ7
+returned bars back to 2021-10-11 too (confirmed 2026-10-10), i.e. the five-year window is
+the binding constraint, not the bar size.
+
+**Operational consequence for any capture.** One contract at `FIVE_YEARS` daily is roughly
+**70 KB of JSON**. The nearest 36 expiries across two roots is therefore on the order of
+**5 MB** -- far past what any single agent should pull through its own context. A capture
+must stream each response straight to disk under `data/raw/ibkr/` rather than reading it.
+Responses above the tool's own result cap are auto-saved to a file by the harness, which
+helps, but the cap sits between the `ONE_YEAR` and `FIVE_YEARS` sizes, so it cannot be
+relied on as the mechanism.
+
