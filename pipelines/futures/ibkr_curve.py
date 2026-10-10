@@ -74,6 +74,29 @@ def _required_array(history: dict[str, Any], key: str) -> Any:
     return value
 
 
+def _check_array_lengths(arrays: dict[str, Any], time_length: int) -> None:
+    """Refuse a response whose OHLCV arrays are present but ragged against `time`.
+
+    Confirmed live 2026-10-10: 3 of 72 real contracts across data/raw/ibkr/cl-20261010.json
+    and lco-20261010.json came back with every key present but of differing length (e.g.
+    `close` carrying 249 values against `time`'s 180). `_required_array` above already
+    names an *absent* key rather than letting a fabricated NaN column or an opaque pandas
+    error stand in for it; a *present-but-ragged* one gets the same treatment -- every
+    offending key named alongside its own length and `time`'s, in one error, so the reader
+    does not have to fix one key, re-run, and discover a second. Truncating to the
+    shortest array is not an option: that is exactly the silent data loss
+    00_TRADING_CONVENTIONS.md's "degenerate inputs fail loudly" rule forbids.
+    """
+    mismatched = {key: len(value) for key, value in arrays.items() if len(value) != time_length}
+    if not mismatched:
+        return
+    detail = ", ".join(f"{key!r} has {length}" for key, length in sorted(mismatched.items()))
+    raise ValueError(
+        f"get_price_history response has ragged OHLCV array(s) against {time_length} "
+        f"'time' value(s): {detail}"
+    )
+
+
 def bars_from_history(history: dict[str, Any]) -> pd.DataFrame:
     """A get_price_history response's parallel arrays -> one row per bar.
 
@@ -87,14 +110,19 @@ def bars_from_history(history: dict[str, Any]) -> pd.DataFrame:
             ts=pd.Series(dtype="datetime64[ns]")
         )[_BAR_COLUMNS]
 
+    arrays = {
+        column: _required_array(history, column) for column in _BAR_COLUMNS if column != "ts"
+    }
+    _check_array_lengths(arrays, len(times))
+
     frame = pd.DataFrame(
         {
             "ts": pd.to_datetime(times, utc=True).tz_localize(None).normalize(),
-            "open": pd.to_numeric(_required_array(history, "open"), errors="coerce"),
-            "high": pd.to_numeric(_required_array(history, "high"), errors="coerce"),
-            "low": pd.to_numeric(_required_array(history, "low"), errors="coerce"),
-            "close": pd.to_numeric(_required_array(history, "close"), errors="coerce"),
-            "volume": pd.to_numeric(_required_array(history, "volume"), errors="coerce"),
+            "open": pd.to_numeric(arrays["open"], errors="coerce"),
+            "high": pd.to_numeric(arrays["high"], errors="coerce"),
+            "low": pd.to_numeric(arrays["low"], errors="coerce"),
+            "close": pd.to_numeric(arrays["close"], errors="coerce"),
+            "volume": pd.to_numeric(arrays["volume"], errors="coerce"),
         }
     )
     return frame.astype({column: "float64" for column in _BAR_COLUMNS if column != "ts"})
@@ -237,12 +265,29 @@ def series_meta_rows(contracts: list[ContractMeta], source: str) -> pd.DataFrame
 
 def parse_envelope(
     envelope: dict[str, Any], specs: pd.DataFrame
-) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, dict[str, int]]]:
-    """An archived capture -> (ts_long rows, series_meta rows, rejections by contract).
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, dict[str, int]], dict[str, Exception]]:
+    """An archived capture -> (ts_long rows, series_meta rows, rejections, skipped).
 
     `revision_date` is the capture's own `captured_at`, so re-parsing the same archive is
     idempotent under write_ts_long's (series_id, ts) de-dup and a later capture supersedes
     an earlier one.
+
+    `rejections` and `skipped` are deliberately two separate dicts, not one. `rejections`
+    always holds exactly the 4 bar-level `REJECTION_REASONS` counts for a contract whose
+    history parsed -- a caller can trust that shape without checking it first. A contract
+    whose OHLCV arrays were ragged (see `_check_array_lengths`) never reaches `liquid_bars`
+    at all, so it has no entry in `rejections`; it is instead recorded in `skipped`, keyed
+    by contract code, with the real exception that was raised. Folding the two together --
+    e.g. a fifth "parse_failed" count alongside the bar-level ones -- would let "ragged,
+    could not parse" collide with "parsed fine, every bar happened to be rejected as
+    stale": both would otherwise show up as values in the same dict shape, and a caller
+    checking only `any(counts.values())` could not tell them apart. Keeping them in
+    separate dicts makes that distinction a membership check (`code in skipped` vs
+    `code in rejections`) rather than a guess about what a count of 1 in some new key
+    means. This is the per-contract version of the existing recorded-skip idiom for an
+    empty `history` entry -- one bad contract must not cost the other 35 (confirmed live
+    2026-10-10: 3 of 72 real contracts across two captures were ragged and took down the
+    *entire* envelope each, 71 good contracts lost, before this guard existed).
     """
     root = str(envelope["root"])
     revision_date = pd.Timestamp(str(envelope["captured_at"])).tz_localize(None)
@@ -256,13 +301,19 @@ def parse_envelope(
 
     bars_by_contract: dict[str, pd.DataFrame] = {}
     rejections: dict[str, dict[str, int]] = {}
+    skipped: dict[str, Exception] = {}
     for contract_id, history in (envelope.get("history") or {}).items():
         code = code_by_id.get(str(contract_id))
         if code is None:
             raise ValueError(
                 f"history carries contract_id {contract_id!r} absent from the ladder"
             )
-        kept, rejected = liquid_bars(bars_from_history(history or {}))
+        try:
+            bars = bars_from_history(history or {})
+        except Exception as exc:  # a per-contract parse failure is a recorded skip
+            skipped[code] = exc
+            continue
+        kept, rejected = liquid_bars(bars)
         rejections[code] = rejected
         if not kept.empty:
             bars_by_contract[code] = kept
@@ -274,4 +325,4 @@ def parse_envelope(
         contracts=contracts,
         source="ibkr",
     )
-    return rows, series_meta_rows(contracts, source="ibkr"), rejections
+    return rows, series_meta_rows(contracts, source="ibkr"), rejections, skipped

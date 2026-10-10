@@ -24,6 +24,18 @@ from pipelines.futures.ibkr_curve import (
 from pipelines.futures.pull_ibkr_curve import load_envelope
 
 _FIXTURE = Path("tests/fixtures/futures/ibkr_curve_cl_20261010.json")
+_RAGGED_FIXTURE = Path("tests/fixtures/futures/ibkr_curve_ragged.json")
+
+
+def _ragged_fixture() -> dict:
+    """Real ragged OHLCV arrays extracted verbatim from data/raw/ibkr/{cl,lco}-20261010.json
+    -- 3 of the 72 real contracts captured 2026-10-10, confirmed by inspection. Not invented
+    shapes: the lengths here are exactly the ones found live (see pipelines/futures/
+    ibkr_curve.py's own docstring reference and the task table: cl 202901 open/time=180 but
+    high/low/close=249 and volume=231; lco 202701 time=249 but everything else=250; lco
+    202703 time/open/high/low/close=249 but volume=243)."""
+    with _RAGGED_FIXTURE.open(encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 def test_contract_code_from_month_covers_every_month_letter() -> None:
@@ -88,6 +100,32 @@ def test_bars_from_history_raises_on_a_history_missing_an_ohlcv_key() -> None:
     }
     with pytest.raises(ValueError, match="volume"):
         bars_from_history(history)
+
+
+def test_bars_from_history_raises_naming_the_ragged_keys_and_lengths_against_real_captures() -> (
+    None
+):
+    """Real connector output, not an invented shape: confirmed live 2026-10-10 against
+    data/raw/ibkr/{cl,lco}-20261010.json, 3 of 72 contracts came back with present-but-
+    ragged OHLCV arrays. `_required_array` already named an *absent* key; a *ragged* one
+    must be named the same way, with its length against `time`'s -- not pandas' own
+    "All arrays must be of the same length", which tells a future reader nothing about
+    which key, or by how much."""
+    extract = _ragged_fixture()
+    cases = [
+        (extract["cl_ragged_history"], 180, {"high": 249, "low": 249, "close": 249, "volume": 231}),
+        (extract["lco_701_ragged_history"], 249,
+         {"open": 250, "high": 250, "low": 250, "close": 250, "volume": 250}),
+        (extract["lco_703_ragged_history"], 249, {"volume": 243}),
+    ]
+    for history, time_length, offending in cases:
+        with pytest.raises(ValueError) as excinfo:
+            bars_from_history(history)
+        message = str(excinfo.value)
+        assert str(time_length) in message, message
+        for key, length in offending.items():
+            assert key in message, (key, message)
+            assert str(length) in message, (key, length, message)
 
 
 def test_liquid_bars_rejects_the_real_zero_volume_stale_print() -> None:
@@ -327,12 +365,13 @@ def test_parse_envelope_maps_contract_ids_to_codes_and_reports_rejections() -> N
             },
         },
     }
-    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+    rows, meta, rejections, skipped = parse_envelope(envelope, specs=load_contract_specs())
 
     assert set(rows["series_id"]) == {"fut.cl.z2026.close", "fut.cl.z2026.volume"}
     assert set(rows["revision_date"]) == {pd.Timestamp("2026-10-10 10:39:00")}
     assert rejections["f2027"]["stale_print"] == 1
     assert rejections["z2026"]["stale_print"] == 0
+    assert skipped == {}
     # series_meta lists every laddered contract, even one with no liquid bars.
     assert set(meta["contract"]) == {"z2026", "f2027"}
 
@@ -345,20 +384,59 @@ def test_parse_envelope_records_a_contract_with_no_history_as_a_skip() -> None:
         "ladder": _LADDER[:1],
         "history": {"296574787": {}},
     }
-    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+    rows, meta, rejections, skipped = parse_envelope(envelope, specs=load_contract_specs())
     assert rows.empty
     assert set(meta["contract"]) == {"z2026"}
     assert rejections["z2026"] == dict.fromkeys(REJECTION_REASONS, 0)
+    assert skipped == {}
+
+
+def test_parse_envelope_skips_a_ragged_contract_but_keeps_the_others() -> None:
+    """The real bug: both real captures failed entirely because one ragged contract (3 of
+    72) aborted the whole envelope via pandas' opaque error. A contract that cannot be
+    parsed must be a recorded skip -- like an empty `history` entry already is -- not a
+    reason to lose every other contract's rows.
+
+    Design decision: the skip is NOT folded into `rejections`. `rejections[code]` is
+    always exactly the 4 bar-level REJECTION_REASONS counts, so a reader can trust its
+    shape; a contract that never reached `liquid_bars` has no entry there at all. The skip
+    lives in a sibling `skipped` dict instead, so "ragged, could not parse" (a dict key
+    that exists in `skipped`, absent from `rejections`) is never confused with "parsed
+    fine, every bar rejected as stale" (a dict key in `rejections` whose counts happen to
+    sum to the contract's whole bar count)."""
+    extract = _ragged_fixture()
+    ragged_id = str(extract["cl_ladder_ragged"]["contract_id"])
+    healthy_id = str(extract["cl_ladder_healthy"]["contract_id"])
+    envelope = {
+        "captured_at": extract["cl_captured_at"],
+        "root": "cl",
+        "exchange": extract["cl_exchange"],
+        "ladder": [extract["cl_ladder_healthy"], extract["cl_ladder_ragged"]],
+        "history": {
+            healthy_id: extract["cl_healthy_history_trimmed"],
+            ragged_id: extract["cl_ragged_history"],
+        },
+    }
+    rows, meta, rejections, skipped = parse_envelope(envelope, specs=load_contract_specs())
+
+    assert set(skipped) == {"f2029"}
+    assert isinstance(skipped["f2029"], Exception)
+    assert "f2029" not in rejections
+
+    assert not rows.empty
+    assert set(rows["series_id"]) == {"fut.cl.x2026.close", "fut.cl.x2026.volume"}
+    assert set(meta["contract"]) == {"x2026", "f2029"}  # meta is the ladder, skip or not
 
 
 def test_the_real_fixture_parses_and_its_stale_print_is_refused() -> None:
     envelope = load_envelope(_FIXTURE)
-    rows, meta, rejections = parse_envelope(envelope, specs=load_contract_specs())
+    rows, meta, rejections, skipped = parse_envelope(envelope, specs=load_contract_specs())
 
     assert not rows.empty
     assert set(rows["source"]) == {"ibkr"}
     assert all(sid.endswith((".close", ".volume")) for sid in rows["series_id"])
     assert not meta.empty
+    assert skipped == {}  # the committed fixture has no ragged contract
     # The fixture deliberately retains a real zero-volume bar.
     assert sum(counts["stale_print"] + counts["zero_volume"] for counts in rejections.values()) >= 1
 
@@ -372,7 +450,7 @@ def test_the_real_fixtures_mid_dated_contract_demonstrates_left_trim() -> None:
     than_dropping_the_contract. z2030 (CLZ30) is the fixture's other case: a contract
     whose whole captured window is stale, rejected in full."""
     envelope = load_envelope(_FIXTURE)
-    rows, _, rejections = parse_envelope(envelope, specs=load_contract_specs())
+    rows, _, rejections, _ = parse_envelope(envelope, specs=load_contract_specs())
 
     assert rejections["z2027"]["stale_print"] == 2
     assert rejections["z2030"]["stale_print"] == 8  # the whole window, rejected in full
@@ -389,7 +467,7 @@ def test_parsing_the_fixture_twice_is_idempotent(tmp_path, monkeypatch) -> None:
     envelope = load_envelope(_FIXTURE)
 
     for _ in range(2):
-        rows, _, _ = parse_envelope(envelope, specs=load_contract_specs())
+        rows, _, _, _ = parse_envelope(envelope, specs=load_contract_specs())
         storage.write_ts_long(rows, source="ibkr")
 
     first_pass = len(parse_envelope(envelope, specs=load_contract_specs())[0])
@@ -486,3 +564,45 @@ def test_main_continues_past_a_malformed_capture_but_still_exits_non_zero(
     assert "ng-20261010.json: FAILED" in out
     assert "cl-20261010.json: wrote" in out
     assert not storage.read_ts_long().empty
+
+
+def test_main_skips_a_ragged_contract_but_still_writes_the_others_and_exits_non_zero(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    """The real regression, end to end: a capture with one ragged contract among several
+    good ones must write the good ones' rows, print the ragged contract's skip
+    distinguishably from a bar-level "refused {...}" line, and still exit non-zero --
+    `main()` must not report success for a run that silently dropped a contract."""
+    from core import storage
+    from core.failures import PartialFailureError
+    from pipelines.futures import pull_ibkr_curve
+
+    extract = _ragged_fixture()  # loaded before chdir -- it uses a cwd-relative path
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(storage, "LAKE_ROOT", tmp_path / "lake")
+    archive_dir = tmp_path / "archive"
+    archive_dir.mkdir()
+    monkeypatch.setattr(pull_ibkr_curve, "ARCHIVE_DIR", archive_dir)
+
+    ragged_id = str(extract["cl_ladder_ragged"]["contract_id"])
+    healthy_id = str(extract["cl_ladder_healthy"]["contract_id"])
+    envelope = {
+        "captured_at": extract["cl_captured_at"],
+        "root": "cl",
+        "exchange": extract["cl_exchange"],
+        "ladder": [extract["cl_ladder_healthy"], extract["cl_ladder_ragged"]],
+        "history": {
+            healthy_id: extract["cl_healthy_history_trimmed"],
+            ragged_id: extract["cl_ragged_history"],
+        },
+    }
+    (archive_dir / "cl-20261010.json").write_text(json.dumps(envelope), encoding="utf-8")
+
+    with pytest.raises(PartialFailureError):
+        pull_ibkr_curve.main()
+
+    out = capsys.readouterr().out
+    assert "cl-20261010.json: wrote" in out  # the file itself did not fail outright
+    assert "f2029" in out
+    assert "FAILED" in out  # the skip reads distinguishably from a "refused {...}" line
+    assert not storage.read_ts_long().empty  # the healthy contract's rows still landed

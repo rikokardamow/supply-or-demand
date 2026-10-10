@@ -42,7 +42,7 @@ def main() -> None:
     with failure_scope("futures.pull_ibkr_curve"):
         for path in envelopes:
             try:
-                rows, meta, rejections = parse_envelope(load_envelope(path), specs=specs)
+                rows, meta, rejections, skipped = parse_envelope(load_envelope(path), specs=specs)
             except Exception as exc:
                 record_failure(path.name, exc)
                 continue
@@ -60,6 +60,13 @@ def main() -> None:
             print(f"{path.name}: wrote {len(rows)} rows across {len(meta)} contracts", flush=True)
             for contract, counts in sorted(refused.items()):
                 print(f"  {contract}: refused {counts}", flush=True)
+            # A ragged/unparseable contract is a recorded skip, never a reason to lose the
+            # other contracts in this capture -- printed as a distinct "FAILED" line (never
+            # "refused {...}", which means something else: a contract that parsed fine but
+            # whose bars didn't pass the liquidity gate) and fed into the same failure log
+            # as a whole-file failure, so the run still exits non-zero overall.
+            for contract, failure in sorted(skipped.items()):
+                record_failure(f"{path.name}:{contract}", failure)
 
 
 if __name__ == "__main__":
