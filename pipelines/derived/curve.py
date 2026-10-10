@@ -3,7 +3,44 @@ core/curve.py, and writes derived.spread.<root>.*/derived.curve.<root>.* series 
 Registered as a Spec 13 orchestration step (infra/run_scheduled.py's daily cadence group),
 run after pipelines.futures.pull_daily -- not GitHub Actions, per the lake-on-laptop
 decision. Per-root failure isolation, matching every other pipeline's own pull loop and
-pipelines/futures/pull.py::pull_root."""
+pipelines/futures/pull.py::pull_root.
+
+## Rank-based series are only trustworthy from `valid_rank_window` onward (found 2026-10-10)
+
+`core.curve.nearby_panel` ranks whatever contracts are actually present in
+`contract_panel` -- f01 is just "nearest expiry among the columns it was given", not
+"the real front month". The IBKR MCP connector's `search_futures` returns only
+contracts still live at capture time *unless called with `include_expired=true`*, and
+the capture behind this lake's real `cl`/`lco` data did not pass it -- it took the
+nearest N non-expired contracts as of the capture date. Every contract that was the
+true front month at some earlier date, and has since expired, is simply absent from
+the panel. Confirmed live: on 2026-04-02 the panel's nearest-expiry contracts were
+x2026 (expiry 2026-10-20) and z2026 (2026-11-20) -- the real front month that date
+expired in May 2026 and was never captured, so the row written as `f01` that day was
+actually a deferred contract, and `derived.spread.cl.s12` was a spread between two
+deferred contracts wearing a front-month label. Cross-checked against the lake's own
+independent yfinance front-month series: 294 overlapping days, median absolute
+difference 2.61, only 0.3% agreeing to within a cent -- these are not the same
+instrument.
+
+`valid_rank_window` below is the fix: ranks are only trustworthy from
+`min(expiries) - median_gap_between_consecutive_expiries` onward, because before that
+date a contract nearer than anything the panel holds would have been live and is the
+one actually missing. `pull_root` suppresses every rank-based write (`s12`/`s13`/`s16`/
+`s1_12`/`s23`/`cv123`/`regime`) before that date and prints the window plus how many
+rows were suppressed -- silent truncation is not acceptable here (root CLAUDE.md's
+"a degenerate input fails loudly and visibly" rule). Contract-coded series (`dec_dec_*`,
+and `fut.<root>.<contract>.close` itself) carry no rank claim at all and are written
+over their full real history, unaffected by any of this.
+
+**Do not "simplify" this window away.** The real fix for a future capture that wants
+genuine historical ranks is to re-run the IBKR pull with `include_expired=true`, which
+would make the panel actually complete back through history and let `valid_rank_window`
+naturally widen on its own (a wider, correctly-populated panel has a smaller
+min(expiries), and real early contracts, not a code change here). Until a capture does
+that, most of a monthly root's rank history is honestly unsupported -- for the current
+`cl` panel (earliest expiry 2026-10-20, monthly contracts) that is only the last few
+weeks, which is the correct answer, not a bug in this window."""
 
 from __future__ import annotations
 
@@ -108,6 +145,35 @@ def contract_panel_for(
     return contract_panel, expiries
 
 
+def valid_rank_window(expiries: pd.Series) -> pd.Timestamp:
+    """Earliest date from which `expiries`' own contracts can support a trustworthy
+    rank (f01, f02, ...) -- see this module's own docstring for the full story of why
+    an IBKR-captured panel needs this at all.
+
+    `expiries` sorted ascending gives the gaps between consecutive contracts actually
+    present in the panel; before `min(expiries) - median(gaps)`, a contract that has
+    since expired and was never captured would have been nearer than the panel's own
+    earliest-expiry contract, so whatever the panel calls f01 on that date is not
+    really the front month. Needs at least two contracts to have a gap to measure from
+    at all -- callers (`pull_root`) already require that before computing a panel."""
+    if len(expiries) < 2:
+        raise ValueError("valid_rank_window needs at least two contracts to measure a gap")
+    sorted_expiries = pd.Series(pd.to_datetime(expiries.to_numpy())).sort_values()
+    median_gap = sorted_expiries.diff().dropna().median()
+    return pd.Timestamp(sorted_expiries.iloc[0]) - median_gap
+
+
+def _suppress_before_window(
+    series: pd.Series, window_start: pd.Timestamp
+) -> tuple[pd.Series, int]:
+    """Masks `series` to NaN before `window_start` -- so `_write_derived`'s own
+    `dropna()` simply never writes those rows -- and returns how many real values were
+    suppressed, for the run output's own "stated, not silent" count."""
+    in_window = series.index >= window_start
+    suppressed = int((~in_window & series.notna()).sum())
+    return series.where(in_window), suppressed
+
+
 def _write_derived(
     root: str, series_id_suffix: str, values: pd.Series, ingested_at: pd.Timestamp
 ) -> int:
@@ -148,16 +214,35 @@ def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
     regime = curve_regime(unadj)
     decs = dec_dec(contract_panel)
 
+    # Rank-based series only -- dec_dec (contract-coded) is written over its full
+    # history below, unaffected by any of this. See the module docstring for why this
+    # window exists at all.
+    window_start = valid_rank_window(expiries)
+    regime_codes = regime["state"].map(REGIME_CODES).astype(float)
+    suppressed = 0
+    for col in _SPREAD_COLUMNS:
+        spreads[col], col_suppressed = _suppress_before_window(spreads[col], window_start)
+        suppressed += col_suppressed
+    cv123, cv_suppressed = _suppress_before_window(cv123, window_start)
+    regime_codes, regime_suppressed = _suppress_before_window(regime_codes, window_start)
+    suppressed += cv_suppressed + regime_suppressed
+
     total = 0
     for col in _SPREAD_COLUMNS:
         total += _write_derived(root, f"spread.{root}.{col}", spreads[col], ingested_at)
     for col in decs.columns:
         total += _write_derived(root, f"spread.{root}.{col}", decs[col], ingested_at)
     total += _write_derived(root, f"curve.{root}.cv123", cv123, ingested_at)
-
-    regime_codes = regime["state"].map(REGIME_CODES).astype(float)
     total += _write_derived(root, f"curve.{root}.regime", regime_codes, ingested_at)
 
+    print(
+        f"{root}: rank series (s12/s13/s16/s1_12/s23/cv123/regime) valid only from "
+        f"{window_start.date()} onward -- the panel is missing every contract that "
+        f"expired before capture (see module docstring); {suppressed} row(s) before "
+        f"that date suppressed, not written. A future IBKR capture with "
+        f"include_expired=true would widen this window for real.",
+        flush=True,
+    )
     print(f"{root}: wrote {total} derived rows", flush=True)
     return total
 
