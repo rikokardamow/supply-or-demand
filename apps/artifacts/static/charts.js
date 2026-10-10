@@ -8,6 +8,10 @@ const KD = (() => {
   const FONT = "Inter, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
   const CONFIG = { displayModeBar: false, responsive: true };
 
+  /* Plotly renders a subset of HTML (links, styling) in every string it draws. Names,
+     units and labels come from lake rows, so they are escaped before reaching it. */
+  const esc = (text) => String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
   const el = (tag, cls, text) => {
     const node = document.createElement(tag);
     if (cls) node.className = cls;
@@ -29,14 +33,14 @@ const KD = (() => {
   }
 
   function axisTitle(text, colour) {
-    return { text, font: { size: 11.5, color: colour || C.muted }, standoff: 6 };
+    return { text: esc(text), font: { size: 11.5, color: colour || C.muted }, standoff: 6 };
   }
 
   function notes(list) {
     return (list || []).map((a, i) => {
       const low = a.text.startsWith("Low");
       return {
-        x: a.x, y: a.y, xref: "x", yref: a.axis || "y", text: a.text,
+        x: a.x, y: a.y, xref: "x", yref: a.axis || "y", text: esc(a.text),
         showarrow: true, arrowhead: 0, arrowwidth: 1, arrowcolor: a.latest ? C.navy : C.muted,
         ax: a.latest ? -70 : (i % 2 ? 30 : -30), ay: a.latest ? -34 : (low ? 30 : -30),
         font: { size: 11, color: a.latest ? C.navy : C.text },
@@ -52,7 +56,7 @@ const KD = (() => {
     const data = [
       { x: e.x, y: e.band_min, mode: "lines", line: { width: 0 }, hoverinfo: "skip", showlegend: false },
       { x: e.x, y: e.band_max, mode: "lines", line: { width: 0 }, fill: "tonexty", fillcolor: C.band,
-        name: e.band_label, hoverinfo: "skip" },
+        name: esc(e.band_label), hoverinfo: "skip" },
       { x: e.x, y: e.median, mode: "lines", name: "Median", line: { color: C.orange, width: 1.5, dash: "dot" },
         hovertemplate: hover },
       { x: e.x, y: e.prior, mode: "lines", name: String(e.year - 1), line: { color: C.blue, width: 1.5 },
@@ -70,9 +74,9 @@ const KD = (() => {
   }
 
   function trace(s, colour, axis, width) {
-    return { x: s.x, y: s.y, mode: s.x.length < 16 ? "lines+markers" : "lines", name: s.name, yaxis: axis,
+    return { x: s.x, y: s.y, mode: s.x.length < 16 ? "lines+markers" : "lines", name: esc(s.name), yaxis: axis,
       line: { color: colour, width: width }, marker: { size: 6, color: colour },
-      hovertemplate: `%{y:${fmt(s.digits)}} ${s.unit}` };
+      hovertemplate: `%{y:${fmt(s.digits)}} ${esc(s.unit)}` };
   }
 
   function dual(e) {
@@ -105,13 +109,13 @@ const KD = (() => {
   }
 
   function bars(e) {
-    const cats = e.categories.slice().reverse();
+    const cats = e.categories.map(esc).reverse();
     const rev = (v) => v.slice().reverse();
-    const hover = `%{x:${fmt(e.digits)}} ${e.unit}`;
+    const hover = `%{x:${fmt(e.digits)}} ${esc(e.unit)}`;
     const data = [
-      { type: "bar", orientation: "h", y: cats, x: rev(e.compare), name: e.compare_name,
+      { type: "bar", orientation: "h", y: cats, x: rev(e.compare), name: esc(e.compare_name),
         marker: { color: C.blue }, hovertemplate: hover },
-      { type: "bar", orientation: "h", y: cats, x: rev(e.values), name: e.value_name,
+      { type: "bar", orientation: "h", y: cats, x: rev(e.values), name: esc(e.value_name),
         marker: { color: C.navy }, hovertemplate: hover },
     ];
     return { data, layout: layout({
@@ -162,5 +166,5 @@ const KD = (() => {
     });
   }
 
-  return { C, FONT, CONFIG, el, layout, axisTitle, render, card, metaLine };
+  return { C, FONT, CONFIG, el, esc, layout, axisTitle, render, card, metaLine };
 })();
