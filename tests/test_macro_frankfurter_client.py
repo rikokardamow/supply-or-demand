@@ -8,9 +8,7 @@ from pipelines.macro.frankfurter_client import FrankfurterClient
 
 @pytest.mark.vcr
 def test_get_rates_returns_real_plausible_rates() -> None:
-    df = FrankfurterClient().get_rates(
-        date(2026, 8, 28), date(2026, 9, 2), ["EUR", "GBP", "TRY"]
-    )
+    df = FrankfurterClient().get_rates(date(2026, 8, 28), date(2026, 9, 2), ["EUR", "GBP", "TRY"])
 
     assert list(df.columns) == ["ts", "currency", "rate"]
     assert not df.empty

@@ -30,9 +30,7 @@ def _index(n: int) -> pd.DatetimeIndex:
 def _backwardated(n: int = 300) -> pd.DataFrame:
     """Front above deferred at every rank -- an unambiguously backwardated curve."""
     idx = _index(n)
-    return pd.DataFrame(
-        {"f01": 80.0, "f02": 79.0, "f03": 78.5, "f04": 78.2}, index=idx
-    )
+    return pd.DataFrame({"f01": 80.0, "f02": 79.0, "f03": 78.5, "f04": 78.2}, index=idx)
 
 
 def _contango(n: int = 300) -> pd.DataFrame:
@@ -77,9 +75,7 @@ def test_reaction_clips_its_input_to_plus_minus_three() -> None:
     """Beyond |z|=3 the function would keep shrinking towards zero; the spec clips the
     input so an extreme reading holds the tail value rather than vanishing."""
     assert reaction(pd.Series([5.0])).iloc[0] == pytest.approx(reaction(pd.Series([3.0])).iloc[0])
-    assert reaction(pd.Series([-5.0])).iloc[0] == pytest.approx(
-        reaction(pd.Series([-3.0])).iloc[0]
-    )
+    assert reaction(pd.Series([-5.0])).iloc[0] == pytest.approx(reaction(pd.Series([-3.0])).iloc[0])
 
 
 def test_reaction_piecewise_plateaus_then_cuts_off() -> None:

@@ -64,6 +64,8 @@ const KD = (() => {
       { x: e.x, y: e.current, mode: "lines", name: String(e.year), line: { color: C.navy, width: 2.5 },
         hovertemplate: hover },
     ];
+    /* Weekly series arrive with a value only on report days; the line joins them. */
+    data.forEach((t) => { t.connectgaps = true; });
     return { data, layout: layout({
       xaxis: { type: "date", tickformat: "%b", dtick: "M1", hoverformat: "%-d %b", gridcolor: C.grid,
         linecolor: C.grid, range: [e.x[0], e.x[e.x.length - 1]] },

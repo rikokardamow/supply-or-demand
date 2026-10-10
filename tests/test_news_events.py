@@ -64,9 +64,7 @@ def test_merge_cross_query_duplicates_unions_tags_for_same_event_id() -> None:
     same_url_two_matches = pd.concat(
         [
             articles_to_events(_articles_df().iloc[[1]], commodity="crude", event_type="opec"),
-            articles_to_events(
-                _articles_df().iloc[[1]], commodity="crude", event_type="sanctions"
-            ),
+            articles_to_events(_articles_df().iloc[[1]], commodity="crude", event_type="sanctions"),
         ],
         ignore_index=True,
     )

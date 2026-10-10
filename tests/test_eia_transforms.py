@@ -30,9 +30,7 @@ def test_wpsr_summary_computes_latest_prior_and_delta() -> None:
     df = pd.DataFrame(
         {
             "series_id": ["WCESTUS1", "WCESTUS1", "WPULEUS3", "WPULEUS3"],
-            "ts": pd.to_datetime(
-                ["2026-08-07", "2026-08-14", "2026-08-07", "2026-08-14"]
-            ),
+            "ts": pd.to_datetime(["2026-08-07", "2026-08-14", "2026-08-07", "2026-08-14"]),
             "value": [400000.0, 420000.0, 96.2, 97.2],
         }
     )

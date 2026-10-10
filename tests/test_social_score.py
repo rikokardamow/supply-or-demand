@@ -8,9 +8,14 @@ from pipelines.social.score import aggregate_to_ts_long, score_text
 
 def _post(title: str, ts: str) -> Post:
     return Post(
-        post_id=title, url=f"https://example.test/{title}", title=title,
-        ts=pd.Timestamp(ts), platform="reddit", query="Henry Hub",
-        score=None, num_comments=None,
+        post_id=title,
+        url=f"https://example.test/{title}",
+        title=title,
+        ts=pd.Timestamp(ts),
+        platform="reddit",
+        query="Henry Hub",
+        score=None,
+        num_comments=None,
     )
 
 
@@ -106,9 +111,7 @@ def test_snapshot_rows_are_written_at_the_pull_date_not_post_dates() -> None:
     assert snapshot_sentiment["unit"] == "score_neg1_to_1"
 
     # The post-dated rows must still land on the posts' own days, not the pull day.
-    post_dated_ts = set(
-        rows[rows["series_id"] == "social.reddit.xom.post_count"]["ts"]
-    )
+    post_dated_ts = set(rows[rows["series_id"] == "social.reddit.xom.post_count"]["ts"])
     assert post_dated_ts == {pd.Timestamp("2026-04-29"), pd.Timestamp("2026-07-12")}
     assert pd.Timestamp("2026-09-06") not in post_dated_ts
 

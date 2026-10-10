@@ -104,9 +104,7 @@ def test_pull_interchange_requests_the_bounded_window_and_correct_facets(
         captured.update(kwargs)
         return pd.DataFrame()
 
-    monkeypatch.setattr(
-        pull_rto_interchange.EIAClient, "get_facet_flows", _fake_get_facet_flows
-    )
+    monkeypatch.setattr(pull_rto_interchange.EIAClient, "get_facet_flows", _fake_get_facet_flows)
 
     pull_rto_interchange.pull_interchange(pull_rto_interchange.EIAClient(), days=3)
 

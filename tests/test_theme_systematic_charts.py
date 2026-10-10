@@ -127,9 +127,7 @@ def test_fractionation_heatmap_pivots_condition_against_bin() -> None:
 
 
 def test_fractionation_heatmap_is_empty_safe() -> None:
-    empty = pd.DataFrame(
-        columns=["condition", "bin", "n", "mean", "sharpe", "share_of_total"]
-    )
+    empty = pd.DataFrame(columns=["condition", "bin", "n", "mean", "sharpe", "share_of_total"])
     fig = fractionation_heatmap(empty, value="sharpe")
     assert len(fig.data) == 0
 
@@ -151,7 +149,5 @@ def test_crowding_quadrant_shades_the_inflection_corners() -> None:
     """The point of the chart is the corners: crowded long with a long signal, and
     crowded short with a short signal."""
     idx = _index(50)
-    fig = crowding_quadrant_scatter(
-        pd.Series(0.5, index=idx), pd.Series(0.0, index=idx)
-    )
+    fig = crowding_quadrant_scatter(pd.Series(0.5, index=idx), pd.Series(0.0, index=idx))
     assert len(fig.layout.shapes) >= 2

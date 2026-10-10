@@ -156,6 +156,30 @@ def _prior_value(frame: pd.DataFrame, days: int) -> float | None:
     return float(earlier.iloc[-1]) if len(earlier) else None
 
 
+def _reference_doy(ts: pd.Series) -> pd.Series:
+    """Day of year in the non-leap reference year, 29 February folded into the 28th."""
+    day_of_month = ts.dt.day.where(~((ts.dt.month == 2) & (ts.dt.day == 29)), 28)
+    stamps = pd.to_datetime({"year": REFERENCE_YEAR, "month": ts.dt.month, "day": day_of_month})
+    return stamps.dt.dayofyear
+
+
+def _drawn(band: pd.DataFrame, series: pd.DataFrame, year: int, last_doy: int) -> pd.DataFrame:
+    """The band as it is drawn. `core.seasonal` carries each report forward to the next,
+    which plots a weekly series as a staircase. For the chart the year tracks keep only
+    the days a report landed and the band one day a week, and the renderers join those
+    points. No value is changed or invented; the workbook keeps the full daily table."""
+    if pd.Timedelta(series["ts"].diff().median()) <= pd.Timedelta(days=2):
+        return band
+    drawn = band.copy()
+    ends = drawn.index.isin([drawn.index[0], drawn.index[-1]])
+    weekly = ((drawn["doy"] - last_doy) % 7 == 0) | ends
+    drawn.loc[~weekly, ["band_min", "band_max", "median"]] = float("nan")
+    for column, which in (("current", year), ("prior", year - 1)):
+        reported = set(_reference_doy(series.loc[series["ts"].dt.year == which, "ts"]))
+        drawn.loc[~drawn["doy"].isin(reported), column] = float("nan")
+    return drawn
+
+
 def seasonal_exhibit(
     book: Book,
     *,
@@ -188,6 +212,7 @@ def seasonal_exhibit(
     prior = _prior_value(series, 7)
     change = None if prior is None else latest - prior * scale
     at_doy = band.loc[band["current"].notna()].iloc[-1]
+    drawn = _drawn(band, series, year, int(at_doy["doy"]))
     median = float(at_doy["median"]) * scale
     low, high = float(at_doy["band_min"]) * scale, float(at_doy["band_max"]) * scale
     # A share is compared in percentage points; a percentage of a percentage misleads.
@@ -237,11 +262,11 @@ def seasonal_exhibit(
             "year": year,
             "band_label": f"{n_years}-year range ({window})",
             "x": x,
-            "band_min": _values(band["band_min"] * scale),
-            "band_max": _values(band["band_max"] * scale),
-            "median": _values(band["median"] * scale),
-            "prior": _values(band["prior"] * scale),
-            "current": _values(band["current"] * scale),
+            "band_min": _values(drawn["band_min"] * scale),
+            "band_max": _values(drawn["band_max"] * scale),
+            "median": _values(drawn["median"] * scale),
+            "prior": _values(drawn["prior"] * scale),
+            "current": _values(drawn["current"] * scale),
             "annotations": annotations,
             "takeaway": [
                 f"{_fmt(latest, digits)} {unit} on {day(latest_ts)}{change_text}.",
@@ -257,7 +282,8 @@ def seasonal_exhibit(
             },
             "source": _source(provider, f"ts_long/{source} ({series_id})", latest_ts, _run(raw)),
             "note": (f"Lake unit {series['unit'].iloc[-1]} × {scale:g}. " if scale != 1.0 else "")
-            + "Band from core.seasonal; each year forward-filled between reports.",
+            + "Band from core.seasonal. Lines join the reports themselves; the band is sampled "
+            "once a week.",
             "gap": stale_flag(latest_ts, cadence_days, book.today),
             "sheets": ["seasonal", "series_long"],
         }

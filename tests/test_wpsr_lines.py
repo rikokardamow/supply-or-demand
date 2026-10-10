@@ -14,9 +14,7 @@ CRUDE = "WCESTUS1"
 def _weekly(series_id: str, values: list[float], end: str = "2026-09-04") -> pd.DataFrame:
     """A weekly ts_long-shaped frame ending on `end`, oldest first."""
     ts = pd.date_range(end=end, periods=len(values), freq="7D")
-    return pd.DataFrame(
-        {"series_id": series_id, "ts": ts, "value": values, "unit": "MBBL"}
-    )
+    return pd.DataFrame({"series_id": series_id, "ts": ts, "value": values, "unit": "MBBL"})
 
 
 def test_build_wpsr_lines_returns_the_serving_schema_columns() -> None:
@@ -78,9 +76,7 @@ def test_vs_median_is_measured_against_the_seasonal_band_excluding_2020() -> Non
     for year in [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]:
         value = 999.0 if year == 2020 else 100.0
         ts = pd.date_range(f"{year}-01-01", f"{year}-12-31", freq="7D")
-        frames.append(
-            pd.DataFrame({"series_id": CRUDE, "ts": ts, "value": value, "unit": "MBBL"})
-        )
+        frames.append(pd.DataFrame({"series_id": CRUDE, "ts": ts, "value": value, "unit": "MBBL"}))
     latest = pd.DataFrame(
         {
             "series_id": CRUDE,
@@ -140,9 +136,7 @@ def test_vs_median_uses_only_its_own_series_not_every_series_in_the_frame() -> N
         frames.append(
             pd.DataFrame({"series_id": CRUDE, "ts": ts, "value": 400000.0, "unit": "MBBL"})
         )
-        frames.append(
-            pd.DataFrame({"series_id": "WPULEUS3", "ts": ts, "value": 90.0, "unit": "%"})
-        )
+        frames.append(pd.DataFrame({"series_id": "WPULEUS3", "ts": ts, "value": 90.0, "unit": "%"}))
     latest = pd.DataFrame(
         {
             "series_id": [CRUDE, "WPULEUS3"],

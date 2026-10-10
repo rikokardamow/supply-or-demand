@@ -93,9 +93,7 @@ def test_a_panel_with_no_rolls_is_returned_unchanged() -> None:
     index = pd.bdate_range("2026-11-24", "2026-11-30")
     f01 = pd.Series(np.linspace(100, 105, len(index)), index=index)
     panel = pd.DataFrame({"f01": f01, "f02": f01 + 2.0})
-    pd.testing.assert_series_equal(
-        back_adjust_from_ranks(panel, "cl"), f01, check_names=False
-    )
+    pd.testing.assert_series_equal(back_adjust_from_ranks(panel, "cl"), f01, check_names=False)
 
 
 def test_back_adjustment_never_uses_a_future_observation() -> None:

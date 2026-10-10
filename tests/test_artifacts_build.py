@@ -371,3 +371,23 @@ def test_an_output_that_cannot_be_deleted_is_named(
     monkeypatch.setattr(Path, "unlink", locked)
     with pytest.raises(build.SecretLeakError, match="COULD NOT DELETE"):
         build.assert_no_secrets([page], {"KEY": {b"long-secret-value"}})
+
+
+def test_a_weekly_series_is_drawn_through_its_reports_not_as_a_staircase() -> None:
+    levels = {y: float(y) for y in range(2021, 2027)}
+    series = _weekly("2021-01-01", "2026-06-26", levels)
+    band = tables.seasonal_table(series, "X")
+    last_doy = int(band.loc[band["current"].notna(), "doy"].iloc[-1])
+    drawn = exhibits._drawn(band, series, 2026, last_doy)
+    reports = int((series["ts"].dt.year == 2026).sum())
+    assert drawn["current"].notna().sum() == reports
+    assert 50 <= drawn["median"].notna().sum() <= 55
+    assert drawn.loc[drawn["doy"] == last_doy, ["current", "median"]].notna().all(axis=None)
+    kept = drawn["current"].dropna()
+    assert (kept == band.loc[kept.index, "current"]).all()
+
+
+def test_a_daily_series_is_drawn_in_full() -> None:
+    series = _daily("2021-01-01", "2026-06-26").assign(unit="%")
+    band = tables.seasonal_table(series, "X")
+    assert exhibits._drawn(band, series, 2026, 100) is band

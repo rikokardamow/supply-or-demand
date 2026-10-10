@@ -28,9 +28,7 @@ def test_deflate_toy_series_hand_checked() -> None:
 def test_deflate_forward_fills_cpi_onto_series_dates() -> None:
     # series has a date CPI doesn't (a daily price against a monthly CPI print).
     nominal = pd.Series([100.0], index=pd.to_datetime(["2019-06-15"]))
-    cpi = pd.Series(
-        [100.0, 106.0], index=pd.to_datetime(["2018-01-01", "2019-06-01"])
-    )
+    cpi = pd.Series([100.0, 106.0], index=pd.to_datetime(["2018-01-01", "2019-06-01"]))
 
     real = deflate(nominal, cpi, base_period="2018-01-01")
 

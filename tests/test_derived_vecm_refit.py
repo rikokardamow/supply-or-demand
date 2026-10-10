@@ -94,8 +94,7 @@ def test_refit_reports_both_the_full_and_post_break_samples() -> None:
     assert card["sample"] == "post_break"
 
 
-def test_refit_falls_back_to_the_full_sample_when_the_break_leaves_too_little_data(
-) -> None:
+def test_refit_falls_back_to_the_full_sample_when_the_break_leaves_too_little_data() -> None:
     """A break near the end of the sample must not leave the VECM with a handful of
     observations -- it falls back to the full sample and says so."""
     panel = build_panel(_lake_panel())

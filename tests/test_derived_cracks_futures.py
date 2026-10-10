@@ -82,7 +82,5 @@ def test_futures_derived_rows_use_the_specs_tenor_series_id() -> None:
 
 
 def test_futures_derived_rows_are_empty_for_an_empty_series() -> None:
-    rows = futures_derived_rows(
-        "us321", "m1", pd.Series(dtype=float), pd.Timestamp("2026-09-05")
-    )
+    rows = futures_derived_rows("us321", "m1", pd.Series(dtype=float), pd.Timestamp("2026-09-05"))
     assert rows.empty
