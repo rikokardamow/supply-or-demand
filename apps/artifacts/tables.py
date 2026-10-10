@@ -28,6 +28,7 @@ SEASONAL_COLUMNS: Final = [
     "band_min",
     "band_max",
     "median",
+    "mean",
     "current",
     "prior",
     "years",
@@ -114,6 +115,8 @@ def seasonal_table(series: pd.DataFrame, series_id: str) -> pd.DataFrame:
             "band_min": band["lo"].to_numpy(),
             "band_max": band["hi"].to_numpy(),
             "median": band["median"].to_numpy(),
+            # The mean of the same per-year columns `seasonal_stats` took its median from.
+            "mean": band[[c for c in band.columns if c.isdigit()]].mean(axis=1).to_numpy(),
             "current": _track(tracks, year, band.index).to_numpy(),
             "prior": _track(tracks, year - 1, band.index).to_numpy(),
             "years": sum(1 for c in band.columns if c.isdigit()),

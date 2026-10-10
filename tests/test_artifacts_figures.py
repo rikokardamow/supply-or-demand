@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 from apps.artifacts import figures
-from core.design import LIGHT_BLUE, NAVY, ORANGE
+from core.design import LIGHT_BLUE, MA_SHORT, NAVY, ORANGE
 
 
 def _track(name: str, unit: str, points: int = 20) -> dict[str, Any]:
@@ -32,6 +32,17 @@ def _seasonal() -> dict[str, Any]:
         "band_min": [1.0, 1.0, 1.0],
         "band_max": [3.0, 3.0, 3.0],
         "median": [2.0, 2.0, 2.0],
+        "mean": [2.1, 2.1, 2.1],
+        "overlays": [
+            {
+                "name": "MA20",
+                "style": "ma20",
+                "digits": 1,
+                "unit": "x",
+                "x": days[:2],
+                "y": [2.7, 2.8],
+            }
+        ],
         "prior": [2.5, 2.5, 2.5],
         "current": [2.8, 2.9, None],
         "annotations": [
@@ -43,11 +54,20 @@ def _seasonal() -> dict[str, Any]:
 
 def test_seasonal_draws_the_current_year_last_in_navy() -> None:
     fig = figures.figure(_seasonal())
-    assert [t.name for t in fig.data[1:]] == ["5-year range", "Median", "2025", "2026"]
+    assert [t.name for t in fig.data[1:]] == [
+        "5-year range",
+        "Median",
+        "5-year average",
+        "MA20",
+        "2025",
+        "2026",
+    ]
+    assert all(t.connectgaps for t in fig.data)
     assert fig.data[1].fill == "tonexty"
     assert (fig.data[2].line.color, fig.data[2].line.dash) == (ORANGE, "dot")
-    assert fig.data[3].line.color == LIGHT_BLUE
-    assert fig.data[4].line.color == NAVY
+    assert (fig.data[4].line.color, fig.data[4].line.dash) == (MA_SHORT, "dot")
+    assert fig.data[5].line.color == LIGHT_BLUE
+    assert fig.data[6].line.color == NAVY
     assert [a.text for a in fig.layout.annotations] == ["Latest 2.9", "Low 2.8 · 1 Jan 2026"]
     assert fig.layout.title.text is None
 
@@ -101,3 +121,19 @@ def test_lake_text_is_escaped_before_plotly_draws_it(kind: str) -> None:
     fig = figures.figure({"kind": kind, "annotations": [], "series": [track]})
     assert "<a" not in fig.data[0].name and "&lt;a" in fig.data[0].name
     assert "<b>" not in fig.data[0].hovertemplate
+
+
+def test_overlays_sit_behind_the_lead_series_on_its_axis() -> None:
+    exhibit = {
+        "kind": "dual",
+        "annotations": [],
+        "series": [_track("Brent", "USD/bbl"), _track("Spread", "USD/bbl")],
+        "overlays": [
+            {**_track("MA200", "USD/bbl"), "style": "ma200"},
+            {**_track("5-year average", "USD/bbl", points=2), "style": "avg5"},
+        ],
+    }
+    fig = figures.figure(exhibit)
+    assert [t.name for t in fig.data] == ["MA200", "5-year average", "Brent", "Spread"]
+    assert fig.data[0].yaxis is None and fig.data[0].line.width == 1.2
+    assert fig.data[1].line.color == ORANGE

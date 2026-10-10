@@ -31,6 +31,11 @@ LIGHT_BLUE: Final = "#5b9bd5"
 RED: Final = "#c0392b"
 ORANGE: Final = "#e67e22"
 GREY: Final = "#95a5a6"
+# Moving averages: one slate ramp, darkest for the shortest window, so the three
+# read as a family and never compete with the navy and light-blue data series.
+MA_SHORT: Final = "#4d5a6a"
+MA_MID: Final = "#7f8a97"
+MA_LONG: Final = "#b3bac2"
 BAND: Final = "rgba(150,150,150,0.25)"
 GRID: Final = "#e6e6e6"
 TRANSPARENT: Final = "rgba(0,0,0,0)"
@@ -41,12 +46,8 @@ BODY_FAMILY: Final = "Inter"
 # Real fallbacks: the app must stay legible with Google Fonts blocked or offline.
 HEADING_STACK: Final = "Lora, Georgia, 'Times New Roman', serif"
 BODY_STACK: Final = "Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-HEADING_URL: Final = (
-    "https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap"
-)
-BODY_URL: Final = (
-    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-)
+HEADING_URL: Final = "https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap"
+BODY_URL: Final = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 BASE_FONT_PX: Final = 15
 
 # -- Shape ----------------------------------------------------------------------------

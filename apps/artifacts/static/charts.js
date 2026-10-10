@@ -3,6 +3,7 @@
 const KD = (() => {
   const C = {
     navy: "#0f2a4a", blue: "#5b9bd5", red: "#c0392b", orange: "#e67e22", grey: "#95a5a6",
+    maShort: "#4d5a6a", maMid: "#7f8a97", maLong: "#b3bac2",
     band: "rgba(150,150,150,0.25)", grid: "#e6e6e6", text: "#363737", muted: "#757575", paper: "#ffffff",
   };
   const FONT = "Inter, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
@@ -51,6 +52,19 @@ const KD = (() => {
 
   const fmt = (digits) => `,.${digits}f`;
 
+  /* Moving averages and the five-year mean: thin, dashed, behind the data series. */
+  const OVERLAY = {
+    ma20: { color: C.maShort, dash: "dot" }, ma100: { color: C.maMid, dash: "dash" },
+    ma200: { color: C.maLong, dash: "longdash" }, avg5: { color: C.orange, dash: "dashdot" },
+  };
+  function overlays(e) {
+    return (e.overlays || []).map((o) => ({
+      x: o.x, y: o.y, mode: "lines", name: esc(o.name), connectgaps: true,
+      line: { color: OVERLAY[o.style].color, width: 1.2, dash: OVERLAY[o.style].dash },
+      hovertemplate: `%{y:${fmt(o.digits)}}`,
+    }));
+  }
+
   function seasonal(e) {
     const hover = `%{y:${fmt(e.digits)}}`;
     const data = [
@@ -59,6 +73,9 @@ const KD = (() => {
         name: esc(e.band_label), hoverinfo: "skip" },
       { x: e.x, y: e.median, mode: "lines", name: "Median", line: { color: C.orange, width: 1.5, dash: "dot" },
         hovertemplate: hover },
+      { x: e.x, y: e.mean, mode: "lines", name: "5-year average",
+        line: { color: C.orange, width: 1.2, dash: "dashdot" }, hovertemplate: hover },
+      ...overlays(e),
       { x: e.x, y: e.prior, mode: "lines", name: String(e.year - 1), line: { color: C.blue, width: 1.5 },
         hovertemplate: hover },
       { x: e.x, y: e.current, mode: "lines", name: String(e.year), line: { color: C.navy, width: 2.5 },
@@ -83,7 +100,7 @@ const KD = (() => {
 
   function dual(e) {
     const [a, b] = e.series;
-    const data = [trace(a, C.navy, "y", 2.2)];
+    const data = [...overlays(e), trace(a, C.navy, "y", 2.2)];
     const extra = {
       yaxis: { title: axisTitle(`${a.name}, ${a.unit}`, C.navy), tickfont: { color: C.navy }, gridcolor: C.grid,
         zeroline: false, automargin: true },
@@ -100,12 +117,13 @@ const KD = (() => {
 
   function lines(e) {
     const colours = [C.navy, C.blue, C.grey];
-    const data = e.series.map((s, i) => trace(s, colours[i % 3], "y", i ? 1.8 : 2.2));
+    const drawn = overlays(e);
+    const data = drawn.concat(e.series.map((s, i) => trace(s, colours[i % 3], "y", i ? 1.8 : 2.2)));
     return { data, layout: layout({
       xaxis: { title: e.x_title ? axisTitle(e.x_title) : undefined, gridcolor: C.grid, linecolor: C.grid },
       yaxis: { title: axisTitle(e.series[0].unit), gridcolor: C.grid, zeroline: true, zerolinecolor: C.grid,
         automargin: true },
-      showlegend: e.series.length > 1,
+      showlegend: e.series.length + drawn.length > 1,
       annotations: notes(e.annotations),
     }) };
   }

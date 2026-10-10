@@ -391,3 +391,26 @@ def test_a_daily_series_is_drawn_in_full() -> None:
     series = _daily("2021-01-01", "2026-06-26").assign(unit="%")
     band = tables.seasonal_table(series, "X")
     assert exhibits._drawn(band, series, 2026, 100) is band
+
+
+def test_moving_averages_use_the_whole_history_and_skip_windows_it_cannot_fill() -> None:
+    book = exhibits.Book(today=date(2026, 10, 10))
+    history = _daily("2026-01-01", "2026-06-29")  # 180 observations, values 0..179
+    out = exhibits._overlays(book, "x", history, "2026-06-01", "USD/bbl", 2)
+    assert [o["name"] for o in out] == ["MA20", "MA100"]  # no MA200, no five-year average
+    ma20 = out[0]
+    assert ma20["x"][0] == "2026-06-01"
+    assert ma20["y"][-1] == sum(range(160, 180)) / 20
+    sheet = pd.concat(book.overlays)
+    assert set(sheet["measure"]) == {"MA20", "MA100"} and set(sheet["exhibit_id"]) == {"x"}
+
+
+def test_the_five_year_average_needs_five_years_of_history() -> None:
+    book = exhibits.Book(today=date(2026, 10, 10))
+    history = _daily("2020-01-01", "2026-10-09")
+    out = exhibits._overlays(book, "x", history, "2026-01-01", "USD/bbl", 2)
+    average = out[-1]
+    assert average["name"] == "5-year average" and average["style"] == "avg5"
+    window = history.loc[history["ts"] > pd.Timestamp("2021-10-09"), "value"]
+    assert average["y"] == [round(float(window.mean()), 3)] * 2
+    assert average["x"] == ["2026-01-01", "2026-10-09"]

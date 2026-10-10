@@ -103,6 +103,12 @@ SHEET_NOTES: Final[dict[str, tuple[str, str, str]]] = {
         "ts_long/gie",
         "% of working gas volume",
     ),
+    "moving_averages": (
+        "MA20, MA100 and MA200 (means of the last 20, 100 and 200 observations) and the "
+        "five-year average drawn on each time-series chart, computed from series_long",
+        "computed at build from ts_long; see apps/artifacts/exhibits.py",
+        "as the chart's lead series",
+    ),
     "freshness": (
         "Last observation and pipeline run per source",
         "core.freshness.staleness_report",
@@ -120,6 +126,12 @@ NAVY: Final = _rgb(design.NAVY)
 LIGHT_BLUE: Final = _rgb(design.LIGHT_BLUE)
 ORANGE: Final = _rgb(design.ORANGE)
 GREY: Final = _rgb(design.GREY)
+OVERLAY_COLOURS: Final = {
+    "ma20": _rgb(design.MA_SHORT),
+    "ma100": _rgb(design.MA_MID),
+    "ma200": _rgb(design.MA_LONG),
+    "avg5": _rgb(design.ORANGE),
+}
 RED: Final = _rgb(design.RED)
 TEXT: Final = _rgb(design.TEXT)
 MUTED: Final = _rgb(design.MUTED)
@@ -191,7 +203,14 @@ def workbook_tables(book: Book) -> dict[str, pd.DataFrame]:
         if book.seasonal
         else pd.DataFrame(columns=SEASONAL_COLUMNS),
     }
-    for name in ("wpsr_lines", "curve_settles", "flows", "storage_by_country", "freshness"):
+    for name in (
+        "moving_averages",
+        "wpsr_lines",
+        "curve_settles",
+        "flows",
+        "storage_by_country",
+        "freshness",
+    ):
         tables[name] = book.sheets[name]
     return tables
 
@@ -363,11 +382,12 @@ def _seasonal(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None
             ("Range low", pick("band_min")),
             ("Range high", pick("band_max")),
             ("Median", pick("median")),
+            ("5-year average", pick("mean")),
             (str(exhibit["year"] - 1), pick("prior")),
             (str(exhibit["year"]), pick("current")),
         ],
-        [GREY, GREY, ORANGE, LIGHT_BLUE, NAVY],
-        [1.0, 1.0, 1.5, 1.5, 2.75],
+        [GREY, GREY, ORANGE, ORANGE, LIGHT_BLUE, NAVY],
+        [1.0, 1.0, 1.5, 1.0, 1.5, 2.75],
         "mmm",
     )
     chart.plots[0].series[2].format.line.dash_style = MSO_LINE_DASH_STYLE.ROUND_DOT
@@ -386,16 +406,21 @@ def _aligned(tracks: list[dict[str, Any]]) -> tuple[list[date], list[list[float 
 
 def _lines(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
     tracks = exhibit["series"]
-    categories, columns = _aligned(tracks)
+    extras = exhibit.get("overlays", [])
+    categories, columns = _aligned([*tracks, *extras])
     palette = [NAVY, LIGHT_BLUE, GREY]
     _line_chart(
         slide,
         top,
         height,
         categories,
-        [(f"{t['name']}, {t['unit']}", c) for t, c in zip(tracks, columns, strict=True)],
-        [palette[i % 3] for i in range(len(tracks))],
-        [2.25] + [1.75] * (len(tracks) - 1),
+        [
+            (f"{t['name']}, {t['unit']}", c)
+            for t, c in zip([*tracks, *extras], columns, strict=True)
+        ],
+        [palette[i % 3] for i in range(len(tracks))]
+        + [OVERLAY_COLOURS[o["style"]] for o in extras],
+        [2.25] + [1.75] * (len(tracks) - 1) + [1.0] * len(extras),
         "mmm yy",
     )
 
@@ -403,15 +428,18 @@ def _lines(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
 def _dual(slide: Slide, exhibit: Exhibit, top: float, height: float) -> None:
     half = height / len(exhibit["series"])
     for index, track in enumerate(exhibit["series"]):
-        categories, columns = _aligned([track])
+        # The averages are of the lead series, so they sit on its chart only.
+        extras = exhibit.get("overlays", []) if index == 0 else []
+        categories, columns = _aligned([track, *extras])
+        names = [f"{track['name']}, {track['unit']}"] + [o["name"] for o in extras]
         chart = _line_chart(
             slide,
             top + index * half,
             half,
             categories,
-            [(f"{track['name']}, {track['unit']}", columns[0])],
-            [NAVY if index == 0 else LIGHT_BLUE],
-            [2.25],
+            list(zip(names, columns, strict=True)),
+            [NAVY if index == 0 else LIGHT_BLUE] + [OVERLAY_COLOURS[o["style"]] for o in extras],
+            [2.25] + [1.0] * len(extras),
             "mmm yy",
         )
         chart.has_legend = True

@@ -13,7 +13,20 @@ from typing import Any, Final
 
 import core.theme  # noqa: F401  -- registers the "kardamow" template
 import plotly.graph_objects as go
-from core.design import BAND, GREY, GRID, LIGHT_BLUE, MUTED, NAVY, ORANGE, PAPER, TEXT
+from core.design import (
+    BAND,
+    GREY,
+    GRID,
+    LIGHT_BLUE,
+    MA_LONG,
+    MA_MID,
+    MA_SHORT,
+    MUTED,
+    NAVY,
+    ORANGE,
+    PAPER,
+    TEXT,
+)
 
 Exhibit = dict[str, Any]
 
@@ -75,6 +88,30 @@ def _figure(data: list[Any], **layout: Any) -> go.Figure:
     return fig
 
 
+# Moving averages and the five-year mean: thin, dashed, behind the data series.
+_OVERLAY: Final = {
+    "ma20": (MA_SHORT, "dot"),
+    "ma100": (MA_MID, "dash"),
+    "ma200": (MA_LONG, "longdash"),
+    "avg5": (ORANGE, "dashdot"),
+}
+
+
+def _overlays(e: Exhibit) -> list[go.Scatter]:
+    return [
+        go.Scatter(
+            x=o["x"],
+            y=o["y"],
+            mode="lines",
+            name=_esc(o["name"]),
+            connectgaps=True,
+            line={"color": _OVERLAY[o["style"]][0], "width": 1.2, "dash": _OVERLAY[o["style"]][1]},
+            hovertemplate=f"%{{y:{_fmt(o['digits'])}}}",
+        )
+        for o in e.get("overlays", [])
+    ]
+
+
 def _seasonal(e: Exhibit) -> go.Figure:
     hover = f"%{{y:{_fmt(e['digits'])}}}"
     x = e["x"]
@@ -105,6 +142,15 @@ def _seasonal(e: Exhibit) -> go.Figure:
             line={"color": ORANGE, "width": 1.5, "dash": "dot"},
             hovertemplate=hover,
         ),
+        go.Scatter(
+            x=x,
+            y=e["mean"],
+            mode="lines",
+            name="5-year average",
+            line={"color": ORANGE, "width": 1.2, "dash": "dashdot"},
+            hovertemplate=hover,
+        ),
+        *_overlays(e),
         go.Scatter(
             x=x,
             y=e["prior"],
@@ -155,7 +201,7 @@ def _trace(s: dict[str, Any], colour: str, axis: str, width: float) -> go.Scatte
 
 def _dual(e: Exhibit) -> go.Figure:
     first = e["series"][0]
-    data = [_trace(first, NAVY, "y", 2.2)]
+    data = [*_overlays(e), _trace(first, NAVY, "y", 2.2)]
     layout: dict[str, Any] = {
         "yaxis": {
             "title": _axis_title(f"{first['name']}, {first['unit']}", NAVY),
@@ -181,7 +227,10 @@ def _dual(e: Exhibit) -> go.Figure:
 
 def _lines(e: Exhibit) -> go.Figure:
     colours = [NAVY, LIGHT_BLUE, GREY]
-    data = [_trace(s, colours[i % 3], "y", 1.8 if i else 2.2) for i, s in enumerate(e["series"])]
+    drawn = _overlays(e)
+    data = drawn + [
+        _trace(s, colours[i % 3], "y", 1.8 if i else 2.2) for i, s in enumerate(e["series"])
+    ]
     xaxis = {"title": _axis_title(e["x_title"])} if e.get("x_title") else {}
     return _figure(
         data,
@@ -191,7 +240,7 @@ def _lines(e: Exhibit) -> go.Figure:
             "zeroline": True,
             "zerolinecolor": GRID,
         },
-        showlegend=len(e["series"]) > 1,
+        showlegend=len(e["series"]) + len(drawn) > 1,
         annotations=_notes(e["annotations"]),
     )
 
