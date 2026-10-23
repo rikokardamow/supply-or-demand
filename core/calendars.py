@@ -1,10 +1,10 @@
 """Release-calendar constants and next-release lookups. Times are approximate ("~")
 for OPEC MOMR and JODI, which publish on a date range/estimate rather than a fixed
-schedule — see NOTES.md's data release calendar for the source list.
+schedule — see DEVELOPMENT.md's data release calendar for the source list.
 
 `roll_calendar`/`roll_window_flag` are this module's first real business-day arithmetic
 (Spec 18 Session C) — plain Mon-Fri via numpy.busday_offset, the same convention
-core/curve.py already established (confirmed with the user: no real CME/ICE holiday
+core/curve.py already established (decided: no real CME/ICE holiday
 calendar yet, since there's no real settlement data to need holiday-exact dates against).
 Genuinely additive -- nothing here touches the RELEASES/next_release machinery above."""
 

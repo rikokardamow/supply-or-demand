@@ -1,11 +1,11 @@
 """Futures curve structure: roll-adjusted nearby ranks, time spreads, convexity, and a
-six-state curve-regime classifier. Never touches DuckDB (root NOTES.md rule) -- callers
+six-state curve-regime classifier. Never touches DuckDB (DEVELOPMENT.md rule) -- callers
 (pipelines/derived/curve.py) read the lake, call these pure functions, and write the
 results back. Every input is a wide DataFrame (index=date, columns=contract code or rank
 label) -- see nearby_panel's own docstring for how contract_panel/expiries are built.
 
 Business-day arithmetic is plain Mon-Fri (numpy.busday_offset), not a real CME/ICE holiday
-calendar -- confirmed with the user before this session: core/calendars.py has no
+calendar -- decided beforehand: core/calendars.py has no
 business-day helper at all today, and there is no real settlement data yet to need
 holiday-exact roll dates against. Revisit once real data demands more precision.
 """
@@ -286,7 +286,7 @@ def transition_matrix(states: pd.Series) -> pd.DataFrame:
 
 def _ttest_1samp_vs_zero(x: pd.Series) -> tuple[float, float]:
     """One-sample t-test of x against 0 -- mean, t-stat. Hand-rolled (mean / (sample std /
-    sqrt(n))) rather than scipy.stats.ttest_1samp: this project's own root NOTES.md rule
+    sqrt(n))) rather than scipy.stats.ttest_1samp: this project's own DEVELOPMENT.md rule
     ("ask before adding a dependency") applies, and a one-sample-vs-zero t-stat needs no
     library at all -- the smallest change that satisfies the spec's own acceptance
     criteria. NaN t-stat if fewer than 2 non-NaN observations, or zero variance."""

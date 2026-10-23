@@ -1,6 +1,6 @@
 """Parquet + DuckDB lake: write/read ts_long and flows datasets.
 
-**Critical historical bug, fixed here (see root NOTES.md / this module's own git
+**Critical historical bug, fixed here (see DEVELOPMENT.md / this module's own git
 history for the full incident)**: `read_parquet(glob, ...)` over a *heterogeneous* set
 of files (one source's own files typed `value` as int64 -- `pipelines/opec_momr`'s
 Baker Hughes rig counts, genuinely whole numbers -- while every other source's files

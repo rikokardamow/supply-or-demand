@@ -1,11 +1,11 @@
 """Phase 2 of the news-map redesign: an LLM-generated "Kardamow take" one-liner
 explaining what a translated headline could mean for the energy complex (crude,
 power, natgas). Uses the official `anthropic` Python SDK (added as a project
-dependency for this feature, per explicit approval -- this project's NOTES.md asks
+dependency for this feature, per explicit approval -- DEVELOPMENT.md asks
 before adding any dependency).
 
 Needs a real `ANTHROPIC_API_KEY` in `.env` (via `core.settings`, never printed/logged)
--- unset until the user provides one, same pattern as `pipelines/news/guardian_client.py`
+-- unset until a key is provided, same pattern as `pipelines/news/guardian_client.py`
 staying gracefully unverified until `GUARDIAN_KEY` existed. `generate_kardamow_caption`
 raises a clear `RuntimeError` rather than crashing obscurely when the key is absent;
 the caller (the page) is expected to catch this and show an explanatory message

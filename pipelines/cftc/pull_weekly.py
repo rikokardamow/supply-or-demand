@@ -1,5 +1,5 @@
 """The real Spec-13 scheduled entrypoint -- CFTC COT is a weekly-only report (data as of
-Tuesday, released Friday 15:30 ET per root NOTES.md's own release calendar), so this
+Tuesday, released Friday 15:30 ET per DEVELOPMENT.md's release calendar), so this
 re-pulls a trailing window of weeks rather than a daily one. Idempotent: write_ts_long's
 own (series_id, ts) de-dup means re-running this after the same report has already landed
 is a safe no-op."""

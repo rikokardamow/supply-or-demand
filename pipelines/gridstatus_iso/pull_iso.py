@@ -1,7 +1,7 @@
 """Pull trailing 60 days of hourly load, fuel mix, and zone/hub-level LMP for CAISO
 and NYISO into ts_long. ERCOT, PJM, and MISO are all out of scope for now -- see
 pipelines/gridstatus_iso/NOTES.md for why (ERCOT's site blocks scraping; PJM needs
-a free API key the user can't currently obtain; MISO's real-time load/fuel-mix
+a free API key I can't currently get; MISO's real-time load/fuel-mix
 endpoints only serve "today" for the current year, no genuine historical window)."""
 
 from __future__ import annotations

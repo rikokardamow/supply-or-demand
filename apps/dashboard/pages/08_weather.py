@@ -253,7 +253,7 @@ def _map_age_hours(rendered_at: pd.Timestamp, now: pd.Timestamp | None = None) -
 
 def _anomaly_maps_section() -> None:
     """Reads pipelines/weather's own manifest.parquet (never calls ECMWF/Open-Meteo
-    directly, per root NOTES.md's "pages read the lake, never call APIs" rule) and
+    directly, per DEVELOPMENT.md's "pages read the lake, never call APIs" rule) and
     displays the map matching the region/step picked below, with a stale-map badge if
     the displayed map is more than STALE_MAP_THRESHOLD_HOURS old -- a sign
     `pipelines/weather/pull_daily.py` hasn't run recently."""

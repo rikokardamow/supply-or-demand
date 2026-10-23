@@ -1,6 +1,6 @@
 """Refining economics: crack-spread boards (Spec 20 Session A).
 
-Pure maths only -- never touches DuckDB (root NOTES.md rule 2). Callers
+Pure maths only -- never touches DuckDB (DEVELOPMENT.md rule 2). Callers
 (`pipelines/derived/cracks.py`, `apps/dashboard/pages/20_cracks.py`) read the lake, call
 these functions, and write or render the results.
 
@@ -140,7 +140,7 @@ def _reference_doy(ts: pd.Timestamp) -> int:
 
 def _seasonal_mean(series: pd.Series, as_of: pd.Timestamp) -> float:
     """Mean of the crack at `as_of`'s day-of-year across the trailing five calendar
-    years, 2020 excluded (root NOTES.md rule 4 -- via core.seasonal, not reimplemented)."""
+    years, 2020 excluded (DEVELOPMENT.md rule 4 -- via core.seasonal, not reimplemented)."""
     if series.empty:
         return float("nan")
 

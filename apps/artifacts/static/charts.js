@@ -1,5 +1,5 @@
 /* Shared chart code for the dashboard, briefing and motion pages.
-   Colours and type mirror core/design.py; see "Design system" in NOTES.md. */
+   Colours and type mirror core/design.py; see "Design system" in DEVELOPMENT.md. */
 const KD = (() => {
   const C = {
     navy: "#0f2a4a", blue: "#5b9bd5", red: "#c0392b", orange: "#e67e22", grey: "#95a5a6",

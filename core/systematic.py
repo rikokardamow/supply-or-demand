@@ -1,7 +1,7 @@
 """Systematic strategy signals and position sizing (Spec 21, after Bouchouev,
 *Virtual Barrels* Ch. 5-6).
 
-Pure maths only -- never touches DuckDB (root NOTES.md rule 2). `pipelines/derived/
+Pure maths only -- never touches DuckDB (DEVELOPMENT.md rule 2). `pipelines/derived/
 systematic.py` reads the lake, calls these, and writes `derived.pos.<strategy>.<root>`.
 
 Vectorised pandas throughout, no per-date loops (the spec's own Session A instruction).

@@ -25,7 +25,7 @@ from pipelines.futures.barchart_curve import (
 
 BARCHART_DIR = Path("data/manual/barchart")
 
-# Barchart's product symbol -> the lake root it belongs to. Confirmed with the user
+# Barchart's product symbol -> the lake root it belongs to. Decided
 # rather than inferred from the price level: QA is Crude Oil Brent Financial (NYMEX),
 # which is this project's `lco` root.
 PRODUCT_ROOTS = {"QA": "lco"}

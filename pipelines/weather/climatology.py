@@ -1,6 +1,6 @@
 """Builds cached daily climatological normals from the lake's own already-backfilled
 Open-Meteo history (2018-present, written by pull_weather.py) via
-core.seasonal.seasonal_stats -- never reimplemented, per NOTES.md rule 4 (2020 excluded
+core.seasonal.seasonal_stats -- never reimplemented, per DEVELOPMENT.md rule 4 (2020 excluded
 automatically by that function's own default years/exclude tuple).
 
 No separate archive fetch here: an earlier version of this module made its own 2010-2024

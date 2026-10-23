@@ -1,6 +1,6 @@
 """Crack-spread VECM after Murat & Tokat (2009), *Energy Economics* 31:85-90.
 
-Pure maths only -- never touches DuckDB (root NOTES.md rule 2). `pipelines/derived/
+Pure maths only -- never touches DuckDB (DEVELOPMENT.md rule 2). `pipelines/derived/
 vecm_refit.py` reads the lake, calls these functions, and writes the model card back.
 
 **Not a clean replication, and the page must never present it as one.** Murat & Tokat
