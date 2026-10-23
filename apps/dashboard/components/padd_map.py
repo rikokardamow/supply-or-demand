@@ -3,7 +3,7 @@ coloured by transport mode, with a month slider and mode filter.
 
 Uses go.Scattermapbox with the free, no-token "open-street-map" style for real street
 tiles (moved off go.Scattergeo's flat continent-outline projection as part of the
-dashboard's institutional-look redesign — see root NOTES.md's chart house style).
+dashboard's institutional-look redesign — see DEVELOPMENT.md's chart house style).
 
 Note: Plotly annotations only support geo-referenced *anchor* coordinates (xref/yref =
 "geo"), not geo-referenced *arrow-tail* coordinates (axref/ayref only accept "pixel" or

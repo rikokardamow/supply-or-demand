@@ -82,3 +82,11 @@ PROJECT_BRIEF.md
 # Publishing-layer Office exports (apps/artifacts/office.py) -- rebuilt from the lake by
 # `python -m apps.artifacts.build`; binary, and they embed lake data.
 exports/
+
+# Local editor and assistant settings (kept out of the repo)
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+web/AGENTS.md
+docs/superpowers/

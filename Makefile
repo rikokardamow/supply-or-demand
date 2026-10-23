@@ -1,4 +1,4 @@
-# Targets mirror .github/workflows/ci.yml and the root NOTES.md's own Commands section --
+# Targets mirror .github/workflows/ci.yml and the Commands section of DEVELOPMENT.md --
 # keep the three checks below identical to what CI runs, or `make check` passing locally
 # stops meaning anything.
 .PHONY: install lint typecheck test check dev clean
@@ -15,8 +15,7 @@ typecheck:
 test:
 	uv run pytest
 
-# The full green-session gate from golden rule 8, in the cheapest-first order of the
-# NOTES.md code review procedure.
+# The full gate from rule 8 in DEVELOPMENT.md, cheapest check first.
 check: lint typecheck test
 
 dev:

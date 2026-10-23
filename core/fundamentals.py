@@ -1,5 +1,5 @@
 """Fundamentals & physical-market analytics: inventory seasonality, days-of-cover, spare
-capacity, and CFTC COT positioning percentiles. Never touches DuckDB (root NOTES.md rule)
+capacity, and CFTC COT positioning percentiles. Never touches DuckDB (DEVELOPMENT.md rule)
 -- callers (pipelines/derived/fundamentals.py) read the lake, call these pure functions,
 and write the results back."""
 
@@ -14,7 +14,7 @@ from core.seasonal import seasonal_stats
 def inventory_deviation(
     df: pd.DataFrame, years: int = 5, exclude: tuple[int, ...] = (2020,)
 ) -> pd.DataFrame:
-    """Thin wrapper over core.seasonal.seasonal_stats (root NOTES.md rule 4: never
+    """Thin wrapper over core.seasonal.seasonal_stats (DEVELOPMENT.md rule 4: never
     reimplement the day-of-year/exclude-2020 seasonal maths) -- `df` needs columns ts,
     value. Columns returned: value (the latest year's own track), mean/min/max (min/max are
     seasonal_stats' own lo/hi, renamed to match this project's own convention), dev

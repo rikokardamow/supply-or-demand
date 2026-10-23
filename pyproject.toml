@@ -35,7 +35,7 @@ dependencies = [
     # and ruptures the Bai-Perron break search -- both named explicitly by the spec.
     # statsmodels has no Phillips-Perron test, which is what `arch` is for here; `arch`
     # is also what Spec 22's GARCH-MIDAS-EVT risk engine needs, so it is not a
-    # single-use addition. Confirmed with the user before adding (root NOTES.md rule 7).
+    # single-use addition. Agreed before adding (DEVELOPMENT.md rule 7).
     # OpenSky Network's official Python binding (Spec 28.04, airspace/aviation). Not
     # published to PyPI, so it installs from the upstream repo's own `python/` subdirectory
     # and is pinned to a commit rather than a tag -- an unpinned git dependency would let a
@@ -51,14 +51,14 @@ dependencies = [
     # for anything estimated, so a reproducible offline scorer is the right trade for
     # a series whose entire purpose is to be compared against a vendor's. VADER is
     # calibrated on general social-media English, not energy jargon -- "crude tanking"
-    # is bearish price language, not negative sentiment. Confirmed with the user
-    # before adding (root NOTES.md rule 7).
+    # is bearish price language, not negative sentiment. Decided
+    # before adding (DEVELOPMENT.md rule 7).
     "vaderSentiment>=3.3,<4",
     # Spec 32's Supabase serving-layer publish (core/publish.py). psycopg3, not
     # psycopg2/supabase-py: the publish step needs raw COPY + INSERT...ON CONFLICT
     # against the pooler connection string, not a REST/PostgREST client. The binary
-    # wheel avoids a local libpq build requirement on Windows. Confirmed with the user
-    # before adding (root NOTES.md rule 7) -- pandas stays the DataFrame convention
+    # wheel avoids a local libpq build requirement on Windows. Decided
+    # before adding (DEVELOPMENT.md rule 7) -- pandas stays the DataFrame convention
     # (matching every existing pipeline), not the polars this spec's own draft notes
     # originally called for.
     "psycopg[binary]>=3.2",
@@ -68,7 +68,7 @@ dependencies = [
     # Gateway nobody runs -- so the lake had no current futures price at all. yfinance is
     # an unofficial client for an undocumented Yahoo endpoint: no SLA, and it breaks when
     # Yahoo changes shape, which is why nothing downstream may depend on it for a curve.
-    # Confirmed with the user before adding (root NOTES.md rule 7).
+    # Agreed before adding (DEVELOPMENT.md rule 7).
     "yfinance>=1.7",
     "python-pptx>=1.0",
 ]

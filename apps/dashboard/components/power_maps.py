@@ -1,7 +1,7 @@
 """ENTSO-E power maps — price choropleth-style map and cross-border flow arrow map.
 Same Scattermapbox + line/dot technique as padd_map.py/entsog_map.py — real
 open-street-map tiles, no token needed, per the dashboard's institutional-look
-redesign (root NOTES.md's chart house style). Direction markers are plain circles,
+redesign (DEVELOPMENT.md's chart house style). Direction markers are plain circles,
 not rotated arrows -- see padd_map.py's comment on why."""
 
 from __future__ import annotations

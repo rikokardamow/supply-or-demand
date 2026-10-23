@@ -7,7 +7,7 @@
 # this script after editing it (or after moving the repo) is always safe.
 #
 # Trigger times below are UTC targets translated to this project's own release
-# calendar (see root NOTES.md) -- Task Scheduler triggers on LOCAL time, so
+# calendar (see DEVELOPMENT.md) -- Task Scheduler triggers on LOCAL time, so
 # these are a reasonable evening/afternoon approximation, not minute-perfect UTC.
 # Known, accepted limitation: local-time triggers drift by ~1h across DST
 # transitions -- fine for a solo analyst's own daily/weekly pulls, not engineered

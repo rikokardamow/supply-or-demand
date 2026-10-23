@@ -23,7 +23,7 @@ type PlotlyData = Parameters<typeof PlotlyModule.newPlot>[1];
  * without a wrapper component. The data arrives as a prop, already fetched server-side:
  * the chart never queries anything itself (Spec 33 §6).
  *
- * The chart paints no title of its own: `Panel` owns the heading (root NOTES.md's chart
+ * The chart paints no title of its own: `Panel` owns the heading (DEVELOPMENT.md's chart
  * house style). Every in-chart string stays on the shared body stack from `theme/plotly`
  * -- a number must never render in the serif.
  *

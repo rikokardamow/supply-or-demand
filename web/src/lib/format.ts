@@ -1,5 +1,5 @@
 /**
- * Number, unit and date formatting. British English throughout (root NOTES.md rule 6).
+ * Number, unit and date formatting. British English throughout (DEVELOPMENT.md rule 6).
  *
  * Every figure the UI shows goes through here, so "no data" renders one way everywhere:
  * an en dash, never "0", "NaN" or "null". A zero and an absence are different claims.

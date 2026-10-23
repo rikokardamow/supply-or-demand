@@ -1,5 +1,5 @@
 """Daily incremental entrypoint for orchestration (Spec 13): day-ahead prices for the
-newly published next day (ENTSO-E publishes ~12:45 CET per root NOTES.md's release
+newly published next day (ENTSO-E publishes ~12:45 CET per DEVELOPMENT.md's release
 calendar) plus actuals — load, generation, wind/solar forecast, cross-border flows —
 for the prior day. `pull_prices.py`/`pull_actuals.py`/`pull_flows.py`'s 90/14/90-day
 pulls are one-off backfills; this is the actual scheduled entrypoint, reusing their

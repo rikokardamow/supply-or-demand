@@ -6,7 +6,7 @@ hdd.us.popw, etc.) are identical to the Open-Meteo path's own, distinguished onl
 the same series_id -- the established multi-source-per-series_id pattern this lake
 already uses everywhere else, e.g. pipelines/eia's several sources sharing source="eia").
 
-Phase 1 scope, confirmed with the user: the *same* two aggregates the Open-Meteo path
+Phase 1 scope, decided: the *same* two aggregates the Open-Meteo path
 computes (EU-9-city, US-5-city) -- no census-division/EIA-gas-region/ERCOT breakdown,
 no new region polygons. That's explicitly a later phase."""
 
