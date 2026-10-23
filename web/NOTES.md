@@ -1,5 +1,3 @@
-@AGENTS.md
-
 ## Design system — the terminal
 
 `web/` is a Bloomberg-style terminal: black ground, one monospace family,

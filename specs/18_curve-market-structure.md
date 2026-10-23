@@ -27,7 +27,7 @@ The curve engine every later trading spec depends on: a futures-settlements pipe
 - DoD: [x] both clients behind one interface, [ ] daily pull idempotent (two runs, same row count), [x] float64 regression test, [ ] live cross-check recorded here.
 
 **Session A done, real verification deferred — recorded live, not assumed:**
-- **`ib_async`, not `ib_insync`**: confirmed with the user before adding the dependency —
+- **`ib_async`, not `ib_insync`**: agreed before adding the dependency —
   `ib_insync`'s original maintainer archived it in favour of this actively-maintained,
   API-compatible fork. Real `IB`/`Future` signatures inspected live via
   `inspect.signature`, not guessed from this spec's own text (see
@@ -36,9 +36,8 @@ The curve engine every later trading spec depends on: a futures-settlements pipe
   check (7497/7496/4002/4001, all closed/unreachable), matching the earlier Spec 07
   deferral. `FUTURES_SOURCE=manual` is therefore the default and the only client exercised
   beyond a mocked-interface test this session.
-- **No real settlement data exists anywhere yet** (no manual CSV, no live IBKR) — confirmed
-  with the user, who plans to open a real IBKR Gateway themselves and asked that this
-  session build ahead rather than block on it. Both clients, `pull_history.py`/
+- **No real settlement data exists anywhere yet** (no manual CSV, no live IBKR) — I plan to open a real
+  IBKR Gateway myself, so this session built ahead rather than block on it. Both clients, `pull_history.py`/
   `pull_daily.py`, `series_meta.py`, and all 5 test categories are built and pass against a
   small, clearly-labelled-synthetic fixture (`tests/fixtures/futures/settles_synthetic.csv`)
   — `pull_history.py` run for real against it wrote 18 rows (2 contracts × 3 dates × 3
@@ -47,7 +46,7 @@ The curve engine every later trading spec depends on: a futures-settlements pipe
   which is expected, not a bug).
 - **Still open, genuinely not verifiable without real data**: the live cross-check against
   CME/ICE's own published daily settlement bulletin, and a real two-runs-same-row-count
-  idempotency check against actual recent settlement data. Revisit once the user has either
+  idempotency check against actual recent settlement data. Revisit once I have either
   a working IBKR Gateway or a real manual CSV.
 
 ### Session B — `core/curve.py` nearby, spreads, convexity, regime
@@ -217,5 +216,5 @@ Visualisation spec: (1) curve strip today vs −5bd/−20bd/−252bd with s12/s1
 - [ ] Page 18 live; one settle and the Cushing utilisation cross-checked against independent sources and recorded here. (Page is live and verified in-browser for every root as of Session D; Cushing utilisation was cross-checked against EIA's own published rate in Session C. The one remaining half — a real settle cross-checked against CME/ICE's own published bulletin — needs real settlement data that doesn't exist yet, same deferral as every prior session.)
 - [ ] `specs/00_INDEX.md` status updated; CHANGELOG entry.
 
-## Session A opener (paste into Claude Code, plan mode)
+## Session A opener
 > Read NOTES.md, specs/00_TRADING_CONVENTIONS.md and specs/18_curve-market-structure.md. Plan Session A only: the `pipelines/futures/` pipeline with IBKR and manual-CSV clients behind one interface, history + daily pulls, series_meta expiries, float64 regression test, cassette test. Use /new-pipeline futures. Do not build core/curve.py yet.

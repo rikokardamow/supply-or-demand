@@ -52,5 +52,5 @@ similarity (rapidfuzz ≥ 90) within 48 h.
 - Event table page + overlay live on ≥3 chart pages. NewsAPI absent from scheduled pulls. Tests green.
 
 ## Stretch
-- Claude-API tagging pass for untagged headlines (batch, cached, budget-capped).
+- API tagging pass for untagged headlines (batch, cached, budget-capped).
 - Event study: median price move ±5 days around severity-3 events per commodity.

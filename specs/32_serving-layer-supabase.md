@@ -237,7 +237,7 @@ without re-reading this note.
 
 AIS is the exception: a 10-minute cron on Actions is wasteful. Run it as a single long-lived job (6-hour max per run, re-triggered by a schedule) that publishes every 10 minutes, or move it to the reserved Modal/Railway worker if it proves flaky. Decide after two weeks of logs.
 
-## 7. Claude Code sessions
+## 7. Build sessions
 
 - Session 1 (weekday, 1 h): migration file with §2 schema, apply to a Supabase branch, `supabase gen types`.
 - Session 2 (weekend): `core/publish.py` with tests against a local Postgres (docker-compose already exists); wire into the WPSR pipeline; first real publish; verify `wpsr_latest_v` and `latest_publish_v` in the Supabase SQL editor.

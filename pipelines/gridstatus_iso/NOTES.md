@@ -25,10 +25,10 @@ specific to this sandboxed environment's outbound IP rather than a universal blo
 re-testing from a different network before concluding ERCOT is permanently unreachable this
 way. ERCOT is out of scope for this pipeline until/unless that's resolved.
 
-## PJM needs a free API key the user can't currently obtain
+## PJM needs a free API key I can't currently get
 `gridstatus.PJM(api_key=...)` requires a Data Miner 2 key from pjm.com, which needs network
-membership the user doesn't have. Out of scope for this pipeline — revisit only if that
-changes. (Creating an account isn't something Claude Code does on a user's behalf regardless.)
+membership I don't have. Out of scope for this pipeline — revisit only if that
+changes.
 
 ## MISO was tried and dropped — its real-time load/fuel-mix has no genuine history
 Confirmed live, in this order:

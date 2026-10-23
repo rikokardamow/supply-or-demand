@@ -1,4 +1,4 @@
-# Trading Analytics Layer — Runbook for Claude Code (Specs 18–27)
+# Trading Analytics Layer — Runbook (Specs 18–27)
 
 This file is the entry point. Read it first in every session that touches Specs 18–27, then `NOTES.md`, then `specs/00_TRADING_CONVENTIONS.md`, then the one spec being worked on. Nothing else needs to be read up front.
 
