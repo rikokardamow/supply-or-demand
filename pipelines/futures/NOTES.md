@@ -8,13 +8,13 @@ four closed/unreachable — matching the earlier Spec 07 deferral finding for th
 client verified against real code paths this session. `IBKRClient` is structurally complete
 (built against the real `ib_async` API, inspected live via `inspect.signature` rather than
 guessed) but only fixture-tested against a mocked `ib_async.IB` — never connected to a real
-gateway. Confirmed with the user: they plan to open a real IBKR Gateway themselves later and
+gateway. I plan to open a real IBKR Gateway later and
 come back for the live verification pass at that point; this session does not fabricate a
 settlement number to fake that DoD box.
 
 ## `ib_async`, not `ib_insync`
 
-The spec's own text names `ib_insync` throughout. Confirmed with the user before adding the
+The spec's own text names `ib_insync` throughout. Agreed before adding the
 dependency: `ib_insync`'s original maintainer archived that project; `ib_async` is the
 actively-maintained, API-compatible community fork (same class names — `IB`, `Future`,
 `ContractDetails` — confirmed live via `from ib_async import IB, Future`). Real signatures
@@ -74,7 +74,7 @@ deliberately int64-typed sibling source in the same glob) passes, mirroring
 **Not done this session, left open in the spec's own DoD**: the live cross-check against
 CME/ICE's published daily settlement bulletin, and the real two-runs-same-row-count
 idempotency check — both need real data (a real manual CSV, or a working IBKR Gateway) that
-doesn't exist yet. Revisit once the user has either.
+doesn't exist yet. Revisit once I have either.
 
 ## Post-session review pass — real bugs caught before this ever ran against real data
 

@@ -47,7 +47,7 @@ guess" precedent for its real functions.
 
 ## Business-day arithmetic is plain Mon–Fri, not a real trading calendar
 
-Confirmed with the user before this session: `core/calendars.py` has no business-day
+Decided beforehand: `core/calendars.py` has no business-day
 helper at all (only a release-schedule lookup). `core/curve.py`'s roll-date arithmetic uses
 `numpy.busday_offset` (weekends only, no CME/ICE holiday awareness) rather than adding a
 new trading-calendar dependency — there is no real settlement data yet to need

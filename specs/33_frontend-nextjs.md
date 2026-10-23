@@ -42,7 +42,7 @@ pipelines/ (Python, DuckDB)  ──GitHub Actions cron──▶  Supabase Postgr
 | Client data | TanStack Query | Caching, refetch intervals keyed to the release calendar |
 | State | Zustand (filters only) | |
 | Types | `supabase gen types typescript` → `src/types/database.ts` | Schema and UI cannot drift |
-| Tests | Vitest + Playwright | Playwright is also how Claude Code sees the screen |
+| Tests | Vitest + Playwright | Playwright for screenshots and end-to-end checks |
 
 Do not add: Recharts, Redux, a second component library, an ORM, tRPC, a Next API route that proxies Supabase (RLS makes it unnecessary and it doubles latency).
 
@@ -139,7 +139,7 @@ web/
 `web/` is a new top-level directory alongside the existing `apps/dashboard/` (Streamlit)
 — the two front ends coexist; this spec does not remove or replace the Streamlit app.
 
-## 8. Claude Code workflow
+## 8. Workflow
 
 Prerequisites: Spec 32 tables exist and at least `series_long`, `seasonal_v`, `wpsr_latest_v`, `publish_log` are populated by one real pipeline run.
 

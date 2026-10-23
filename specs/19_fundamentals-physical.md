@@ -25,12 +25,12 @@ Write `derived.inv.dev_z.uscrude`, `derived.spare_cap.regime`, `derived.cot.<roo
 - Tests: 2020 absent from the 2026 band; `days_of_cover(420000, 16000)=26.25`; pct_rank ∈ [0,1]; `spare_cap_regime(1.5)='tight'`, `(3.0)='balanced'`, `(4.5)='ample'`.
 - DoD: [x] functions + derived series, [x] tests, [x] cross-check one COT net-length figure against the CFTC report PDF (done against the CFTC PRE's own live source data directly -- see below, not a PDF scrape).
 
-**Session A done, with a real scope expansion the user explicitly asked for:**
+**Session A done, with a real scope expansion I asked for:**
 - **Real, live-investigated finding**: this spec's own Data section assumed CFTC COT
   data already existed via "Spec 14" — confirmed live, twice, that it does not (no
   pipeline, no series anywhere in the lake; Spec 14 was never built). CFTC's own COT
   landing page (`https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm`,
-  fetched live per the user's own request) points to the **Public Reporting
+  fetched live at my request) points to the **Public Reporting
   Environment** (`publicreporting.cftc.gov`) as its current API access point — a real,
   free, no-API-key Socrata dataset (`72hh-3qpy`, Disaggregated Futures-Only, weekly
   back to 2006). New pipeline `pipelines/cftc/` built and run for real this session:

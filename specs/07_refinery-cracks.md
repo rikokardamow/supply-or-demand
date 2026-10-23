@@ -39,7 +39,7 @@ continuous futures, never production.
 
 ## Sessions
 
-### Manual prep (you, not Claude Code, ~30 min)
+### Manual prep (~30 min)
 Install IB Gateway, enable API, confirm delayed data. Note the port. Never store the IB password in the repo.
 
 ### Session A (weekend, 3 h) — connection + history

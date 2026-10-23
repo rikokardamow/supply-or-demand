@@ -1,20 +1,20 @@
-# Energy Dashboard — Spec Pack (Index)
+# Energy Dashboard — spec index
 
 **Owner:** Riko | **Start:** Fri 22 Aug 2026, ~21:00 Dublin | **Budget:** 3–4 h/day weekends, ≤1 h some weekdays
 
 This pack contains one self-contained spec document per sub-project. Each document is written to be
 dropped into the repo (under `specs/`) and worked through one session at a time, e.g.:
 
-> "Read specs/01_eia-padd.md and NOTES.md. Execute Session 2 exactly as written. Plan first, then implement."
+> "Read specs/01_eia-padd.md and DEVELOPMENT.md. Execute Session 2 exactly as written. Plan first, then implement."
 
 ## How to use this pack
 
 1. **Before anything else:** rotate every API key that has ever been stored in plain-text notes
    (EIA, Ember, GIE, ENTSO-E, FRED, NewsAPI, WorldNews, ECMWF, tomorrow.io, Mapbox, IBKR password).
-2. Copy `NOTES.md` to the repo root. Copy the numbered specs into `specs/`.
+2. Keep `DEVELOPMENT.md` at the repo root. Copy the numbered specs into `specs/`.
 3. Work through the specs in numeric order. Do not skip `00_project-setup.md` — every other
    spec assumes `core/` exists.
-4. One working session = one "Session" block inside a spec. Never start a session you cannot
+4. One sitting = one "Session" block inside a spec. Never start a session you cannot
    finish inside your time block. Always end green: tests pass, work committed.
 5. Each spec ends with a **Definition of Done** — do not move to the next spec until it is met,
    or you have consciously descoped (write the descope decision into the spec file itself).

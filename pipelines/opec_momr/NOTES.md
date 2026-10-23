@@ -141,7 +141,7 @@ genuinely missing from Excel (per-country DoC crude production, confirmed in Ses
 1. `momr.opec.org/pdf-download/` (the PDF's own download link) returns a **403** — a
    different, less stable endpoint than the Excel appendix's clean static URL.
 2. Camelot's lattice mode needs a system **Ghostscript** install (not a pip package) — this
-   needed the user to manually run the installer and approve a Windows UAC prompt (this
+   needed a manual run of the installer and approve a Windows UAC prompt (this
    automated session can't click through UAC itself). Confirmed installed successfully
    (`gswin64c.exe --version` → `10.07.1`) after that.
 3. With a real MOMR PDF in hand (user-provided, since step 1 is blocked) and Ghostscript

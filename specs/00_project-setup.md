@@ -9,7 +9,7 @@ A running, themed, multipage Streamlit dashboard backed by a DuckDB + Parquet la
 shared `core/` library (settings, storage, schemas, seasonal maths, theme) and one real EIA
 chart rendering — proving the whole pipeline end-to-end on day one.
 
-## Pre-session manual steps (do these yourself, not in Claude Code)
+## Pre-session manual steps (manual)
 1. Rotate keys: EIA, Ember, GIE, ENTSO-E, FRED, NewsAPI, WorldNews, ECMWF, tomorrow.io, Mapbox. Change the IBKR password.
 2. Create the GitHub repo `energy-dashboard` (private).
 3. Bootstrap locally:
@@ -35,7 +35,7 @@ energy-dashboard/
 └── data/{raw,lake}/     (git-ignored)
 ```
 
-## Session 1 (Fri 22 Aug, ~2 h) — copy-paste prompt for Claude Code
+## Session 1 (Fri 22 Aug, ~2 h)
 
 > Read NOTES.md and specs/00_project-setup.md. Plan first, then implement:
 > 1. `core/settings.py` — pydantic-settings `Settings` loading from `.env`: `eia_api_key`,

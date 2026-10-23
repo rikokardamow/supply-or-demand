@@ -66,7 +66,7 @@ Spec: variables log(WTI spot), crack_321 level; lag order by AIC/SIC over p=1..4
 - DoD: [x] pipeline, [~] April-2003 recovery test — **not recovered, see below**, [x] model card fields per conventions, [x] `pipelines/derived/vecm_refit.py` monthly entrypoint.
 
 #### Session B verification (2026-09-05)
-All three of the spec's own acceptance tests pass on synthetic data: Johansen recovers β = **0.1611** (rank 1) against the 0.16±0.03 target; Bai–Perron recovers the obs-120 mean shift at **exactly 120**; the random-walk guard holds. 20 tests in `tests/test_core_vecm.py`, 9 in `tests/test_derived_vecm_refit.py`. Dependencies added with the user's approval (root NOTES.md rule 7): `statsmodels>=0.15`, `ruptures>=1.1`, `arch>=8.0` — `arch` supplies the Phillips–Perron test statsmodels lacks, and is also what Spec 22's GARCH engine will need.
+All three of the spec's own acceptance tests pass on synthetic data: Johansen recovers β = **0.1611** (rank 1) against the 0.16±0.03 target; Bai–Perron recovers the obs-120 mean shift at **exactly 120**; the random-walk guard holds. 20 tests in `tests/test_core_vecm.py`, 9 in `tests/test_derived_vecm_refit.py`. Dependencies added with my approval (root NOTES.md rule 7): `statsmodels>=0.15`, `ruptures>=1.1`, `arch>=8.0` — `arch` supplies the Phillips–Perron test statsmodels lacks, and is also what Spec 22's GARCH engine will need.
 
 #### April 2003 is NOT recovered — the honest result
 On the real 1993–2008 monthly sample (n=192, log WTI + spot 3:2:1):

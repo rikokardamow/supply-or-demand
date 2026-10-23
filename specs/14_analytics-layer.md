@@ -7,7 +7,7 @@ professional physical/paper traders use, extracted from the project's trading li
 gas primer, and three academic papers). Every panel here is computable from data the
 dashboard already ingests, plus TWO explicitly authorised additions (Section 0.4).
 
-**How this file is used.** Claude Code: read NOTES.md first, then this file, then the
+**How this file is used.** Read DEVELOPMENT.md first, then this file, then the
 referenced base spec (01–13) for any session you are executing. Work ONE session at a time,
 in plan mode, exactly as written. Do not write code until the operator approves the plan.
 Each item below carries: INPUTS (existing lake series), FORMULA, CHART, TEST (hand-checked
@@ -998,9 +998,9 @@ the Session 14-A/B/D split above — useful if 14-A feels too large for one sitt
 
 ---
 
-## GUARDRAILS (Claude Code, read before every session)
+## Guardrails
 - Never edit `.env`. Never print key values. CFTC/FRED/GPR pulls must appear in
-  cassettes with any query params that could identify the user filtered.
+  cassettes with any query params that could identify the account filtered.
 - Never add a dependency not named in this file or the base specs without asking.
   This spec adds NO new Python dependencies (statsmodels is NOT required — use
   numpy/scipy lstsq for the OLS items, or ask before adding statsmodels).

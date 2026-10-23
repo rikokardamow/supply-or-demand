@@ -1,8 +1,6 @@
 # Changelog
 
-The build log, spec by spec. Moved out of `README.md` when the project was opened up:
-it is a genuine record of what was verified live and what broke, but it is history
-rather than orientation, and a newcomer needs the second thing first.
+The build log, spec by spec. It records what was checked against each live API and what broke.
 
 ## Status
 
@@ -131,7 +129,7 @@ fresh API call: exact match across all 89 points that day.
 (before any code existed), printed a raw `requests.HTTPError` to see what went wrong — its
 default string representation embeds the full request URL, including ENTSO-E's
 `securityToken` query-param auth, leaking the real API key into this transcript. Disclosed
-immediately; the user was asked to rotate the key. `ENTSOEClient` now converts every HTTP
+immediately; I rotated the key. `ENTSOEClient` now converts every HTTP
 error to a bare status-code message before it can propagate — see
 `pipelines/entsoe/NOTES.md` for the full rule.
 
@@ -216,7 +214,7 @@ L48 headline worm chart + 7-region small multiples, reusing the exact
 Session B: added `pipelines/gridstatus_iso/` for ISO real-time load, fuel mix, and
 hub/zone-level LMP. The spec's own ERCOT+PJM pairing didn't survive contact with reality:
 ERCOT's website is behind Incapsula bot-protection (every endpoint gridstatus needs returns
-403), and PJM needs a free Data Miner 2 API key the user can't obtain (network membership
+403), and PJM needs a free Data Miner 2 API key I can't obtain (network membership
 required). MISO was tried next but dropped too — its real-time load/fuel-mix API only
 serves "today" for the current year, with no genuine historical path via gridstatus.
 Landed on **CAISO + NYISO**, both confirmed to support a real 60-day range for all three
@@ -270,7 +268,7 @@ Camelot PDF fallback is for. Acceptance criterion met: parsed 2026 annual world 
 Session B: tried Camelot first, as the spec calls for — the PDF's own download endpoint
 (`momr.opec.org/pdf-download/`) returns a 403, and Camelot's lattice mode needs a system
 Ghostscript install (a Windows UAC-gated installer this automated session couldn't approve
-itself; the user ran it). With Ghostscript installed and a real user-provided PDF in hand,
+itself; I ran it). With Ghostscript installed and a real user-provided PDF in hand,
 the premise turned out to be moot: the MOMR PDF has a full, clean, digitally-native text
 layer, not a scan — reading it directly with `pypdfium2` and a handful of regexes extracted
 the one table missing from Excel (per-country DoC crude production, 22 countries) more
@@ -654,7 +652,7 @@ Specs 11/12/14 remain unbuilt, Spec 07 stays deferred.
 Cross-cutting addition on top of an already-shipped, tagged spec (v0.9), not a new
 spec number — adapts a user-supplied `weather-module-spec.md` (written against
 Railway/Postgres/Grafana) to this project's actual DuckDB+Parquet/Streamlit/Task
-Scheduler stack. Confirmed scope with the user before writing code: reuse the
+Scheduler stack. Scope agreed before writing code: reuse the
 existing 3-year climatology grid (no `cdsapi`/Copernicus CDS account) and the
 existing EU/US city-sample aggregates (no new region polygons) — zero new
 dependencies, zero new accounts, zero new schemas. `pipelines/weather/gfs_client.py`
@@ -738,7 +736,7 @@ along the way.
   - Local gate: `pnpm test` (38 passing), `pnpm lint` and `pnpm typecheck` all clean. The
     production build could not be run on this machine (Turbopack OOMs under 1.5GB free of
     7.79GB) — the production build is Vercel's. Branch not yet merged; per the plan's own
-    notes, the merge call is the user's, not this session's.
+    notes, the merge was my call.
 - **UI restyle complete — masthead, section kit and Kardamow house type replace the
   bordered `card()` layout across all 16 pages (`2026-09-06-ui-design-system`).** Every
   page now opens with `page_header()` (a Lora `<h2>`, demoting the old bare `st.title()`)
