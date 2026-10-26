@@ -39,3 +39,21 @@ def test_build_rows_writes_regions_origins_and_both_mirrors() -> None:
     assert get["derived.lng.europe_imports.united_states.observed"] == 0.054
     assert get["derived.lng.mirror_uk.europe_reported.observed"] == 0.014
     assert "derived.lng.mirror_eu.us_reported.observed" in get.index
+
+
+def test_global_rows_keep_only_well_covered_months() -> None:
+    months = pd.date_range("2024-01-01", "2025-12-01", freq="MS")
+    jodi = pd.concat(
+        [
+            pd.DataFrame({"flow": "explng", "country": "qa", "ts": months, "value": 10.0}),
+            pd.DataFrame({"flow": "implng", "country": "jp", "ts": months, "value": 8.0}),
+            pd.DataFrame({"flow": "implng", "country": "kr", "ts": months[:-1], "value": 8.0}),
+        ]
+    )
+
+    rows = pd.concat(d.global_rows(jodi, JUL))
+    imports = rows[rows["series_id"] == "derived.lng.global_imports.japan.observed"]
+
+    assert imports["ts"].max() == months[-2]  # Korea missing December: about 50% covered
+    exports = rows[rows["series_id"] == "derived.lng.global_exports.qatar.observed"]
+    assert exports["ts"].max() == months[-1]

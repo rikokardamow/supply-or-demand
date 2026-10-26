@@ -126,3 +126,6 @@ must be labelled annual and manual.
   `N9133US2`), Europe's imports by origin, and the US–Europe mirror. Page `28_lng.py`.
 - The liquefaction project list is still not built. Its capacities need a source per row,
   and none is in hand.
+- **JODI-Gas account added the same day.** The API is confirmed live (details in
+  `pipelines/jodi_gas/CLAUDE.md`), and Asian imports and global exports are now in
+  `derived.lng.global_*`, shown on page 28.

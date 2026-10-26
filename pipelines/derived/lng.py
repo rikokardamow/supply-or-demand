@@ -10,8 +10,12 @@ Series written (``source="derived"``, monthly, bcm):
   Europe, by origin, geo EU+UK
 - ``derived.lng.mirror_<eu|uk>.<us_reported|europe_reported>.observed``: the same US cargoes
   as each side's statistics record them
+- ``derived.lng.global_<exports|imports>.<group>.observed``: JODI-Gas LNG trade by exporter
+  and importer group (``core.lng_balance.EXPORTER_GROUPS`` / ``IMPORTER_GROUPS``), only for
+  months whose reporting covers ``GLOBAL_COVERAGE`` of typical volume
+- ``derived.lng.coverage.<exports|imports>.observed``: that coverage share, every month
 
-Observed only. A projection waits for Asian demand (JODI-Gas needs an account). Read through
+Observed only. Read through
 ``pipelines.derived.eu_gas_balance.latest_run``. Not scheduled.
 """
 
@@ -31,6 +35,31 @@ from pipelines.derived.uk_gas_balance import read_trade as read_uk_trade
 
 DESTINATIONS_CSV = Path(__file__).parent / "lng" / "destinations.csv"
 _PREFIX = "derived.lng"
+
+
+def read_jodi() -> pd.DataFrame:
+    """Long JODI-Gas rows (``flow``, ``country``, ``ts``, ``value``), latest revision."""
+    rows = read_ts_long(series_prefix="jodi_gas.", source="jodi_gas")
+    rows = rows.sort_values("revision_date").drop_duplicates(["series_id", "ts"], keep="last")
+    parts = rows["series_id"].str.split(".")
+    return pd.DataFrame(
+        {"flow": parts.str[1], "country": parts.str[2], "ts": rows["ts"], "value": rows["value"]}
+    )
+
+
+def global_rows(jodi: pd.DataFrame, at: pd.Timestamp) -> list[pd.DataFrame]:
+    frames = []
+    for flow, kind, groups in (
+        ("explng", "exports", lb.EXPORTER_GROUPS),
+        ("implng", "imports", lb.IMPORTER_GROUPS),
+    ):
+        table = lb.by_country(jodi, flow)
+        share = lb.coverage(table)
+        complete = share[share >= lb.GLOBAL_COVERAGE].index
+        frames.append(_rows(lb.grouped(table.loc[complete], groups), f"global_{kind}", "World", at))
+        cov = pd.DataFrame({kind: share * 1000})  # _rows divides by 1000
+        frames.append(_rows(cov, "coverage", "World", at).assign(unit="share"))
+    return frames
 
 
 def read_us_exports() -> pd.DataFrame:
@@ -65,6 +94,7 @@ def build_rows(
     uk_trade: pd.DataFrame,
     destinations: pd.DataFrame,
     at: pd.Timestamp,
+    jodi: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     region = lb.us_exports_by(us_exports, destinations, "region")
     bloc = lb.us_exports_by(us_exports, destinations, "bloc")
@@ -88,6 +118,8 @@ def build_rows(
         if us_side is not None:
             mirror = lb.mirror(us_side, europe_side)[["us_reported", "europe_reported"]]
             frames.append(_rows(mirror, f"mirror_{name}", name.upper(), at))
+    if jodi is not None and not jodi.empty:
+        frames += global_rows(jodi, at)
     return pd.concat(frames, ignore_index=True)
 
 
@@ -103,9 +135,14 @@ def main() -> None:
             ),
         )
         return
+    jodi = read_jodi()
+    if jodi.empty:
+        print("derived.lng: no JODI-Gas rows, global view skipped "
+              "(run python -m pipelines.jodi_gas.pull)", flush=True)  # fmt: skip
     rows = build_rows(
-        us, eu, uk, pd.read_csv(DESTINATIONS_CSV), pd.Timestamp(datetime.now(UTC)).tz_localize(None)
-    )
+        us, eu, uk, pd.read_csv(DESTINATIONS_CSV),
+        pd.Timestamp(datetime.now(UTC)).tz_localize(None), jodi,
+    )  # fmt: skip
     write_ts_long(rows, source="derived")
     print(
         f"derived.lng: wrote {len(rows)} rows across {rows['series_id'].nunique()} series, "

@@ -8,7 +8,10 @@ What this page must not let a reader miss:
   neither is corrected.
 - **Europe here is the EU-27 plus the UK, and only LNG from outside Europe counts.**
   Re-exports between European terminals are not new supply.
-- **Asian demand is not built yet.** JODI-Gas, the public route, needs an account.
+- **The global view is what countries report to JODI, and gaps are named.** Russia does
+  not report its LNG exports. Taiwan files zeros for its imports, and those are treated as
+  unreported. Thailand, Bangladesh, Pakistan and Singapore do not report at all. A month
+  counts only when its reporters cover 98% of typical volume.
 """
 
 from __future__ import annotations
@@ -163,8 +166,65 @@ with section("The same cargoes in two statistics"):
         )
     source_note("US side: EIA exports to EU members and to the UK. Europe side: Eurostat, DESNZ.")
 
-st.info(
-    "Asian LNG demand (China, Japan, South Korea, India, Taiwan) is not in this model yet. "
-    "The public source, JODI-Gas, serves current data only through its API, which needs a "
-    "free jodidata.org account (JODI_USERNAME / JODI_PASSWORD in .env)."
-)
+EXPORTER_COLOURS = {
+    "united_states": LIGHT_BLUE,
+    "qatar": ORANGE,
+    "australia": NAVY,
+    "malaysia": MA_MID,
+    "nigeria": MA_SHORT,
+    "algeria": MA_LONG,
+    "trinidad_tobago": GREY,
+    "rest": RED,
+}
+IMPORTER_COLOURS = {
+    "china": RED,
+    "japan": NAVY,
+    "south_korea": MA_MID,
+    "india": ORANGE,
+    "europe": LIGHT_BLUE,
+    "other_asia": MA_SHORT,
+    "rest": GREY,
+}
+
+world_exports = _table(derived, "global_exports")
+world_imports = _table(derived, "global_imports")
+if world_exports.empty or world_imports.empty:
+    st.info(
+        "No global LNG view: run `python -m pipelines.jodi_gas.pull` (needs JODI_USERNAME and "
+        "JODI_PASSWORD in .env), then `python -m pipelines.derived.lng`."
+    )
+else:
+    with section("Global LNG: exporters and importers"):
+        imp12 = world_imports.tail(12)
+        kpi_row(
+            [
+                (f"{lb.GROUP_LABELS[k]}, 12m", f"{imp12[k].sum():.1f} bcm", None)
+                for k in ("china", "japan", "south_korea", "india")
+            ]
+        )
+        st.caption(f"LNG imports, twelve months to {imp12.index.max():%b %Y}.")
+        st.plotly_chart(_stacked(world_exports.loc["2019":], EXPORTER_COLOURS, lb.GROUP_LABELS))
+        st.plotly_chart(_stacked(world_imports.loc["2019":], IMPORTER_COLOURS, lb.GROUP_LABELS))
+        years = (
+            pd.concat(
+                {
+                    "Exports reported": gp.calendar_year(world_exports).sum(axis=1, min_count=1),
+                    "Imports reported": gp.calendar_year(world_imports).sum(axis=1, min_count=1),
+                },
+                axis=1,
+            )
+            .sort_index()
+            .loc[2019:]
+        )
+        st.dataframe(years.round(1), width="stretch")
+        st.caption(
+            f"Exports complete to {world_exports.index.max():%b %Y}, imports to "
+            f"{world_imports.index.max():%b %Y}: later months are still being reported and "
+            "are left out rather than shown as a fall. Reported exports and imports do not "
+            "match: Russia's exports are missing, several importers do not report, and cargoes "
+            "at sea cross month ends."
+        )
+        source_note(
+            "JODI-Gas World Database via the JODI REST API, NATGAS flows EXPLNG and IMPLNG, "
+            "million m3. Europe here also includes Türkiye. Groups: core/lng_balance.py."
+        )

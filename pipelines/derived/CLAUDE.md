@@ -203,3 +203,5 @@ Inputs: `eia.lng.*`, `estat.gas.*` (Eurostat LNG by partner, using the EU model'
 `complete_months`) and `desnz.gas.*` (UK LNG by origin). Arithmetic is `core/lng_balance.py`.
 Observed only. Europe is the EU-27 plus the UK, counting only LNG from outside Europe. The
 EU–US mirror gap (about a third) is a finding to show, not to correct. Detail in `lng/README.md`.
+`lng.py` also writes the JODI-Gas global view (`derived.lng.global_*`, `derived.lng.coverage.*`)
+when `jodi_gas.*` rows exist. A month is written only at 98% coverage of typical volume.

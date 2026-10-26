@@ -65,4 +65,23 @@ def test_the_mirror_ratio_and_the_missing_asia_are_stated(isolated_lake) -> None
     said = _said(_run_page())
 
     assert "2025 67%" in said  # 24 / 36
-    assert "JODI" in said and "account" in said
+    assert "No global LNG view" in said and "pipelines.jodi_gas.pull" in said  # no JODI rows
+
+
+def test_the_global_view_names_its_gaps(isolated_lake) -> None:
+    _seed(isolated_lake)
+    months = pd.date_range("2024-01-01", "2025-12-01", freq="MS")
+    frames = [
+        _rows(f"derived.lng.global_exports.{g}.observed", months, 2.0)
+        for g in (*lb.EXPORTER_GROUPS, "rest")
+    ]
+    frames += [
+        _rows(f"derived.lng.global_imports.{g}.observed", months, 1.0)
+        for g in (*lb.IMPORTER_GROUPS, "rest")
+    ]
+    isolated_lake.write_ts_long(pd.concat(frames), source="derived")
+
+    said = _said(_run_page())
+
+    assert "Russia's exports are missing" in said
+    assert "imports, twelve months to Dec 2025" in said

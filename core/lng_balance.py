@@ -99,3 +99,69 @@ def mirror(us_side: pd.Series, europe_side: pd.Series) -> pd.DataFrame:
     out = pd.concat({"us_reported": us_side, "europe_reported": europe_side}, axis=1).dropna()
     out["gap"] = out["europe_reported"] - out["us_reported"]
     return out
+
+
+# --- global view from JODI-Gas -----------------------------------------------------------
+
+EXPORTER_GROUPS: dict[str, tuple[str, ...]] = {
+    "united_states": ("us",), "qatar": ("qa",), "australia": ("au",), "malaysia": ("my",),
+    "nigeria": ("ng",), "algeria": ("dz",), "trinidad_tobago": ("tt",),
+}  # fmt: skip
+IMPORTER_GROUPS: dict[str, tuple[str, ...]] = {
+    "china": ("cn",), "japan": ("jp",), "south_korea": ("kr",), "india": ("in",),
+    # JODI codes Greece "gr" where Eurostat uses "el".
+    "europe": (*sorted((EU27 - {"el"}) | {"gr"}), "gb", "tr"),
+    "other_asia": ("th", "sg", "bd", "pk", "ph", "my", "id", "vn", "hk", "lk", "mm"),
+}  # fmt: skip
+GROUP_LABELS: dict[str, str] = {
+    "united_states": "United States", "qatar": "Qatar", "australia": "Australia",
+    "malaysia": "Malaysia", "nigeria": "Nigeria", "algeria": "Algeria",
+    "trinidad_tobago": "Trinidad and Tobago", "china": "China", "japan": "Japan",
+    "south_korea": "South Korea", "india": "India",
+    "europe": "Europe (EU-27, UK, Türkiye)", "other_asia": "Other Asia", "rest": "Rest of world",
+}  # fmt: skip
+# Taiwan (Chinese Taipei) files a zero for LNG imports in every month it reports to JODI
+# (58 of 58, checked 2026-10-26), though it imports tens of bcm a year. A placeholder zero is
+# not data: those cells are treated as unreported.
+ZERO_IS_UNREPORTED: frozenset[tuple[str, str]] = frozenset({("implng", "tw")})
+GLOBAL_COVERAGE = 0.98
+COVERAGE_WINDOW_MONTHS = 24
+
+
+def by_country(rows: pd.DataFrame, flow: str) -> pd.DataFrame:
+    """Month x country (lower-case JODI code) for one flow, from long JODI rows
+    (``flow``, ``country``, ``ts``, ``value``). A country that did not report is NaN."""
+    part = rows[rows["flow"] == flow]
+    placeholder = part["country"].map(lambda c: (flow, c) in ZERO_IS_UNREPORTED) & (
+        part["value"] == 0
+    )
+    part = part[~placeholder]
+    return part.groupby(["ts", "country"])["value"].sum(min_count=1).unstack("country").sort_index()
+
+
+def coverage(table: pd.DataFrame, window: int = COVERAGE_WINDOW_MONTHS) -> pd.Series:
+    """Share of typical volume reported, per month: each country weighs its share of the
+    flow over the trailing ``window`` months before that month. A new month in which only
+    early reporters have filed scores low and is not treated as a collapse."""
+    filled = table.fillna(0.0).abs()
+    out = {}
+    for i, month in enumerate(table.index):
+        past = filled.iloc[max(0, i - window) : i]
+        if past.empty or past.to_numpy().sum() == 0:
+            continue
+        weight = past.sum() / past.to_numpy().sum()
+        out[month] = float(weight[table.loc[month].notna()].sum())
+    return pd.Series(out, dtype="float64")
+
+
+def grouped(table: pd.DataFrame, groups: dict[str, tuple[str, ...]]) -> pd.DataFrame:
+    """Month x group sums, with every other country in ``rest``."""
+    out = pd.DataFrame(index=table.index)
+    used: set[str] = set()
+    for group, members in groups.items():
+        present = [m for m in members if m in table.columns]
+        used.update(present)
+        out[group] = table[present].sum(axis=1, min_count=1) if present else float("nan")
+    rest = [c for c in table.columns if c not in used]
+    out["rest"] = table[rest].sum(axis=1, min_count=1)
+    return out
