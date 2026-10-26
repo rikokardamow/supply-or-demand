@@ -114,3 +114,15 @@ must be labelled annual and manual.
 3. The JODI-Gas spike, then Asian demand.
 4. The demand engine last, as a fitted elasticity where data allows and named assumptions
    elsewhere.
+
+## Update, 2026-10-26 (later): JODI-Gas and the Atlantic build
+
+- **JODI-Gas bulk file is stale**: `…/gas-data/jodi_gas_csv_beta.zip` returns 200 but holds
+  `jodi_gas_beta.csv` dated 2018-10-18, with data from 2009-01 to 2018-08.
+- **JODI-Gas API is current but needs an account**: `POST https://www.jodidata.org/api/token`
+  with the username (sign-up email) and password returns a JWT, valid for one hour, for
+  `GET /api/gasdata`. The limit is 100 requests a minute. This is the route for Asian imports.
+- **Built without it**: US exports by destination (EIA, 50 destinations, which add up to
+  `N9133US2`), Europe's imports by origin, and the US–Europe mirror. Page `28_lng.py`.
+- The liquefaction project list is still not built. Its capacities need a source per row,
+  and none is in hand.

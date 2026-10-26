@@ -196,3 +196,10 @@ and `eu_carbon/assumptions.csv`. Arithmetic is `core/carbon_balance.py`. The pro
 `eu_gas_balance.latest_run`. The balance covers complete registry years only, and the
 cumulative surplus carries into the projection. Shipping is a real zero before
 `SHIPPING_FROM` (2024), never a gap. Detail in `eu_carbon/README.md`.
+
+## `lng.py` — Atlantic LNG (2026-10-26)
+
+Inputs: `eia.lng.*`, `estat.gas.*` (Eurostat LNG by partner, using the EU model's
+`complete_months`) and `desnz.gas.*` (UK LNG by origin). Arithmetic is `core/lng_balance.py`.
+Observed only. Europe is the EU-27 plus the UK, counting only LNG from outside Europe. The
+EU–US mirror gap (about a third) is a finding to show, not to correct. Detail in `lng/README.md`.
