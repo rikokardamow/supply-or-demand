@@ -187,3 +187,12 @@ Inputs: `desnz.gas.*` (`pipelines/desnz_gas`), the committed `uk_gas/routes.csv`
 model has not run). Arithmetic is `core/uk_gas_balance.py`, and the shared projection is
 `core/gas_projection.py`. Read through `eu_gas_balance.latest_run`. The projection solves for
 LNG as one total; LNG routes are never projected one by one. Detail in `uk_gas/README.md`.
+
+## `eu_carbon.py` — EU ETS allowance balance and auction prices (2026-10-26)
+
+Inputs: `eex.*` and `eu_ets.*` (`pipelines/carbon`), `pipelines/carbon/maritime_phase_in.csv`
+and `eu_carbon/assumptions.csv`. Arithmetic is `core/carbon_balance.py`. The projection is
+`core/gas_projection.project(..., freq="YS")`, which is annual. Read through
+`eu_gas_balance.latest_run`. The balance covers complete registry years only, and the
+cumulative surplus carries into the projection. Shipping is a real zero before
+`SHIPPING_FROM` (2024), never a gap. Detail in `eu_carbon/README.md`.

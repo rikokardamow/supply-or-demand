@@ -17,8 +17,11 @@ def calendar_year(table: pd.DataFrame, complete_only: bool = True) -> pd.DataFra
     return totals
 
 
-def project(history: pd.DataFrame, assumptions: pd.DataFrame, end: pd.Timestamp) -> pd.DataFrame:
-    """Month x line projection from the last observed month to ``end``.
+def project(
+    history: pd.DataFrame, assumptions: pd.DataFrame, end: pd.Timestamp, freq: str = "MS"
+) -> pd.DataFrame:
+    """Period x line projection from the last observed period to ``end``: monthly by default,
+    or annual with ``freq="YS"``.
 
     Each projected month is the same month a year earlier (observed or already projected)
     times ``1 + yoy_pct / 100``, which keeps the seasonal shape. ``assumptions`` has
@@ -28,7 +31,8 @@ def project(history: pd.DataFrame, assumptions: pd.DataFrame, end: pd.Timestamp)
     if history.empty:
         return pd.DataFrame(columns=history.columns)
     last = pd.Timestamp(history.index.max())
-    months = pd.date_range(last + pd.offsets.MonthBegin(1), end, freq="MS")
+    step = pd.tseries.frequencies.to_offset(freq)
+    months = pd.date_range(last + step, end, freq=freq)
     rates = assumptions.set_index(["line", "year"])["yoy_pct"]
     if rates.index.duplicated().any():
         raise ValueError("assumptions: duplicate line/year")
