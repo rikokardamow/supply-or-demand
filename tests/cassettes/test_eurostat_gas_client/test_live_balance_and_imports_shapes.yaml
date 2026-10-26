@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_cb_gasm?format=JSON&geo=EU27_2020&lang=EN&nrg_bal=IC_OBS&siec=G3000&time=2026-01&time=2026-02&unit=MIO_M3
+  response:
+    body:
+      string: '{"version":"2.0","class":"dataset","label":"Gas supply, transformation
+        and consumption - monthly data","source":"ESTAT","updated":"2026-10-23T23:00:00+0200","value":{"0":50298.338,"1":38070.263},"id":["freq","nrg_bal","siec","unit","geo","time"],"size":[1,1,1,1,1,2],"dimension":{"freq":{"label":"Time
+        frequency","category":{"index":{"M":0},"label":{"M":"Monthly"}}},"nrg_bal":{"label":"Energy
+        balance","category":{"index":{"IC_OBS":0},"label":{"IC_OBS":"Inland consumption
+        - observed"}}},"siec":{"label":"Standard international energy product classification
+        (SIEC)","category":{"index":{"G3000":0},"label":{"G3000":"Natural gas"}}},"unit":{"label":"Unit
+        of measure","category":{"index":{"MIO_M3":0},"label":{"MIO_M3":"Million cubic
+        metres"}}},"geo":{"label":"Geopolitical entity (reporting)","category":{"index":{"EU27_2020":0},"label":{"EU27_2020":"European
+        Union - 27 countries (from 2020)"}}},"time":{"label":"Time","category":{"index":{"2026-01":0,"2026-02":1},"label":{"2026-01":"2026-01","2026-02":"2026-02"}}}},"extension":{"lang":"EN","description":"<p>Monthly
+        quantities of natural gas along the energy balance, covering supply, stock
+        changes, transformation, losses and final consumption by sector, classified
+        under the Standard International Energy Product Classification and collected
+        under Regulation (EC) No 1099/2008.</p>","id":"NRG_CB_GASM","agencyId":"ESTAT","version":"1.0","datastructure":{"id":"NRG_CB_GASM","agencyId":"ESTAT","version":"206.0"},"annotation":[{"type":"CREATED","date":"2020-03-26T16:49:42+0100"},{"type":"DISSEMINATION_DOI_XML","title":"<adms:identifier
+        xmlns:adms=\"http://www.w3.org/ns/adms#\" xmlns:skos=\"http://www.w3.org/2004/02/skos/core.html\"
+        xmlns:dct=\"http://purl.org/dc/terms/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><adms:Identifier
+        rdf:about=\"https://doi.org/10.2908/NRG_CB_GASM\"><skos:notation rdf:datatype=\"http://purl.org/spar/datacite/doi\">10.2908/NRG_CB_GASM</skos:notation><dct:creator
+        rdf:resource=\"http://publications.europa.eu/resource/authority/corporate-body/ESTAT\"/><dct:issued
+        rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">2023-01-19</dct:issued></adms:Identifier></adms:identifier>"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf","text":"Information
+        note"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_OBJECT_TYPE","title":"DATASET"},{"type":"DISSEMINATION_TIMESTAMP_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_GLOBAL","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_PLANNED","date":"2026-10-23T23:00:00+0200"},{"type":"OBS_COUNT","title":"129120"},{"type":"OBS_PERIOD_OVERALL_LATEST","title":"2026-09"},{"type":"OBS_PERIOD_OVERALL_OLDEST","title":"2008-01"},{"type":"SOURCE_INSTITUTIONS","text":"Eurostat"},{"type":"UPDATE_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"UPDATE_STRUCTURE","date":"2026-10-14T23:00:00+0200"}],"positions-with-no-data":{"freq":[],"nrg_bal":[],"siec":[],"unit":[],"geo":[],"time":[]}}}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type, Accept, X-Requested-With
+      Access-Control-Allow-Methods:
+      - GET
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3456'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Oct 2026 17:35:57 GMT
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_ti_gasm?format=JSON&geo=EU27_2020&lang=EN&partner=NO&partner=TOTAL&time=2026-01&unit=MIO_M3
+  response:
+    body:
+      string: '{"version":"2.0","class":"dataset","label":"Natural gas imports - monthly
+        data","source":"ESTAT","updated":"2026-10-23T23:00:00+0200","value":{"0":7799.934,"1":41973.354,"2":388.816,"3":12643.690},"id":["freq","siec","partner","unit","geo","time"],"size":[1,2,2,1,1,1],"dimension":{"freq":{"label":"Time
+        frequency","category":{"index":{"M":0},"label":{"M":"Monthly"}}},"siec":{"label":"Standard
+        international energy product classification (SIEC)","category":{"index":{"G3000":0,"G3200":1},"label":{"G3000":"Natural
+        gas","G3200":"Liquefied natural gas"}}},"partner":{"label":"Geopolitical entity
+        (partner)","category":{"index":{"NO":0,"TOTAL":1},"label":{"NO":"Norway","TOTAL":"Total"}}},"unit":{"label":"Unit
+        of measure","category":{"index":{"MIO_M3":0},"label":{"MIO_M3":"Million cubic
+        metres"}}},"geo":{"label":"Geopolitical entity (reporting)","category":{"index":{"EU27_2020":0},"label":{"EU27_2020":"European
+        Union - 27 countries (from 2020)"}}},"time":{"label":"Time","category":{"index":{"2026-01":0},"label":{"2026-01":"2026-01"}}}},"extension":{"lang":"EN","description":"<p>Monthly
+        quantities of imported natural gas, including liquefied natural gas, by country
+        of origin, classified according to the Standard International Energy Product
+        Classification under Regulation (EC) No 1099/2008 on energy statistics.</p>","id":"NRG_TI_GASM","agencyId":"ESTAT","version":"1.0","datastructure":{"id":"NRG_TI_GASM","agencyId":"ESTAT","version":"199.0"},"annotation":[{"type":"CREATED","date":"2020-03-26T16:50:15+0100"},{"type":"DISSEMINATION_DOI_XML","title":"<adms:identifier
+        xmlns:adms=\"http://www.w3.org/ns/adms#\" xmlns:skos=\"http://www.w3.org/2004/02/skos/core.html\"
+        xmlns:dct=\"http://purl.org/dc/terms/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><adms:Identifier
+        rdf:about=\"https://doi.org/10.2908/NRG_TI_GASM\"><skos:notation rdf:datatype=\"http://purl.org/spar/datacite/doi\">10.2908/NRG_TI_GASM</skos:notation><dct:creator
+        rdf:resource=\"http://publications.europa.eu/resource/authority/corporate-body/ESTAT\"/><dct:issued
+        rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">2023-01-23</dct:issued></adms:Identifier></adms:identifier>"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf","text":"Information
+        note"},{"type":"DISSEMINATION_OBJECT_TYPE","title":"DATASET"},{"type":"DISSEMINATION_TIMESTAMP_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_GLOBAL","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_PLANNED","date":"2026-10-23T23:00:00+0200"},{"type":"OBS_COUNT","title":"2621111"},{"type":"OBS_PERIOD_OVERALL_LATEST","title":"2026-09"},{"type":"OBS_PERIOD_OVERALL_OLDEST","title":"2008-01"},{"type":"SOURCE_INSTITUTIONS","text":"Eurostat"},{"type":"UPDATE_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"UPDATE_STRUCTURE","date":"2026-10-14T23:00:00+0200"}],"positions-with-no-data":{"freq":[],"siec":[],"partner":[],"unit":[],"geo":[],"time":[]}}}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type, Accept, X-Requested-With
+      Access-Control-Allow-Methods:
+      - GET
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3444'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Oct 2026 17:35:57 GMT
+      X-ORACLE-DMS-ECID:
+      - 8d3858e2-6a57-476c-91eb-b144dd9c4ef6-0040d898
+      X-ORACLE-DMS-RID:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

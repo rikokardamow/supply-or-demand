@@ -33,6 +33,16 @@ def _scrub_echoed_api_key(response: dict) -> dict:
     return response
 
 
+def _scrub_response(response: dict) -> dict:
+    """Every response hook in one place. ``filter_headers`` below applies to REQUEST headers
+    only, so a server's ``Set-Cookie`` (Eurostat's load-balancer cookie, confirmed in a
+    recorded response) would otherwise land in a public cassette."""
+    headers = response.get("headers", {})
+    for name in [n for n in headers if n.lower() == "set-cookie"]:
+        del headers[name]
+    return _scrub_echoed_api_key(response)
+
+
 @pytest.fixture(scope="module")
 def vcr_config() -> dict[str, object]:
     return {
@@ -60,5 +70,5 @@ def vcr_config() -> dict[str, object]:
             "x-key",  # GIE's auth header (EIA uses a query param instead)
             "X-API-Key",  # Adanos's own auth header (pipelines/adanos)
         ],
-        "before_record_response": _scrub_echoed_api_key,
+        "before_record_response": _scrub_response,
     }

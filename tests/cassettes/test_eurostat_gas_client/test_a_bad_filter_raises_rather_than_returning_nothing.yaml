@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_cb_gasm?format=JSON&geo=EU27_2020&lang=EN&siec=NOT_A_CODE&time=2026-01&unit=MIO_M3
+  response:
+    body:
+      string: '{"version":"2.0","class":"dataset","label":"Gas supply, transformation
+        and consumption - monthly data","source":"ESTAT","updated":"2026-10-23T23:00:00+0200","value":{},"id":["freq","nrg_bal","siec","unit","geo","time"],"size":[1,16,0,1,1,1],"dimension":{"freq":{"label":"Time
+        frequency","category":{"index":{"M":0},"label":{"M":"Monthly"}}},"nrg_bal":{"label":"Energy
+        balance","category":{"index":{"IPRD":0,"TOS":1,"IMP":2,"EXP":3,"STK_CHG_CG":4,"STK_CHG_MG":5,"INTMARB":6,"IC_OBS":7,"IC_CAL_MG":8,"TI_EHG_MAP":9,"DL":10,"VENT":11,"FLARE":12,"FC_IND":13,"FC_OTH":14,"STATDIFF":15},"label":{"IPRD":"Indigenous
+        production","TOS":"Transfer from other sources","IMP":"Imports","EXP":"Exports","STK_CHG_CG":"Change
+        in stock - cushion gas","STK_CHG_MG":"Stock changes - as defined in MOS GAS","INTMARB":"International
+        maritime bunkers","IC_OBS":"Inland consumption - observed","IC_CAL_MG":"Inland
+        consumption - calculated as defined in MOS GAS","TI_EHG_MAP":"Transformation
+        input - electricity and heat generation - main activity producers","DL":"Distribution
+        losses","VENT":"Vented","FLARE":"Flared","FC_IND":"Final consumption - industry
+        sector","FC_OTH":"Final consumption - other sectors","STATDIFF":"Statistical
+        differences"}}},"siec":{"label":"Standard international energy product classification
+        (SIEC)","category":{"index":{},"label":{}}},"unit":{"label":"Unit of measure","category":{"index":{"MIO_M3":0},"label":{"MIO_M3":"Million
+        cubic metres"}}},"geo":{"label":"Geopolitical entity (reporting)","category":{"index":{"EU27_2020":0},"label":{"EU27_2020":"European
+        Union - 27 countries (from 2020)"}}},"time":{"label":"Time","category":{"index":{"2026-01":0},"label":{"2026-01":"2026-01"}}}},"extension":{"lang":"EN","description":"<p>Monthly
+        quantities of natural gas along the energy balance, covering supply, stock
+        changes, transformation, losses and final consumption by sector, classified
+        under the Standard International Energy Product Classification and collected
+        under Regulation (EC) No 1099/2008.</p>","id":"NRG_CB_GASM","agencyId":"ESTAT","version":"1.0","datastructure":{"id":"NRG_CB_GASM","agencyId":"ESTAT","version":"206.0"},"annotation":[{"type":"CREATED","date":"2020-03-26T16:49:42+0100"},{"type":"DISSEMINATION_DOI_XML","title":"<adms:identifier
+        xmlns:adms=\"http://www.w3.org/ns/adms#\" xmlns:skos=\"http://www.w3.org/2004/02/skos/core.html\"
+        xmlns:dct=\"http://purl.org/dc/terms/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><adms:Identifier
+        rdf:about=\"https://doi.org/10.2908/NRG_CB_GASM\"><skos:notation rdf:datatype=\"http://purl.org/spar/datacite/doi\">10.2908/NRG_CB_GASM</skos:notation><dct:creator
+        rdf:resource=\"http://publications.europa.eu/resource/authority/corporate-body/ESTAT\"/><dct:issued
+        rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">2023-01-19</dct:issued></adms:Identifier></adms:identifier>"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf","text":"Information
+        note"},{"type":"DISSEMINATION_EXPLANATORY_LINK","title":"text-category","href":"https://ec.europa.eu/eurostat/databrowser-backend/api/public/explanatory-notes/get/Info_note_NRG_20260917.pdf"},{"type":"DISSEMINATION_OBJECT_TYPE","title":"DATASET"},{"type":"DISSEMINATION_TIMESTAMP_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_GLOBAL","date":"2026-10-23T23:00:00+0200"},{"type":"DISSEMINATION_TIMESTAMP_PLANNED","date":"2026-10-23T23:00:00+0200"},{"type":"OBS_COUNT","title":"129120"},{"type":"OBS_PERIOD_OVERALL_LATEST","title":"2026-09"},{"type":"OBS_PERIOD_OVERALL_OLDEST","title":"2008-01"},{"type":"SOURCE_INSTITUTIONS","text":"Eurostat"},{"type":"UPDATE_DATA","date":"2026-10-23T23:00:00+0200"},{"type":"UPDATE_STRUCTURE","date":"2026-10-14T23:00:00+0200"}],"positions-with-no-data":{"freq":[0],"nrg_bal":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"siec":[],"unit":[0],"geo":[0],"time":[0]}}}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type, Accept, X-Requested-With
+      Access-Control-Allow-Methods:
+      - GET
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '4173'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 26 Oct 2026 17:35:57 GMT
+      X-ORACLE-DMS-ECID:
+      - 3ed1ba10-06ca-42b8-9c25-1b5c333f64e8-003dc25e
+      X-ORACLE-DMS-RID:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

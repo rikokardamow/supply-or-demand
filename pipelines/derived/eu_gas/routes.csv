@@ -1,0 +1,36 @@
+partner,product,route,valid_from,valid_to,note
+no,pipeline,norway_pipeline,,,Norwegian Continental Shelf pipelines
+ru,pipeline,russia_pipeline,,,Nord Stream (to 2022-09) and other direct entry
+by,pipeline,russia_pipeline,,,Yamal via Belarus: Russian gas recorded at the Belarus border
+ua,pipeline,russia_pipeline,,2024-12-01,Russian gas transiting Ukraine; the transit contract ended 2025-01-01
+ua,pipeline,neighbour_exports,2025-01-01,,After transit ended: net EU exports to Ukraine
+tr,pipeline,southeast_corridor,,,TurkStream (Russian) into Bulgaria and TANAP/TAP (Azeri) into Greece: one border; cannot be split
+rs,pipeline,southeast_corridor,,,TurkStream gas leaving Bulgaria and re-entering Hungary; net is Serbia's own offtake
+al,pipeline,southeast_corridor,,,TAP gas leaving Greece and re-entering Italy
+az,pipeline,southeast_corridor,,,Azeri gas where reported by origin
+mk,pipeline,southeast_corridor,,,Offtake by North Macedonia from the same corridor
+ge,pipeline,southeast_corridor,,,Caspian gas where reported by Georgian transit
+dz,pipeline,north_africa_pipeline,,,Medgaz into Spain
+tn,pipeline,north_africa_pipeline,,,TransMed: Algerian gas recorded at the Tunisian border
+ly,pipeline,north_africa_pipeline,,,Greenstream into Italy
+ma,pipeline,north_africa_pipeline,,2021-10-01,Maghreb-Europe pipeline (Algerian gas) until it closed 2021-10-31
+ma,pipeline,neighbour_exports,2021-11-01,,After closure: Spanish reverse flows to Morocco
+uk,pipeline,uk,,,Interconnector and BBL; flows both ways
+ch,pipeline,neighbour_exports,,,Switzerland: transit DE/FR to IT and Swiss consumption; net is Swiss offtake
+md,pipeline,neighbour_exports,,,Moldova
+ba,pipeline,neighbour_exports,,,Bosnia and Herzegovina
+me,pipeline,neighbour_exports,,,Montenegro
+xk,pipeline,neighbour_exports,,,Kosovo
+li,pipeline,neighbour_exports,,,Liechtenstein
+*,pipeline,other_pipeline,,,Every other pipeline partner including NSP (not specified)
+us,lng,lng_us,,,
+qa,lng,lng_qatar,,,
+ru,lng,lng_russia,,,
+nsp,lng,lng_unspecified,,,Origin not specified by the reporting country
+eur_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+afr_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+ame_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+asi_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+asi_nme_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+ex_su_oth,lng,lng_unspecified,,,Regional aggregate; no country given
+*,lng,lng_other,,,Every other LNG origin; net of re-exports

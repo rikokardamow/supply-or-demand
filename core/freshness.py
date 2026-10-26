@@ -47,6 +47,8 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     # Monthly group.
     "opec_momr": 35,
     "jodi": 35,
+    # Eurostat publishes monthly gas about two months after the month; pulled by hand monthly.
+    "eurostat_gas": 35,
     "coal": 35,
 }
 
