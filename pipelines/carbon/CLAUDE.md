@@ -17,8 +17,15 @@ header row (`Date`, `Time`, `Auction Name`, `Contract`, `Status`, `Auction Price
 - `cancelled` auctions exist (2020-03-17, two in 2022): no price, flagged in
   `eex.<product>.auction.cancelled`.
 - **An auction clearing price is not a market price.** Every label says "auction".
-- **Terms of use not yet reviewed** (Spec 39 requires it). Until they are, keep these series
-  in the lake and off the public site.
+- **Terms of use, reviewed 2026-10-26** (a reading, not legal advice). EEX `/en/disclaimer`
+  allows "a single copy for exclusive personal, non-commercial use". "Any commercial use shall
+  only be permitted with the express written approval of EEX AG." `/en/market-data/licensing-policies`
+  says that passing data to third parties "in raw or in derived form" needs an External Usage
+  Licence (Commercial: newsletters, portals; Media: public, raw form only). Kardamow is a paid
+  publication, so **EEX-derived series stay in the private dashboard**.
+  `core.publish.LICENCE_RESTRICTED_PREFIXES` drops `eex.*`, `derived.eu_carbon.price.*` and
+  `derived.eu_carbon.balance.*` (its auction volumes are EEX-derived) from every serving-layer
+  publish, including the `publish_series` sweep. Lift a prefix only once a licence is in place.
 
 ## Union Registry installation file (confirmed live 2026-10-26)
 
