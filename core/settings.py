@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     guardian_key: str | None = None
     adanos_api_key: str | None = None
     anthropic_api_key: str | None = None
+    # pipelines/jodi_gas -- JODI REST API account (free sign-up at jodidata.org). The username
+    # is the sign-up email; the password is a secret (core.failures redacts *_password).
+    jodi_username: str | None = None
+    jodi_password: str | None = None
 
     # pipelines/futures -- IBKR Gateway/TWS connection params, not a secret (auth is
     # handled by the locally-running Gateway app itself, no API key involved). Plain
