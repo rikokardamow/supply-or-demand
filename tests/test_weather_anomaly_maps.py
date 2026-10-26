@@ -60,6 +60,29 @@ def test_read_manifest_fills_missing_model_column_as_ecmwf(tmp_path: Path) -> No
     assert result.iloc[0]["model"] == "ecmwf"
 
 
+def test_read_manifest_normalises_windows_separators() -> None:
+    """Rows rendered on the old Windows machine store `data\\lake\\maps\\x.png`, which no
+    other OS can open -- read back as forward slashes, which every OS accepts."""
+    legacy = pd.DataFrame(
+        [{"model": "ecmwf", "region": "eu", "step_hours": 72,
+          "valid_time": pd.Timestamp("2026-10-13"), "rendered_at": pd.Timestamp("2026-10-10"),
+          "path": "data\\lake\\maps\\anomaly-ecmwf-eu-d3-20261013.png"}]
+    )  # fmt: skip
+    anomaly_maps.MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    legacy.to_parquet(anomaly_maps.MANIFEST_PATH, index=False)
+
+    result = anomaly_maps.read_manifest()
+
+    assert result.iloc[0]["path"] == "data/lake/maps/anomaly-ecmwf-eu-d3-20261013.png"
+
+
+def test_append_manifest_row_writes_forward_slashes() -> None:
+    path = Path("data") / "lake" / "maps" / "a.png"
+    anomaly_maps._append_manifest_row("ecmwf", "eu", 72, pd.Timestamp("2026-09-04"), path)
+
+    assert pd.read_parquet(anomaly_maps.MANIFEST_PATH).iloc[0]["path"] == "data/lake/maps/a.png"
+
+
 def test_append_manifest_row_round_trips_and_dedupes() -> None:
     valid_time = pd.Timestamp("2026-09-04T00:00:00")
     anomaly_maps._append_manifest_row("ecmwf", "eu", 72, valid_time, Path("a.png"))
