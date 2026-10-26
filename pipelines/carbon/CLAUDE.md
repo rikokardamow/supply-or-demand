@@ -39,3 +39,15 @@ stationary installations, aircraft operators and (from 2024) shipping companies.
   latest year can therefore be incomplete. `core.carbon_balance.complete_years` tests only that year.
 - Shipping emissions are reported **before** the phase-in. Demand applies
   `maritime_phase_in.csv` (40% for 2024, 70% for 2025, 100% from 2026; Directive (EU) 2023/959).
+
+## `tnac.csv` — Total Number of Allowances in Circulation (2026-10-26)
+
+Hand-maintained and annual. Each figure is quoted with its source. TNAC 2016–2025, and MSR intake
+for the TNAC years 2020–2025 (each intake runs September of Y+1 to August of Y+2). Sources:
+Commission PDFs (`c_2017_3228` … `c_2021_3266`) and Commission news releases on
+climate.ec.europa.eu. **EUR-Lex answers scripted requests with HTTP 202 and an empty body (a
+bot check), so the Official Journal versions were not fetched. Do not work around it.**
+The 2023 TNAC comes from C(2025) 3120, where the PDF text reads "1 111 736 5353": the last 3 is a
+footnote marker. 24% of 1,111,736,535 is exactly the published intake.
+`core.carbon_balance.msr_intake` reproduces all six published intakes to within one allowance,
+and a test pins this. Add a row each June when the Commission publishes the next TNAC.

@@ -117,3 +117,32 @@ def balance(
     out["surplus"] = out["supply"] - out["demand"]
     out["cumulative_surplus"] = carried + out["surplus"].cumsum()
     return out
+
+
+# --- Market Stability Reserve --------------------------------------------------------------
+# Decision (EU) 2015/1814, as amended by Decision (EU) 2023/852. The intake is set from the
+# TNAC of year Y and taken from auctions from 1 September of Y+1 for twelve months.
+MSR_RATE = 0.24
+MSR_LOWER = 833_000_000  # the threshold above which allowances are withdrawn
+MSR_UPPER = 1_096_000_000  # from the TNAC for 2023: above this, the full 24% applies
+MSR_RELEASE_BELOW = 400_000_000
+MSR_RELEASE = 100_000_000
+FIRST_BUFFER_TNAC_YEAR = (
+    2023  # the 833-1,096 million buffer applies from the TNAC published in 2024
+)
+FIRST_RULE_TNAC_YEAR = 2018  # the 24% rate applies from the TNAC that set 2019's intake
+
+
+def msr_intake(tnac_year: int, tnac: float) -> float:
+    """Allowances the MSR takes from auctions on the TNAC of ``tnac_year``. Negative is a
+    release. Up to the TNAC for 2022: 24% above 833 million. From the TNAC for 2023: 24% above
+    1,096 million, and between 833 and 1,096 million only the excess over 833 million. Below
+    400 million, 100 million are released. Reproduces every published intake from 2020 to 2025
+    (tests pin them)."""
+    if tnac_year < FIRST_RULE_TNAC_YEAR:
+        raise ValueError(f"MSR rule implemented from the TNAC for {FIRST_RULE_TNAC_YEAR}")
+    if tnac < MSR_RELEASE_BELOW:
+        return -float(MSR_RELEASE)
+    if tnac_year >= FIRST_BUFFER_TNAC_YEAR and MSR_LOWER < tnac <= MSR_UPPER:
+        return float(tnac - MSR_LOWER)
+    return MSR_RATE * tnac if tnac > MSR_LOWER else 0.0

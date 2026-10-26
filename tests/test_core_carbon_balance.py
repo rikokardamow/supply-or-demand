@@ -90,3 +90,26 @@ def test_balance_carries_a_cumulative_surplus_forward() -> None:
 
     assert list(out["surplus"]) == [10.0, -20.0]
     assert list(out["cumulative_surplus"]) == [-20.0, -40.0]
+
+
+def test_msr_rule_reproduces_every_published_intake() -> None:
+    from pathlib import Path
+
+    published = pd.read_csv(
+        Path(__file__).parent.parent / "pipelines" / "carbon" / "tnac.csv"
+    ).dropna(subset=["msr_intake"])
+
+    assert len(published) == 6
+    for row in published.itertuples():
+        assert cb.msr_intake(row.tnac_year, row.tnac) == pytest.approx(row.msr_intake, abs=1.0)
+
+
+def test_msr_rule_bands_before_and_after_the_2023_amendment() -> None:
+    # 1,000 Mt sits in the 833-1,096 Mt buffer: 24% before the amendment, the excess after.
+    assert cb.msr_intake(2022, 1_000_000_000) == pytest.approx(240_000_000)
+    assert cb.msr_intake(2023, 1_000_000_000) == pytest.approx(167_000_000)
+    assert cb.msr_intake(2023, 1_200_000_000) == pytest.approx(288_000_000)
+    assert cb.msr_intake(2023, 800_000_000) == 0.0
+    assert cb.msr_intake(2023, 350_000_000) == -100_000_000
+    with pytest.raises(ValueError):
+        cb.msr_intake(2016, 1_700_000_000)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 from pipelines.derived import eu_carbon as d
 from pipelines.derived.eu_gas_balance import load_assumptions
 
@@ -53,3 +54,24 @@ def test_an_incomplete_latest_year_is_kept_out_of_the_balance() -> None:
     assert list(cumulative["value"]) == [75.0]  # carried 50, plus the projected 2024's 25
     flags = rows[rows["series_id"] == "derived.eu_carbon.check.complete.observed"]
     assert list(flags["value"]) == [1.0, 1.0, 0.0]
+
+
+def test_the_committed_tnac_file_quotes_a_source_for_every_figure() -> None:
+    tnac = pd.read_csv(d.TNAC_CSV)
+
+    assert tnac["tnac_year"].is_monotonic_increasing and not tnac["tnac_year"].duplicated().any()
+    assert tnac["source"].str.contains("https://").all()
+    with_intake = tnac.dropna(subset=["msr_intake"])
+    starts = pd.to_datetime(with_intake["intake_from"])
+    assert (starts.dt.month == 9).all()  # intakes run September to August
+    assert (starts.dt.year == with_intake["tnac_year"] + 1).all()
+
+
+def test_tnac_rows_carry_published_and_rule_intake() -> None:
+    tnac = pd.DataFrame({"tnac_year": [2016, 2025], "tnac": [1.6e9, 1_023_494_202.0],
+                         "msr_intake": [float("nan"), 190_494_202.0]})  # fmt: skip
+
+    rows = d.tnac_rows(tnac, AT).set_index("series_id")
+
+    rule = rows.loc["derived.eu_carbon.tnac.rule_intake.observed", "value"]
+    assert rule == pytest.approx(190.494202)  # 2016 is before the rule: no rule row for it
