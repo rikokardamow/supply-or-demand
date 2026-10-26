@@ -7,6 +7,7 @@ import math
 import pandas as pd
 import pytest
 from core import eu_gas_balance as egb
+from core import gas_projection as gp
 
 JAN, FEB, MAR = pd.Timestamp("2025-01-01"), pd.Timestamp("2025-02-01"), pd.Timestamp("2025-03-01")
 
@@ -228,7 +229,7 @@ def test_a_year_missing_a_month_has_no_annual_total() -> None:
     table = pd.DataFrame({"a": 1.0, "b": 1.0}, index=months)
     table.loc["2025-03-01", "b"] = float("nan")
 
-    years = egb.calendar_year(table)
+    years = gp.calendar_year(table)
 
     assert years.loc[2025, "a"] == 12.0
     assert math.isnan(years.loc[2025, "b"])
@@ -244,7 +245,7 @@ def test_projection_keeps_the_seasonal_shape_and_chains_years() -> None:
         {"line": ["consumption", "consumption"], "year": [2026, 2027], "yoy_pct": [10.0, 0.0]}
     )
 
-    out = egb.project(history, assumptions, pd.Timestamp("2027-02-01"))
+    out = gp.project(history, assumptions, pd.Timestamp("2027-02-01"))
 
     assert out.loc["2026-02-01", "consumption"] == pytest.approx(2.2)
     assert out.loc["2027-02-01", "consumption"] == pytest.approx(2.2)
@@ -254,7 +255,7 @@ def test_a_line_with_no_assumption_is_not_projected_as_flat() -> None:
     history = pd.DataFrame({"production": [1.0]}, index=[pd.Timestamp("2025-12-01")])
     assumptions = pd.DataFrame({"line": [], "year": [], "yoy_pct": []})
 
-    out = egb.project(history, assumptions, pd.Timestamp("2026-12-01"))
+    out = gp.project(history, assumptions, pd.Timestamp("2026-12-01"))
 
     assert out["production"].isna().all()
 
@@ -263,6 +264,6 @@ def test_storage_path_stops_at_the_first_gap() -> None:
     months = pd.date_range("2026-01-01", periods=3, freq="MS")
     build = pd.Series([10.0, float("nan"), 5.0], index=months)
 
-    path = egb.storage_path(100.0, build)
+    path = gp.storage_path(100.0, build)
 
     assert list(path) == [110.0]
