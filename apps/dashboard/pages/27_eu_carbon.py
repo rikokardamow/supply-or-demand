@@ -205,3 +205,51 @@ with section("Allowance balance"):
         "shipping at its phase-in (pipelines/carbon/maritime_phase_in.csv). Surplus is an annual "
         "flow, not the TNAC; the Market Stability Reserve is outside it."
     )
+
+tnac = _table(derived, "tnac", "observed")
+if not tnac.empty:
+    with section("Allowances in circulation and the Market Stability Reserve"):
+        fig = go.Figure()
+        fig.add_trace(
+            go.Bar(
+                x=pd.DatetimeIndex(tnac.index).year,
+                y=tnac["tnac"],
+                name="Total number of allowances in circulation",
+                marker_color=NAVY,
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=pd.DatetimeIndex(tnac.index).year,
+                y=tnac["msr_intake"],
+                mode="lines+markers",
+                name="MSR intake (next Sep-Aug)",
+                line={"color": RED},
+            )
+        )
+        for level, label in ((1096, "1,096 Mt"), (833, "833 Mt"), (400, "400 Mt")):
+            fig.add_hline(y=level, line={"color": GREY, "dash": "dot"}, annotation_text=label)
+        fig.update_layout(template="kardamow")
+        fig.update_yaxes(title_text="Mt (allowances)")
+        st.plotly_chart(fig)
+        checked = tnac.dropna(subset=["msr_intake", "rule_intake"])
+        worst = (checked["msr_intake"] - checked["rule_intake"]).abs().max() * 1e6
+        latest = tnac["tnac"].dropna().index.max()
+        st.caption(
+            f"The TNAC for {latest:%Y} is {tnac.loc[latest, 'tnac']:,.1f} Mt, so "
+            f"{tnac.loc[latest, 'msr_intake']:,.1f} Mt leave auctions from September "
+            f"{latest.year + 1} to August {latest.year + 2}. The MSR rule, re-implemented here, "
+            f"reproduces every published intake from {checked.index.min():%Y} to "
+            f"{checked.index.max():%Y} "
+            + (
+                "to within one allowance (rounding)."
+                if worst < 1
+                else f"to within {worst:,.0f} allowances."
+            )
+        )
+        source_note(
+            "European Commission TNAC communications and announcements, each figure quoted with "
+            "its source in pipelines/carbon/tnac.csv. Rule: Decision (EU) 2015/1814 as amended by "
+            "Decision (EU) 2023/852 (24% above 1,096 Mt; above 833 Mt only the excess; below "
+            "400 Mt a 100 Mt release)."
+        )

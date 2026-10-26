@@ -57,7 +57,7 @@ _URI_USERINFO_RE = re.compile(r"(?P<scheme>[a-z][a-z0-9+.\-]*://[^:/?#@\s]+:)[^@
 # "127.0.0.1" and `ibkr_client_id` is 1, and redacting those would mangle unrelated
 # messages beyond recognition. `_db_url` is here rather than a bare `_url` for the same
 # reason: `supabase_db_url` embeds a password, an ordinary `*_url` setting would not.
-_SECRET_FIELD_SUFFIXES = ("_key", "_token", "_secret", "_db_url")
+_SECRET_FIELD_SUFFIXES = ("_key", "_token", "_secret", "_db_url", "_password")
 # Below this length a "secret" is far more likely to be a placeholder ("ci-placeholder"
 # is 14, a real key is 32+) than something worth redacting at the cost of false hits.
 _MIN_SECRET_LENGTH = 8

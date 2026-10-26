@@ -54,6 +54,8 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     # EEX auctions run most weekdays, pulled by hand; the registry file is annual.
     "eex": 9,
     "eu_registry": 400,
+    # JODI-Gas, monthly with a lag of one to five months by country; pulled by hand.
+    "jodi_gas": 35,
     "coal": 35,
 }
 

@@ -50,6 +50,34 @@ _ALLOWED_TABLES: Final = frozenset(
 )
 
 
+# Series that must never reach the serving layer, which backs a public site, because their
+# source's terms forbid onward dissemination without a licence. EEX (checked 2026-10-26,
+# /en/disclaimer and /en/market-data/licensing-policies): a single copy for personal,
+# non-commercial use only. Any commercial use needs EEX's written approval, and passing the
+# data to third parties "in raw or in derived form" needs an External Usage Licence. The
+# carbon balance's auction volumes are derived from EEX, so they are restricted too.
+# Remove a prefix only once a licence is in place, and record it in pipelines/carbon/NOTES.md.
+LICENCE_RESTRICTED_PREFIXES: Final = (
+    "eex.",
+    "derived.eu_carbon.price.",
+    "derived.eu_carbon.balance.",
+)
+
+
+def drop_licence_restricted(df: pd.DataFrame, table: str) -> pd.DataFrame:
+    """``df`` without rows whose ``series_id`` is licence-restricted, saying how many went.
+    A frame with no ``series_id`` column is returned unchanged."""
+    if "series_id" not in df.columns:
+        return df
+    restricted = df["series_id"].astype(str).str.startswith(LICENCE_RESTRICTED_PREFIXES)
+    if restricted.any():
+        print(
+            f"serving.{table}: {int(restricted.sum())} licence-restricted row(s) not published "
+            f"({sorted(df.loc[restricted, 'series_id'].unique())[:3]}...)"
+        )
+    return df[~restricted]
+
+
 class UnknownServingTableError(ValueError):
     """Raised when publish() is asked to write to a table outside serving.* (Spec 32 §2)."""
 
@@ -84,6 +112,7 @@ def publish(
             f"{table!r} is not a whitelisted serving.* table ({sorted(_ALLOWED_TABLES)})"
         )
     _check_identifiers([*df.columns, *key])
+    df = drop_licence_restricted(df, table)
 
     # `as_of` can never be in the future. Callers derive it from `df["ts"].max()`, which
     # is right for an observed series but wrong for a forecast one: OPEC's MOMR carries
@@ -181,8 +210,10 @@ def _revalidate(table: str) -> None:
     except Exception as exc:
         # describe_exception, not str(exc): a requests error embeds the full URL, and
         # this one carries no credential today but the habit is what keeps it that way.
-        print(f"revalidate hook failed for {table} (publish itself succeeded): "
-              f"{describe_exception(exc)}")
+        print(
+            f"revalidate hook failed for {table} (publish itself succeeded): "
+            f"{describe_exception(exc)}"
+        )
 
 
 # A plain lowercase SQL identifier. Anything else -- mixed case, a quote, whitespace, a

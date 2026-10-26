@@ -13,6 +13,10 @@ Series written (``source="derived"``, ``geo="EU"``):
 - ``derived.eu_carbon.check.complete.observed``: 1 for a complete registry year, else 0.
 - ``derived.eu_carbon.price.<monthly_mean|annual_vwap>.observed``: €/t, auction clearing
   prices for general allowances (EEX contract T3PA), not market prices.
+- ``derived.eu_carbon.tnac.<tnac|msr_intake|rule_intake>.observed``: annual, Mt, ts = 1 January
+  of the TNAC year. The published TNAC and MSR intake come from ``pipelines/carbon/tnac.csv``
+  (each figure quoted with its source); ``rule_intake`` is ``core.carbon_balance.msr_intake``
+  on the same TNAC, kept as a check.
 
 Read through ``pipelines.derived.eu_gas_balance.latest_run``. Not scheduled.
 """
@@ -33,6 +37,7 @@ from pipelines.derived.eu_gas_balance import load_assumptions
 HERE = Path(__file__).parent / "eu_carbon"
 ASSUMPTIONS_CSV = HERE / "assumptions.csv"
 PHASE_IN_CSV = Path(__file__).parent.parent / "carbon" / "maritime_phase_in.csv"
+TNAC_CSV = Path(__file__).parent.parent / "carbon" / "tnac.csv"
 PROJECTION_END = pd.Timestamp("2027-01-01")
 PROJECTED_LINES = (
     "emissions_combustion",
@@ -97,12 +102,27 @@ def _balance_from(lines: pd.DataFrame, phase: pd.Series, carried: float = 0.0) -
     return cb.balance(lines, lines["auctioned"], demand, carried)
 
 
+def tnac_rows(tnac: pd.DataFrame, at: pd.Timestamp) -> pd.DataFrame:
+    index = pd.to_datetime(tnac["tnac_year"].astype(str) + "-01-01")
+    rule = [
+        cb.msr_intake(int(y), float(v)) if y >= cb.FIRST_RULE_TNAC_YEAR else float("nan")
+        for y, v in zip(tnac["tnac_year"], tnac["tnac"], strict=True)
+    ]
+    table = pd.DataFrame(
+        {"tnac": tnac["tnac"].to_numpy(), "msr_intake": tnac["msr_intake"].to_numpy(),
+         "rule_intake": rule},
+        index=index,
+    )  # fmt: skip
+    return _rows(table / MT, "tnac", "observed", "Mt", "A", at)
+
+
 def build_rows(
     registry: pd.DataFrame,
     auctions: pd.DataFrame,
     phase_in: pd.Series,
     assumptions: pd.DataFrame,
     at: pd.Timestamp,
+    tnac: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     ets = cb.annual_ets(registry)
     complete = cb.complete_years(ets)
@@ -144,6 +164,8 @@ def build_rows(
                 at,
             )
         )
+    if tnac is not None and not tnac.empty:
+        frames.append(tnac_rows(tnac, at))
     return pd.concat(frames, ignore_index=True)
 
 
@@ -163,6 +185,7 @@ def main() -> None:
         phase_in,
         load_assumptions(ASSUMPTIONS_CSV),
         pd.Timestamp(datetime.now(UTC)).tz_localize(None),
+        pd.read_csv(TNAC_CSV),
     )
     write_ts_long(rows, source="derived")
     labels = rows["series_id"].str.rsplit(".", n=1).str[-1].value_counts()

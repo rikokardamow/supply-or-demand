@@ -1251,3 +1251,13 @@ with two series of wildly different magnitude specifically to catch a regression
 
 The lesson is the one this file keeps relearning: a green suite is not a verified number.
 The fix was confirmed by reading the real published table back out of Supabase.
+
+## `pull_lng_exports.py` — US LNG exports by destination (2026-10-26)
+
+Route `natural-gas/move/expc`. Series are discovered from the route's facet names. EIA names
+them **four ways**, all confirmed live: "Liquefied U.S. Natural Gas …" or "U.S. Liquefied
+Natural Gas …", "by Vessel" or "by Vessels", and a unit of "(Million Cubic Feet)" or
+"(MMcf)". The UK, Italy and Türkiye use "(MMcf)", and missing that drops 10–20% of US exports.
+Vessel plus truck exports by destination add up to `N9133US2` exactly in every month since
+2017. Re-exports are not in that total. Lake ids are namespaced (`eia.lng.exports.<dest>`),
+not raw EIA codes.

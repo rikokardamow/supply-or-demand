@@ -14,8 +14,10 @@ calculator served as a layout example only.
 
 The cumulative surplus is a running sum of those flows from 2020, the first EEX year. It is not
 the Total Number of Allowances in Circulation. Banked allowances from before 2020 and the
-Market Stability Reserve's intake are outside it. A TNAC reference file from the Commission's
-annual communications is the obvious next step.
+Market Stability Reserve's intake are outside it. The official TNAC is shown beside it, from
+`pipelines/carbon/tnac.csv` (2016–2025, Commission sources). So is the MSR intake, published
+and re-derived by `core.carbon_balance.msr_intake`. TNAC 2025 = 1,023.5 Mt, so 190.5 Mt leave
+auctions from September 2026 to August 2027.
 
 ## `assumptions.csv`
 

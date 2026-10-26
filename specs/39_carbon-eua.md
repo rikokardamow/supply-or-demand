@@ -8,8 +8,9 @@ want of carbon and coal.**
 
 Session A, partly built: `pipelines/carbon` pulls EEX primary auctions (2020 onwards, `eex.eua.auction.*`
 including `cover_ratio`) and the Union Registry installation file. A separate EU ETS allowance
-balance (`pipelines/derived/eu_carbon.py`, page `27_eu_carbon.py`) is built on them. Still open:
-the IBKR EUA futures route, EEX terms of use, the API2 coal source, and Session B (switching price).
+balance (`pipelines/derived/eu_carbon.py`, page `27_eu_carbon.py`) is built on them. EEX terms reviewed 2026-10-26: personal non-commercial use only without a licence, so
+EEX-derived series are blocked from the serving layer (`core.publish.LICENCE_RESTRICTED_PREFIXES`).
+Still open: the IBKR EUA futures route, the API2 coal source, and Session B (switching price).
 
 ## Objective & alpha question
 
