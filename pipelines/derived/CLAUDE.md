@@ -315,3 +315,9 @@ projected-final), then final beats proposed, then latest `revision_date`; it kee
 `label` and `status` columns so a page can still say "projected" or "proposed". Both readers
 share `_best_per`. The STEO code-to-lake-id rule is `pipelines.eia.steo_series.lake_series_id`,
 used by `pull_steo` (writer) and this module (reader).
+
+**Checked against the licensed workbook 2026-10-26**: same arithmetic, same denominator
+quantity (the `_P` pair matches its gasoline + distillate − renewables within STEO revisions).
+The port is a little above the workbook in history because it omits the workbook's Alaska exclusion and its
+adjusted-to-actual factor. Both are deliberate omissions. It follows EPA's 1 April 2026 final rule
+where the workbook's SRE-reallocated 2025–27 standards differ. Detail in `rin/README.md`.
