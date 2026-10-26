@@ -168,3 +168,14 @@ Bai-Perron with one break finds 2005-03 (+23 months); Andrews sup-F finds 2004-0
 The 2004-05 crude run-up is a far larger level shift and dominates the search. Allowing two
 breaks surfaces 2003-01, three months from the paper's date — partial recovery obtained by
 relaxing the break count, not a clean replication. Recorded as a miss in the spec.
+
+## `eu_gas_balance.py` — EU-27 gas balance by route (2026-10-26)
+
+Inputs: `estat.gas.*` (`pipelines/eurostat_gas`), the committed `eu_gas/routes.csv` and
+`eu_gas/assumptions.csv`, and GIE `agsi.EU.*`. Arithmetic is `core/eu_gas_balance.py`.
+**Read `derived.eu_gas.*` only through `latest_run`.** Each run writes the whole model, and a
+month later found incomplete (2024-03) or a projection overtaken by data would otherwise
+linger in the lake. Routes are net imports. Intra-EU trade is excluded. Months whose partner
+detail does not add up to the total are left out. Blank EU balance cells are rebuilt from
+member states only at 99% coverage, and flagged in `derived.eu_gas.member_sum.*`. Not
+scheduled. Detail in `eu_gas/README.md`.
