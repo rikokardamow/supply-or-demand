@@ -122,7 +122,7 @@ def _append_manifest_row(
                 "step_hours": step_hours,
                 "valid_time": valid_time,
                 "rendered_at": pd.Timestamp(datetime.now(UTC)),
-                "path": str(path),
+                "path": path.as_posix(),
             }
         ]
     )
@@ -141,7 +141,9 @@ def _append_manifest_row(
 def read_manifest() -> pd.DataFrame:
     """A manifest row written before this session has no `model` column at all (every
     map rendered so far was ECMWF's) -- filled in as "ecmwf" here rather than requiring
-    a one-off migration script, so the existing on-disk file needs no manual backfill."""
+    a one-off migration script, so the existing on-disk file needs no manual backfill.
+    Rows rendered on Windows store backslash paths; they are read back with forward
+    slashes, which every OS opens."""
     if not MANIFEST_PATH.exists():
         return pd.DataFrame(
             columns=["model", "region", "step_hours", "valid_time", "rendered_at", "path"]
@@ -149,4 +151,5 @@ def read_manifest() -> pd.DataFrame:
     manifest = pd.read_parquet(MANIFEST_PATH)
     if "model" not in manifest.columns:
         manifest["model"] = "ecmwf"
+    manifest["path"] = manifest["path"].str.replace("\\", "/", regex=False)
     return manifest
