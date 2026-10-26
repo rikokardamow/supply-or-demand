@@ -52,3 +52,22 @@ def test_write_series_meta_overwrites_a_corrected_contract_spec() -> None:
 
     assert len(result) == 1  # de-duped on (root, contract), keep last
     assert result.iloc[0]["tick_size"] == pytest.approx(0.02)
+
+
+def test_series_meta_path_follows_lake_root_rather_than_the_cwd(tmp_path, monkeypatch) -> None:
+    """The manifest holds the only real contract expiries this project has, and it used
+    to live at a *relative* `Path("data/lake/futures_meta")` independent of
+    `core.storage.LAKE_ROOT` -- so only `monkeypatch.chdir` isolated it, and one test
+    missing that one line would overwrite the real file. Deriving the directory from
+    `LAKE_ROOT` at call time makes the ordinary lake patch sufficient."""
+    from core import storage
+    from pipelines.futures import series_meta
+
+    lake = tmp_path / "elsewhere"
+    monkeypatch.setattr(storage, "LAKE_ROOT", lake)
+
+    write_series_meta(_rows("z26", "2026-11-20"))
+
+    assert (lake / "futures_meta" / "series_meta.parquet").exists()
+    assert len(read_series_meta()) == 1
+    assert series_meta.series_meta_path() == lake / "futures_meta" / "series_meta.parquet"

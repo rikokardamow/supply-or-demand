@@ -42,6 +42,22 @@ CSV schema.
 `drop_duplicates(subset=["root", "contract"], keep="last")`, so a corrected contract spec
 simply overwrites the earlier one on the next write.
 
+### Its directory comes from `core.storage.LAKE_ROOT`, resolved per call (2026-10-10)
+
+`series_meta.py` held its own module-level `SERIES_META_DIR` built from a relative path at
+import time. Two consequences, both found by a test that had been passing for the wrong
+reason: the manifest's location depended on the process's working directory, and patching
+`core.storage.LAKE_ROOT` — the one knob every other test uses to isolate the lake — did not
+move it, so a test that believed it was writing to `tmp_path` was writing to the real
+manifest and only `chdir` was saving it.
+
+It now does `from core import storage` and reads `storage.LAKE_ROOT` inside each function,
+so the directory resolves when the call happens rather than when the module is imported.
+Call-time resolution is the whole point: `from core.storage import LAKE_ROOT` would rebind a
+copy at import and defeat `monkeypatch.setattr` exactly as the old constant did. Verified by
+checking the real manifest's mtime across a full `AppTest` run that patched only
+`LAKE_ROOT`.
+
 ## `contract_specs.csv` — well-known public exchange specs, not fetched live
 
 Per-root `tick_size`/`contract_unit`/`currency` for the 7 roots (`cl`/`rb`/`ho`/`ng` on
@@ -332,3 +348,106 @@ restrict redistribution, which is a live question for `data.kardamow.com` — th
 are published into an anon-readable `serving.series_long`. The per-symbol pull is wrapped
 in `core.failures`, so one broken symbol does not cost the other four, but a run where
 every symbol failed still exits non-zero rather than reporting success.
+
+## IBKR MCP connector — daily-bar history limit, confirmed live 2026-10-10
+
+`get_price_history(security_type="FUT", exchange="NYMEX", step="ONE_DAY", outside_rth=false)`
+on CL Dec 2026 (contract_id 296574787):
+
+| period | result |
+|---|---|
+| `ONE_YEAR` | 251 bars, 2025-10-10 -> 2026-10-09 |
+| `FIVE_YEARS` | **1,255 bars, 2021-10-11 -> 2026-10-09** |
+
+`FIVE_YEARS` is the largest value the tool's own enum offers, so there is no deeper period
+to test -- five years of daily bars per contract is the ceiling. Every response carries
+`delayed: 600` and `source: "Last"`, which is why these are `.close` series and never
+`.settle`.
+
+Not the same as the monthly-bar limit: `step="ONE_MONTH", period="FIVE_YEARS"` on CLZ7
+returned bars back to 2021-10-11 too (confirmed 2026-10-10), i.e. the five-year window is
+the binding constraint, not the bar size.
+
+**Operational consequence for any capture.** One contract at `FIVE_YEARS` daily is roughly
+**70 KB of JSON**. The nearest 36 expiries across two roots is therefore on the order of
+**5 MB** -- far past what any single agent should pull through its own context. A capture
+must stream each response straight to disk under `data/raw/ibkr/` rather than reading it.
+Responses above the tool's own result cap are auto-saved to a file by the harness, which
+helps, but the cap sits between the `ONE_YEAR` and `FIVE_YEARS` sizes, so it cannot be
+relied on as the mechanism.
+
+## The IBKR MCP connector as a data source (2026-10-10)
+
+**This is not the Gateway path.** The section at the top of this file — "No IBKR Gateway/TWS
+running on this machine" — remains true and remains irrelevant to this source. All four
+ports are still closed and `ibkr_preflight.py` still reports so; it tells you nothing about
+the connector, which is an MCP tool available inside an AI-assistant session and needs no Gateway,
+no port and no `ib_async`.
+
+Resolved underlying contract ids, so nobody re-derives them: `cl` = 17340715 (Light Sweet
+Crude Oil, NYMEX), `lco` = 45631501 (Brent Crude Oil – Last Day, NYMEX). Futures are not
+SMART-eligible — pass the contract's native `exchange` or the response comes back empty.
+
+### Provenance: these are `.close`, never `.settle`
+
+Every response carries `delayed: 600` and `source: "Last"`. That is last-trade data, ten
+minutes delayed, not an exchange settlement. The measured difference between the two, from
+this file's own yfinance section, is exactly equal on **3.6%** of 5,915 days, within a cent
+on 96.4%, worst day **$1.50**. So the series are `fut.<root>.<contract>.close` with
+`source="ibkr"`, and nothing may relabel them.
+
+Open interest is **not** written. `future_open_interest` was requested on three contracts
+and returned on none. Absent is not zero.
+
+### What the capture produced, 2026-10-10
+
+36 nearest non-expired contracts per root, five years of daily bars each. `cl` 2,172,048
+bytes and `lco` 1,254,164 bytes of archived JSON under the git-ignored `data/raw/ibkr/`.
+Ingested: **13,038** rows for `cl` across 35 of 36 contracts, **2,544** for `lco` across 34
+of 36 — 15,582 rows in total.
+
+### Two real defects in the source, both found by running against it
+
+**Ragged parallel arrays, 3 of 72 contracts.** The connector returns OHLCV lists of
+differing lengths: `cl` 202901 came back `time=180, open=180, high=249, low=249, close=249,
+volume=231`; `lco` 202701 had `time=249` against 250 everywhere else; `lco` 202703 had
+`volume=243` against 249. The first real ingest aborted both whole captures on pandas'
+opaque `ValueError: All arrays must be of the same length`. Now refused per contract with a
+named error, recorded as a skip, so one bad contract costs only itself.
+
+**Duplicate price series are a symptom, not a bug.** Three pairs of contracts returned
+byte-identical close series. They are 92–99% zero-volume far-dated contracts printing
+carried reference prices, so the two "duplicates" are both mostly non-markets and the
+liquidity gate strips them. Worth knowing before anyone reports it as a connector fault.
+Note `cl` 202901's zero-volume bars carry *varying* OHLC, so they are counted `zero_volume`
+rather than `stale_print` — the two reasons are not redundant.
+
+### The limitation that matters most
+
+`search_futures` returns only contracts **still active** unless `include_expired=true`. This
+capture took the nearest 36 non-expired, so every contract that was front-month in the past
+is missing. Consequences:
+
+- **Contract-coded output is correct.** `fut.cl.z2026.close` is genuinely that contract, and
+  `dec_dec_4026_4027` names both its legs.
+- **Rank-based output is not, historically.** `core.curve.nearby_panel` ranks whatever is in
+  the panel, so on 2026-04-02 it calls `x2026` (expiry 2026-10-20) the front month at 73.16
+  when the real front expired in May 2026 and was never captured.
+
+Measured against the lake's independent yfinance front month: 294 overlapping days, max
+absolute difference **38.38**, median 2.61, 0.3% within a cent. Two last-trade series for the
+same instrument do not disagree like that — they are not the same instrument.
+
+**A capture that wants genuine historical ranks must pass `include_expired=true`.** That is
+the real fix and it was not done here.
+
+### A namespace hazard, recorded because it did not bite
+
+`pipelines/derived/curve_ranks.py` (EIA rank series) and `pipelines/derived/curve.py` (the
+contract panel) write **the same series ids** — `derived.spread.<root>.s12` and siblings —
+from different inputs. They do not collide today only because EIA's route was discontinued
+at 2024-04-05 while this capture begins 2024-04-17: zero overlapping timestamps, verified by
+grouping on `revision_date`. If EIA data ever extended forward, or a capture reached further
+back, `write_ts_long`'s `(series_id, ts)` de-dup would let one path silently overwrite the
+other.
+

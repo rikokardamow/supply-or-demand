@@ -1,0 +1,771 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.34.2
+    method: GET
+    uri: https://api.eia.gov/v2/steo/data/?data%5B0%5D=value&facets%5BseriesId%5D%5B%5D=MGTCPUSX&frequency=monthly&length=5000&offset=0&sort%5B0%5D%5Bcolumn%5D=period&sort%5B0%5D%5Bdirection%5D=desc
+  response:
+    body:
+      string: '{"response":{"total":"456","dateFormat":"YYYY-MM","frequency":"monthly","data":[{"period":"2027-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.664308","unit":"million barrels per
+        day"},{"period":"2027-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.589556","unit":"million barrels per
+        day"},{"period":"2027-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.848429","unit":"million barrels per
+        day"},{"period":"2027-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.724387","unit":"million barrels per
+        day"},{"period":"2027-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.062621","unit":"million barrels per
+        day"},{"period":"2027-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.076441","unit":"million barrels per
+        day"},{"period":"2027-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.981288","unit":"million barrels per
+        day"},{"period":"2027-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.862797","unit":"million barrels per
+        day"},{"period":"2027-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.802645","unit":"million barrels per
+        day"},{"period":"2027-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.616942","unit":"million barrels per
+        day"},{"period":"2027-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.482241","unit":"million barrels per
+        day"},{"period":"2027-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.266772","unit":"million barrels per
+        day"},{"period":"2026-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.621498","unit":"million barrels per
+        day"},{"period":"2026-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.553804","unit":"million barrels per
+        day"},{"period":"2026-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.810368","unit":"million barrels per
+        day"},{"period":"2026-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.7520748","unit":"million barrels per
+        day"},{"period":"2026-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.856967742","unit":"million barrels per
+        day"},{"period":"2026-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.945817","unit":"million barrels per
+        day"},{"period":"2026-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.917085","unit":"million barrels per
+        day"},{"period":"2026-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.681877","unit":"million barrels per
+        day"},{"period":"2026-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.122677","unit":"million barrels per
+        day"},{"period":"2026-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.853144","unit":"million barrels per
+        day"},{"period":"2026-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.586191","unit":"million barrels per
+        day"},{"period":"2026-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.257876","unit":"million barrels per
+        day"},{"period":"2025-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.858098","unit":"million barrels per
+        day"},{"period":"2025-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.714216","unit":"million barrels per
+        day"},{"period":"2025-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.942396","unit":"million barrels per
+        day"},{"period":"2025-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.012095","unit":"million barrels per
+        day"},{"period":"2025-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.240297","unit":"million barrels per
+        day"},{"period":"2025-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.176572","unit":"million barrels per
+        day"},{"period":"2025-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.394458","unit":"million barrels per
+        day"},{"period":"2025-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.066608","unit":"million barrels per
+        day"},{"period":"2025-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.920909","unit":"million barrels per
+        day"},{"period":"2025-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.757826","unit":"million barrels per
+        day"},{"period":"2025-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.676489","unit":"million barrels per
+        day"},{"period":"2025-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.441681","unit":"million barrels per
+        day"},{"period":"2024-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.772606","unit":"million barrels per
+        day"},{"period":"2024-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.832329","unit":"million barrels per
+        day"},{"period":"2024-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.069841","unit":"million barrels per
+        day"},{"period":"2024-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.983351","unit":"million barrels per
+        day"},{"period":"2024-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.257144","unit":"million barrels per
+        day"},{"period":"2024-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.317653","unit":"million barrels per
+        day"},{"period":"2024-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.199385","unit":"million barrels per
+        day"},{"period":"2024-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.390945","unit":"million barrels per
+        day"},{"period":"2024-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.869273","unit":"million barrels per
+        day"},{"period":"2024-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.937057","unit":"million barrels per
+        day"},{"period":"2024-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.659161","unit":"million barrels per
+        day"},{"period":"2024-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.290367","unit":"million barrels per
+        day"},{"period":"2023-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.795869","unit":"million barrels per
+        day"},{"period":"2023-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.90984","unit":"million barrels per day"},{"period":"2023-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.099847","unit":"million barrels per
+        day"},{"period":"2023-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.8431","unit":"million barrels per day"},{"period":"2023-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.244487","unit":"million barrels per
+        day"},{"period":"2023-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.979008","unit":"million barrels per
+        day"},{"period":"2023-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.365719","unit":"million barrels per
+        day"},{"period":"2023-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.079885","unit":"million barrels per
+        day"},{"period":"2023-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.944074","unit":"million barrels per
+        day"},{"period":"2023-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.076929","unit":"million barrels per
+        day"},{"period":"2023-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.694903","unit":"million barrels per
+        day"},{"period":"2023-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.291026","unit":"million barrels per
+        day"},{"period":"2022-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.595912","unit":"million barrels per
+        day"},{"period":"2022-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.826837","unit":"million barrels per
+        day"},{"period":"2022-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.806797","unit":"million barrels per
+        day"},{"period":"2022-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.846635","unit":"million barrels per
+        day"},{"period":"2022-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.115364","unit":"million barrels per
+        day"},{"period":"2022-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.811562","unit":"million barrels per
+        day"},{"period":"2022-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.075113","unit":"million barrels per
+        day"},{"period":"2022-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.11911","unit":"million barrels per day"},{"period":"2022-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.798742","unit":"million barrels per
+        day"},{"period":"2022-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.005125","unit":"million barrels per
+        day"},{"period":"2022-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.650176","unit":"million barrels per
+        day"},{"period":"2022-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.061873","unit":"million barrels per
+        day"},{"period":"2021-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.879416","unit":"million barrels per
+        day"},{"period":"2021-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.021078","unit":"million barrels per
+        day"},{"period":"2021-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.026937","unit":"million barrels per
+        day"},{"period":"2021-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.93246","unit":"million barrels per day"},{"period":"2021-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.182325","unit":"million barrels per
+        day"},{"period":"2021-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.297062","unit":"million barrels per
+        day"},{"period":"2021-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.361666","unit":"million barrels per
+        day"},{"period":"2021-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.080775","unit":"million barrels per
+        day"},{"period":"2021-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.83938","unit":"million barrels per day"},{"period":"2021-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.553155","unit":"million barrels per
+        day"},{"period":"2021-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.823575","unit":"million barrels per
+        day"},{"period":"2021-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.723325","unit":"million barrels per
+        day"},{"period":"2020-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.855421","unit":"million barrels per
+        day"},{"period":"2020-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.001362","unit":"million barrels per
+        day"},{"period":"2020-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.316407","unit":"million barrels per
+        day"},{"period":"2020-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.541101","unit":"million barrels per
+        day"},{"period":"2020-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.524085","unit":"million barrels per
+        day"},{"period":"2020-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.460286","unit":"million barrels per
+        day"},{"period":"2020-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.291546","unit":"million barrels per
+        day"},{"period":"2020-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.197988","unit":"million barrels per
+        day"},{"period":"2020-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"5.86576","unit":"million barrels per day"},{"period":"2020-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.779002","unit":"million barrels per
+        day"},{"period":"2020-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.050439","unit":"million barrels per
+        day"},{"period":"2020-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.723536","unit":"million barrels per
+        day"},{"period":"2019-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.971231","unit":"million barrels per
+        day"},{"period":"2019-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.209053","unit":"million barrels per
+        day"},{"period":"2019-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.308189","unit":"million barrels per
+        day"},{"period":"2019-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.197502","unit":"million barrels per
+        day"},{"period":"2019-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.833689","unit":"million barrels per
+        day"},{"period":"2019-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.532961","unit":"million barrels per
+        day"},{"period":"2019-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.703288","unit":"million barrels per
+        day"},{"period":"2019-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.497436","unit":"million barrels per
+        day"},{"period":"2019-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.410589","unit":"million barrels per
+        day"},{"period":"2019-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.184054","unit":"million barrels per
+        day"},{"period":"2019-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.071828","unit":"million barrels per
+        day"},{"period":"2019-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.778393","unit":"million barrels per
+        day"},{"period":"2018-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.178549","unit":"million barrels per
+        day"},{"period":"2018-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.290409","unit":"million barrels per
+        day"},{"period":"2018-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.293834","unit":"million barrels per
+        day"},{"period":"2018-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.152556","unit":"million barrels per
+        day"},{"period":"2018-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.778168","unit":"million barrels per
+        day"},{"period":"2018-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.640401","unit":"million barrels per
+        day"},{"period":"2018-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.797031","unit":"million barrels per
+        day"},{"period":"2018-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.515244","unit":"million barrels per
+        day"},{"period":"2018-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.205966","unit":"million barrels per
+        day"},{"period":"2018-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.464547","unit":"million barrels per
+        day"},{"period":"2018-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.796149","unit":"million barrels per
+        day"},{"period":"2018-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.787592","unit":"million barrels per
+        day"},{"period":"2017-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.246563","unit":"million barrels per
+        day"},{"period":"2017-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.11048","unit":"million barrels per day"},{"period":"2017-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.357127","unit":"million barrels per
+        day"},{"period":"2017-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.377567","unit":"million barrels per
+        day"},{"period":"2017-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.75171","unit":"million barrels per day"},{"period":"2017-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.595235","unit":"million barrels per
+        day"},{"period":"2017-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.772265","unit":"million barrels per
+        day"},{"period":"2017-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.549812","unit":"million barrels per
+        day"},{"period":"2017-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.295168","unit":"million barrels per
+        day"},{"period":"2017-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.32525","unit":"million barrels per day"},{"period":"2017-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.007759","unit":"million barrels per
+        day"},{"period":"2017-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.506696","unit":"million barrels per
+        day"},{"period":"2016-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.2832","unit":"million barrels per day"},{"period":"2016-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.23323","unit":"million barrels per day"},{"period":"2016-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.093321","unit":"million barrels per
+        day"},{"period":"2016-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.483732","unit":"million barrels per
+        day"},{"period":"2016-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.687105","unit":"million barrels per
+        day"},{"period":"2016-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.577596","unit":"million barrels per
+        day"},{"period":"2016-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.607931","unit":"million barrels per
+        day"},{"period":"2016-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.416888","unit":"million barrels per
+        day"},{"period":"2016-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.175542","unit":"million barrels per
+        day"},{"period":"2016-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.37315","unit":"million barrels per day"},{"period":"2016-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.221286","unit":"million barrels per
+        day"},{"period":"2016-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.653286","unit":"million barrels per
+        day"},{"period":"2015-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.147578","unit":"million barrels per
+        day"},{"period":"2015-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.111636","unit":"million barrels per
+        day"},{"period":"2015-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.244671","unit":"million barrels per
+        day"},{"period":"2015-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.288614","unit":"million barrels per
+        day"},{"period":"2015-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.460096","unit":"million barrels per
+        day"},{"period":"2015-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.470298","unit":"million barrels per
+        day"},{"period":"2015-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.417066","unit":"million barrels per
+        day"},{"period":"2015-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.262457","unit":"million barrels per
+        day"},{"period":"2015-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.189463","unit":"million barrels per
+        day"},{"period":"2015-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.056536","unit":"million barrels per
+        day"},{"period":"2015-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.828559","unit":"million barrels per
+        day"},{"period":"2015-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.639102","unit":"million barrels per
+        day"},{"period":"2014-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.940775","unit":"million barrels per
+        day"},{"period":"2014-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.921166","unit":"million barrels per
+        day"},{"period":"2014-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.147897","unit":"million barrels per
+        day"},{"period":"2014-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.821612","unit":"million barrels per
+        day"},{"period":"2014-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.311067","unit":"million barrels per
+        day"},{"period":"2014-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.248673","unit":"million barrels per
+        day"},{"period":"2014-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.039371","unit":"million barrels per
+        day"},{"period":"2014-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.022793","unit":"million barrels per
+        day"},{"period":"2014-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.955135","unit":"million barrels per
+        day"},{"period":"2014-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.696667","unit":"million barrels per
+        day"},{"period":"2014-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.646722","unit":"million barrels per
+        day"},{"period":"2014-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.27344","unit":"million barrels per day"},{"period":"2013-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.669507","unit":"million barrels per
+        day"},{"period":"2013-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.922807","unit":"million barrels per
+        day"},{"period":"2013-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.943888","unit":"million barrels per
+        day"},{"period":"2013-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.946454","unit":"million barrels per
+        day"},{"period":"2013-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.124234","unit":"million barrels per
+        day"},{"period":"2013-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.146136","unit":"million barrels per
+        day"},{"period":"2013-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.077529","unit":"million barrels per
+        day"},{"period":"2013-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.033425","unit":"million barrels per
+        day"},{"period":"2013-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.855377","unit":"million barrels per
+        day"},{"period":"2013-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.640551","unit":"million barrels per
+        day"},{"period":"2013-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.395372","unit":"million barrels per
+        day"},{"period":"2013-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.331101","unit":"million barrels per
+        day"},{"period":"2012-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.388858","unit":"million barrels per
+        day"},{"period":"2012-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.482589","unit":"million barrels per
+        day"},{"period":"2012-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.700738","unit":"million barrels per
+        day"},{"period":"2012-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.560848","unit":"million barrels per
+        day"},{"period":"2012-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.153831","unit":"million barrels per
+        day"},{"period":"2012-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.810291","unit":"million barrels per
+        day"},{"period":"2012-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.995539","unit":"million barrels per
+        day"},{"period":"2012-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.9792","unit":"million barrels per day"},{"period":"2012-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.74052","unit":"million barrels per day"},{"period":"2012-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.582069","unit":"million barrels per
+        day"},{"period":"2012-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.597774","unit":"million barrels per
+        day"},{"period":"2012-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.190408","unit":"million barrels per
+        day"},{"period":"2011-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.683383","unit":"million barrels per
+        day"},{"period":"2011-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.537129","unit":"million barrels per
+        day"},{"period":"2011-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.648585","unit":"million barrels per
+        day"},{"period":"2011-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.743889","unit":"million barrels per
+        day"},{"period":"2011-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.925297","unit":"million barrels per
+        day"},{"period":"2011-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.031229","unit":"million barrels per
+        day"},{"period":"2011-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.067045","unit":"million barrels per
+        day"},{"period":"2011-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.817262","unit":"million barrels per
+        day"},{"period":"2011-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.796261","unit":"million barrels per
+        day"},{"period":"2011-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.798641","unit":"million barrels per
+        day"},{"period":"2011-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.604038","unit":"million barrels per
+        day"},{"period":"2011-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.370154","unit":"million barrels per
+        day"},{"period":"2010-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.910825","unit":"million barrels per
+        day"},{"period":"2010-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.815932","unit":"million barrels per
+        day"},{"period":"2010-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.015622","unit":"million barrels per
+        day"},{"period":"2010-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.112282","unit":"million barrels per
+        day"},{"period":"2010-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.255415","unit":"million barrels per
+        day"},{"period":"2010-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.300885","unit":"million barrels per
+        day"},{"period":"2010-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.310981","unit":"million barrels per
+        day"},{"period":"2010-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.162493","unit":"million barrels per
+        day"},{"period":"2010-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.107813","unit":"million barrels per
+        day"},{"period":"2010-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.792837","unit":"million barrels per
+        day"},{"period":"2010-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.579372","unit":"million barrels per
+        day"},{"period":"2010-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.519543","unit":"million barrels per
+        day"},{"period":"2009-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.931148","unit":"million barrels per
+        day"},{"period":"2009-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.905626","unit":"million barrels per
+        day"},{"period":"2009-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.98635","unit":"million barrels per day"},{"period":"2009-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.910593","unit":"million barrels per
+        day"},{"period":"2009-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.294801","unit":"million barrels per
+        day"},{"period":"2009-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.260429","unit":"million barrels per
+        day"},{"period":"2009-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.179839","unit":"million barrels per
+        day"},{"period":"2009-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.083955","unit":"million barrels per
+        day"},{"period":"2009-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.029091","unit":"million barrels per
+        day"},{"period":"2009-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.902728","unit":"million barrels per
+        day"},{"period":"2009-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.83649","unit":"million barrels per day"},{"period":"2009-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.622943","unit":"million barrels per
+        day"},{"period":"2008-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.927364","unit":"million barrels per
+        day"},{"period":"2008-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.903825","unit":"million barrels per
+        day"},{"period":"2008-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.024233","unit":"million barrels per
+        day"},{"period":"2008-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.49721","unit":"million barrels per day"},{"period":"2008-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.134228","unit":"million barrels per
+        day"},{"period":"2008-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.149777","unit":"million barrels per
+        day"},{"period":"2008-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.109698","unit":"million barrels per
+        day"},{"period":"2008-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.251094","unit":"million barrels per
+        day"},{"period":"2008-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.112249","unit":"million barrels per
+        day"},{"period":"2008-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.066237","unit":"million barrels per
+        day"},{"period":"2008-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.86622","unit":"million barrels per day"},{"period":"2008-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.809863","unit":"million barrels per
+        day"},{"period":"2007-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.250863","unit":"million barrels per
+        day"},{"period":"2007-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.229182","unit":"million barrels per
+        day"},{"period":"2007-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.236075","unit":"million barrels per
+        day"},{"period":"2007-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.254235","unit":"million barrels per
+        day"},{"period":"2007-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.581956","unit":"million barrels per
+        day"},{"period":"2007-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.639593","unit":"million barrels per
+        day"},{"period":"2007-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.491349","unit":"million barrels per
+        day"},{"period":"2007-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.434305","unit":"million barrels per
+        day"},{"period":"2007-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.215428","unit":"million barrels per
+        day"},{"period":"2007-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.177611","unit":"million barrels per
+        day"},{"period":"2007-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.00641","unit":"million barrels per day"},{"period":"2007-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.885506","unit":"million barrels per
+        day"},{"period":"2006-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.338009","unit":"million barrels per
+        day"},{"period":"2006-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.244355","unit":"million barrels per
+        day"},{"period":"2006-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.266602","unit":"million barrels per
+        day"},{"period":"2006-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.235738","unit":"million barrels per
+        day"},{"period":"2006-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.563732","unit":"million barrels per
+        day"},{"period":"2006-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.607166","unit":"million barrels per
+        day"},{"period":"2006-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.478342","unit":"million barrels per
+        day"},{"period":"2006-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.307565","unit":"million barrels per
+        day"},{"period":"2006-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.153968","unit":"million barrels per
+        day"},{"period":"2006-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.054475","unit":"million barrels per
+        day"},{"period":"2006-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.911316","unit":"million barrels per
+        day"},{"period":"2006-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.83937","unit":"million barrels per day"},{"period":"2005-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.29551","unit":"million barrels per day"},{"period":"2005-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.115059","unit":"million barrels per
+        day"},{"period":"2005-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.036166","unit":"million barrels per
+        day"},{"period":"2005-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.915144","unit":"million barrels per
+        day"},{"period":"2005-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.537117","unit":"million barrels per
+        day"},{"period":"2005-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.533791","unit":"million barrels per
+        day"},{"period":"2005-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.372607","unit":"million barrels per
+        day"},{"period":"2005-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.278323","unit":"million barrels per
+        day"},{"period":"2005-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.127574","unit":"million barrels per
+        day"},{"period":"2005-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.993588","unit":"million barrels per
+        day"},{"period":"2005-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.861422","unit":"million barrels per
+        day"},{"period":"2005-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.812576","unit":"million barrels per
+        day"},{"period":"2004-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.206","unit":"million barrels per day"},{"period":"2004-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.056","unit":"million barrels per day"},{"period":"2004-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.098","unit":"million barrels per day"},{"period":"2004-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.015","unit":"million barrels per day"},{"period":"2004-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.327","unit":"million barrels per day"},{"period":"2004-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.357","unit":"million barrels per day"},{"period":"2004-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.322","unit":"million barrels per day"},{"period":"2004-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.181","unit":"million barrels per day"},{"period":"2004-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.127","unit":"million barrels per day"},{"period":"2004-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.023","unit":"million barrels per day"},{"period":"2004-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.837","unit":"million barrels per day"},{"period":"2004-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.706","unit":"million barrels per day"},{"period":"2003-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.012","unit":"million barrels per day"},{"period":"2003-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.946","unit":"million barrels per day"},{"period":"2003-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.107","unit":"million barrels per day"},{"period":"2003-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.926","unit":"million barrels per day"},{"period":"2003-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.411","unit":"million barrels per day"},{"period":"2003-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.192","unit":"million barrels per day"},{"period":"2003-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.169","unit":"million barrels per day"},{"period":"2003-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.042","unit":"million barrels per day"},{"period":"2003-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.838","unit":"million barrels per day"},{"period":"2003-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.6","unit":"million barrels per day"},{"period":"2003-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.525","unit":"million barrels per day"},{"period":"2003-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.414","unit":"million barrels per day"},{"period":"2002-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.893","unit":"million barrels per day"},{"period":"2002-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.83","unit":"million barrels per day"},{"period":"2002-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.814","unit":"million barrels per day"},{"period":"2002-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.685","unit":"million barrels per day"},{"period":"2002-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.313","unit":"million barrels per day"},{"period":"2002-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.142","unit":"million barrels per day"},{"period":"2002-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.141","unit":"million barrels per day"},{"period":"2002-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.079","unit":"million barrels per day"},{"period":"2002-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.765","unit":"million barrels per day"},{"period":"2002-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.654","unit":"million barrels per day"},{"period":"2002-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.607","unit":"million barrels per day"},{"period":"2002-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.227","unit":"million barrels per day"},{"period":"2001-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.586","unit":"million barrels per day"},{"period":"2001-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.677","unit":"million barrels per day"},{"period":"2001-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.655","unit":"million barrels per day"},{"period":"2001-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.556","unit":"million barrels per day"},{"period":"2001-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.954","unit":"million barrels per day"},{"period":"2001-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"9.022","unit":"million barrels per day"},{"period":"2001-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.69","unit":"million barrels per day"},{"period":"2001-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.706","unit":"million barrels per day"},{"period":"2001-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.576","unit":"million barrels per day"},{"period":"2001-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.531","unit":"million barrels per day"},{"period":"2001-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.233","unit":"million barrels per day"},{"period":"2001-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.099","unit":"million barrels per day"},{"period":"2000-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.671","unit":"million barrels per day"},{"period":"2000-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.384","unit":"million barrels per day"},{"period":"2000-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.417","unit":"million barrels per day"},{"period":"2000-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.517","unit":"million barrels per day"},{"period":"2000-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.92","unit":"million barrels per day"},{"period":"2000-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.642","unit":"million barrels per day"},{"period":"2000-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.824","unit":"million barrels per day"},{"period":"2000-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.661","unit":"million barrels per day"},{"period":"2000-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.374","unit":"million barrels per day"},{"period":"2000-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.305","unit":"million barrels per day"},{"period":"2000-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.29","unit":"million barrels per day"},{"period":"2000-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.653","unit":"million barrels per day"},{"period":"1999-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.86","unit":"million barrels per day"},{"period":"1999-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.24","unit":"million barrels per day"},{"period":"1999-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.541","unit":"million barrels per day"},{"period":"1999-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.306","unit":"million barrels per day"},{"period":"1999-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.58","unit":"million barrels per day"},{"period":"1999-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.941","unit":"million barrels per day"},{"period":"1999-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.886","unit":"million barrels per day"},{"period":"1999-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.42","unit":"million barrels per day"},{"period":"1999-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.506","unit":"million barrels per day"},{"period":"1999-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.127","unit":"million barrels per day"},{"period":"1999-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.031","unit":"million barrels per day"},{"period":"1999-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.701","unit":"million barrels per day"},{"period":"1998-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.451","unit":"million barrels per day"},{"period":"1998-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.167","unit":"million barrels per day"},{"period":"1998-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.378","unit":"million barrels per day"},{"period":"1998-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.31","unit":"million barrels per day"},{"period":"1998-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.568","unit":"million barrels per day"},{"period":"1998-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.681","unit":"million barrels per day"},{"period":"1998-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.52","unit":"million barrels per day"},{"period":"1998-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.279","unit":"million barrels per day"},{"period":"1998-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.313","unit":"million barrels per day"},{"period":"1998-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.003","unit":"million barrels per day"},{"period":"1998-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.711","unit":"million barrels per day"},{"period":"1998-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.617","unit":"million barrels per day"},{"period":"1997-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.065","unit":"million barrels per day"},{"period":"1997-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.965","unit":"million barrels per day"},{"period":"1997-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.141","unit":"million barrels per day"},{"period":"1997-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.022","unit":"million barrels per day"},{"period":"1997-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.234","unit":"million barrels per day"},{"period":"1997-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.496","unit":"million barrels per day"},{"period":"1997-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.287","unit":"million barrels per day"},{"period":"1997-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.139","unit":"million barrels per day"},{"period":"1997-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.063","unit":"million barrels per day"},{"period":"1997-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.796","unit":"million barrels per day"},{"period":"1997-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.667","unit":"million barrels per day"},{"period":"1997-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.301","unit":"million barrels per day"},{"period":"1996-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.795","unit":"million barrels per day"},{"period":"1996-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.914","unit":"million barrels per day"},{"period":"1996-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.093","unit":"million barrels per day"},{"period":"1996-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.662","unit":"million barrels per day"},{"period":"1996-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.344","unit":"million barrels per day"},{"period":"1996-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.165","unit":"million barrels per day"},{"period":"1996-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.088","unit":"million barrels per day"},{"period":"1996-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.07","unit":"million barrels per day"},{"period":"1996-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.874","unit":"million barrels per day"},{"period":"1996-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.792","unit":"million barrels per day"},{"period":"1996-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.6","unit":"million barrels per day"},{"period":"1996-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.272","unit":"million barrels per day"},{"period":"1995-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.741","unit":"million barrels per day"},{"period":"1995-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.867","unit":"million barrels per day"},{"period":"1995-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.781","unit":"million barrels per day"},{"period":"1995-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.786","unit":"million barrels per day"},{"period":"1995-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.188","unit":"million barrels per day"},{"period":"1995-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.888","unit":"million barrels per day"},{"period":"1995-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"8.22","unit":"million barrels per day"},{"period":"1995-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.893","unit":"million barrels per day"},{"period":"1995-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.651","unit":"million barrels per day"},{"period":"1995-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.787","unit":"million barrels per day"},{"period":"1995-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.481","unit":"million barrels per day"},{"period":"1995-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.163","unit":"million barrels per day"},{"period":"1994-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.924","unit":"million barrels per day"},{"period":"1994-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.464","unit":"million barrels per day"},{"period":"1994-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.548","unit":"million barrels per day"},{"period":"1994-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.615","unit":"million barrels per day"},{"period":"1994-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.974","unit":"million barrels per day"},{"period":"1994-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.884","unit":"million barrels per day"},{"period":"1994-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.923","unit":"million barrels per day"},{"period":"1994-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.645","unit":"million barrels per day"},{"period":"1994-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.563","unit":"million barrels per day"},{"period":"1994-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.396","unit":"million barrels per day"},{"period":"1994-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.275","unit":"million barrels per day"},{"period":"1994-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.98","unit":"million barrels per day"},{"period":"1993-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.662","unit":"million barrels per day"},{"period":"1993-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.532","unit":"million barrels per day"},{"period":"1993-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.382","unit":"million barrels per day"},{"period":"1993-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.607","unit":"million barrels per day"},{"period":"1993-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.864","unit":"million barrels per day"},{"period":"1993-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.784","unit":"million barrels per day"},{"period":"1993-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.7","unit":"million barrels per day"},{"period":"1993-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.586","unit":"million barrels per day"},{"period":"1993-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.435","unit":"million barrels per day"},{"period":"1993-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.39","unit":"million barrels per day"},{"period":"1993-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.112","unit":"million barrels per day"},{"period":"1993-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.639","unit":"million barrels per day"},{"period":"1992-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.462","unit":"million barrels per day"},{"period":"1992-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.17","unit":"million barrels per day"},{"period":"1992-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.324","unit":"million barrels per day"},{"period":"1992-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.387","unit":"million barrels per day"},{"period":"1992-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.471","unit":"million barrels per day"},{"period":"1992-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.713","unit":"million barrels per day"},{"period":"1992-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.47","unit":"million barrels per day"},{"period":"1992-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.365","unit":"million barrels per day"},{"period":"1992-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.287","unit":"million barrels per day"},{"period":"1992-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.196","unit":"million barrels per day"},{"period":"1992-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.956","unit":"million barrels per day"},{"period":"1992-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.861","unit":"million barrels per day"},{"period":"1991-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.212","unit":"million barrels per day"},{"period":"1991-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.046","unit":"million barrels per day"},{"period":"1991-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.268","unit":"million barrels per day"},{"period":"1991-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.076","unit":"million barrels per day"},{"period":"1991-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.476","unit":"million barrels per day"},{"period":"1991-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.569","unit":"million barrels per day"},{"period":"1991-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.435","unit":"million barrels per day"},{"period":"1991-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.439","unit":"million barrels per day"},{"period":"1991-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.139","unit":"million barrels per day"},{"period":"1991-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.968","unit":"million barrels per day"},{"period":"1991-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.811","unit":"million barrels per day"},{"period":"1991-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.616","unit":"million barrels per day"},{"period":"1990-12","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.943","unit":"million barrels per day"},{"period":"1990-11","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.137","unit":"million barrels per day"},{"period":"1990-10","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.161","unit":"million barrels per day"},{"period":"1990-09","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.906","unit":"million barrels per day"},{"period":"1990-08","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.857","unit":"million barrels per day"},{"period":"1990-07","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.579","unit":"million barrels per day"},{"period":"1990-06","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.646","unit":"million barrels per day"},{"period":"1990-05","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.462","unit":"million barrels per day"},{"period":"1990-04","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.178","unit":"million barrels per day"},{"period":"1990-03","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.414","unit":"million barrels per day"},{"period":"1990-02","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"7.206","unit":"million barrels per day"},{"period":"1990-01","seriesId":"MGTCPUSX","seriesDescription":"Motor
+        Gasoline Product Supplied","value":"6.656","unit":"million barrels per day"}],"description":"Monthly
+        short term (18 month) projections using STEO model.  \r\n        Report and
+        interactive projection data browser:  STEO (www.eia.gov\/steo\/)"},"request":{"command":"\/v2\/steo\/data\/","params":{"frequency":"monthly","data":["value"],"facets":{"seriesId":["MGTCPUSX"]},"sort":[{"column":"period","direction":"desc"}],"offset":"0","length":"5000"}},"apiVersion":"2.1.14","ExcelAddInVersion":"2.1.0"}'
+    headers:
+      Access-Control-Allow-Headers:
+      - Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Params
+      Access-Control-Allow-Methods:
+      - GET,POST,PATCH,PUT,DELETE,OPTIONS
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '5'
+      Alt-Svc:
+      - h3=":443"; ma=93600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '4031'
+      Content-Type:
+      - application/json
+      Date:
+      - Sat, 10 Oct 2026 17:30:21 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      - Accept-Encoding
+      Via:
+      - https/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])
+      X-Api-Umbrella-Request-Id:
+      - d14reouhbmpsd54ftjh0
+      X-Cache:
+      - MISS
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Vcap-Request-Id:
+      - 87c97d01-92ba-45c9-7dd9-03b26641560f
+    status:
+      code: 200
+      message: OK
+version: 1

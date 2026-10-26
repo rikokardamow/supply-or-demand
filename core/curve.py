@@ -262,6 +262,33 @@ def curve_regime(
     )
 
 
+def determined_regime_codes(regime: pd.DataFrame, s12: pd.Series) -> pd.Series:
+    """`REGIME_CODES` values for the rows whose state `curve_regime`'s inputs actually
+    determine, NaN for the rest.
+
+    `curve_regime` classifies with `np.select(..., default="flat")`. Each of the six named
+    states comes from a condition over `s12`/`cv`/`s1_12`, and a comparison against NaN is
+    False, so a named state can only fire on inputs that are really there. The default
+    cannot: a row reaches `"flat"` either on the genuine `s12 == 0` knife edge the state
+    was added for, or because nothing could be evaluated at all -- `s12` absent, or `cv`
+    absent on a panel with fewer than three ranks. The second kind is not a flat curve; it
+    is an unknown one, and reporting it as code 6.0 states a definite market structure on a
+    date with no curve to measure. It is also invisible to every NaN guard downstream,
+    because 6.0 is an ordinary number.
+
+    Separate from `curve_regime` rather than folded into it: which state a classifier
+    returns is its own business, and `regime["state"]` stays exactly as the spec defines
+    it. Whether a row is fit to *publish* is the caller's question -- and every caller asks
+    it, which is why this lives here beside the classifier rather than in any one of them.
+    `pipelines/derived/curve.py` uses it to decide what reaches the lake;
+    `apps/dashboard/pages/18_curve.py` uses it to decide what reaches the ribbon. They must
+    agree: a page painting a state the lake withholds, under a caption citing that same
+    lake series, is the worse half of the two."""
+    codes = regime["state"].map(REGIME_CODES).astype(float)
+    determined = regime["state"].ne("flat") | s12.eq(0.0)
+    return codes.where(determined)
+
+
 def transition_matrix(states: pd.Series) -> pd.DataFrame:
     """Row-normalised state[t] -> state[t+1] transition counts. Rows sum to 1 by
     construction; a state observed with zero outgoing transitions in the sample gets an
