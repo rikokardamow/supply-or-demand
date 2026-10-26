@@ -1,0 +1,19 @@
+line,year,yoy_pct,author,as_of,note
+emissions_combustion,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_industry,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_aviation,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_maritime,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+free_allocation,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+auctioned,2025,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_combustion,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_industry,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_aviation,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_maritime,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+free_allocation,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+auctioned,2026,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_combustion,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_industry,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_aviation,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+emissions_maritime,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+free_allocation,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
+auctioned,2027,0,persistence baseline (default),2026-10-26,Same as the previous year; a benchmark to replace with your own view
