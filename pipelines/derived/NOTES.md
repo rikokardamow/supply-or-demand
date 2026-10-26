@@ -179,3 +179,11 @@ linger in the lake. Routes are net imports. Intra-EU trade is excluded. Months w
 detail does not add up to the total are left out. Blank EU balance cells are rebuilt from
 member states only at 99% coverage, and flagged in `derived.eu_gas.member_sum.*`. Not
 scheduled. Detail in `eu_gas/README.md`.
+
+## `uk_gas_balance.py` — UK gas balance and the call on LNG (2026-10-26)
+
+Inputs: `desnz.gas.*` (`pipelines/desnz_gas`), the committed `uk_gas/routes.csv` and
+`uk_gas/assumptions.csv`, and `derived.eu_gas.route.uk` for the mirror check (skipped if the EU
+model has not run). Arithmetic is `core/uk_gas_balance.py`, and the shared projection is
+`core/gas_projection.py`. Read through `eu_gas_balance.latest_run`. The projection solves for
+LNG as one total; LNG routes are never projected one by one. Detail in `uk_gas/README.md`.

@@ -51,6 +51,7 @@ PAGES: dict[str, tuple[PageSpec, ...]] = {
         PageSpec("02_gas_storage.py", "Gas Storage", "gas_storage"),
         PageSpec("03_eu_gas_flows.py", "EU Gas Flows", "eu_gas_flows"),
         PageSpec("25_eu_gas_balance.py", "EU Gas Balance", "eu_gas_balance"),
+        PageSpec("26_uk_gas_balance.py", "UK Gas Balance", "uk_gas_balance"),
         PageSpec("04_eu_power.py", "EU Power", "eu_power"),
         PageSpec("05_us_gas_power.py", "US Gas & Power", "us_gas_power"),
         PageSpec("06_supply.py", "Supply", "supply"),

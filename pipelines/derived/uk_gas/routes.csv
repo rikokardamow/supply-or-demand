@@ -1,0 +1,9 @@
+type,country,route,note
+pipeline,norway,norway_pipeline,"Langeled, CATS, FLAGS, Vesterled, SAGE; less small direct exports to Norway"
+pipeline,belgium,continent_pipeline,Interconnector UK (IUK) to Zeebrugge; flows both ways
+pipeline,netherlands,continent_pipeline,BBL to Balgzand (both ways since 2019) and small direct exports
+pipeline,republic_of_ireland,ireland_exports,Moffat interconnectors; exports only
+pipeline,isle_of_man,isle_of_man_exports,Moffat; exports only
+lng,usa,lng_us,
+lng,qatar,lng_qatar,
+lng,*,lng_other,"Every other LNG origin, including re-imports from EU terminals and reload exports"

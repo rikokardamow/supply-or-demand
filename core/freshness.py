@@ -49,6 +49,8 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     "jodi": 35,
     # Eurostat publishes monthly gas about two months after the month; pulled by hand monthly.
     "eurostat_gas": 35,
+    # DESNZ Energy Trends section 4, released monthly; pulled by hand.
+    "desnz": 35,
     "coal": 35,
 }
 

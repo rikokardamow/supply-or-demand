@@ -24,6 +24,7 @@ import plotly.graph_objects as go
 import streamlit as st
 from components.section import empty_state, kpi_row, page_header, section, source_note
 from core import eu_gas_balance as egb
+from core import gas_projection as gp
 from core.design import MA_MID, MA_SHORT
 from core.storage import read_ts_long
 from core.theme import GREY, LIGHT_BLUE, NAVY, ORANGE, RED
@@ -148,7 +149,7 @@ with section("Net imports by route, monthly"):
     )
 
 with section("Annual balance, bcm"):
-    annual = egb.calendar_year(
+    annual = gp.calendar_year(
         pd.concat([routes, balance[["production", "consumption", "stock_build"]]], axis=1)
     ).loc[2019:]
     names = {

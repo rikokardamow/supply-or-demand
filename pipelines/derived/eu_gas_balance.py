@@ -28,6 +28,7 @@ from pathlib import Path
 
 import pandas as pd
 from core import eu_gas_balance as egb
+from core import gas_projection as gp
 from core.failures import fails_loudly, record_failure
 from core.storage import read_ts_long, write_ts_long
 
@@ -171,7 +172,7 @@ def build_rows(
     ]
 
     history = pd.concat([routes, balance[list(PROJECTED_LINES)]], axis=1, sort=True).dropna()
-    projected = egb.project(history, assumptions, PROJECTION_END)
+    projected = gp.project(history, assumptions, PROJECTION_END)
     if not projected.empty and projected.notna().any().any():
         frames.append(
             _rows(projected[routes.columns] / 1000, "route", "projected", "bcm", ingested_at)
@@ -190,7 +191,7 @@ def build_rows(
         start = gie_storage_twh.dropna().sort_index()
         start = start[start.index < build_twh.index.min()]
         if not start.empty:
-            level = egb.storage_path(float(start.iloc[-1]), build_twh)
+            level = gp.storage_path(float(start.iloc[-1]), build_twh)
             storage = pd.DataFrame({"level": level})
             if gie_capacity_twh:
                 storage["fill_pct"] = level / gie_capacity_twh * 100
