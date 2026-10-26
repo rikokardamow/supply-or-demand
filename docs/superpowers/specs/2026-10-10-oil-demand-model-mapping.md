@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-10
 **Status:** analysis complete; routes confirmed live 2026-10-10 (see that section); plan in `docs/superpowers/plans/2026-10-10-oil-demand-elasticity.md`
-**Source workbook:** `~/Desktop/skill-pdfs/oil_demand.xlsx` (Bloomberg Intelligence, 12 sheets)
+**Source workbook:** `data/manual/bloomberg/oil_demand.xlsx` (was `~/Desktop/skill-pdfs/`) (Bloomberg Intelligence, 12 sheets)
 **Related:** `specs/06_opec-supply.md`, `specs/33_frontend-nextjs.md` (33.01 is the Hormuz screen)
 
 Read-only analysis. The workbook was not modified and must never be committed: it is
@@ -276,3 +276,70 @@ means either carrying them as explicit, dated, editable assumptions with an auth
 dropping them and accepting a different balance. Silently inheriting BI's overlays as if they
 were observations would put someone else's judgement into this repo wearing the costume of
 measured data — which is the failure mode `00_TRADING_CONVENTIONS.md` keeps naming.
+
+## Port compared with the workbook, 2026-10-26
+
+Read against the workbook's `OLS.*` and `For_OLS` sheets. Recorded in structure and direction
+only: no coefficient, R², p-value, observation count or panel value from the workbook appears
+here, and nothing here is a ratio or difference from which one could be recovered given the
+repo's own figures, which are public on the Oil Demand page.
+
+### What the workbook actually regressed
+
+- **USA:** year-on-year change in US oil consumption in mb/d, regressed on the year-on-year
+  change in US GDP in US$bn. Level change on level change. Not an elasticity.
+- **China, Europe, Rest of World:** year-on-year growth on both sides, carried as fractions
+  rather than percentages. The slope is unit-free, so it is the same quantity as the repo's
+  slope and can be compared directly.
+- **Europe is OECD Europe**, not the euro area. Its regressor is Europe GDP growth from
+  Bloomberg Economics.
+- **Rest of World** is regressed on global GDP growth. The repo does not fit it (see the plan's
+  out-of-scope list).
+- **The panel** runs from 1Q 2013 levels, so the first year-on-year observation is 2014, and the
+  last observed quarter is 4Q 2025. It **contains 2020 and 2021**. The workbook has no
+  ex-pandemic fit.
+- **Every intercept is negative**: demand growth below zero at zero GDP growth, the
+  efficiency drift. The repo's specification also carries an intercept, so the two are alike on
+  this point.
+
+### Direction and rank, block by block
+
+- **USA: not comparable at all.** The workbook's slope is in mb/d per US$bn, the repo's is
+  percentage points per percentage point. No row of one may sit beside the other. On fit
+  quality alone, both full-panel fits explain most of the variance. The repo's ex-pandemic R²
+  collapses, which says the workbook's US
+  fit is also likely carried by 2020–2021. The workbook cannot show this, because it has no
+  ex-pandemic run.
+- **China: same sign, smaller slope here, and a different verdict.** The workbook's China slope
+  is positive and statistically significant. The repo's full-panel and ex-pandemic slopes are
+  both positive and both smaller than the workbook's, and neither is significant at 5 %. Both
+  sources rank China the weakest block on R², and the repo's R² is far below the workbook's.
+- **Europe / euro area: same sign, similar size, lower fit here.** The repo's slopes in both
+  panels are of the same order as the workbook's. The repo's R² is lower than the workbook's in
+  both panels. Different geography (see below), so read this as the same
+  relationship measured on a neighbouring basket, not as a replication.
+
+### Why differences are expected, largest first
+
+1. **Specification.** For the USA the two are different regressions. For China and Europe both
+   are year-on-year growth on growth, so specification is *not* the cause there.
+2. **Demand source.** The repo uses JODI's secondary table, total products, which is national
+   reporting. The workbook uses EIA/IEA-style consumption estimates in mb/d. China's JODI demand
+   is noisier quarter to quarter than an agency estimate smoothed for stock changes, and noise in
+   the dependent variable lowers R². That alone could explain much of China's lost significance.
+3. **GDP source.** The repo uses OECD Quarterly National Accounts (seasonally adjusted,
+   chain-linked volume). The workbook uses Bloomberg Economics series in local currency (CNY bn,
+   EUR mn).
+4. **Basket.** OECD Europe there, euro area ex Malta here. OECD Europe adds the UK, Norway,
+   Switzerland and Türkiye, among others. Türkiye's demand growth is fast and only loosely tied to
+   euro-area GDP, which would pull the workbook's Europe slope away from a pure euro-area one.
+5. **Panel end.** The repo's panel runs past 4Q 2025 into 2026, adding a few post-pandemic
+   quarters. A minor effect next to the four above.
+
+### Verdict
+
+The port reproduces the workbook's ordering for the two comparable blocks: Europe is a strong,
+significant relationship and China is the weak one. It does **not** reproduce China's
+significance. The repo's reading is that, on public national data, the China elasticity cannot
+be distinguished from zero. The page states this, in words, beside the number. The USA block
+is a different model in each source and is never compared as a figure.
