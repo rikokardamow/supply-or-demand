@@ -60,10 +60,10 @@ class EIAClient:
                 "offset": offset,
                 "length": PAGE_SIZE,
             }
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -110,10 +110,10 @@ class EIAClient:
                 "offset": offset,
                 "length": PAGE_SIZE,
             }
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -223,10 +223,10 @@ class EIAClient:
             if end is not None:
                 params["end"] = end
 
-            response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
             try:
+                response = requests.get(f"{BASE_URL}/{route}/data/", params=params, timeout=30)
                 response.raise_for_status()
-            except requests.HTTPError as exc:
+            except requests.RequestException as exc:
                 raise_sanitised(exc)
             page = response.json()["response"]["data"]
             rows.extend(page)
@@ -236,6 +236,55 @@ class EIAClient:
             offset += PAGE_SIZE
 
         return rows
+
+    def _fetch_steo_rows(self, codes: list[str], frequency: str) -> list[dict[str, Any]]:
+        """STEO's facet is `seriesId`, not `series` -- confirmed live 2026-10-10. Its rows
+        carry `seriesId`/`unit`/`seriesDescription` and no `area-name`, so `_fetch_rows`
+        cannot serve this route."""
+        rows: list[dict[str, Any]] = []
+        offset = 0
+        while True:
+            params: dict[str, Any] = {
+                "api_key": self._api_key,
+                "frequency": frequency,
+                "data[0]": "value",
+                "facets[seriesId][]": codes,
+                "sort[0][column]": "period",
+                "sort[0][direction]": "desc",
+                "offset": offset,
+                "length": PAGE_SIZE,
+            }
+            try:
+                response = requests.get(f"{BASE_URL}/steo/data/", params=params, timeout=30)
+                response.raise_for_status()
+            except requests.RequestException as exc:
+                raise_sanitised(exc)
+            page = response.json()["response"]["data"]
+            rows.extend(page)
+            if len(page) < PAGE_SIZE:
+                break
+            offset += PAGE_SIZE
+        return rows
+
+    def get_steo_series(self, codes: list[str], frequency: str) -> pd.DataFrame:
+        """`source="eia_steo"`, never plain `"eia"`: STEO is an 18-month model outlook and the
+        source field is the only place a reader learns that before looking at the dates.
+        `geo` is hardcoded "US" because STEO returns no area field at all -- every code in
+        STEO_SERIES is a US national aggregate."""
+        rows = self._drop_null_values(self._fetch_steo_rows(codes, frequency), "steo", "value")
+        pulled_at = datetime.now(UTC)
+        return pd.DataFrame(
+            {
+                "series_id": [row["seriesId"] for row in rows],
+                "source": "eia_steo",
+                "ts": pd.to_datetime([row["period"] for row in rows]),
+                "value": [float(row["value"]) for row in rows],
+                "unit": [row["unit"] for row in rows],
+                "geo": "US",
+                "freq": frequency,
+                "revision_date": pulled_at,
+            }
+        )
 
     def _drop_null_values(
         self, rows: list[dict[str, Any]], route: str, data_key: str
@@ -326,10 +375,10 @@ class EIAClient:
         """List every series id/name available under a route, via its facet endpoint.
         Use this to discover series codes instead of guessing them."""
         params = {"api_key": self._api_key}
-        response = requests.get(f"{BASE_URL}/{route}/facet/series", params=params, timeout=30)
         try:
+            response = requests.get(f"{BASE_URL}/{route}/facet/series", params=params, timeout=30)
             response.raise_for_status()
-        except requests.HTTPError as exc:
+        except requests.RequestException as exc:
             raise_sanitised(exc)
         result: list[dict[str, str]] = response.json()["response"]["facets"]
         return result

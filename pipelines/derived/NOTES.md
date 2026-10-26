@@ -90,6 +90,61 @@ so `apps/dashboard/pages/18_curve.py` could import and call it directly, matchin
 `pipelines/eia/transforms.py`'s own "page imports a pipeline's transform helper"
 precedent instead of re-implementing the same pivot logic a second time.
 
+## `curve.py` — three rulings from the IBKR-capture session (2026-10-10)
+
+Each of these was written the obvious way first and broken by the real lake or the real
+page. The obvious version is recorded beside the ruling, because it is what the next reader
+will reach for.
+
+### Which metric a contract contributes: row count, ties to settle (2026-10-10)
+
+`contract_panel_for` reads both `fut.<root>.<contract>.settle` and `.close` and picks ONE
+per contract — whichever has more rows, ties going to settle. Per contract, never per row: a
+settlement and a last trade are different quantities, and blending them inside one column
+leaves every spread downstream measuring something nobody chose.
+
+The rule that reads more naturally — "settle if the contract has any settle rows at all" —
+was written first and is wrong against this lake. `lco` holds a settle row for all ~89
+contracts but exactly one each (2026-09-04, the Barchart reconstruction, `source="manual"`),
+and IBKR's `contract_code_from_month` emits the identical contract-code format. "Any settle
+rows" therefore resolves every `lco` contract to that single stale print and silently
+discards the entire IBKR daily close history, pinning the curve to one date forever. Row
+count is what distinguishes a real series from a single carried row.
+
+`_METRIC_SUFFIXES` is both the list of suffixes read and the tie-break order, and the
+selection is an `idxmax` over the per-contract row counts reindexed to that tuple — so
+adding or removing a metric needs no second edit, and the earlier hardcoded
+`row["settle"] >= row["close"]` can no longer drift from the docstring above it.
+
+### `valid_rank_window` uses the smallest expiry gap, not the median (2026-10-10)
+
+The median was tried first and is unsound for any panel that is not evenly spaced. A ladder
+that is monthly at the front and annual behind it — perfectly ordinary once a capture
+reaches far out, and the direction `cl`'s own real panel already leans, its gaps running
+min 28 / median 31 / max 63 days — has a median gap of roughly a year. That would open the
+window a year before the panel's earliest expiry and declare nearly twelve months of
+mislabelled `f01` rows trustworthy.
+
+The smallest observed gap is the tightest spacing the panel itself evidences, so it errs in
+the safe direction: the window can only be too narrow, never too wide, and a narrow window
+suppresses real rows rather than publishing wrong ones.
+
+### `curve_regime`'s "flat" is masked before anything publishes it (2026-10-10)
+
+`core.curve.curve_regime` classifies with `np.select(..., default="flat")`. A row reaches
+that default two ways: on the genuine `s12 == 0` knife edge the state exists for, or because
+nothing could be evaluated at all — `s12` absent, or `cv` absent on a panel with fewer than
+three ranks. The second kind is not a flat curve but an unknown one, and code 6.0 is an
+ordinary number that slips past every NaN guard downstream.
+
+`core.curve.determined_regime_codes` is the shared predicate: `state != "flat" or s12 == 0`.
+This package uses it to decide what reaches the lake, and `apps/dashboard/pages/18_curve.py`
+uses it to decide what reaches the ribbon. **Both callers, always.** Masking only on the
+write side was tried, and the page went on painting "flat" over dates the lake had correctly
+withheld, under a caption citing that same lake series — a worse failure than the one it
+fixed, because it looks authoritative. `curve_regime` itself is untouched: which state a
+classifier returns is its own business, and whether a row is fit to publish is the caller's.
+
 ## `cracks.py` — spot legs, because no futures legs exist (Spec 20 Session A)
 
 Confirmed live at the start of the session, not assumed: the lake holds **zero `fut.*`
@@ -168,3 +223,101 @@ Bai-Perron with one break finds 2005-03 (+23 months); Andrews sup-F finds 2004-0
 The 2004-05 crude run-up is a far larger level shift and dominates the search. Allowing two
 breaks surfaces 2003-01, three months from the paper's date — partial recovery obtained by
 relaxing the break count, not a clean replication. Recorded as a miss in the spec.
+
+## `hormuz.py` — a ported scenario, and an error found in its source (2026-10-10)
+
+Ports the `Hormuz Scenarios` sheet of a Bloomberg Intelligence supply-demand workbook. The
+mechanism is the workbook's own:
+
+    scenario = disrupted + (undisrupted - disrupted) * open_share * recovery_ceiling
+
+**Assumptions are split deliberately.** `pipelines/derived/hormuz/recovery_ceilings.csv`
+and `flow_share.csv` are committed -- they are the owner's scenario choices and belong in a
+diff. `data/manual/hormuz/baselines.csv` is the git-ignored drop, because the
+undisrupted/disrupted rates derive from licensed BI content. See that directory's README.
+
+**"Ramp factor" is a recovery ceiling, not a speed.** A producer whose ceiling is below 1
+permanently regains only that fraction of its lost rate, even at a fully reopened strait.
+Named `recovery_ceiling` for what the formula does rather than what the sheet calls it.
+
+**Where the licence line actually falls, and why it is not where it first looks.** The five
+per-producer ceilings in the tracked `recovery_ceilings.csv` do reproduce the workbook's
+ramp factors. They stay tracked: they are the active scenario choices, bounded scalars in
+[0, 1] that assert nothing about anyone's production, and a scenario whose levers are not
+in the diff cannot be reviewed or reproduced. The licensed quantities are the per-producer
+**rates** -- `undisrupted_mbd` and `disrupted_mbd` -- and those live only in
+`data/manual/hormuz/baselines.csv`.
+
+The consequence is a rule that is easy to miss and was missed once already: **never put a
+scenario output in a tracked file.** With the ceilings and flow shares tracked, every term
+of the formula is public except the two baselines, so two scenario figures for one producer
+at different shares invert to those baselines exactly. A table of published-against-correct
+1Q 2027 values is precisely such a pair, and the first scrub of this port left one in
+`pipelines/derived/hormuz/README.md` while deleting the baselines from the prose beside it.
+The structural findings -- which cell the sheet skips, how many cells matched -- carry the
+analysis without any figure at all.
+
+**A blank flow share is `None`, never `0.0`.** The source writes its pre-disruption quarter
+as `-`; read as zero that asserts a total closure, the inversion of its meaning. Quarters
+with no known share write no rows.
+
+**Real error in the source, found by porting it.** Checked against the workbook's own
+`Scenario` columns -- outputs, not inputs here. 30 of 35 cells match at 0.00e+00. All five
+mismatches sit in 1Q 2027: the sheet's formulas reference flow-share cells
+`$E$4,$F$4,$G$4,$G$4,$I$4,$J$4,$K$4`, skipping `$H$4`, so that quarter is computed with
+the previous quarter's reopening share against its own stated one for that quarter. Every
+Gulf producer is understated for 1Q 2027 as a result, and the error feeds
+`Surplus / (Deficit)` directly. This module uses each quarter's own share and therefore
+disagrees there deliberately.
+
+**Not registered in `infra/run_scheduled.py`.** A scenario changes when its assumptions
+change, not on a clock; a nightly rerun would rewrite identical rows and imply the numbers
+had been refreshed from a source. Run `python -m pipelines.derived.hormuz` by hand.
+
+Every series id carries `scenario` (`derived.hormuz.scenario.*`) so no reader mistakes
+conditional output for an observation. The Gulf total is NaN wherever any producer is
+unknown rather than summing around the gap.
+
+**A test lesson worth keeping.** The first version passed all its tests and failed on the
+first real run: `build_scenario_rows` took one directory for both readers while the real
+layout has two. The fixture had put every file in one tmp directory, so it encoded the
+wrong design and went green. The fixture now builds two directories, and a test asserts the
+baselines are not found beside the committed levers.
+
+## `rin.py` — implied RFS mandate from the STEO baseline (2026-10-10)
+
+Series id, fixed once: `derived.rin.mandate.<category>.<observed|projected>.<final|proposed>`,
+unit `billion RINs`, monthly. Both labels are in the id because a row must say what it rests on:
+
+- **observed / projected.** `projected` if EITHER demand input for the month is projected.
+- **final / proposed.** Read from the `status` of the EPA reference row, never hard-coded
+  (today every committed standard is `final`; a test exercises `proposed` with a synthetic frame).
+
+Rulings: observed beats projected where STEO's moving history boundary leaves a month under
+both labels (`prefer_observed`); the denominator is the `_P` pair from
+`RFS_DENOMINATOR_CODES`, never the headline `MGTCPUSX`/`DFTCPUS`; days per month are derived
+from each row's own period (leap Februaries included); a missing demand leg or missing
+standard writes no row (no data is not zero); an empty lake, or an input set yielding no row,
+fails loudly via `fails_loudly` and writes nothing. No volume-target comparison is made, so
+the `requirement`/`applicable` basis is not used here (use `applicable` if one is added).
+
+**Not registered in `infra/run_scheduled.py`**: it follows a manual STEO pull. Scenario-style
+rule from `hormuz.py` applies: no licensed workbook figure and no derived output in a tracked
+file; tests use synthetic demand only.
+
+**Twin rows across runs: read `derived.rin.mandate.*` through `resolve_mandate_twins`, never
+raw.** The id carries the observed/projected label and the final/proposed status, and the lake
+has no delete path, so after STEO's boundary moves (or a standard goes proposed to final) the
+old `...projected.final` row survives beside the new `...observed.final` one for the same month.
+`prefer_observed` protects only the STEO inputs. `resolve_mandate_twins(rows)` returns one row
+per (category, month): observed beats projected FIRST (so observed-proposed beats
+projected-final), then final beats proposed, then latest `revision_date`; it keeps the winner's
+`label` and `status` columns so a page can still say "projected" or "proposed". Both readers
+share `_best_per`. The STEO code-to-lake-id rule is `pipelines.eia.steo_series.lake_series_id`,
+used by `pull_steo` (writer) and this module (reader).
+
+**Checked against the licensed workbook 2026-10-26**: same arithmetic, same denominator
+quantity (the `_P` pair matches its gasoline + distillate − renewables within STEO revisions).
+The port is a little above the workbook in history because it omits the workbook's Alaska exclusion and its
+adjusted-to-actual factor. Both are deliberate omissions. It follows EPA's 1 April 2026 final rule
+where the workbook's SRE-reallocated 2025–27 standards differ. Detail in `rin/README.md`.
