@@ -54,6 +54,7 @@ PAGES: dict[str, tuple[PageSpec, ...]] = {
         PageSpec("06_supply.py", "Supply", "supply"),
         PageSpec("08_weather.py", "Weather", "weather"),
         PageSpec("19_fundamentals.py", "Fundamentals", "fundamentals"),
+        PageSpec("23_oil_demand.py", "Oil Demand", "oil_demand"),
     ),
     "Trading": (
         PageSpec("18_curve.py", "Curve", "curve"),
