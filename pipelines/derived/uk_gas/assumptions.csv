@@ -1,0 +1,17 @@
+line,year,yoy_pct,author,as_of,note
+production,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+demand,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+biomethane,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+stock_change,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+norway_pipeline,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+continent_pipeline,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+ireland_exports,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+isle_of_man_exports,2026,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+production,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+demand,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+biomethane,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+stock_change,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+norway_pipeline,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+continent_pipeline,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+ireland_exports,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
+isle_of_man_exports,2027,0,claude-code (persistence baseline),2026-10-26,Same month last year; a benchmark to replace with your own view
