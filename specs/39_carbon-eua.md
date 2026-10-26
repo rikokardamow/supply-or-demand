@@ -4,6 +4,13 @@
 IBKR). New source: EUA prices. Unblocks the dark/clean spread analytics Spec 14 dropped for
 want of carbon and coal.**
 
+## Status (2026-10-26)
+
+Session A, partly built: `pipelines/carbon` pulls EEX primary auctions (2020 onwards, `eex.eua.auction.*`
+including `cover_ratio`) and the Union Registry installation file. A separate EU ETS allowance
+balance (`pipelines/derived/eu_carbon.py`, page `27_eu_carbon.py`) is built on them. Still open:
+the IBKR EUA futures route, EEX terms of use, the API2 coal source, and Session B (switching price).
+
 ## Objective & alpha question
 
 Spec 04 noted "add EUA price when available"; Spec 14 dropped clean spark and dark spreads

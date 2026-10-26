@@ -51,6 +51,9 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     "eurostat_gas": 35,
     # DESNZ Energy Trends section 4, released monthly; pulled by hand.
     "desnz": 35,
+    # EEX auctions run most weekdays, pulled by hand; the registry file is annual.
+    "eex": 9,
+    "eu_registry": 400,
     "coal": 35,
 }
 
