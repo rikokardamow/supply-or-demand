@@ -46,6 +46,18 @@ HOME_TAG = "h2"  # 00_home.py uses page_header(), not st.title()
 # match, so _page_title's assert below fails loudly instead of silently passing.
 _TITLE_RE = re.compile(r'(page_header)\(\s*["\'](.+?)["\']')
 _TITLE_TAG = {"page_header": "h2"}
+_VIEW_RE = re.compile(r"from views\.sd import (\w+_view)")
+
+
+def _view_titles() -> dict[str, str]:
+    """views.sd.TITLES, read from source so collecting this file imports nothing heavy."""
+    source = (REPO_ROOT / "apps" / "dashboard" / "views" / "sd.py").read_text(encoding="utf-8")
+    block = re.search(r"TITLES: dict\[str, str\] = \{(.*?)\}", source, re.S)
+    assert block, "views/sd.py has no TITLES table"
+    return dict(re.findall(r'"(\w+_view)": "([^"]+)"', block.group(1)))
+
+
+_VIEW_TITLES = _view_titles()
 
 # Same shape as Streamlit's own PAGE_FILENAME_REGEX (streamlit/source_util.py) -- confirmed
 # live that Streamlit's sidebar nav order is NOT a lexical filename sort (it sorts by
@@ -58,8 +70,14 @@ _SLUG_RE = re.compile(r"[0-9]*[_ -]*(.*)\.py")
 
 def _page_title(page_file: Path) -> tuple[str, str]:
     """The page's title text and the heading tag it actually renders at."""
-    match = _TITLE_RE.search(page_file.read_text(encoding="utf-8"))
-    assert match, f"{page_file.name} has no page_header(...) call to check against"
+    source = page_file.read_text(encoding="utf-8")
+    match = _TITLE_RE.search(source)
+    if match is None:
+        # A thin page that renders a shared view (apps/dashboard/views/sd.py): its title lives
+        # in views.sd.TITLES and is painted by the same page_header(), as <h2>.
+        view = _VIEW_RE.search(source)
+        assert view, f"{page_file.name} has no page_header(...) call to check against"
+        return _VIEW_TITLES[view.group(1)], "h2"
     call, title = match.groups()
     return title, _TITLE_TAG[call]
 

@@ -71,6 +71,9 @@ dependencies = [
     # Confirmed with the user before adding (root NOTES.md rule 7).
     "yfinance>=1.7",
     "python-pptx>=1.0",
+    # Plotly Dash, for apps/dash_app: the supply-demand model pages as a Dash app beside the
+    # Streamlit one, both rendering apps/dashboard/views/sd.py. Requested by the user.
+    "dash>=2.18",
 ]
 
 [project.optional-dependencies]
