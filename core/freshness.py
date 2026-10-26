@@ -47,6 +47,9 @@ EXPECTED_CADENCE_DAYS: dict[str, int] = {
     # Monthly group.
     "opec_momr": 35,
     "jodi": 35,
+    # Quarterly national accounts, pulled by hand. 120 days is one quarter plus the
+    # OECD's own publication lag; tighter would flag a healthy series as stale.
+    "oecd": 120,
     "coal": 35,
 }
 

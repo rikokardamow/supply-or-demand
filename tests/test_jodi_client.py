@@ -83,3 +83,36 @@ def test_download_annual_csv_matches_real_schema_columns() -> None:
         "REF_AREA", "TIME_PERIOD", "ENERGY_PRODUCT", "FLOW_BREAKDOWN",
         "UNIT_MEASURE", "OBS_VALUE", "ASSESSMENT_CODE",
     ]  # fmt: skip
+
+
+def test_download_annual_csv_reads_the_secondary_table_under_its_own_url_and_cache(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Same filename split as the primary table, different path segment -- confirmed live
+    2026-10-10. The cache name must differ too, or a secondary file would be served to a
+    primary caller for the same year."""
+    calls: list[str] = []
+
+    def fake_get(url: str, timeout: int) -> _FakeResponse:
+        calls.append(url)
+        return _FakeResponse(_SAMPLE_CSV)
+
+    monkeypatch.setattr(client.requests, "get", fake_get)
+
+    client.download_annual_csv(2025, is_current_year=False, table="secondary")
+    client.download_annual_csv(2026, is_current_year=True, table="secondary")
+    client.download_annual_csv(2025, is_current_year=False)
+
+    base = "https://www.jodidata.org/_resources/files/downloads/oil-data/annual-csv"
+    assert calls == [
+        f"{base}/secondary/2025.csv",
+        f"{base}/secondary/secondaryyear2026.csv",
+        f"{base}/primary/2025.csv",
+    ]
+    assert (tmp_path / "jodi-secondary-2025.csv").exists()
+    assert (tmp_path / "jodi-primary-2025.csv").exists()
+
+
+def test_download_annual_csv_rejects_an_unknown_table() -> None:
+    with pytest.raises(ValueError, match="tertiary"):
+        client.download_annual_csv(2025, is_current_year=False, table="tertiary")

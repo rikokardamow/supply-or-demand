@@ -21,10 +21,21 @@ env/
 # uv
 .uv/
 
-# Environment
+# Environment. `.env.*` catches .env.production / .env.prod / anything future; the
+# negation keeps the committed templates tracked.
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.*.example
+
+# Credential material, by shape rather than by name -- nothing of this kind is tracked
+# today and nothing of this kind should become tracked by accident.
+secrets.json
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
 
 # IDE
 .vscode/
@@ -46,12 +57,28 @@ manual_settlements/*.csv
 # `manual_settlements/` rule above never matched the real path the code uses
 # (`pipelines/futures/client.py::MANUAL_FUTURES_DIR` is `data/manual/futures`), so
 # nothing under data/manual/ was actually ignored.
-data/manual/**/*.csv
-!data/manual/**/.gitkeep
+# Widened 2026-10-10 from `data/manual/**/*.csv`: only CSV was ignored, so an operator
+# Excel workbook dropped here was committable. These drops are licensed vendor data
+# (Platts/Argus/Aramco per pipelines/manual_physical/NOTES.md) plus the user's own
+# models -- none of it may reach a remote, whatever its extension.
+data/manual/**
+!data/manual/**/
+
+# Generated lake and cache output of every kind, not just parquet. A stray .json or
+# .csv written into the lake by a future pipeline is still generated output.
+data/lake/**
+data/cache/**
+!data/lake/**/
+!data/cache/**/
+
 *.parquet
 *.duckdb
 data/raw/
 data/lake/maps/
+
+# Keep the directory sentinels visible despite the recursive rules above. Must stay
+# after them: in gitignore the last matching rule wins.
+!**/.gitkeep
 
 # Logs
 *.log

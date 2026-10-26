@@ -10,14 +10,18 @@ cache (`client.py::download_annual_csv`) — closed years are cached indefinitel
 fetched, mirroring `pipelines/opec_momr`'s raw-file-caching precedent
 (`data/raw/jodi/jodi-primary-{year}.csv`).
 
-## Two annual tables exist — "primary" and "secondary" — only "primary" is needed here
+## Two annual tables exist — "primary" and "secondary" — both are read
 Confirmed live via JODI's own "A Guide on JODI-Oil World Database Item Names" PDF: the
 **primary** table covers crude oil (+ NGL + other crude), with flow codes like `INDPROD`
 ("Production"), `REFINOBS` ("Refinery intake"), `CLOSTLV` ("Closing stocks"). The
 **secondary** table covers *refined products* (LPG, naphtha, gasoline, gas/diesel, fuel
-oil...) with a different flow vocabulary (`REFGROUT`, `RECEIPTS`, `TOTDEMO`...). The spec
-wants crude production/refinery intake/closing stocks specifically — all three live in the
-primary table; the secondary table is out of scope for this pipeline.
+oil...) with a different flow vocabulary (`REFGROUT`, `RECEIPTS`, `TOTDEMO`...).
+`pull_jodi.py` reads the primary table for crude. `pull_demand.py` reads the **secondary**
+table for total product demand — `TOTDEMO` / `TOTPRODS` / `KBD`, monthly per country,
+confirmed live 2026-10-10 — for the US, China and the twenty euro-area members, from 2012.
+It is the consumption side of `core/oil_demand.py`. In that slice the only non-numeric
+marker seen is `-`. Malta has gaps (2015-09 → 2016-01, 2017-05); the latest month is
+routinely missing one or two smaller members.
 
 ## Confirmed real column schema
 `REF_AREA` (ISO 3166-1 alpha-2 country code), `TIME_PERIOD` (`yyyy-mm`), `ENERGY_PRODUCT`
