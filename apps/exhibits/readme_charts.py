@@ -39,7 +39,7 @@ BAND_YEARS = range(2021, 2026)
 plt.rcParams.update(
     {
         "font.family": "sans-serif",
-        "font.sans-serif": ["Inter", "Helvetica Neue", "Helvetica", "DejaVu Sans"],
+        "font.sans-serif": ["Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"],
         "figure.facecolor": "white",
         "axes.facecolor": "white",
         "axes.edgecolor": BAND,
@@ -53,8 +53,8 @@ plt.rcParams.update(
         "xtick.color": MUTED,
         "ytick.color": MUTED,
         "text.color": TEXT,
-        "font.size": 10,
-        "lines.linewidth": 2,
+        "font.size": 9,
+        "lines.linewidth": 1.4,
     }
 )
 
@@ -63,7 +63,7 @@ def frame(fig: Figure, title: str, subtitle: str, footer: str) -> None:
     """Title, subtitle and footer wrapped to the figure's width; the axes' top and
     bottom margins follow from how many lines they take."""
     w, h = fig.get_size_inches()
-    tw, sw, fw = fill(title, int(w * 9)), fill(subtitle, int(w * 13.5)), fill(footer, int(w * 17))
+    tw, sw, fw = fill(title, int(w * 11)), fill(subtitle, int(w * 14.5)), fill(footer, int(w * 18))
     y = 1 - 0.1 / h
     fig.text(
         0.01,
@@ -71,16 +71,16 @@ def frame(fig: Figure, title: str, subtitle: str, footer: str) -> None:
         tw,
         ha="left",
         va="top",
-        fontsize=14,
+        fontsize=12,
         fontweight="bold",
         color=TEXT,
         linespacing=1.25,
     )
-    y -= (0.27 * (tw.count("\n") + 1) + 0.1) / h
-    fig.text(0.01, y, sw, ha="left", va="top", fontsize=10, color=MUTED, linespacing=1.4)
-    y -= (0.2 * (sw.count("\n") + 1) + 0.3) / h
-    fig.text(0.01, 0.08 / h, fw, ha="left", va="bottom", fontsize=8.5, color=MUTED, linespacing=1.4)
-    fig.subplots_adjust(top=y, bottom=(0.08 + 0.17 * (fw.count("\n") + 1) + 0.4) / h)
+    y -= (0.23 * (tw.count("\n") + 1) + 0.08) / h
+    fig.text(0.01, y, sw, ha="left", va="top", fontsize=9.5, color=MUTED, linespacing=1.4)
+    y -= (0.19 * (sw.count("\n") + 1) + 0.3) / h
+    fig.text(0.01, 0.08 / h, fw, ha="left", va="bottom", fontsize=8, color=MUTED, linespacing=1.4)
+    fig.subplots_adjust(top=y, bottom=(0.08 + 0.16 * (fw.count("\n") + 1) + 0.4) / h)
 
 
 def plain_dates(ax: Axes) -> None:
@@ -151,7 +151,7 @@ def seasonal_panel(
     )
     mid = len(stats) // 2
     ax.annotate(
-        f"{BAND_YEARS.start}–{BAND_YEARS.stop - 1} median",
+        f"{BAND_YEARS.start} to {BAND_YEARS.stop - 1} median",
         (x[mid], stats["median"].iloc[mid]),
         xytext=(0, 7),
         textcoords="offset points",
@@ -180,13 +180,14 @@ def crude_stocks(lake: Lake) -> Figure:
     pct = 100 * (v - m) / m
     frame(
         fig,
-        f"US commercial crude stocks are {abs(pct):.1f} % {'below' if pct < 0 else 'above'} "
-        f"the {BAND_YEARS.start}–{BAND_YEARS.stop - 1} median for the date",
-        f"Weekly stocks excluding the Strategic Petroleum Reserve, million barrels; "
-        f"{df['ts'].max().year} against the range and median of {BAND_YEARS.start}–"
-        f"{BAND_YEARS.stop - 1} (our band, 2020 excluded by rule)",
-        f"Source: U.S. EIA, Weekly Petroleum Status Report (WCESTUS1) · Public domain · "
-        f"As of {df['ts'].max():%Y-%m-%d}",
+        "US commercial crude stocks against the same date in recent years",
+        f"Million barrels, weekly, excluding the Strategic Petroleum Reserve. "
+        f"{df['ts'].max().year} against the range and median of {BAND_YEARS.start} to "
+        f"{BAND_YEARS.stop - 1}, with 2020 "
+        f"excluded by rule. Stocks are {abs(pct):.1f}% {'below' if pct < 0 else 'above'} the "
+        "median for the date.",
+        f"Source: U.S. EIA, Weekly Petroleum Status Report (WCESTUS1), public domain. "
+        f"Latest week {df['ts'].max():%-d %b %Y}.",
     )
     return fig
 
@@ -201,13 +202,13 @@ def cftc_positioning(lake: Lake) -> Figure:
     fig.subplots_adjust(left=0.07, right=0.84)
     ax.bar(both.index, both["long"], width=5, color=NAVY)
     ax.bar(both.index, -both["short"], width=5, color=GREY)
-    ax.plot(net.index, net, color=BLUE, linewidth=1.8)
+    ax.plot(net.index, net, color=BLUE, linewidth=1.3)
     ax.axhline(0, color=MUTED, linewidth=0.8)
     last = net.index[-1]
-    for y, text, colour in (
-        (both["long"].iloc[-1], f"long {both['long'].iloc[-1]:.0f}k", NAVY),
-        (net.iloc[-1], f"net {signed(net.iloc[-1], 0)}k", BLUE),
-        (-both["short"].iloc[-1], f"short {both['short'].iloc[-1]:.0f}k", GREY),
+    for y, text in (
+        (both["long"].iloc[-1], f"long {both['long'].iloc[-1]:.0f}k"),
+        (net.iloc[-1], f"net {signed(net.iloc[-1], 0)}k"),
+        (-both["short"].iloc[-1], f"short {both['short'].iloc[-1]:.0f}k"),
     ):
         ax.annotate(
             text,
@@ -215,22 +216,21 @@ def cftc_positioning(lake: Lake) -> Figure:
             xytext=(8, 0),
             textcoords="offset points",
             va="center",
-            fontsize=9,
-            color=colour,
-            fontweight="bold",
+            fontsize=8.5,
+            color=TEXT,
         )
     ax.set_ylabel("thousand contracts (short below the axis)")
     plain_dates(ax)
     peak = net.idxmax()
     frame(
         fig,
-        f"Managed money is net long {net.iloc[-1]:.0f} thousand WTI contracts, "
-        f"{100 * (1 - net.iloc[-1] / net.max()):.0f} % below its three-year high of "
-        f"{peak:%b %Y}",
-        "CFTC Commitments of Traders, NYMEX WTI: managed-money long (above the axis), short "
-        "(below) and net (line), thousand contracts, weekly. Bars, because the book is counted "
-        "once a week and nothing is known in between.",
-        f"Source: CFTC disaggregated futures-only report · Public domain · As of {last:%Y-%m-%d}",
+        "Managed-money positioning in WTI crude futures",
+        f"Thousand contracts, weekly: long above the axis, short below, net as the line. Managed "
+        f"money is net long {net.iloc[-1]:.0f} thousand contracts, "
+        f"{100 * (1 - net.iloc[-1] / net.max()):.0f}% below its three-year high of {peak:%B %Y}. "
+        "Bars, because the book is counted once a week and nothing is known in between.",
+        f"Source: CFTC Commitments of Traders, disaggregated futures-only report, public domain. "
+        f"Latest week {last:%-d %b %Y}.",
     )
     return fig
 
@@ -251,14 +251,13 @@ def interpadd_flows(lake: Lake) -> Figure:
         s = wide[mode].dropna()
         ax.plot(s.index, s, color=colour)
         ax.annotate(
-            f"{name}  {s.iloc[-1]:.2f}",
+            f"{name}, {s.iloc[-1]:.2f}",
             (s.index[-1], s.iloc[-1]),
             xytext=(8, 0),
             textcoords="offset points",
             va="center",
-            fontsize=9,
-            color=colour,
-            fontweight="bold",
+            fontsize=8.5,
+            color=TEXT,
         )
     rail = wide["rail"].dropna()
     ax.set_ylabel("million barrels a day")
@@ -266,13 +265,12 @@ def interpadd_flows(lake: Lake) -> Figure:
     plain_dates(ax)
     frame(
         fig,
-        f"Rail moved {rail.max():.2f} mb/d of crude between US regions at its "
-        f"{rail.idxmax():%B %Y} peak and {rail.iloc[-1]:.2f} mb/d now; pipelines carry "
-        f"{wide['pipeline'].dropna().iloc[-1]:.1f}",
-        "Crude oil moved between PADDs by mode, million barrels a day, monthly, all region pairs "
-        "summed. Modes are kept apart because the mode is usually the story.",
-        f"Source: U.S. EIA, movements of crude oil between PADDs · Public domain · "
-        f"As of {wide.index.max():%Y-%m}",
+        "Crude oil moved between US regions, by mode of transport",
+        f"Million barrels a day, monthly, all PADD pairs summed. Rail peaked at {rail.max():.2f} "
+        f"mb/d in {rail.idxmax():%B %Y} and carries {rail.iloc[-1]:.2f} now; pipelines carry "
+        f"{wide['pipeline'].dropna().iloc[-1]:.1f}.",
+        f"Source: U.S. EIA, movements of crude oil between PADDs, public domain. "
+        f"Latest month {wide.index.max():%B %Y}.",
     )
     return fig
 
@@ -284,12 +282,12 @@ def eu_gas_storage(lake: Lake) -> Figure:
     v, m = seasonal_panel(ax, df, "% of working capacity", lambda v, t: f"{v:.1f} % · {t:%b %-d}")
     frame(
         fig,
-        f"EU gas storage is {abs(v - m):.1f} points {'below' if v < m else 'above'} the "
-        f"{BAND_YEARS.start}–{BAND_YEARS.stop - 1} median for the date, at {v:.1f} % full",
-        f"Gas in storage as a share of working capacity, EU aggregate, daily; "
-        f"{df['ts'].max().year} against the range and median of {BAND_YEARS.start}–"
-        f"{BAND_YEARS.stop - 1}",
-        f"Source: GIE AGSI+ · As of {df['ts'].max():%Y-%m-%d}",
+        "EU gas storage against the same date in recent years",
+        f"Per cent of working capacity, EU aggregate, daily. {df['ts'].max().year} against the "
+        f"range and median of {BAND_YEARS.start} to {BAND_YEARS.stop - 1}. Storage is "
+        f"{v:.1f}% full, {abs(v - m):.1f} points {'below' if v < m else 'above'} the median for "
+        "the date.",
+        f"Source: GIE AGSI+. Latest day {df['ts'].max():%-d %b %Y}.",
     )
     return fig
 
