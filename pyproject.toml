@@ -130,6 +130,7 @@ ignore = []
 "apps/dashboard/pages/*.py" = ["N999"]  # numbered Streamlit page filenames
 # Reader-facing chart text: en dashes in ranges, a real minus and multiplication sign.
 "apps/artifacts/*.py" = ["RUF001"]
+"apps/exhibits/*.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -169,6 +170,11 @@ ignore_missing_imports = true
 # python-pptx types only part of its chart API.
 [[tool.mypy.overrides]]
 module = ["artifacts.office"]
+disallow_untyped_calls = false
+
+# matplotlib's date helpers (date2num, the locators and formatters) carry no types.
+[[tool.mypy.overrides]]
+module = ["exhibits.readme_charts"]
 disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
