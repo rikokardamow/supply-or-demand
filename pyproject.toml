@@ -71,6 +71,9 @@ dependencies = [
     # Confirmed with the user before adding (root NOTES.md rule 7).
     "yfinance>=1.7",
     "python-pptx>=1.0",
+    # ggplot-style charts through core/paper_style.py (theme_paper, from_plotnine), beside
+    # matplotlib above; see docs/FIGURES.md. Charts still write only through paper_style.save.
+    "plotnine>=0.15.3",
 ]
 
 [project.optional-dependencies]
@@ -130,6 +133,14 @@ ignore = []
 "apps/dashboard/pages/*.py" = ["N999"]  # numbered Streamlit page filenames
 # Reader-facing chart text: en dashes in ranges, a real minus and multiplication sign.
 "apps/artifacts/*.py" = ["RUF001"]
+"apps/exhibits/*.py" = ["RUF001"]
+# Vendored from the paper-figure style (see docs/FIGURES.md): kept byte-for-byte as shipped,
+# so it is not reformatted to this repo's rules.
+"core/paper_style.py" = ["ALL"]
+"tools/export_paper_figures.py" = ["ALL"]
+"tests/test_paper_style.py" = ["ALL"]
+"tests/test_paper_style_guard.py" = ["ALL"]
+"tests/test_export_paper_figures.py" = ["ALL"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -170,6 +181,18 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["artifacts.office"]
 disallow_untyped_calls = false
+
+# matplotlib's date helpers (date2num, the locators and formatters) carry no types, and
+# core.paper_style is an untyped vendored file.
+[[tool.mypy.overrides]]
+module = ["exhibits.readme_charts", "pipelines.weather.anomaly_maps"]
+disallow_untyped_calls = false
+
+# Vendored, untyped single-file module (docs/FIGURES.md); callers are typed.
+[[tool.mypy.overrides]]
+module = ["core.paper_style"]
+ignore_errors = true
+follow_imports = "silent"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
