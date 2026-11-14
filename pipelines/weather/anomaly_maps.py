@@ -11,10 +11,11 @@ know about either.
 Cartopy confirmed live to install and render cleanly via pip on Windows (no system
 GEOS/PROJ needed -- modern wheels bundle them) -- no matplotlib-only fallback needed.
 
-Paper format (core/paper_style.py, docs/FIGURES.md): each map is drawn at 7.0 in wide in a
-serif, with latitude and longitude labelled, and the finding title, units, source and the
-forecast run are written to a LaTeX caption (.tex) beside the PDF and PNG, not on the image.
-The colour scale is the house diverging scale (cold blue, white, warm brown), not red-blue.
+Paper format (core/paper_style.py, docs/FIGURES.md): each map is drawn at 7.0 in wide in
+grey sans-serif type, with latitude and longitude labelled, and the finding title, units,
+source and the forecast run are written to a LaTeX caption (.tex) beside the PDF and PNG,
+not on the image. The colour scale is the house diverging scale (cold blue, white, warm
+brown), not red-blue.
 
 Maps are written as PNG files under data/lake/maps/ (with a PDF and a .tex caption of the
 same name), with one manifest row per map in

@@ -9,7 +9,8 @@ Every number is read from the lake, never typed in; the seasonal maths is
 core.seasonal, with 2020 excluded by rule.
 
 Paper format (core/paper_style.py, docs/FIGURES.md): each chart is drawn at its printed
-width (7.0 in) in a serif between 6 and 9 pt, with an axis label and unit on both axes.
+width (7.0 in) in a grey sans-serif between 6 and 9 pt, with an axis label and unit on both
+axes, no box (a light baseline and faint horizontal gridlines) and haloed direct labels.
 Nothing about the finding is drawn on the image: the title, units, cadence, source and
 as-of date, all computed from the data, go to a LaTeX caption written beside the figure.
 Each chart is written as a vector PDF (Type 42 fonts), a 300 dpi PNG (what the README
@@ -105,7 +106,7 @@ def seasonal_panel(
     xs = mdates.date2num([jan1 + pd.Timedelta(days=int(d) - 1) for d in doy])
     ax.fill_between(x, stats["lo"], stats["hi"], color=ps.TOKENS["border"], linewidth=0)
     ax.plot(x, stats["median"], color=ps.PALETTE[2], linestyle=ps.DASHES[1], linewidth=1.2)
-    ax.plot(xs, this_year["value"], color=ps.PALETTE[0], linewidth=1.3)
+    ax.plot(xs, this_year["value"], color=ps.PALETTE[0], linewidth=1.2)
     last_v, last_t = float(this_year["value"].iloc[-1]), this_year["ts"].iloc[-1]
     end_label(ax, float(xs[-1]), last_v, *label(last_v, last_t), colour=ps.PALETTE[0])
     # The band and the median are named at the right-hand end of the year.
@@ -119,6 +120,7 @@ def seasonal_panel(
         fontsize=7.5,
         color=ps.TOKENS["text_muted"],
         annotation_clip=False,
+        path_effects=ps.halo(),
     )
     ax.annotate(
         f"{span} median",
@@ -128,6 +130,7 @@ def seasonal_panel(
         fontsize=7.5,
         color=ps.TOKENS["text_muted"],
         annotation_clip=False,
+        path_effects=ps.halo(),
     )
     ax.set_xlim(float(x[0]), float(x[-1]))
     month_ticks(ax)
