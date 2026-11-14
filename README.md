@@ -10,6 +10,8 @@ It is careful about a few things most dashboards are not. Seasonal comparisons a
 
 Drawn from the lake with `uv run python -m apps.exhibits.readme_charts`.
 
+Each chart is also written beside its PNG as a vector PDF and a LaTeX caption (`docs/img/*.pdf`, `docs/img/*.tex`), in the paper format described in [`docs/FIGURES.md`](docs/FIGURES.md): the finding, units, source and as-of date are in the caption, not on the image. The data keeps each source's own terms.
+
 ![US commercial crude stocks against the same date in recent years](docs/img/crude_stocks.png)
 
 ![Managed-money positioning in WTI crude futures](docs/img/cftc_positioning.png)
