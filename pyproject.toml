@@ -71,6 +71,9 @@ dependencies = [
     # Confirmed with the user before adding (root NOTES.md rule 7).
     "yfinance>=1.7",
     "python-pptx>=1.0",
+    # ggplot-style charts through core/paper_style.py (theme_paper, from_plotnine), beside
+    # matplotlib above; see docs/FIGURES.md. Charts still write only through paper_style.save.
+    "plotnine>=0.15.3",
 ]
 
 [project.optional-dependencies]
