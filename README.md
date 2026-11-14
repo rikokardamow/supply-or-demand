@@ -10,15 +10,25 @@ It is careful about a few things most dashboards are not. Seasonal comparisons a
 
 Drawn from the lake with `uv run python -m apps.exhibits.readme_charts`.
 
+Each chart is also written beside its PNG as a vector PDF and a LaTeX caption (`docs/img/*.pdf`, `docs/img/*.tex`), in the paper format described in [`docs/FIGURES.md`](docs/FIGURES.md): the finding, units, source and as-of date are in the caption, not on the image, and the line under each chart repeats its finding and source. The data keeps each source's own terms.
+
 ![US commercial crude stocks against the same date in recent years](docs/img/crude_stocks.png)
 
+*Figure: US commercial crude stocks are 1.7% above the median for the date. Source: U.S. EIA, Weekly Petroleum Status Report (series WCESTUS1); Public domain; as of 2026-10-02.*
+
 ![Managed-money positioning in WTI crude futures](docs/img/cftc_positioning.png)
+
+*Figure: Managed money is net long 54 thousand contracts, 79% below its three-year high of October 2023. Source: CFTC Commitments of Traders, disaggregated futures-only report (series cftc.cl.mm_long, cftc.cl.mm_short); Public domain; as of 2026-10-06.*
 
 Crude moved between US regions is kept apart by mode because the mode is usually the story: Bakken crude moved by rail because there was no pipe, and stopped when there was.
 
 ![Crude oil moved between US regions, by mode of transport](docs/img/interpadd_flows.png)
 
+*Figure: Rail peaked at 0.89 mb/d in December 2014 and carries 0.23 now; pipelines carry 3.5. Source: U.S. EIA, movements of crude oil between PADDs (latest month July 2026); Public domain; as of 2026-07-31.*
+
 ![EU gas storage against the same date in recent years](docs/img/eu_gas_storage.png)
+
+*Figure: EU gas storage is 73.3% full, 17.6 points below the median for the date. Source: GIE AGSI+ (series agsi.EU.full_pct); as of 2026-10-08.*
 
 The dashboard itself, as served:
 

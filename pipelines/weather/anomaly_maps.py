@@ -11,7 +11,14 @@ know about either.
 Cartopy confirmed live to install and render cleanly via pip on Windows (no system
 GEOS/PROJ needed -- modern wheels bundle them) -- no matplotlib-only fallback needed.
 
-Maps are written as PNG files under data/lake/maps/, with one manifest row per map in
+Paper format (core/paper_style.py, docs/FIGURES.md): each map is drawn at 7.0 in wide in
+grey sans-serif type, with latitude and longitude labelled, and the finding title, units,
+source and the forecast run are written to a LaTeX caption (.tex) beside the PDF and PNG,
+not on the image. The colour scale is the house diverging scale (cold blue, white, warm
+brown), not red-blue.
+
+Maps are written as PNG files under data/lake/maps/ (with a PDF and a .tex caption of the
+same name), with one manifest row per map in
 data/lake/maps/manifest.parquet -- a plain Parquet file, not a real persisted DuckDB
 table file, even though the spec's own Data Model section names "DuckDB table
 map_assets". No precedent for a persisted (non-in-memory) DuckDB file exists anywhere
@@ -28,19 +35,25 @@ from pathlib import Path
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-import matplotlib
-from cartopy.mpl.geoaxes import GeoAxes
-
-matplotlib.use("Agg")  # headless rendering -- this runs inside a pipeline, not a GUI
-import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import xarray as xr
+from cartopy.mpl.geoaxes import GeoAxes
+from core import paper_style as ps
+from matplotlib.colors import LinearSegmentedColormap
 
 from pipelines.weather.climatology_grid import REGION_BOUNDS, climatology_grid
 
 MAPS_DIR = Path("data/lake/maps")
 MANIFEST_PATH = MAPS_DIR / "manifest.parquet"
 ANOMALY_VMIN_VMAX = 8.0  # degrees C either side of zero -- fixed scale for comparability
+FORMATS = ("pdf", "png", "tex")
+REGION_NAMES = {"eu": "Europe", "conus": "CONUS"}
+# (source series, licence) per model, as the dashboard's page 08 attributes them.
+MODEL_SOURCE = {
+    "ecmwf": ("ECMWF IFS HRES 2 m temperature (2t), ECMWF Open Data", "CC BY 4.0"),
+    "gfs": ("NOAA GFS 2 m temperature (2t), NOAA/NCEP", "Public domain"),
+}
 
 
 def _region_extent(region: str) -> tuple[float, float, float, float]:
@@ -71,35 +84,54 @@ def render_anomaly_map(
     )
     anomaly = forecast_c - clim["climatology_c"].to_numpy()
 
-    fig = plt.figure(figsize=(8, 6))
-    ax: GeoAxes = plt.axes(projection=ccrs.PlateCarree())
-    ax.set_extent(_region_extent(region))
+    fig, axes = ps.figure()
+    fig.delaxes(axes[0][0])
+    ax: GeoAxes = fig.add_subplot(projection=ccrs.PlateCarree())
+    west, east, south, north = _region_extent(region)
+    ax.set_extent((west, east, south, north))
     ax.add_feature(cfeature.COASTLINE, linewidth=0.6)
     ax.add_feature(cfeature.BORDERS, linewidth=0.4, linestyle=":")
+    ax.grid(False)
+    ax.set_xticks(np.arange(np.ceil(west / 10) * 10, east + 1, 10), crs=ccrs.PlateCarree())
+    ax.set_yticks(np.arange(np.ceil(south / 10) * 10, north + 1, 10), crs=ccrs.PlateCarree())
 
     scatter = ax.scatter(
         clim["lon"],
         clim["lat"],
         c=anomaly,
-        cmap="RdBu_r",
+        cmap=LinearSegmentedColormap.from_list("paper_diverging", ps.DIVERGING),
         vmin=-ANOMALY_VMIN_VMAX,
         vmax=ANOMALY_VMIN_VMAX,
         s=60,
         marker="s",
         transform=ccrs.PlateCarree(),
     )
-    fig.colorbar(scatter, ax=ax, label="2m-temp anomaly (°C)", shrink=0.8)
-    ax.set_title(
-        f"{region.upper()} 2m-Temp Anomaly ({model.upper()}) — D+{step_hours // 24} "
-        f"({valid_time:%Y-%m-%d}) vs {climatology_years_label()}",
-        fontsize=9,
+    mean = float(np.nanmean(anomaly))
+    source, licence = MODEL_SOURCE[model]
+    run = valid_time - pd.Timedelta(hours=step_hours)  # the forecast run the step belongs to
+    ps.frame(
+        fig,
+        title=f"{model.upper()} forecasts {REGION_NAMES.get(region, region)} 2 m temperature "
+        f"{abs(mean):.1f} °C {'below' if mean < 0 else 'above'} the recent normal on average "
+        f"at D+{step_hours // 24}",
+        subtitle=f"Forecast 2 m temperature minus the {climatology_years_label()} grid, valid "
+        f"{valid_time:%Y-%m-%d}; one square per grid point, colour scale fixed at "
+        f"±{ANOMALY_VMIN_VMAX:.0f} °C",
+        units="°C",
+        cadence="daily",
+        source=source,
+        licence=licence,
+        asof=f"{run:%Y-%m-%d %H:%M} UTC",
+        xlabel="Longitude (° east)",
+        ylabel="Latitude (° north)",
+        margins=(0.7, 0.2, 0.2, 0.55),
     )
+    fig.colorbar(scatter, ax=ax, label="2 m temperature anomaly (°C)", shrink=0.8)
 
     MAPS_DIR.mkdir(parents=True, exist_ok=True)
-    filename = f"anomaly-{model}-{region}-d{step_hours // 24}-{valid_time:%Y%m%d}.png"
-    path = MAPS_DIR / filename
-    fig.savefig(path, dpi=100, bbox_inches="tight")
-    plt.close(fig)
+    stem = f"anomaly-{model}-{region}-d{step_hours // 24}-{valid_time:%Y%m%d}"
+    path = MAPS_DIR / f"{stem}.png"
+    ps.save(fig, MAPS_DIR / stem, formats=FORMATS)
 
     _append_manifest_row(model, region, step_hours, valid_time, path)
     return path
