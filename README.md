@@ -36,7 +36,7 @@ The dashboard itself, as served:
 
 ## How it works
 
-One pipeline per source downloads the data and keeps the raw response. Every value is then written into one of a few shared shapes, validated on write: `ts_long` for a time series, `flows` for movement between two places, `events`, and `vessel_positions`. The lake is partitioned Parquet with revision-aware de-duplication, so a corrected number is a new row. A publish step copies the serving set to Postgres with row-level security and a provenance log of which pipeline wrote what, when, and with what as-of date. The Next.js data site, the landing page and the Streamlit explorer read that copy, and the pipelines tell the sites when to refresh. Pipelines never draw and the sites never call a source API, which is what makes a chart reproducible offline.
+One pipeline per source downloads the data and keeps the raw response. Every value is then written into one of a few shared shapes, validated on write: `ts_long` for a time series, `flows` for movement between two places, `events`, and `vessel_positions`. The lake is partitioned Parquet de-duplicated on series and date: a corrected number replaces the earlier one, and the write time is kept in `revision_date`. First prints are not retained yet (see `PARKING.md`). A publish step copies the serving set to Postgres with row-level security and a provenance log of which pipeline wrote what, when, and with what as-of date. The Next.js data site, the landing page and the Streamlit explorer read that copy, and the pipelines tell the sites when to refresh. Pipelines never draw and the sites never call a source API, which is what makes a chart reproducible offline.
 
 ## Getting started
 
@@ -66,32 +66,37 @@ The landing page is a second Next.js app in `site/`, run the same way on port 31
 The serving layer is a public, read-only REST API through PostgREST. Every table grants `SELECT` to the anonymous role under row-level security and there is no write path, which is why the anonymous key can sit in the browser bundle.
 
 ```bash
-curl "$SUPABASE_URL/rest/v1/series_long?series_id=eq.fut.cl.f01.close&order=ts.desc&limit=5" \
+curl "$SUPABASE_URL/rest/v1/series_long?series_id=eq.WCESTUS1&order=ts.desc&limit=5" \
   -H "apikey: $SUPABASE_ANON_KEY" -H "Accept-Profile: serving"
 ```
 
-`series_long` holds every scalar series (prices, stocks, storage, positioning, macro); `seasonal` the day-of-year range, median and current track with 2020 excluded; `flows` movement between two places (inter-PADD crude, grid interchange, gas); `wpsr_lines` the weekly petroleum report's summary table as published; `curve_settles` and `spreads` the futures curves and calendar spreads; `events` and `sanctions` tagged news and the OFAC list; `vessel_latest` the latest AIS position per vessel; and `publish_log` the provenance. Two things to know: `as_of` is the data's own date, and PostgREST returns at most 1,000 rows per request, so page with `offset` (`web/src/data/paginate.ts` shows how).
+`series_long` holds the scalar series the rights register lets through (stocks, storage, positioning, macro; see `RIGHTS.md`); `seasonal` the day-of-year range, median and current track with 2020 excluded; `flows` movement between two places (inter-PADD crude, grid interchange, gas); `wpsr_lines` the weekly petroleum report's summary table as published; `spreads` the calendar spreads from EIA's NYMEX ranks (`curve_settles`, a Brent curve rebuilt from a vendor export, is class d and not published); `events` and `sanctions` tagged news and the OFAC list; `vessel_latest` the latest AIS position per vessel; and `publish_log` the provenance. Two things to know: `as_of` is the data's own date, and PostgREST returns at most 1,000 rows per request, so page with `offset` (`web/src/data/paginate.ts` shows how).
 
 ## Layout
 
-`pipelines/` has one folder per source, each with its client, its notes on what was verified live against that API, and a test recorded against the real response. `core/` holds the shared pieces: schemas, seasonal maths, publishing, failure handling, settings and the chart theme. `apps/dashboard/` is the Streamlit explorer, `apps/artifacts/` the published exhibit pages and Office exports, `apps/exhibits/` the README charts. `web/` and `site/` are the two Next.js apps, `supabase/migrations/` the serving schema, `infra/` scheduling and deployment, `specs/` the build specifications one per feature, and `tests/` the test suite, including a check that fails the build if a recorded response contains a key. `data/` is the lake and the raw downloads and is not in git.
+`pipelines/` has one folder per source, each with its client, its notes on what was verified live against that API, and a test recorded against the real response. `core/` holds the shared pieces: schemas, seasonal maths, publishing, failure handling, settings and the chart theme. `apps/dashboard/` is the Streamlit explorer, `apps/artifacts/` the published exhibit pages and Office exports, `apps/exhibits/` the README charts. `web/` and `site/` are the two Next.js apps, `supabase/migrations/` the serving schema, `infra/` scheduling and deployment, `core/rights.py` and `RIGHTS.md` each source's terms and class, `specs/` the build specifications one per feature, and `tests/` the test suite, including a check that fails the build if a recorded response contains a key. `data/` is the lake and the raw downloads and is not in git.
 
 `DEVELOPMENT.md` holds the conventions, commands and credential rules; `CHANGELOG.md` is the full build log; `docs/README.md` explains the specification numbering and the rest of the documents.
 
 ## Contributing
 
-Run `make check` (ruff, mypy, pytest) and the web tests (`pnpm typecheck && pnpm lint && pnpm test` in `web/` and `site/`) before opening a pull request. To add a source, scaffold `pipelines/<source>/` with its own `NOTES.md`, a client and a test recorded against the real API; never guess a schema. Add the source's terms to the table below. British English in prose, labels and docstrings.
+Run `make check` (ruff, mypy, pytest) and the web tests (`pnpm typecheck && pnpm lint && pnpm test` in `web/` and `site/`) before opening a pull request. To add a source, scaffold `pipelines/<source>/` with its own `NOTES.md`, a client and a test recorded against the real API; never guess a schema. Read the source's terms at source and add it to `core/rights.py` with its class; `uv run python -m core.rights` rewrites `RIGHTS.md`, and the publish step refuses a source that is not registered. British English in prose, labels and docstrings.
 
 ## Licence and data terms
 
-The code is MIT, © 2026 Riko Kardamow. The data is not the project's to relicense: each source keeps its own terms, and several restrict use. Check the table before deploying anywhere, especially commercially.
+The code is MIT, © 2026 Riko Kardamow. The data is not the project's to relicense: each source keeps its own terms, and several restrict use. [`RIGHTS.md`](RIGHTS.md) holds the full register: each source's terms as read, its class, the page it was read from and the date. The publish step enforces it: rows of a class d source (no, or terms not read) are never sent to the serving layer, and a source with no row in the register stops the publish. Check the table before deploying anywhere, especially commercially.
 
 | Source | Terms | Notes |
 |---|---|---|
-| EIA, FRED, Frankfurter, Eurostat, GIE AGSI+/ALSI+, ENTSO-E, ENTSOG, EirGrid, OPEC, JODI, Baker Hughes, gridstatus, OFAC | Free public or government data, or a free API key; no attribution requirement found in each provider's own documents | Checked per pipeline during its build; see each `pipelines/<source>/NOTES.md` |
-| Open-Meteo | Free for non-commercial use only | A personal research tool, not a commercial product; revisit if that changes |
+| EIA (including coal), CFTC | US government data in the public domain; an acknowledgement is requested | Read at source 2026-11-21 |
+| NOAA GFS | US government data, public domain, per the NWS disclaimer | The NOMADS page itself states no terms. Attribution carried anyway |
 | ECMWF Open Data | Free, CC BY 4.0, attribution required | Carried as a caption under each weather map |
-| NOAA GFS | US government data, public domain | Attribution carried anyway |
-| GDELT | Free; the project asks to be credited | Not yet carried on the page; a known gap |
-| The Guardian Open Platform | Free registered tier, attribution required | Key not yet set; revisit once live |
-| NewsAPI | Free tier is for development only, no scheduled use | Kept to a manual, on-demand search |
+| EirGrid | Open Data Licence; free to use, "Supported by EirGrid Group Data" required | Read at source 2026-11-21 |
+| GDELT | Unrestricted use; a citation and a link to the GDELT Project are required | Not yet carried on the page; a known gap |
+| Open-Meteo | Free for non-commercial use only, CC BY 4.0 | A personal research tool, not a commercial product; revisit if that changes |
+| Eurostat | Re-use authorised with the source acknowledged; some data identified as another source's is non-commercial only | Held at the stricter class |
+| GIE AGSI+/ALSI+, ENTSO-E, ENTSOG, FRED, OPEC, Baker Hughes | Held at the class this README gave them before the terms were read at source; a stricter reading exists and is not settled | Published pending that decision; see `RIGHTS.md` |
+| Yahoo Finance | Redistribution restricted | Kept out of the serving layer by the publish step |
+| Frankfurter, GridStatus, JODI, OFAC, Adanos, Reddit, StockTwits, Polymarket, AIS, manual vendor drops | No re-use terms found, or terms not read | Class d: kept out of the serving layer |
+| NewsAPI | Free tier is for development only, no scheduled use | Class d; kept to a manual, on-demand search |
+| The Guardian Open Platform | Personal and non-commercial end use, and its advertisements must be shown | Class d; key not set |
