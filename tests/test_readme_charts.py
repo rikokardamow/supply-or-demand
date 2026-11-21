@@ -107,3 +107,66 @@ def test_the_finding_is_computed_from_the_data_and_kept_off_the_image(
     assert "2026-10-02" in ps.caption(fig)
     assert not ps.lint(fig, axis_labels=True)
     assert all(t.get_text() != title for t in fig.findobj(lambda a: hasattr(a, "get_text")))
+
+
+# --- the band years follow the data (I-04) --------------------------------------------
+
+
+def _lake_ending(tmp_path: Path, eia_end: str, gie_end: str) -> Path:
+    root = tmp_path / "lake_ending"
+    _write(
+        root,
+        "ts_long/source=eia",
+        _series("WCESTUS1", "2019-01-04", eia_end, "7D", 4.2e5, 2e4),
+    )
+    _write(
+        root,
+        "ts_long/source=gie",
+        _series("agsi.EU.full_pct", "2019-01-01", gie_end, "D", 60, 30),
+    )
+    return root
+
+
+def _ts(*dates: str) -> pd.DataFrame:
+    return pd.DataFrame({"ts": pd.to_datetime(list(dates)), "value": 1.0})
+
+
+def test_band_years_are_the_five_years_before_the_latest_observation() -> None:
+    # Hand-worked: the latest observation is in 2026, so the band is 2021, 2022, 2023,
+    # 2024 and 2025, which is what the constant used to say. A date in 2027 moves it to
+    # 2022 through 2026: five years ending the year before.
+    assert readme_charts.band_years(_ts("2026-10-02")) == range(2021, 2026)
+    assert readme_charts.band_years(_ts("2027-03-05")) == range(2022, 2027)
+    assert readme_charts.band_years(_ts("2027-03-05", "2026-12-30")) == range(2022, 2027)
+
+
+def test_the_band_years_come_from_the_data_not_the_clock() -> None:
+    # An old frame keeps its own band however late it is run.
+    assert readme_charts.band_years(_ts("2024-06-07")) == range(2019, 2024)
+
+
+def test_the_2027_charts_compare_against_the_band_of_2022_to_2026(tmp_path: Path) -> None:
+    lk = readme_charts.Lake(_lake_ending(tmp_path, "2027-03-05", "2027-03-05"))
+    for chart in (readme_charts.crude_stocks, readme_charts.eu_gas_storage):
+        text = ps.caption(chart(lk))
+        assert "2022 to 2026" in text, chart.__name__
+        assert "2021 to 2025" not in text, chart.__name__
+
+
+def test_the_2026_charts_keep_the_band_of_2021_to_2025(tmp_path: Path) -> None:
+    lk = readme_charts.Lake(_lake_ending(tmp_path, "2026-10-02", "2026-10-08"))
+    for chart in (readme_charts.crude_stocks, readme_charts.eu_gas_storage):
+        assert "2021 to 2025" in ps.caption(chart(lk)), chart.__name__
+
+
+def test_2020_is_left_out_of_the_band_whatever_the_year() -> None:
+    from core import seasonal
+
+    # A latest observation in 2025 puts 2020 inside the five-year window; the shared
+    # seasonal module still leaves it out (golden rule 4).
+    df = _series("x", "2019-01-04", "2025-06-06", "7D", 100, 10)
+    years = readme_charts.band_years(df)
+    assert 2020 in years
+    stats = seasonal.seasonal_stats(df, "value", years=years)
+    assert "2020" not in stats.columns
+    assert {"2021", "2022", "2023", "2024"} <= set(stats.columns)

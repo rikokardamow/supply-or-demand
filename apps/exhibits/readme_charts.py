@@ -33,7 +33,8 @@ from core import seasonal
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-BAND_YEARS = range(2021, 2026)
+BAND_SIZE = 5
+"""How many prior years make the band, matching the artifacts' design system."""
 FORMATS = ("pdf", "png", "tex")
 # Room on the right for labels at the ends of the lines (inches): left, right, top, bottom.
 MARGINS = (0.7, 1.45, 0.2, 0.55)
@@ -91,14 +92,32 @@ class Lake:
         return df
 
 
+def band_years(df: pd.DataFrame) -> range:
+    """The years the band is drawn from: the five before the latest observation's year.
+
+    Read from the data, not frozen. This was the literal `range(2021, 2026)`, correct only
+    until the first observation of 2027 arrived, after which every chart would have set the
+    new year against a band that stopped a year short, with no error (the failure
+    `core.seasonal.default_years` documents). 2020 can fall inside the window in a frame
+    ending in 2025 or earlier; `seasonal.seasonal_stats` leaves it out by default.
+    """
+    last_year = int(df["ts"].max().year)
+    return range(last_year - BAND_SIZE, last_year)
+
+
+def _span(years: range) -> str:
+    return f"{years.start} to {years.stop - 1}"
+
+
 def seasonal_panel(
     ax: Axes,
     df: pd.DataFrame,
     label: Callable[[float, pd.Timestamp], tuple[str, str]],
 ) -> tuple[float, float]:
-    """The current year against the band of BAND_YEARS. Returns the latest value
+    """The current year against the band of `band_years(df)`. Returns the latest value
     and the median for the same day."""
-    stats = seasonal.seasonal_stats(df, "value", years=BAND_YEARS)
+    years = band_years(df)
+    stats = seasonal.seasonal_stats(df, "value", years=years)
     this_year = df[df["ts"].dt.year == df["ts"].max().year]
     doy = seasonal._normalised_doy(this_year["ts"])
     jan1 = date(seasonal.REFERENCE_YEAR, 1, 1)
@@ -110,7 +129,7 @@ def seasonal_panel(
     last_v, last_t = float(this_year["value"].iloc[-1]), this_year["ts"].iloc[-1]
     end_label(ax, float(xs[-1]), last_v, *label(last_v, last_t), colour=ps.PALETTE[0])
     # The band and the median are named at the right-hand end of the year.
-    span = f"{BAND_YEARS.start} to {BAND_YEARS.stop - 1}"
+    span = _span(years)
     end_label_x = float(x[-1])
     ax.annotate(
         f"{span} range",
@@ -150,7 +169,7 @@ def crude_stocks(lake: Lake) -> Figure:
         f"{'below' if pct < 0 else 'above'} the median for the date",
         subtitle=f"US commercial crude stocks against the same date in recent years, excluding "
         f"the Strategic Petroleum Reserve: {df['ts'].max().year} against the range and median "
-        f"of {BAND_YEARS.start} to {BAND_YEARS.stop - 1}, with 2020 excluded by rule",
+        f"of {_span(band_years(df))}, with 2020 excluded by rule",
         units="million barrels",
         cadence="weekly",
         source="U.S. EIA, Weekly Petroleum Status Report (series WCESTUS1)",
@@ -251,8 +270,7 @@ def eu_gas_storage(lake: Lake) -> Figure:
         title=f"EU gas storage is {v:.1f}% full, {abs(v - m):.1f} points "
         f"{'below' if v < m else 'above'} the median for the date",
         subtitle=f"EU gas storage against the same date in recent years, EU aggregate: "
-        f"{df['ts'].max().year} against the range and median of {BAND_YEARS.start} to "
-        f"{BAND_YEARS.stop - 1}",
+        f"{df['ts'].max().year} against the range and median of {_span(band_years(df))}",
         units="% of working capacity",
         cadence="daily",
         source="GIE AGSI+ (series agsi.EU.full_pct)",
