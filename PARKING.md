@@ -15,3 +15,5 @@ Open choices and ideas not taken yet. One line each; the long form is in `IMPROV
 - After I-02: run `uv run python -m pipelines.derived.unpublish_restricted` (dry run), read the counts, then `--apply`, against the owner's pooler connection.
 - `infra/register_tasks.ps1` is a Windows Task Scheduler setup; PROJECT-STARTER says jobs run by hand.
 - The GIE README chart caption has no licence line (`docs/img/eu_gas_storage.tex`); write one once I-06 is decided.
+- After I-01: Frankfurter, GridStatus, JODI, OFAC, Adanos, Reddit, StockTwits, Polymarket, AIS and manual drops are class d in `core/rights.py` (terms not read, or no re-use statement found), so their rows, the `sanctions` and `vessel_latest` tables and the Brent `curve_settles` table stop being published. Read each terms page at source and change the class in `core/rights.py` to bring one back (`uv run python -m core.rights` rewrites `RIGHTS.md`).
+- Before merging I-01 to I-04 and I-09: run the I-02 dry run against the pooler URL, read what is still served, then decide on `--apply`. Not run in the build session.

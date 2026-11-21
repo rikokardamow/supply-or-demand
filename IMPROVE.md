@@ -176,6 +176,7 @@ The lake (`data/lake/`) is empty in this worktree (only `.gitkeep` is tracked), 
 - **Acceptance test.** `git ls-files .github railway.toml` is empty; `grep -rn "ci.yml" Makefile DEVELOPMENT.md infra/README.md docs` is empty; `make check` green.
 - **Rights impact.** None.
 - **Implement in this run: yes.**
+- **Status: done, `013e318`** (implementer run-01). pytest 1299 passed, 17 deselected; ruff and mypy clean on 228 files (`make check` green); web vitest 46 passed and site vitest 7 passed, typechecks clean. `railway.toml` and `.github/workflows/ci.yml` are deleted on the branch (nothing ran or triggered), `Makefile`, `infra/README.md`, `infra/run_scheduled.py` and `DEVELOPMENT.md` say there is no CI, and `.gitignore` lost the dead `manual_settlements` rule and the duplicate `*.log`. `tests/test_repo_hygiene.py` holds it. Historical specs and `CHANGELOG.md` still mention both files; they are history and were left alone. `make check` needs the five required keys set to any placeholder (the deleted workflow used to supply them), now said in the Makefile.
 
 ### I-10 Make the data site buildable without a database, or say that it cannot be
 
