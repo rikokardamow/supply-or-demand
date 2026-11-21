@@ -120,6 +120,7 @@ The lake (`data/lake/`) is empty in this worktree (only `.gitkeep` is tracked), 
 - **Acceptance test.** In `tests/test_readme_charts.py`, `band_years` on the fixture `WCESTUS1` series ending `2026-10-02` returns `range(2021, 2026)` and the caption contains "2021 to 2025"; a second fixture ending `2027-03-05` returns `range(2022, 2027)` and the caption contains "2022 to 2026" and the band does not include 2020 (assert `"2020" not in stats.columns` from `seasonal_stats`). Existing byte-identity test unchanged and green.
 - **Rights impact.** None.
 - **Implement in this run: yes.**
+- **Status: done, `fce07ad`** (implementer run-01). pytest 1295 passed, 17 deselected; ruff and mypy clean on 228 files. `BAND_YEARS` is gone; `band_years(df)` and a five-year `BAND_SIZE` replace it, and the tests include the hand-worked 2027 case. `docs/img/*` were not redrawn (no lake here); the 2026 output is unchanged because the computed range is the same. One caveat left as is: a frame ending in 2025 or earlier has 2020 inside the five-year window, so its caption would read "2020 to ...", with 2020 left out of the maths by `seasonal_stats`.
 
 ### I-05 Keep first prints: a vintage-aware lake
 
