@@ -108,6 +108,7 @@ The lake (`data/lake/`) is empty in this worktree (only `.gitkeep` is tracked), 
 - **Acceptance test.** `tests/test_readme_claims.py`: `README.md` does not contain "a corrected number is a new row", does not contain `fut.cl.f01.close`, does contain `RIGHTS.md`; `docs/README.md` contains `RIGHTS.md`. Existing tests green.
 - **Rights impact.** Honest public statement of what is published under which terms.
 - **Implement in this run: yes.** Pure documentation of facts established above; depends on I-01 for `RIGHTS.md`.
+- **Status: done, `e4137d8`** (implementer run-01). pytest 1290 passed, 17 deselected; ruff and mypy clean on 228 files. Edits match the proposal (a) to (d), plus three the new guard forced: the licence table was rewritten from `RIGHTS.md` (read dates, six disputed sources shown as "published pending that decision", Yahoo and the other class d sources listed), the `series_long` and `curve_settles` sentences in "The read API" now say what is actually published, and the contributing paragraph points at `core/rights.py`. `origin/docs/readme-and-notes` still rewrites the same README; expect a conflict there.
 
 ### I-04 Compute the README band years from the data
 
