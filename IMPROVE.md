@@ -96,6 +96,7 @@ The lake (`data/lake/`) is empty in this worktree (only `.gitkeep` is tracked), 
 - **Acceptance test.** With `_FakeConnection`: dry run records only `SELECT count(*)` statements and prints `fut\.[a-z]+\.f01\.close: <n> rows in series_long`; `--apply` records one `DELETE FROM serving.series_long WHERE series_id ~ %s` per pattern plus the `publish_log` insert, inside one `commit()`.
 - **Rights impact.** Removes class-d data already served.
 - **Implement in this run: yes.** Nothing is run against a database here; the owner runs it by hand.
+- **Status: done, `2bd2f20`** (implementer run-01). pytest 1269 passed, 17 deselected; ruff and mypy clean on 228 files. **Not executed against any database**; the tests use a fake connection and a small lake frame. Executing it is the owner's call: run the dry run first (`uv run python -m pipelines.derived.unpublish_restricted`, which connects to the pooler URL only to count), read the counts, then `--apply`. Differences from the proposal: it selects by the `source` column and by lake-derived series ids as well as by the series patterns, it also empties `curve_settles`, `vessel_latest` and `sanctions` whole (each is fed by one class d source), and its `publish_log` row reuses the table's latest `as_of` (a row stamped now would reset the staleness badge). The `--apply` safeguard is a per-delete count check with rollback, not the "more than one source in publish_log" test, which the log's schema cannot answer.
 
 ### I-03 README and docs: stop claiming what the code does not do
 
