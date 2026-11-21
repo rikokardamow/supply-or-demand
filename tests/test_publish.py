@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 import pytest
 from core.publish import UnknownServingTableError, publish
+from core.rights import UnregisteredSourceError
 
 
 class _FakeCopy:
@@ -388,3 +389,99 @@ def test_publish_leaves_a_past_as_of_alone(fake_conn: _FakeConnection) -> None:
     )
     assert params is not None
     assert params[1] == stale
+
+
+# --- the class d guard (I-01) ----------------------------------------------------------
+
+
+def _mixed_df() -> pd.DataFrame:
+    """Three EIA rows (class b) and two Yahoo closes (class d, pipelines/futures/NOTES.md:330)."""
+    return pd.DataFrame(
+        {
+            "series_id": ["WCESTUS1"] * 3 + ["fut.cl.f01.close"] * 2,
+            "ts": pd.to_datetime(
+                ["2026-09-01", "2026-09-08", "2026-09-15", "2026-09-14", "2026-09-15"]
+            ),
+            "value": [420.0, 415.0, 410.0, 70.5, 71.0],
+            "unit": ["mb"] * 3 + ["USD"] * 2,
+            "geo": ["US"] * 5,
+            "freq": ["W"] * 3 + ["D"] * 2,
+            "source": ["eia"] * 3 + ["yfinance"] * 2,
+            "revision_date": pd.to_datetime(["2026-09-16"] * 5).date,
+        }
+    )
+
+
+def _publish(df: pd.DataFrame, table: str = "series_long", **kw: Any) -> int:
+    return publish(
+        table,
+        df,
+        as_of=datetime.now(UTC),
+        source_note="test",
+        key=kw.pop("key", ["series_id", "ts"]),
+        **kw,
+    )
+
+
+def test_publish_drops_class_d_rows_and_publishes_the_rest(
+    fake_conn: _FakeConnection, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert _publish(_mixed_df()) == 3
+
+    assert fake_conn.cur.copied_data[0].count("\n") == 3
+    assert "fut.cl.f01.close" not in fake_conn.cur.copied_data[0]
+    out = capsys.readouterr().out
+    assert "serving.series_long: 2 licence-restricted row(s) not published" in out
+    assert "fut.cl.f01.close" in out
+    log = next(p for sql, p in fake_conn.cur.executed if "insert into serving.publish_log" in sql)
+    assert log is not None and log[3] == 3  # row_count is what was written
+
+
+def test_publish_of_only_class_d_rows_writes_nothing_and_no_log_row(
+    fake_conn: _FakeConnection,
+) -> None:
+    only_yahoo = _mixed_df().iloc[3:]
+    assert _publish(only_yahoo) == 0
+    assert fake_conn.cur.executed == []
+    assert fake_conn.cur.copy_calls == []
+    assert not fake_conn.committed
+
+
+def test_publish_refuses_an_unregistered_source_before_any_sql(
+    fake_conn: _FakeConnection,
+) -> None:
+    mystery = _mixed_df().iloc[:1].assign(source="mystery")
+    with pytest.raises(UnregisteredSourceError, match="mystery"):
+        _publish(mystery)
+    assert fake_conn.cur.executed == []
+
+
+def test_the_guard_runs_even_when_no_database_is_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # An unset SUPABASE_DB_URL skips the publish; it must not skip the rights check, or a
+    # sweep on a machine with no database would never learn that a source is unregistered.
+    monkeypatch.setattr("core.publish.settings.supabase_db_url", None)
+    mystery = _mixed_df().iloc[:1].assign(source="mystery")
+    with pytest.raises(UnregisteredSourceError):
+        _publish(mystery)
+
+
+def test_publish_drops_a_restricted_series_id_from_a_frame_with_no_source_column(
+    fake_conn: _FakeConnection,
+) -> None:
+    seasonal = pd.DataFrame(
+        {"series_id": ["fut.ng.f01.close"] * 2, "doy": [1, 2], "median": [3.0, 3.1]}
+    )
+    assert _publish(seasonal, "seasonal", key=["series_id", "doy"], pipeline="wpsr") == 0
+    assert fake_conn.cur.executed == []
+
+
+def test_publish_drops_derived_rows_by_the_class_of_their_inputs(
+    fake_conn: _FakeConnection,
+) -> None:
+    base = _mixed_df().iloc[:2].assign(source="derived")
+    moving_average = base.assign(series_id="derived.ma.cl.50")
+    cushing = base.assign(series_id="derived.cushing.stocks")
+    assert _publish(moving_average) == 0
+    assert _publish(cushing) == 2

@@ -259,9 +259,12 @@ class _FakeConnection:
         pass
 
 
-def test_main_publishes_both_tables_without_touching_a_real_database(
-    monkeypatch: pytest.MonkeyPatch,
+def test_main_publishes_spreads_but_not_the_vendor_reconstructed_curve(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    # `curve_settles` is the contract-coded Brent curve reconstructed from a vendor export
+    # (source "manual", class d in core/rights.py), so the rights guard keeps it off the
+    # serving layer; `spreads` comes from EIA's rank-based settles (class b) and goes out.
     conn = _FakeConnection()
     monkeypatch.setattr("core.publish.psycopg.connect", lambda *a, **k: conn)
     monkeypatch.setattr("core.publish.settings.supabase_db_url", "postgresql://fake")
@@ -276,10 +279,11 @@ def test_main_publishes_both_tables_without_touching_a_real_database(
         for sql, params in conn.cur.executed
         if "insert into serving.publish_log" in sql
     ]
-    assert [p[0] for p in logged if p is not None] == ["curve_settles", "spreads"]
+    assert [p[0] for p in logged if p is not None] == ["spreads"]
+    assert "serving.curve_settles:" in capsys.readouterr().out
     assert all(p is not None and p[4] == "curve" for p in logged)
     assert all(p is not None and isinstance(p[1], datetime) for p in logged)
 
     upserts = [sql for sql, _ in conn.cur.executed if "on conflict" in sql]
-    assert any("(root, trade_date, contract) do update" in sql for sql in upserts)
+    assert not any("(root, trade_date, contract) do update" in sql for sql in upserts)
     assert any("(root, trade_date, legs) do update" in sql for sql in upserts)

@@ -9,6 +9,12 @@ the handful of sources whose pipelines happen to publish.
 Run it after a full `run_scheduled` pass, or on its own. It is idempotent -- the upsert
 refreshes rows rather than duplicating them.
 
+**Rights.** Every source in the lake is walked, but `core.publish.publish()` only lets
+through what `core/rights.py` allows: class d sources and restricted series are dropped
+(and named on the log line), and a source missing from the register raises, so it fails
+this sweep loudly instead of publishing. Class d sources are still read before they are
+dropped; that costs time, not correctness.
+
 **One source at a time, deliberately.** `read_ts_long()` with no `source=` scans every
 partition in the lake before filtering; narrowing the glob per source is far cheaper and
 keeps peak memory to one source's frame rather than 1.6 million rows at once.

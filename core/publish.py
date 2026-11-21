@@ -20,6 +20,7 @@ import psycopg
 import requests
 
 from core.failures import describe_exception
+from core.rights import drop_restricted
 from core.seasonal import (
     FIRST_SEASONAL_YEAR,
     REFERENCE_YEAR,
@@ -68,6 +69,11 @@ def publish(
     Returns the number of rows actually written -- 0 when the publish was skipped, so a
     caller's own log line cannot claim a publish that never happened.
 
+    **Rights.** Rows of a class d source, and rows of a restricted series, are dropped
+    before anything else happens (`core.rights.drop_restricted`); a frame whose source is
+    not in the register raises `UnregisteredSourceError`. A frame that is entirely
+    restricted returns 0 and writes no `publish_log` row.
+
     Chunked COPY-into-a-temp-table + `INSERT ... ON CONFLICT DO UPDATE` (Spec 32 §3).
     COPY has no bound on row count per chunk, unlike a parameterised multi-row INSERT,
     which would hit Postgres' ~65,535-parameter limit well before `chunk_size` rows for
@@ -84,6 +90,20 @@ def publish(
             f"{table!r} is not a whitelisted serving.* table ({sorted(_ALLOWED_TABLES)})"
         )
     _check_identifiers([*df.columns, *key])
+
+    # The rights guard (core/rights.py, RIGHTS.md): nothing of class d reaches the
+    # anon-readable serving layer, and a source nobody has classified raises here, before
+    # any SQL and before the "no database configured" skip below. Rows already dropped
+    # are named on one line so a run that publishes less than it read says so.
+    df, restricted = drop_restricted(df, table, pipeline=pipeline)
+    if restricted:
+        shown = ", ".join(list(restricted)[:3]) + (", ..." if len(restricted) > 3 else "")
+        print(
+            f"serving.{table}: {sum(restricted.values())} licence-restricted row(s) not"
+            f" published ({shown})"
+        )
+        if df.empty:
+            return 0
 
     # `as_of` can never be in the future. Callers derive it from `df["ts"].max()`, which
     # is right for an observed series but wrong for a forecast one: OPEC's MOMR carries
