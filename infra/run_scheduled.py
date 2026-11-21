@@ -3,9 +3,9 @@ per-pipeline entrypoints (each already independently idempotent/resilient) are
 just never *called* on a schedule until now. Run via
 `.venv\\Scripts\\python.exe -m infra.run_scheduled --cadence <label>` -- registered
 against Windows Task Scheduler by `infra/register_tasks.ps1`, per this project's
-own lake-on-laptop decision (see infra/README.md): GitHub Actions stays CI-only
-(`.github/workflows/ci.yml`), since a cloud runner has no access to this laptop's
-real `data/` lake or `.env` secrets.
+own lake-on-laptop decision (see infra/README.md): no GitHub Actions workflow exists,
+since a cloud runner has no access to this laptop's real `data/` lake or `.env`
+secrets.
 
 Every cadence group entry is `(label, "pipelines.pkg.module")` rather than a
 direct callable -- `main` is imported lazily inside `run_cadence`, not at module

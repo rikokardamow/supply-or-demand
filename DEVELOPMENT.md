@@ -32,6 +32,7 @@ Tests: pytest + vcrpy cassettes in `tests/cassettes/`.
 - Run app: `streamlit run apps/dashboard/app.py`
 - Tests: `pytest` | Lint: `ruff check .` | Types: `mypy core pipelines infra apps`
 - New pipeline: scaffold under `pipelines/<source>/` with its own `NOTES.md`, client, and cassette test.
+- Gate: `make check` (ruff, mypy, pytest) before every merge. There is no CI.
 
 ## Code review procedure
 Run these in order — cheapest first, and never skip step 1.
@@ -47,7 +48,7 @@ Run these in order — cheapest first, and never skip step 1.
    - `pr-test-analyzer` — new pipeline code, checked against its cassette.
    - `type-design-analyzer` — changes to `core/schemas.py` invariants.
    - `code-reviewer` — reads this NOTES.md and checks the diff against the golden rules.
-4. `/security-review` before merging anything that touches `infra/`, `railway.toml`,
+4. `/security-review` before merging anything that touches `infra/`,
    `core/settings.py`, or a new API client — i.e. anywhere a key could leak (golden rule 1).
 5. `/code-review ultra` before a large merge to `main` (multi-agent cloud review of the branch;
    user-triggered and billed, so ask first).
@@ -231,8 +232,8 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 All real secrets live in a single git-ignored `.env` (`.env.example` is the tracked template,
 values blank); `core.settings` (pydantic-settings) is the only place they're read from — never
 hardcode a key in a pipeline client. Before any commit, run the secret-scan check in
-Commands section above; `tests/test_cassette_secrets.py` runs the same check in CI
-against every committed cassette, so a real key accidentally baked into a recorded fixture fails
+Commands section above; `tests/test_cassette_secrets.py` runs the same check as part of
+`make check` against every committed cassette, so a real key accidentally baked into a recorded fixture fails
 the build rather than landing on `main` silently.
 
 **If a real key is ever exposed** — printed into a chat transcript, committed, or pasted into

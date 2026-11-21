@@ -1,6 +1,6 @@
-# Targets mirror .github/workflows/ci.yml and the root NOTES.md's own Commands section --
-# keep the three checks below identical to what CI runs, or `make check` passing locally
-# stops meaning anything.
+# `make check` is the gate: run it locally before every merge. There is no CI and no
+# GitHub Actions workflow. The tests replay recorded cassettes, but core.settings still needs
+# the required API keys to be set (any placeholder value will do); see .env.example.
 .PHONY: install lint typecheck test check dev clean
 
 install:

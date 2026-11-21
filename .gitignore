@@ -40,12 +40,7 @@ Thumbs.db
 .streamlit/secrets.toml
 
 # Local data / snapshots
-manual_settlements/*.csv
-!manual_settlements/.gitkeep
-# Manual drops. specs/00_TRADING_CONVENTIONS.md says these are git-ignored, but the
-# `manual_settlements/` rule above never matched the real path the code uses
-# (`pipelines/futures/client.py::MANUAL_FUTURES_DIR` is `data/manual/futures`), so
-# nothing under data/manual/ was actually ignored.
+# Manual drops (`pipelines/futures/client.py::MANUAL_FUTURES_DIR` is `data/manual/futures`).
 data/manual/**/*.csv
 !data/manual/**/.gitkeep
 *.parquet
@@ -68,7 +63,6 @@ site/.vercel/
 # Build artefacts and local run output. tsbuildinfo is a machine-specific incremental
 # cache -- it was tracked by accident and produces a diff on every build.
 *.tsbuildinfo
-*.log
 .next/
 site/site.log
 

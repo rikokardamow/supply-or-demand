@@ -9,10 +9,10 @@ so a cloud runner could pull data, then somehow getting the resulting parquet
 back onto this laptop, is real complexity for zero benefit over just running the
 pull where the human analyst and the lake already live.
 
-**Decision**: `.github/workflows/ci.yml` stays exactly as it is — CI only
-(ruff/mypy/pytest against recorded cassettes, no live API calls, no real
-secrets). Every scheduled *data pull* runs locally, via **Windows Task
-Scheduler** (this is Windows, not Linux — no cron here).
+**Decision**: There is no CI. `make check` (ruff, mypy and pytest against recorded
+cassettes, no live API calls, no real secrets) runs locally before every merge, and
+no GitHub Actions workflow exists. Every scheduled *data pull* runs locally, via
+**Windows Task Scheduler** (this is Windows, not Linux — no cron here).
 
 ## How it works
 
