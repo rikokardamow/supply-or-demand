@@ -358,6 +358,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
   - The byte-identity test for the fixture stays green, since the fixture is net long below its high.
 - **Risk.** None.
 - **Implement in this run: yes.**
+- **Status: done in 7749d92. `pytest -q`: 1332 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. All four acceptance strings match exactly (the minus in the "−5 thousand" case is the true minus from `ps.signed`). Extra cases: a flat book (net rounds to 0) reads "Managed money is flat, ..." and an end-to-end net-short lake gives a "net short" chart title. The committed fixture caption is unchanged.**
 
 #### I-21 Lock the README exhibits to the desk rules: `STRICT_DESK` on, and rule-8 unit spellings
 
