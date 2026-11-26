@@ -113,6 +113,11 @@ def test_rights_md_is_the_rendering_of_the_register() -> None:
         ("derived.cot.cl.mm_pct_3y", "b"),  # CFTC
         ("derived.crack.us321.m1", "b"),  # EIA futures ranks
         ("derived.spread.cl.s12", "b"),
+        ("derived.curve.cl.regime", "b"),
+        ("derived.curve.cl.f01_adj", "b"),
+        ("derived.spread.lco.s12", "d"),  # contract-coded Brent: manual or IBKR settles
+        ("derived.curve.lco.regime", "d"),
+        ("derived.spread.ng.s12", "d"),
         ("derived.pos.carry.cl", "b"),
         ("derived.unmapped.thing", "d"),  # no input mapping: unknown means unread
     ],
@@ -259,3 +264,18 @@ def test_events_rows_are_judged_by_their_own_source_column() -> None:
 def test_an_empty_frame_passes_through() -> None:
     kept, dropped = drop_restricted(_frame([]), "series_long", pipeline=None)
     assert kept.empty and dropped == {}
+
+
+def test_the_derived_curve_map_covers_exactly_the_roots_the_eia_ranks_cover() -> None:
+    # pipelines/derived/curve_ranks.py reads EIA's rank series for these roots; the other
+    # roots in pipelines.futures.client.ROOTS are built from contract-coded settles, which
+    # come only from class d sources (I-18).
+    from pipelines.derived.curve_ranks import RANK_ROOTS
+    from pipelines.futures.client import ROOTS
+
+    for root in RANK_ROOTS:
+        assert series_class("derived", f"derived.spread.{root}.s12") == "b", root
+        assert series_class("derived", f"derived.curve.{root}.regime") == "b", root
+    for root in set(ROOTS) - set(RANK_ROOTS):
+        assert series_class("derived", f"derived.spread.{root}.s12") == "d", root
+        assert series_class("derived", f"derived.curve.{root}.regime") == "d", root

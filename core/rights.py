@@ -379,9 +379,11 @@ DERIVED_INPUTS: Final[tuple[tuple[re.Pattern[str], tuple[str, ...]], ...]] = (
     (re.compile(r"^derived\.cot\."), ("cftc",)),
     (re.compile(r"^derived\.crack\..+\.spot$"), ("fred",)),
     (re.compile(r"^derived\.crack\..+\.m\d$"), ("eia",)),
-    # pipelines/derived/curve_ranks.py reads the EIA rank series. curve.py would read
-    # contract-coded manual settles, but writes nothing today (no series_meta rows).
-    (re.compile(r"^derived\.(spread|curve)\."), ("eia",)),
+    # pipelines/derived/curve_ranks.py reads the EIA rank series, for these four roots
+    # only (curve_ranks.RANK_ROOTS; a test asserts the two agree). Any other root is built
+    # by curve.py from contract-coded settles, which come from manual or IBKR (class d),
+    # so it matches nothing here and is class d.
+    (re.compile(r"^derived\.(spread|curve)\.(cl|rb|ho|hu)\."), ("eia",)),
     (re.compile(r"^derived\.pos\."), ("eia", "cftc")),
 )
 """`derived` series id to the sources its inputs come from. An id that matches none is

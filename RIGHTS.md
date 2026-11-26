@@ -65,7 +65,7 @@ A `derived` series takes the worst class among the sources its inputs come from.
 | `^derived\.cot\.` | cftc | b |
 | `^derived\.crack\..+\.spot$` | fred | a |
 | `^derived\.crack\..+\.m\d$` | eia | b |
-| `^derived\.(spread|curve)\.` | eia | b |
+| `^derived\.(spread|curve)\.(cl|rb|ho|hu)\.` | eia | b |
 | `^derived\.pos\.` | eia, cftc | b |
 
 ## Series kept off the serving layer whatever their source

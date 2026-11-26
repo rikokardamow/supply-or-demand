@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime
 
 import pandas as pd
+from core import rights
 from core.curve import (
     REGIME_CODES,
     convexity,
@@ -27,18 +28,17 @@ from pipelines.futures.series_meta import read_series_meta
 _SPREAD_COLUMNS = ("s12", "s13", "s16", "s1_12", "s23")
 
 
-def contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
-    """Public (not module-private) so apps/dashboard/pages/18_curve.py can reuse this same
-    settle-pivot logic directly, matching pipelines/eia/transforms.py's own
-    "page imports a pipeline's transform helper" precedent."""
+def _settles_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """The root's series_meta rows and the lake's settle rows for its contracts."""
     root_meta = meta[meta["root"] == root]
     if root_meta.empty:
-        return pd.DataFrame(), pd.Series(dtype="datetime64[ns]")
+        return root_meta, pd.DataFrame()
+    series_ids = [f"fut.{root}.{c}.settle" for c in root_meta["contract"].tolist()]
+    return root_meta, read_ts_long(series_ids=series_ids)
 
-    contracts = root_meta["contract"].tolist()
-    series_ids = [f"fut.{root}.{c}.settle" for c in contracts]
-    long_df = read_ts_long(series_ids=series_ids)
-    if long_df.empty:
+
+def _panel_from(root_meta: pd.DataFrame, long_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+    if root_meta.empty or long_df.empty:
         return pd.DataFrame(), pd.Series(dtype="datetime64[ns]")
 
     long_df = long_df.copy()
@@ -49,6 +49,13 @@ def contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.
     # contract before any real settle data for it has landed.
     expiries = expiries.loc[expiries.index.intersection(contract_panel.columns)]
     return contract_panel, expiries
+
+
+def contract_panel_for(root: str, meta: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
+    """Public (not module-private) so apps/dashboard/pages/18_curve.py can reuse this same
+    settle-pivot logic directly, matching pipelines/eia/transforms.py's own
+    "page imports a pipeline's transform helper" precedent."""
+    return _panel_from(*_settles_for(root, meta))
 
 
 def _write_derived(
@@ -73,10 +80,30 @@ def _write_derived(
     return len(df)
 
 
+def restricted_sources(long_df: pd.DataFrame) -> list[str]:
+    """The class d sources among a settle frame's rows (`core.rights.SOURCE_CLASS`). A
+    source the register does not know counts as restricted: no mapping means not read."""
+    sources = sorted(set(long_df["source"].astype(str)))
+    return [s for s in sources if rights.SOURCE_CLASS.get(s, "d") == "d"]
+
+
 def pull_root(root: str, meta: pd.DataFrame, ingested_at: pd.Timestamp) -> int:
-    contract_panel, expiries = contract_panel_for(root, meta)
+    root_meta, long_df = _settles_for(root, meta)
+    contract_panel, expiries = _panel_from(root_meta, long_df)
     if contract_panel.empty or len(expiries) < 2:
         print(f"{root}: not enough contracts for a curve yet", flush=True)
+        return 0
+
+    # Every derived.spread.* / derived.curve.* row is written under source "derived",
+    # which inherits its class from its inputs. Class d settles (a vendor export, IBKR)
+    # must not become class b rows in that shared partition (RIGHTS.md).
+    restricted = restricted_sources(long_df)
+    if restricted:
+        print(
+            f"{root}: settles come from class d source(s) {restricted}; "
+            "derived curve rows not written (RIGHTS.md)",
+            flush=True,
+        )
         return 0
 
     _adjusted, unadj, _roll_dates = nearby_panel(contract_panel, expiries)
