@@ -18,20 +18,30 @@ def inventory_deviation(
     reimplement the day-of-year/exclude-2020 seasonal maths) -- `df` needs columns ts,
     value. Columns returned: value (the latest year's own track), mean/min/max (min/max are
     seasonal_stats' own lo/hi, renamed to match this project's own convention), dev
-    (value-mean), dev_z (dev / the standard deviation across the included years, at that
-    same day-of-year). NaN wherever std is 0 or too few years remain, never a crash."""
+    (value-mean), dev_z (dev / the standard deviation across the `years` years before the
+    latest, 2020 excluded, at that same day-of-year). The latest year is the value being
+    measured, so it is not in its own benchmark (see core.seasonal.default_years): the band
+    comes from one call and the latest track from a second, as core.publish.seasonal_rows
+    does. NaN wherever std is 0 or too few years remain, never a crash."""
     current_year = int(df["ts"].dt.year.max())
-    years_range = range(current_year - years, current_year + 1)
-    stats = seasonal_stats(df, "value", years=years_range, exclude=exclude)
+    stats = seasonal_stats(
+        df, "value", years=range(current_year - years, current_year), exclude=exclude
+    )
+    latest = seasonal_stats(
+        df, "value", years=range(current_year, current_year + 1), exclude=exclude
+    )
 
     year_cols = [c for c in stats.columns if c not in ("lo", "hi", "median")]
+    index = stats.index.union(latest.index)
     year_values = stats[year_cols]
-    mean = year_values.mean(axis=1)
-    std = year_values.std(axis=1)
+    mean = year_values.mean(axis=1).reindex(index)
+    std = year_values.std(axis=1).reindex(index)
 
     latest_col = str(current_year)
-    value = stats[latest_col] if latest_col in stats.columns else pd.Series(
-        np.nan, index=stats.index
+    value = (
+        latest[latest_col].reindex(index)
+        if latest_col in latest.columns
+        else pd.Series(np.nan, index=index)
     )
     dev = value - mean
     dev_z = dev / std
@@ -40,12 +50,12 @@ def inventory_deviation(
         {
             "value": value,
             "mean": mean,
-            "min": stats["lo"],
-            "max": stats["hi"],
+            "min": stats["lo"].reindex(index),
+            "max": stats["hi"].reindex(index),
             "dev": dev,
             "dev_z": dev_z,
         },
-        index=stats.index,
+        index=index,
     )
 
 

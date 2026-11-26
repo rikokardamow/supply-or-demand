@@ -37,8 +37,37 @@ def test_inventory_deviation_excludes_2020_from_mean_and_dev() -> None:
     # Non-2020 years hover around 398-405; if 2020's 1000 leaked in, mean would be far
     # higher (roughly (1000+398+402+400+401)/5 = 520 vs the real ~401.2 excluding 2020).
     some_doy = result.index[100]
-    assert result.loc[some_doy, "mean"] == pytest.approx(401.2, abs=1.0)
+    # The band is the four prior years (2022 to 2025: 398, 402, 400, 401), so the mean is
+    # 1601 / 4 = 400.25; 2026 (405) is the value being measured and is not in it (I-17).
+    assert result.loc[some_doy, "mean"] == pytest.approx(400.25, abs=1e-9)
     assert result.loc[some_doy, "max"] < 1000.0
+
+
+def test_inventory_deviation_measures_the_latest_year_against_the_years_before_it() -> None:
+    result = inventory_deviation(_synthetic_stocks_df(), years=5, exclude=(2020,))
+    row = result.loc[result.index[100]]
+    # Hand-worked: prior years 398, 402, 400, 401 -> mean 400.25, min 398, max 402; the
+    # squared deviations are 5.0625 + 3.0625 + 0.0625 + 0.5625 = 8.75, so the sample
+    # standard deviation is sqrt(8.75 / 3) = 1.7078; dev = 405 - 400.25 = 4.75 and
+    # dev_z = 4.75 / 1.7078 = 2.781. With 2026 inside its own band the old code gave
+    # mean 401.2, max 405 and dev_z 1.468.
+    assert row["value"] == 405.0
+    assert row["mean"] == pytest.approx(400.25, abs=1e-9)
+    assert row["min"] == 398.0
+    assert row["max"] == 402.0
+    assert row["dev"] == pytest.approx(4.75, abs=1e-9)
+    assert row["dev_z"] == pytest.approx(2.781, abs=1e-3)
+
+
+def test_a_record_level_sits_above_the_band_it_is_measured_by() -> None:
+    result = inventory_deviation(_synthetic_stocks_df(), years=5, exclude=(2020,))
+    assert (result["value"] > result["max"]).all()
+
+
+def test_inventory_deviation_with_no_prior_year_is_nan_not_a_crash() -> None:
+    dates = pd.date_range("2026-01-01", "2026-03-31", freq="D")
+    result = inventory_deviation(pd.DataFrame({"ts": dates, "value": 100.0}), years=5)
+    assert result["dev_z"].isna().all()
 
 
 def test_inventory_deviation_dev_z_is_nan_when_std_is_zero() -> None:
