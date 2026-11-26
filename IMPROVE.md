@@ -389,6 +389,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
 - **Acceptance.** Use a synthetic W-FRI series where the change in the week ending on or before 2 October is +1.0 (2021), −1.0 (2022), +3.0 (2023), 0.0 (2024), +2.0 (2025) and **−2.0** (2026, the latest). The same-week median is **+1.0** and the range is **−1.0 to +3.0**. The title reads "US crude stocks ▼2.0 mb in the week to Oct 2, against a 2021 to 2025 median of ▲1.0 mb for the week". The chart passes lint under I-21's settings and is byte-identical between two runs.
 - **Risk.** It shares I-16's January edge: build it after I-16, or the first week of 2027 breaks it as well.
 - **Implement in this run: yes.** Code and tests only; drawing it needs the owner's lake.
+- **Status: done in e5178b4. `pytest -q`: 1343 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. Hand-worked acceptance holds on the synthetic W-FRI lake: same-week median +1.0, range -1.0 to +3.0, title "US crude stocks ▼2.0 mb in the week to Oct 2, against a 2021 to 2025 median of ▲1.0 mb for the week" (arrow and size, as the item's string has no minus sign), lint clean under `desk_rules()`, byte-identical between two runs. Registered in `CHARTS`; `weekly_change_band` uses `seasonal_stats` on the first difference, no new seasonal maths. Image and README line not added (owner line in PARKING.md); the chart was rendered once to /tmp to check the layout by eye.**
 
 ### Order for the implementer (round 2)
 
