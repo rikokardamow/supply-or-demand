@@ -19,3 +19,4 @@ Open choices and ideas not taken yet. One line each; the long form is in `IMPROV
 - Before merging I-01 to I-04 and I-09: run the I-02 dry run against the pooler URL, read what is still served, then decide on `--apply`. Not run in the build session.
 - After I-15: retake a dashboard screenshot for the README once I-07 (or another public-domain price) feeds the headline cards and I-11 settles the colours.
 - After I-21: redraw the four README exhibits from the lake (`uv run python -m apps.exhibits.readme_charts`); the committed `docs/img/*` captions still use the old spellings ("million barrels", "thousand contracts") until then. Then update the figure captions in `README.md` to match the new `.tex` files.
+- After I-22: draw `crude_weekly_change` from the lake (`uv run python -m apps.exhibits.readme_charts`), then add its image and caption line to `README.md` (no README line yet, because there is no drawn file to point at).

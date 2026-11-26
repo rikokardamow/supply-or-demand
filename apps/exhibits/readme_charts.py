@@ -2,9 +2,10 @@
 
     uv run python -m apps.exhibits.readme_charts [--lake data/lake] [--out docs/img]
 
-Four exhibits, one per kind of data the lake holds: a seasonal band (US crude
-stocks), weekly positioning (CFTC managed money in WTI), directional flows
-(crude between PADDs by mode) and a second seasonal band (EU gas storage).
+Five exhibits: a seasonal band (US crude stocks), the week's change in those stocks
+against the same week in prior years, weekly positioning (CFTC managed money in WTI),
+directional flows (crude between PADDs by mode) and a second seasonal band (EU gas
+storage).
 Every number is read from the lake, never typed in; the seasonal maths is
 core.seasonal, with 2020 excluded by rule.
 
@@ -202,6 +203,79 @@ def crude_stocks(lake: Lake) -> Figure:
     return fig
 
 
+def arrow_mb(value: float) -> str:
+    """A change in mb as a direction and a size: '\u25b21.0 mb', '\u25bc2.0 mb'."""
+    shown = round(value, 1)
+    arrow = "\u25b2" if shown > 0 else "\u25bc" if shown < 0 else "\u25cf"
+    return f"{arrow}{abs(shown):.1f} mb"
+
+
+def weekly_change_band(stocks_kb: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """The weekly change in stocks (mb) and its seasonal band.
+
+    `stocks_kb` is ts, value in thousand barrels. The change is the first difference, and
+    the band is `seasonal.seasonal_stats` on that change over `band_years`: for each day of
+    the year, the range and median of the change in the report that held on that day in
+    each of the five prior years, 2020 excluded. No new seasonal maths."""
+    ordered = stocks_kb.sort_values("ts")
+    changes = pd.DataFrame({"ts": ordered["ts"], "value": ordered["value"].diff() / 1000})
+    changes = changes.dropna().reset_index(drop=True)
+    stats = seasonal.seasonal_stats(changes, "value", years=band_years(changes))
+    return changes, stats
+
+
+def crude_weekly_change(lake: Lake) -> Figure:
+    changes, stats = weekly_change_band(lake.series("WCESTUS1", "eia"))
+    years = band_years(changes)
+    recent = changes.tail(26)
+    doy = [seasonal.reference_doy_clamped(t) for t in recent["ts"]]
+    lo, hi = stats["lo"].reindex(doy).to_numpy(), stats["hi"].reindex(doy).to_numpy()
+    median = stats["median"].reindex(doy).to_numpy()
+    x = mdates.date2num(recent["ts"])
+    fig, ax = new_figure()
+    ax.fill_between(x, lo, hi, color=ps.TOKENS["border"], linewidth=0, step="mid")
+    ax.plot(x, median, color=ps.PALETTE[2], linestyle=ps.DASHES[1], linewidth=1.2)
+    ax.bar(x, recent["value"], width=5, color=ps.PALETTE[0])
+    ax.axhline(0, color=ps.TOKENS["text_muted"], linewidth=0.6)
+    last_v, last_t = float(recent["value"].iloc[-1]), recent["ts"].iloc[-1]
+    end_label(
+        ax, float(x[-1]), last_v, f"Week to {last_t:%b %-d}", f"{ps.signed(last_v)} mb",
+        ps.PALETTE[0],
+    )
+    span = _span(years)
+    notes = ((f"{span} range", float(hi[-1]), 4), (f"{span} median", float(median[-1]), -9))
+    for text, y, dy in notes:
+        ax.annotate(
+            text,
+            (float(x[-1]), y),
+            xytext=(5, dy),
+            textcoords="offset points",
+            fontsize=7.5,
+            color=ps.TOKENS["text_muted"],
+            annotation_clip=False,
+            path_effects=ps.halo(),
+        )
+    ps.date_axis(ax)
+    median_now = float(median[-1])
+    ps.frame(
+        fig,
+        title=f"US crude stocks {arrow_mb(last_v)} in the week to {last_t:%b %-d}, "
+        f"against a {span} median of {arrow_mb(median_now)} for the week",
+        subtitle="Weekly change in US commercial crude stocks, excluding the Strategic "
+        f"Petroleum Reserve, over the last 26 weeks, against the range and median of the "
+        f"same week in {span}, with 2020 excluded by rule",
+        units="mb",
+        cadence="weekly",
+        source="U.S. EIA, Weekly Petroleum Status Report (series WCESTUS1)",
+        licence="Public domain",
+        asof=last_t.date(),
+        xlabel="Week ending",
+        ylabel="Weekly change in commercial crude stocks (mb)",
+        margins=MARGINS,
+    )
+    return fig
+
+
 def positioning_finding(net_last: float, net_max: float, peak: pd.Timestamp) -> str:
     """Sentence 1 of the CFTC caption: managed money's net position in thousand contracts
     against its three-year high of `net_max`, reached in `peak`'s month.
@@ -330,6 +404,7 @@ def eu_gas_storage(lake: Lake) -> Figure:
 
 CHARTS: dict[str, Callable[[Lake], Figure]] = {
     "crude_stocks": crude_stocks,
+    "crude_weekly_change": crude_weekly_change,
     "cftc_positioning": cftc_positioning,
     "interpadd_flows": interpadd_flows,
     "eu_gas_storage": eu_gas_storage,

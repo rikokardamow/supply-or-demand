@@ -3,13 +3,21 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterator
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytest
 from apps.exhibits import readme_charts
 from core import paper_style as ps
+
+
+@pytest.fixture(autouse=True)
+def _close_figures() -> Iterator[None]:
+    yield
+    plt.close("all")
 
 
 def _write(root: Path, rel: str, df: pd.DataFrame) -> None:
@@ -252,12 +260,14 @@ def test_the_chart_title_says_net_short_when_the_fixture_book_is_net_short(
 
 EXPECTED_UNITS = {
     "crude_stocks": "mb",
+    "crude_weekly_change": "mb",
     "cftc_positioning": "contracts",
     "interpadd_flows": "mb/d",
     "eu_gas_storage": "%",
 }
 EXPECTED_YLABELS = {
     "crude_stocks": "Commercial crude stocks (mb)",
+    "crude_weekly_change": "Weekly change in commercial crude stocks (mb)",
     "cftc_positioning": "Managed-money positions (contracts; short below zero)",
     "interpadd_flows": "Crude moved between PADDs (mb/d)",
     "eu_gas_storage": "EU gas storage, share of working capacity (%)",
@@ -333,3 +343,79 @@ def test_the_positioning_chart_plots_contracts_not_thousands(lake: Path) -> None
     assert fig.axes[0].yaxis.get_major_formatter()(150000, 0) == "150,000"
     title = ps.field(fig, "title")
     assert "thousand contracts" in title
+
+
+# --- the weekly change against its own seasonal norm (I-22) -----------------------------
+
+# The change in the week ending on or before 2 October, by year (2 October 2026 is a
+# Friday; the week ending on or before it is 1 Oct 2021, 30 Sep 2022, 29 Sep 2023,
+# 27 Sep 2024 and 26 Sep 2025). Every other week changes by 0.5 mb.
+OCT_2_CHANGES = {2021: 1.0, 2022: -1.0, 2023: 3.0, 2024: 0.0, 2025: 2.0, 2026: -2.0}
+
+
+def _change_lake(tmp_path: Path) -> Path:
+    weeks = pd.date_range("2020-01-03", "2026-10-02", freq="W-FRI")
+    change = pd.Series(0.5, index=weeks)
+    for year, value in OCT_2_CHANGES.items():
+        change[weeks[weeks <= pd.Timestamp(f"{year}-10-02")][-1]] = value
+    level_kb = (400_000.0 + 1000.0 * change.cumsum()).to_numpy()
+    root = tmp_path / "change_lake"
+    _write(
+        root,
+        "ts_long/source=eia",
+        pd.DataFrame(
+            {
+                "ts": weeks,
+                "series_id": "WCESTUS1",
+                "value": level_kb,
+                "revision_date": weeks.normalize(),
+            }
+        ),
+    )
+    return root
+
+
+def test_the_weekly_change_is_set_against_the_same_week_of_the_five_prior_years(
+    tmp_path: Path,
+) -> None:
+    lk = readme_charts.Lake(_change_lake(tmp_path))
+    changes, stats = readme_charts.weekly_change_band(lk.series("WCESTUS1", "eia"))
+    assert changes["value"].iloc[-1] == pytest.approx(-2.0)
+    from core import seasonal
+
+    doy = seasonal.reference_doy_clamped(pd.Timestamp("2026-10-02"))
+    # Hand-worked: +1, -1, +3, 0, +2 sorted are -1, 0, +1, +2, +3: median +1, range -1 to +3.
+    assert stats.loc[doy, "median"] == pytest.approx(1.0)
+    assert stats.loc[doy, "lo"] == pytest.approx(-1.0)
+    assert stats.loc[doy, "hi"] == pytest.approx(3.0)
+
+
+def test_the_weekly_change_title_states_the_finding_with_arrows(tmp_path: Path) -> None:
+    lk = readme_charts.Lake(_change_lake(tmp_path))
+    with readme_charts.desk_rules():
+        fig = readme_charts.crude_weekly_change(lk)
+        assert ps.field(fig, "title") == (
+            "US crude stocks \u25bc2.0 mb in the week to Oct 2, against a 2021 to 2025 median "
+            "of \u25b21.0 mb for the week"
+        )
+        assert ps.lint(fig, axis_labels=True) == []
+        assert fig._ps_frame["units"] == "mb"  # type: ignore[attr-defined]
+        assert "WCESTUS1" in ps.caption(fig) and "Public domain" in ps.caption(fig)
+
+
+def test_the_weekly_change_is_a_registered_chart_and_byte_stable(tmp_path: Path) -> None:
+    assert "crude_weekly_change" in readme_charts.CHARTS
+    root = _change_lake(tmp_path)
+    only = {"crude_weekly_change": readme_charts.CHARTS["crude_weekly_change"]}
+    from unittest import mock
+
+    with mock.patch.dict(readme_charts.CHARTS, only, clear=True):
+        first = _hashes(readme_charts.build_all(root, tmp_path / "a"))
+        second = _hashes(readme_charts.build_all(root, tmp_path / "b"))
+    assert first == second and len(first) == 3
+
+
+def test_a_week_with_no_change_or_a_build_gets_the_right_arrow() -> None:
+    assert readme_charts.arrow_mb(2.0) == "\u25b22.0 mb"
+    assert readme_charts.arrow_mb(-2.0) == "\u25bc2.0 mb"
+    assert readme_charts.arrow_mb(0.0) == "\u25cf0.0 mb"
