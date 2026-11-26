@@ -344,6 +344,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
   - The `tests/test_pages_smoke.py` page smoke tests stay green.
 - **Risk.** It touches six pages. Each change replaces one line with one call, and the smoke tests cover the pages.
 - **Implement in this run: yes.**
+- **Status: done in f8cac81. `pytest -q`: 1326 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. Added `reference_doy`, `reference_date_clamped`, `reference_doy_clamped`, `current_year_rows` and `current_track` to `core/seasonal.py`. Acceptance values hold (panel (50.0, 50.0) on 2028-03-05; track of 64 rows with a unique index; 2028-02-29 gives 59). Beyond the six sites the item named, the guard test found and fixed `pipelines/eia/transforms.py`, `pipelines/gie/transforms.py`, `apps/artifacts/exhibits.py`, `core/cracks.py`, `core/publish.py` and `event_overlay.py`. Behaviour change: an event dated 29 February is now drawn on 28 February on a day-of-year chart (it used to be skipped). The inventory pipeline leaves a 29 February report out of the z-score series (tested).**
 
 #### I-20 The CFTC README chart's finding is wrong whenever managed money is net short
 
