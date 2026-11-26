@@ -377,6 +377,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
   - The byte-identity test is updated once, to the new expected bytes, and stays green between two runs.
 - **Risk.** The committed PNGs and captions stay on the old spellings until the owner redraws. The I-04 and I-20 tests also read the caption text, so update them together.
 - **Implement in this run: yes.**
+- **Status: done in 72b0e2c. `pytest -q`: 1339 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. `build_all` now runs inside a new `desk_rules()` context manager (STRICT_DESK on, UNITS set to mb, mb/d, kb, kb/d, contracts, %), which restores both switches even when a chart fails. Units are mb, contracts, mb/d and %, axis labels as written in the item, and the CFTC panel plots contracts with a thousands-separator tick formatter. Two findings: (1) `ps.field(fig, "units")` raises KeyError (`field` takes only title, subtitle and footer), so the test reads `fig._ps_frame["units"]`, the stored caption field; (2) the existing byte-identity test compares two runs and has no committed expected bytes, so nothing needed updating. `docs/img/*` is not redrawn (owner line in PARKING.md).**
 
 #### I-22 A fifth README exhibit: this week's crude build or draw against the same week in the five prior years
 
