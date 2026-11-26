@@ -118,8 +118,8 @@ def seasonal_panel(
     and the median for the same day."""
     years = band_years(df)
     stats = seasonal.seasonal_stats(df, "value", years=years)
-    this_year = df[df["ts"].dt.year == df["ts"].max().year]
-    doy = seasonal._normalised_doy(this_year["ts"])
+    this_year = seasonal.current_year_rows(df)
+    doy = seasonal.reference_doy(this_year["ts"])
     jan1 = date(seasonal.REFERENCE_YEAR, 1, 1)
     x = mdates.date2num([jan1 + pd.Timedelta(days=int(d) - 1) for d in stats.index])
     xs = mdates.date2num([jan1 + pd.Timedelta(days=int(d) - 1) for d in doy])

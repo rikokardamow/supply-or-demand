@@ -23,8 +23,8 @@ from core.failures import describe_exception
 from core.rights import drop_restricted
 from core.seasonal import (
     FIRST_SEASONAL_YEAR,
-    REFERENCE_YEAR,
     default_years,
+    reference_doy_clamped,
     seasonal_stats,
 )
 from core.settings import settings
@@ -270,16 +270,12 @@ SEASONAL_COLUMNS: Final = (
 def _today_doy() -> int:
     """Today's day-of-year on `core.seasonal`'s own normalised calendar.
 
-    `REFERENCE_YEAR` (2001) is not a leap year, so `date(2028, 2, 29).replace(year=2001)`
-    raises `ValueError: day is out of range for month`. `core.seasonal` never hits this
-    because `_drop_leap_day` filters 29 February out before `_normalised_doy` sees it --
-    but *today* arrives unfiltered. 29 February is clamped to the 28th, matching
-    `_drop_leap_day`'s treatment of the day as not existing on this calendar.
+    `core.seasonal` never meets 29 February, because `_drop_leap_day` filters it out
+    before the reference year is applied -- but *today* arrives unfiltered.
+    `reference_doy_clamped` takes 29 February as the 28th, matching `_drop_leap_day`'s
+    treatment of the day as not existing on this calendar.
     """
-    today = date.today()
-    if (today.month, today.day) == (2, 29):
-        return date(REFERENCE_YEAR, 2, 28).timetuple().tm_yday
-    return today.replace(year=REFERENCE_YEAR).timetuple().tm_yday
+    return reference_doy_clamped(pd.Timestamp(date.today()))
 
 
 def seasonal_rows(df: pd.DataFrame, series_id: str, unit: str | None = None) -> pd.DataFrame:

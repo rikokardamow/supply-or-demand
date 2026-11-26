@@ -22,7 +22,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from core.seasonal import REFERENCE_YEAR, seasonal_stats
+from core.seasonal import reference_doy_clamped, seasonal_stats
 
 GAL_PER_BBL = 42.0
 """US barrel = 42 US gallons. RBOB and heating oil settle in $/gal."""
@@ -132,10 +132,8 @@ def rbob_splice_flag(ts: pd.DatetimeIndex | pd.Series) -> pd.Series:
 
 def _reference_doy(ts: pd.Timestamp) -> int:
     """Day-of-year on core.seasonal's own non-leap reference year, so the board looks up
-    the same row seasonal_stats indexed by."""
-    if ts.month == 2 and ts.day == 29:
-        ts = ts.replace(day=28)  # seasonal_stats drops 29 Feb outright
-    return int(ts.replace(year=REFERENCE_YEAR).dayofyear)
+    the same row seasonal_stats indexed by (29 February is taken as the 28th)."""
+    return reference_doy_clamped(ts)
 
 
 def _seasonal_mean(series: pd.Series, as_of: pd.Timestamp) -> float:

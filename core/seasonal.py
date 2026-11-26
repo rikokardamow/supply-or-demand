@@ -42,6 +42,55 @@ def _normalised_doy(ts: pd.Series) -> pd.Series:
     return result
 
 
+def _is_leap_day(ts: pd.Series) -> pd.Series:
+    result: pd.Series = (ts.dt.month == 2) & (ts.dt.day == 29)
+    return result
+
+
+def reference_doy(ts: pd.Series) -> pd.Series:
+    """Day of year on the non-leap reference calendar, for a Series of timestamps, with
+    29 February rows dropped (the calendar has no such day; `seasonal_stats` drops it from
+    every band too). The result keeps the index of the rows it keeps.
+
+    The one place a date is put on the reference calendar: an open-coded
+    `ts.replace(year=2001)` raises on 29 February, which is how the daily charts broke
+    for all of 2028."""
+    ts = pd.to_datetime(ts)
+    kept = ts[~_is_leap_day(ts)]
+    after_feb_in_leap_year = kept.dt.is_leap_year & (kept.dt.month > 2)
+    result: pd.Series = kept.dt.dayofyear - after_feb_in_leap_year.astype(int)
+    return result
+
+
+def reference_date_clamped(ts: pd.Timestamp) -> pd.Timestamp:
+    """One date on the reference calendar. 29 February becomes 28 February (a single date
+    must land somewhere; a Series goes through `reference_doy`, which drops it)."""
+    day = 28 if (ts.month == 2 and ts.day == 29) else ts.day
+    return pd.Timestamp(year=REFERENCE_YEAR, month=ts.month, day=day)
+
+
+def reference_doy_clamped(ts: pd.Timestamp) -> int:
+    """Day of year of one date on the reference calendar, 29 February taken as the 28th."""
+    return int(reference_date_clamped(ts).dayofyear)
+
+
+def current_year_rows(df: pd.DataFrame, value_col: str = "value") -> pd.DataFrame:
+    """The latest calendar year's rows (ts, value_col), oldest first, 29 February dropped."""
+    latest = df[df["ts"].dt.year == df["ts"].dt.year.max()].sort_values("ts")
+    rows: pd.DataFrame = latest.loc[~_is_leap_day(latest["ts"]), ["ts", value_col]]
+    return rows
+
+
+def current_track(df: pd.DataFrame, value_col: str = "value") -> pd.Series:
+    """The latest calendar year's values indexed by reference day of year, 29 February
+    dropped: the track a seasonal chart draws against `seasonal_stats`' band."""
+    rows = current_year_rows(df, value_col)
+    return pd.Series(
+        rows[value_col].to_numpy(),
+        index=pd.Index(reference_doy(rows["ts"]).to_numpy(), name="doy"),
+    )
+
+
 def _daily_ffill_by_year(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
     """Forward-fill each calendar year's series onto a dense daily grid.
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pandas as pd
-from core.seasonal import seasonal_stats
+from core.seasonal import reference_doy_clamped, seasonal_stats
 
 
 def net_flow(injection: pd.Series, withdrawal: pd.Series) -> pd.Series:
@@ -60,7 +60,7 @@ def country_deviation(fill_by_country: dict[str, pd.DataFrame]) -> pd.DataFrame:
             continue
         stats = seasonal_stats(df, value_col="value")
         latest = df.sort_values("ts").iloc[-1]
-        latest_doy = pd.Timestamp(latest["ts"]).replace(year=2001).dayofyear
+        latest_doy = reference_doy_clamped(pd.Timestamp(latest["ts"]))
         median = stats["median"].get(latest_doy)
         if median is None:
             continue

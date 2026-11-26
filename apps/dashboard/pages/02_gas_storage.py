@@ -12,7 +12,7 @@ from components.event_overlay import add_event_markers
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
 from components.section import empty_state, page_header, section
-from core.seasonal import seasonal_stats
+from core.seasonal import current_track, seasonal_stats
 from core.theme import (
     NAVY,
     RED,
@@ -88,10 +88,7 @@ def _worm_chart(
         return None
 
     stats = seasonal_stats(df, value_col="value")
-    current_year = df["ts"].dt.year.max()
-    current = df[df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(df)
 
     return seasonal_range_chart(
         stats,
@@ -172,10 +169,7 @@ def _net_flow_seasonal_section(geo: str) -> None:
         return
 
     stats = seasonal_stats(net_df, value_col="value")
-    current_year = net_df["ts"].dt.year.max()
-    current = net_df[net_df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(net_df)
 
     title = f"{geo} Net Daily Injection/Withdrawal — Seasonal"
     fig = seasonal_minmaxmean_chart(stats, current_year_series, unit="GWh/d")
@@ -189,10 +183,7 @@ def _worm_chart_minmaxmean(series_id: str, unit: str) -> go.Figure | None:
         return None
 
     stats = seasonal_stats(df, value_col="value")
-    current_year = df["ts"].dt.year.max()
-    current = df[df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(df)
 
     return seasonal_minmaxmean_chart(stats, current_year_series, unit=unit)
 

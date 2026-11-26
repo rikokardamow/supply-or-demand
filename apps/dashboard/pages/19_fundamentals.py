@@ -34,7 +34,7 @@ from core.fundamentals import (
     inventory_deviation,
     osp_signal,
 )
-from core.seasonal import REFERENCE_YEAR, seasonal_stats
+from core.seasonal import current_track, seasonal_stats
 from core.theme import RED, seasonal_range_chart, sign_agreement_scatter, simple_time_series_chart
 from pipelines.cftc.client import CONTRACT_CODES
 from pipelines.manual_physical.reader import read_physical_csvs
@@ -80,10 +80,7 @@ with tab_inventory:
             empty_state("eia", "weekly", None)
         else:
             stats = seasonal_stats(stocks_df[["ts", "value"]], value_col="value")
-            current_year = stocks_df["ts"].dt.year.max()
-            current = stocks_df[stocks_df["ts"].dt.year == current_year].sort_values("ts")
-            reference_doy = current["ts"].map(lambda d: d.replace(year=REFERENCE_YEAR)).dt.dayofyear
-            current_year_series = current.set_index(reference_doy)["value"]
+            current_year_series = current_track(stocks_df[["ts", "value"]])
 
             fig = seasonal_range_chart(stats, current_year_series, unit=" mb")
             st.plotly_chart(fig)

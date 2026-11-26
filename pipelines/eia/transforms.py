@@ -4,7 +4,7 @@ core.seasonal, not here — this module is for WPSR-specific derived metrics onl
 from __future__ import annotations
 
 import pandas as pd
-from core.seasonal import seasonal_stats
+from core.seasonal import reference_doy_clamped, seasonal_stats
 
 
 def days_of_cover(stocks: pd.Series, product_supplied: pd.Series) -> pd.Series:
@@ -19,7 +19,7 @@ def _vs_median(group: pd.DataFrame, latest_ts: pd.Timestamp, latest_value: float
     if len(group) < 2:
         return float("nan")
     stats = seasonal_stats(group, value_col="value")
-    latest_doy = pd.Timestamp(latest_ts).replace(year=2001).dayofyear
+    latest_doy = reference_doy_clamped(pd.Timestamp(latest_ts))
     median = stats["median"].get(latest_doy)
     return latest_value - median if median is not None else float("nan")
 

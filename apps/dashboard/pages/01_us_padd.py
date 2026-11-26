@@ -15,7 +15,7 @@ from components.lake import read_flows, read_ts_long
 from components.padd_map import render_padd_flow_map
 from components.section import empty_state, page_header, section, source_note
 from core.calendars import next_release
-from core.seasonal import seasonal_stats
+from core.seasonal import current_track, seasonal_stats
 from core.theme import NAVY, RED, dual_axis_chart, seasonal_range_chart
 from pipelines.eia.pull_wpsr import (
     GROSS_INPUTS,
@@ -103,10 +103,7 @@ def _seasonal_section(series_id: str, unit: str, take: str | None = None) -> Non
         return
 
     stats = seasonal_stats(df, value_col="value")
-    current_year = df["ts"].dt.year.max()
-    current = df[df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(df)
 
     fig = seasonal_range_chart(stats, current_year_series, unit=unit)
     add_event_markers(fig, commodity="crude", x_axis="doy")

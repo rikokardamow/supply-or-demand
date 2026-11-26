@@ -12,7 +12,7 @@ from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
 from components.section import empty_state, page_header, section
 from core.macro import deflate
-from core.seasonal import seasonal_stats
+from core.seasonal import current_track, seasonal_stats
 from core.theme import (
     LIGHT_BLUE,
     multi_year_overlay_chart,
@@ -75,10 +75,7 @@ def _seasonal_section(series_id: str, title: str, unit: str, take: str | None = 
         return
 
     stats = seasonal_stats(df, value_col="value")
-    current_year = df["ts"].dt.year.max()
-    current = df[df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(df)
 
     fig = seasonal_range_chart(stats, current_year_series, unit=unit)
     with section(title):

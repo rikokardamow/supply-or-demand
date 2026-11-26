@@ -14,7 +14,7 @@ import streamlit as st
 from components.kardamow_take import kardamow_take
 from components.lake import read_ts_long
 from components.section import empty_state, page_header, section
-from core.seasonal import seasonal_stats
+from core.seasonal import current_track, reference_doy_clamped, seasonal_stats
 from core.theme import NAVY, dual_axis_chart, seasonal_range_chart
 from pipelines.gie.transforms import net_flow
 from pipelines.weather.anomaly_maps import read_manifest
@@ -96,7 +96,7 @@ def _anomaly_series(
     if combined.empty:
         return pd.Series(dtype=float)
 
-    doy = pd.Index([ts.replace(year=2001).dayofyear for ts in combined.index])
+    doy = pd.Index([reference_doy_clamped(ts) for ts in combined.index])
     baseline = clim_lookup.reindex(doy).to_numpy()
     return pd.Series(combined.to_numpy() - baseline, index=combined.index)
 
@@ -111,17 +111,14 @@ def _climatology_section(region: str) -> None:
     history_df = history.reset_index()
     history_df.columns = ["ts", "value"]
     stats = seasonal_stats(history_df, value_col="value")
-    current_year = history_df["ts"].dt.year.max()
-    current = history_df[history_df["ts"].dt.year == current_year].sort_values("ts")
-    reference_doy = current["ts"].map(lambda d: d.replace(year=2001)).dt.dayofyear
-    current_year_series = current.set_index(reference_doy)["value"]
+    current_year_series = current_track(history_df)
 
     title = f"{region.upper()} Population-Weighted HDD — Seasonal"
     fig = seasonal_range_chart(stats, current_year_series, unit="degree-days")
 
     forecast = _series_by_ts(f"{series_id}.forecast", source="open_meteo_forecast")
     if not forecast.empty:
-        forecast_doy = [ts.replace(year=2001).dayofyear for ts in forecast.index]
+        forecast_doy = [reference_doy_clamped(ts) for ts in forecast.index]
         fig.add_trace(
             go.Scatter(
                 x=forecast_doy,

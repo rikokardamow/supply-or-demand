@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 import pandas as pd
 from core.failures import fails_loudly, record_failure
 from core.fundamentals import cot_percentiles, inventory_deviation
-from core.seasonal import REFERENCE_YEAR
+from core.seasonal import current_year_rows, reference_doy
 from core.storage import read_ts_long, write_ts_long
 
 from pipelines.cftc.client import CONTRACT_CODES
@@ -51,12 +51,11 @@ def _pull_inventory_deviation(ingested_at: pd.Timestamp) -> int:
     # by day-of-year, not a real calendar date -- map the latest year's own real dates
     # back onto it (same reference_doy technique 01_us_padd.py's own _seasonal_section
     # already uses) before this can be written as a ts_long series.
-    current = stocks.sort_values("ts")
-    current_year = current["ts"].dt.year.max()
-    current = current[current["ts"].dt.year == current_year]
-    reference_doy = current["ts"].map(lambda d: d.replace(year=REFERENCE_YEAR)).dt.dayofyear
+    # A report dated 29 February has no day on that calendar and is left out.
+    current = current_year_rows(stocks)
+    doy = reference_doy(current["ts"])
     dev_z_by_date = pd.Series(
-        result["dev_z"].reindex(reference_doy).to_numpy(), index=current["ts"].to_numpy()
+        result["dev_z"].reindex(doy).to_numpy(), index=current["ts"].to_numpy()
     )
 
     return _write_derived(

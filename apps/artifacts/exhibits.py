@@ -14,7 +14,7 @@ from datetime import date, datetime
 from typing import Any, Final
 
 import pandas as pd
-from core.seasonal import REFERENCE_YEAR
+from core.seasonal import REFERENCE_YEAR, reference_date_clamped
 
 from . import tables
 
@@ -312,9 +312,7 @@ def seasonal_exhibit(
     ]
     for point in _turning_points(this_year, digits):
         if point["y"] != _num(latest):
-            stamp = pd.Timestamp(point["x"])
-            leap_day = stamp.month == 2 and stamp.day == 29
-            point["x"] = _iso(stamp.replace(year=REFERENCE_YEAR, day=28 if leap_day else stamp.day))
+            point["x"] = _iso(reference_date_clamped(pd.Timestamp(point["x"])))
             annotations.append(point)
 
     change_text = "" if change is None else f", {_signed(change, digits)} on the week"

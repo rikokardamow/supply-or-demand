@@ -7,10 +7,8 @@ Supports two x-axis conventions already in use across this dashboard's charts:
 - `x_axis="date"` (default) -- a real calendar-timestamp x-axis
   (`core.theme.dual_axis_chart`/`time_series_area_chart`/etc.).
 - `x_axis="doy"` -- a day-of-year x-axis (`core.theme.seasonal_range_chart` and every
-  other `core.seasonal`-based chart), matching `core.seasonal.REFERENCE_YEAR`'s own
-  non-leap-year alignment convention (ad-hoc-replicated the same way
-  `apps/dashboard/pages/08_weather.py` already does inline, rather than importing
-  `core.seasonal`'s private `_normalised_doy`)."""
+  other `core.seasonal`-based chart), on `core.seasonal`'s non-leap reference calendar
+  (`reference_doy_clamped`: a 29 February event is drawn on 28 February)."""
 
 from __future__ import annotations
 
@@ -18,7 +16,7 @@ from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
-from core.seasonal import REFERENCE_YEAR
+from core.seasonal import reference_doy_clamped
 from core.theme import GREY, ORANGE, RED
 
 from components.lake import read_events
@@ -37,13 +35,6 @@ MAX_MARKERS = 50
 # itself uses, and avoids colliding with charts that already use a real y2 (e.g.
 # dual_axis_chart).
 _MARKER_YAXIS = "y3"
-
-
-def _doy(ts: pd.Timestamp) -> int | None:
-    try:
-        return int(ts.replace(year=REFERENCE_YEAR).dayofyear)
-    except ValueError:
-        return None  # Feb 29 events have no day-of-year in a non-leap reference year
 
 
 def add_event_markers(
@@ -77,10 +68,7 @@ def add_event_markers(
         headlines: list[str] = []
         severities: list[int] = []
         for _, row in events.iterrows():
-            doy = _doy(pd.Timestamp(row["ts"]))
-            if doy is None:
-                continue
-            x_values.append(doy)
+            x_values.append(reference_doy_clamped(pd.Timestamp(row["ts"])))
             headlines.append(str(row["headline"]))
             severities.append(int(row["severity"]))
     else:
