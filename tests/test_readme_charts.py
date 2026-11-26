@@ -182,3 +182,67 @@ def test_the_crude_panel_is_drawn_on_the_first_report_of_a_year() -> None:
     _, ax = readme_charts.new_figure()
     latest, median = readme_charts.seasonal_panel(ax, df, lambda v, t: (f"{v:.0f}", f"{t:%b %-d}"))
     assert (latest, median) == (27.0, 23.0)
+
+
+# --- the positioning finding follows the sign of the book (I-20) -----------------------
+
+OCT_2023 = pd.Timestamp("2023-10-03")
+
+
+def test_a_net_long_book_below_its_high_gives_the_percentage_form() -> None:
+    # 100 * (1 - 54 / 257) = 78.99, so 79%: the caption as committed in docs/img.
+    assert readme_charts.positioning_finding(54.0, 257.0, OCT_2023) == (
+        "Managed money is net long 54 thousand contracts, 79% below its three-year high of "
+        "October 2023"
+    )
+
+
+def test_a_net_short_book_below_a_positive_high_gives_a_difference_not_a_percentage() -> None:
+    # -10 against +50: 60 thousand below; "120% below" was the old output.
+    assert readme_charts.positioning_finding(-10.0, 50.0, OCT_2023) == (
+        "Managed money is net short 10 thousand contracts, 60 thousand below its "
+        "three-year high of +50 thousand in October 2023"
+    )
+
+
+def test_a_net_short_book_below_a_negative_high_keeps_the_sign_of_the_high() -> None:
+    # -10 against -5: 5 thousand below, and the high itself is a net short of 5 thousand.
+    assert readme_charts.positioning_finding(-10.0, -5.0, pd.Timestamp("2025-03-04")) == (
+        "Managed money is net short 10 thousand contracts, 5 thousand below its "
+        f"three-year high of {ps.MINUS}5 thousand in March 2025"
+    )
+
+
+def test_a_book_at_its_high_says_so() -> None:
+    assert readme_charts.positioning_finding(60.0, 60.0, pd.Timestamp("2026-10-06")) == (
+        "Managed money is net long 60 thousand contracts, at its three-year high"
+    )
+    assert readme_charts.positioning_finding(-5.0, -5.0, pd.Timestamp("2026-10-06")) == (
+        "Managed money is net short 5 thousand contracts, at its three-year high"
+    )
+
+
+def test_a_flat_book_is_neither_long_nor_short() -> None:
+    assert readme_charts.positioning_finding(0.0, 40.0, OCT_2023) == (
+        "Managed money is flat, 40 thousand below its three-year high of +40 thousand in "
+        "October 2023"
+    )
+
+
+def test_the_chart_title_says_net_short_when_the_fixture_book_is_net_short(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "short_lake"
+    _write(
+        root,
+        "ts_long/source=cftc",
+        pd.concat(
+            [
+                _series("cftc.cl.mm_long", "2023-01-03", "2026-10-06", "7D", 5e4, 1e4),
+                _series("cftc.cl.mm_short", "2023-01-03", "2026-10-06", "7D", 2e5, 1e4),
+            ]
+        ),
+    )
+    title = ps.field(readme_charts.cftc_positioning(readme_charts.Lake(root)), "title")
+    assert title.startswith("Managed money is net short ")
+    assert "net long" not in title and "short -" not in title and "%" not in title

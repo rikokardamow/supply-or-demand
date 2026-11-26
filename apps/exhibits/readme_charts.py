@@ -182,6 +182,31 @@ def crude_stocks(lake: Lake) -> Figure:
     return fig
 
 
+def positioning_finding(net_last: float, net_max: float, peak: pd.Timestamp) -> str:
+    """Sentence 1 of the CFTC caption: managed money's net position in thousand contracts
+    against its three-year high of `net_max`, reached in `peak`'s month.
+
+    "Long" or "short" follows the sign of the book and the number is its absolute value.
+    The percentage below the high is only meaningful when both are net long (positive);
+    otherwise it is the difference in thousand contracts, with the high's own sign
+    (PROJECT-STARTER rule 3: direction is a sign, not a colour)."""
+    held = round(net_last)
+    if held == 0:
+        lead = "Managed money is flat"
+    else:
+        side = "long" if held > 0 else "short"
+        lead = f"Managed money is net {side} {abs(net_last):.0f} thousand contracts"
+    if net_last == net_max:
+        return f"{lead}, at its three-year high"
+    if net_last > 0 and net_max > 0:
+        below = 100 * (1 - net_last / net_max)
+        return f"{lead}, {below:.0f}% below its three-year high of {peak:%B %Y}"
+    return (
+        f"{lead}, {net_max - net_last:.0f} thousand below its three-year high of "
+        f"{ps.signed(net_max, 0)} thousand in {peak:%B %Y}"
+    )
+
+
 def cftc_positioning(lake: Lake) -> Figure:
     long = lake.series("cftc.cl.mm_long", "cftc").set_index("ts")["value"] / 1000
     short = lake.series("cftc.cl.mm_short", "cftc").set_index("ts")["value"] / 1000
@@ -205,9 +230,7 @@ def cftc_positioning(lake: Lake) -> Figure:
     peak = net.idxmax()
     ps.frame(
         fig,
-        title=f"Managed money is net long {net.iloc[-1]:.0f} thousand contracts, "
-        f"{100 * (1 - net.iloc[-1] / net.max()):.0f}% below its three-year high of "
-        f"{peak:%B %Y}",
+        title=positioning_finding(float(net.iloc[-1]), float(net.max()), peak),
         subtitle="Managed-money positioning in WTI crude futures: long above the axis, short "
         "below, net as the line. Bars, because the book is counted once a week and nothing is "
         "known in between",
