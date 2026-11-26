@@ -8,6 +8,10 @@ import pandas as pd
 
 REFERENCE_YEAR = 2001  # non-leap year, used only to align day-of-year across leap/non-leap years
 FIRST_SEASONAL_YEAR = 2018  # earliest year with full coverage across this project's sources
+CARRY_DAYS = 14
+"""A year's level starts from the previous year's last observation when that lies no more
+than this many days before 1 January. A weekly series has no report on 1 January itself, so
+without the carry every day before the year's first report is empty."""
 
 
 def default_years() -> range:
@@ -44,13 +48,22 @@ def _daily_ffill_by_year(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
     Source series here are weekly (EIA releases), and weekly release dates drift
     by a day or two year to year — pivoting on exact day-of-year would leave
     almost every day with data from at most one year, making cross-year
-    lo/hi/median meaningless. Forward-filling within each year (the value holds
-    until the next report) is the standard treatment for these storage/
-    inventory seasonal charts and gives every day-of-year real overlap.
+    lo/hi/median meaningless. Forward-filling (the value holds until the next
+    report) is the standard treatment for these storage/inventory seasonal charts
+    and gives every day-of-year real overlap. The fill starts from the previous
+    year's last observation when it is at most `CARRY_DAYS` before 1 January, so
+    the first days of January are not empty; a longer gap is left as NaN.
     """
+    ordered = df.sort_values("ts")
     frames = []
-    for year, year_df in df.groupby(df["ts"].dt.year):
-        series = year_df.sort_values("ts").set_index("ts")[value_col]
+    for year, year_df in ordered.groupby(ordered["ts"].dt.year):
+        series = year_df.set_index("ts")[value_col]
+        jan1 = pd.Timestamp(f"{year}-01-01")
+        previous = ordered[ordered["ts"] < jan1]
+        if not previous.empty and (jan1 - previous["ts"].iloc[-1]).days <= CARRY_DAYS:
+            # The level that held at the turn of the year, until this year's first report.
+            seed = previous.iloc[[-1]].set_index("ts")[value_col]
+            series = pd.concat([seed, series])
         daily_index = pd.date_range(f"{year}-01-01", f"{year}-12-31", freq="D")
         daily_values = series.reindex(daily_index, method="ffill")
         frames.append(pd.DataFrame({"ts": daily_index, value_col: daily_values.to_numpy()}))

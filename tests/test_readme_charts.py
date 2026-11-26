@@ -170,3 +170,15 @@ def test_2020_is_left_out_of_the_band_whatever_the_year() -> None:
     stats = seasonal.seasonal_stats(df, "value", years=years)
     assert "2020" not in stats.columns
     assert {"2021", "2022", "2023", "2024"} <= set(stats.columns)
+
+
+def test_the_crude_panel_is_drawn_on_the_first_report_of_a_year() -> None:
+    # 2027-01-01 is a Friday: the week ending 1 January is 2027's first report, and its
+    # band years first reported on Jan 7, 6, 5, 3 and 2. Day 1 used to be missing from the
+    # band and the panel raised KeyError (I-16). Every value in year y is y - 2000, so the
+    # latest is 27.0 and the day-1 median of 2022 to 2026 (carried from 21 to 25) is 23.0.
+    ts = pd.date_range("2021-01-01", "2027-01-01", freq="W-FRI")
+    df = pd.DataFrame({"ts": ts, "value": (ts.year - 2000).astype(float)})
+    _, ax = readme_charts.new_figure()
+    latest, median = readme_charts.seasonal_panel(ax, df, lambda v, t: (f"{v:.0f}", f"{t:%b %-d}"))
+    assert (latest, median) == (27.0, 23.0)
