@@ -324,6 +324,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
   - `tests/test_rights.py` passes, comparing the regenerated `RIGHTS.md` byte for byte.
 - **Risk.** None today, since no row changes. If the owner later wants a private Brent curve in the lake, that is a separate id namespace, and their call.
 - **Implement in this run: yes.** It enforces the class the register already gives `manual` and `ibkr`.
+- **Status: done in bbe4e1f. `pytest -q`: 1317 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. `series_class` now gives d for `derived.spread.lco.s12` and `derived.curve.lco.regime` (and every root outside cl/rb/ho/hu), b for the EIA rank roots; `curve.pull_root` returns 0 and writes nothing for manual settles, and more than 0 when `rights.SOURCE_CLASS` is patched so manual is b. A source the register does not know also counts as restricted. `RIGHTS.md` regenerated (one line) and byte-identical to the render.**
 
 #### I-19 Daily seasonal charts crash for all of 2028: 29 February reaches `replace(year=2001)`
 
