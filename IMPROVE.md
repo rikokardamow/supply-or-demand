@@ -278,6 +278,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
 - **Acceptance.** `grep -n "screenshots/" README.md` returns nothing; `git ls-files docs/screenshots` lists only `site-landing.png`; the new test passes; pytest is at 1300 or more passed.
 - **Risk.** The README loses its only picture of the web app. That is the honest state until I-07 lands.
 - **Implement in this run: yes.** It applies section 6 and rule 10 directly, with no decision about any source's class: Yahoo is already d in this repo's own register.
+- **Status: done in ce24921. `pytest -q`: 1300 passed, 17 deselected; `ruff check`: All checks passed. `git ls-files docs/screenshots` lists only `site-landing.png`; `grep -n "screenshots/" README.md` is empty. PARKING.md has the retake line.**
 
 #### I-16 Seasonal bands have no value before each year's first report: the README crude chart raises `KeyError` on the 2027-01-01 report, and the January "median" comes from one year
 
