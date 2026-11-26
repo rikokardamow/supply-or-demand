@@ -306,6 +306,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
 - **Acceptance.** On the existing fixture, at `result.index[100]`: mean **400.25**, min **398.0**, max **402.0**, dev **4.75**, dev_z **2.781** (±0.001). Tighten the existing assertion from `401.2 abs=1.0` to `400.25 abs=1e-9`. The std-zero test still yields all-NaN dev_z. The new pipeline test reads back 2026 rows whose last value is 2.781 ± 0.001, unit `z-score`.
 - **Risk.** The next `derived_fundamentals` run rewrites the current year's `derived.inv.dev_z.uscrude` rows with larger magnitudes, and the next sweep publishes them. It is not a frozen or pre-registered number; `specs/19_fundamentals-physical.md` records no score against it. Say so in the commit message.
 - **Implement in this run: yes.**
+- **Status: done in f67ca2a. `pytest -q`: 1308 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. Hand-worked fixture values confirmed (mean 400.25, min 398, max 402, dev 4.75, dev_z 2.781); the std-zero test still gives all-NaN. The band and the latest track now come from two `seasonal_stats` calls on a union index, so a frame with no prior year returns NaN rather than crashing (tested). Page 19 also calls `inventory_deviation` and picks up the corrected band.**
 
 #### I-18 Close the rights hole in derived curve series: class d settles would publish as class b
 
