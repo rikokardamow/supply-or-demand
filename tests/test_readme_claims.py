@@ -65,3 +65,11 @@ def test_the_readme_licence_table_lists_the_disputed_sources_as_pending() -> Non
     row = next(line for line in README.splitlines() if "GIE AGSI+" in line and line.startswith("|"))
     assert re.search(r"RIGHTS\.md", row)
     assert "pending" in row.lower()
+
+
+def test_the_readme_shows_no_screenshot_of_class_d_data() -> None:
+    # The dashboard capture showed Yahoo front-month closes, class d (core/rights.py):
+    # a picture of class d data is the data (PROJECT-STARTER section 6, rule 10).
+    assert "data-overview.png" not in README
+    assert "screenshots/" not in README
+    assert not (ROOT / "docs" / "screenshots" / "data-overview.png").exists()

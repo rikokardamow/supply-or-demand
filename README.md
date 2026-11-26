@@ -30,10 +30,6 @@ Crude moved between US regions is kept apart by mode because the mode is usually
 
 *Figure: EU gas storage is 73.3% full, 17.6 points below the median for the date. Source: GIE AGSI+ (series agsi.EU.full_pct); as of 2026-10-08.*
 
-The dashboard itself, as served:
-
-![The dashboard overview](docs/screenshots/data-overview.png)
-
 ## How it works
 
 One pipeline per source downloads the data and keeps the raw response. Every value is then written into one of a few shared shapes, validated on write: `ts_long` for a time series, `flows` for movement between two places, `events`, and `vessel_positions`. The lake is partitioned Parquet de-duplicated on series and date: a corrected number replaces the earlier one, and the write time is kept in `revision_date`. First prints are not retained yet (see `PARKING.md`). A publish step copies the serving set to Postgres with row-level security and a provenance log of which pipeline wrote what, when, and with what as-of date. The Next.js data site, the landing page and the Streamlit explorer read that copy, and the pipelines tell the sites when to refresh. Pipelines never draw and the sites never call a source API, which is what makes a chart reproducible offline.
