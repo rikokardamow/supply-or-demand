@@ -21,12 +21,14 @@ Series are labelled where they are drawn, one unit per axis.
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from datetime import date
 from pathlib import Path
 
 import duckdb
 import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
 import pandas as pd
 from core import paper_style as ps
 from core import seasonal
@@ -36,8 +38,26 @@ from matplotlib.figure import Figure
 BAND_SIZE = 5
 """How many prior years make the band, matching the artifacts' design system."""
 FORMATS = ("pdf", "png", "tex")
+DESK_UNITS = frozenset({"mb", "mb/d", "kb", "kb/d", "contracts", "%"})
+"""The unit spellings these exhibits may use (PROJECT-STARTER 7.2 rule 8)."""
 # Room on the right for labels at the ends of the lines (inches): left, right, top, bottom.
 MARGINS = (0.7, 1.45, 0.2, 0.55)
+
+
+@contextmanager
+def desk_rules() -> Iterator[None]:
+    """Hold the exhibits to the desk rules while they are drawn: no legend box, no twin
+    axis, no red or green, and only the unit spellings in `DESK_UNITS`. The switches are
+    paper_style's module globals, so the previous values are put back on the way out, even
+    when a chart fails, and other callers in the process are untouched."""
+    previous = ps.STRICT_DESK, ps.UNITS
+    ps.STRICT_DESK = True
+    ps.UNITS = DESK_UNITS  # type: ignore[assignment]  # paper_style declares it as None
+    try:
+        yield
+    finally:
+        ps.STRICT_DESK = previous[0]
+        ps.UNITS = previous[1]
 
 
 def end_label(ax: Axes, x: float, y: float, name: str, value: str, colour: str) -> None:
@@ -170,13 +190,13 @@ def crude_stocks(lake: Lake) -> Figure:
         subtitle=f"US commercial crude stocks against the same date in recent years, excluding "
         f"the Strategic Petroleum Reserve: {df['ts'].max().year} against the range and median "
         f"of {_span(band_years(df))}, with 2020 excluded by rule",
-        units="million barrels",
+        units="mb",
         cadence="weekly",
         source="U.S. EIA, Weekly Petroleum Status Report (series WCESTUS1)",
         licence="Public domain",
         asof=df["ts"].max().date(),
         xlabel="Month of the year",
-        ylabel="Crude stocks (million barrels)",
+        ylabel="Commercial crude stocks (mb)",
         margins=MARGINS,
     )
     return fig
@@ -208,8 +228,8 @@ def positioning_finding(net_last: float, net_max: float, peak: pd.Timestamp) -> 
 
 
 def cftc_positioning(lake: Lake) -> Figure:
-    long = lake.series("cftc.cl.mm_long", "cftc").set_index("ts")["value"] / 1000
-    short = lake.series("cftc.cl.mm_short", "cftc").set_index("ts")["value"] / 1000
+    long = lake.series("cftc.cl.mm_long", "cftc").set_index("ts")["value"]
+    short = lake.series("cftc.cl.mm_short", "cftc").set_index("ts")["value"]
     both = pd.DataFrame({"long": long, "short": short}).dropna()
     both = both[both.index >= both.index.max() - pd.Timedelta(days=3 * 365)]
     net = both["long"] - both["short"]
@@ -221,27 +241,30 @@ def cftc_positioning(lake: Lake) -> Figure:
     last = net.index[-1]
     x_last = float(mdates.date2num(last))
     for y, name, value, colour in (
-        (both["long"].iloc[-1], "long", f"{both['long'].iloc[-1]:.0f}k", ps.PALETTE[0]),
-        (net.iloc[-1], "net", f"{ps.signed(net.iloc[-1], 0)}k", ps.PALETTE[3]),
-        (-both["short"].iloc[-1], "short", f"{both['short'].iloc[-1]:.0f}k", ps.PALETTE[2]),
+        (both["long"].iloc[-1], "long", f"{both['long'].iloc[-1]:,.0f}", ps.PALETTE[0]),
+        (net.iloc[-1], "net", f"{net.iloc[-1]:+,.0f}".replace("-", ps.MINUS), ps.PALETTE[3]),
+        (-both["short"].iloc[-1], "short", f"{both['short'].iloc[-1]:,.0f}", ps.PALETTE[2]),
     ):
         end_label(ax, x_last, y, name, value, colour)
     ps.date_axis(ax)
+    ax.yaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda v, _: f"{v:,.0f}".replace("-", ps.MINUS))
+    )
     peak = net.idxmax()
     ps.frame(
         fig,
-        title=positioning_finding(float(net.iloc[-1]), float(net.max()), peak),
+        title=positioning_finding(float(net.iloc[-1]) / 1000, float(net.max()) / 1000, peak),
         subtitle="Managed-money positioning in WTI crude futures: long above the axis, short "
         "below, net as the line. Bars, because the book is counted once a week and nothing is "
         "known in between",
-        units="thousand contracts",
+        units="contracts",
         cadence="weekly",
         source="CFTC Commitments of Traders, disaggregated futures-only report "
         "(series cftc.cl.mm_long, cftc.cl.mm_short)",
         licence="Public domain",
         asof=last.date(),
         xlabel="Report week",
-        ylabel="Contracts (thousand; short below zero)",
+        ylabel="Managed-money positions (contracts; short below zero)",
         margins=MARGINS,
     )
     return fig
@@ -271,14 +294,14 @@ def interpadd_flows(lake: Lake) -> Figure:
         f"{rail.iloc[-1]:.2f} now; pipelines carry {wide['pipeline'].dropna().iloc[-1]:.1f}",
         subtitle="Crude oil moved between US regions, by mode of transport, all PADD pairs "
         "summed",
-        units="million barrels a day",
+        units="mb/d",
         cadence="monthly",
         source="U.S. EIA, movements of crude oil between PADDs "
         f"(latest month {wide.index.max():%B %Y})",
         licence="Public domain",
         asof=month_end(wide.index.max()),
         xlabel="Month",
-        ylabel="Crude moved (million barrels a day)",
+        ylabel="Crude moved between PADDs (mb/d)",
         margins=MARGINS,
     )
     return fig
@@ -294,12 +317,12 @@ def eu_gas_storage(lake: Lake) -> Figure:
         f"{'below' if v < m else 'above'} the median for the date",
         subtitle=f"EU gas storage against the same date in recent years, EU aggregate: "
         f"{df['ts'].max().year} against the range and median of {_span(band_years(df))}",
-        units="% of working capacity",
+        units="%",
         cadence="daily",
         source="GIE AGSI+ (series agsi.EU.full_pct)",
         asof=df["ts"].max().date(),
         xlabel="Month of the year",
-        ylabel="Storage (% of working capacity)",
+        ylabel="EU gas storage, share of working capacity (%)",
         margins=MARGINS,
     )
     return fig
@@ -318,8 +341,9 @@ def build_all(lake_root: Path, out: Path) -> list[Path]:
     lake = Lake(lake_root)
     out.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
-    for name, draw in CHARTS.items():
-        written.extend(Path(p) for p in ps.save(draw(lake), out / name, formats=FORMATS))
+    with desk_rules():
+        for name, draw in CHARTS.items():
+            written.extend(Path(p) for p in ps.save(draw(lake), out / name, formats=FORMATS))
     return written
 
 

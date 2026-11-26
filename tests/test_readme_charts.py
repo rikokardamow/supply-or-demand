@@ -246,3 +246,90 @@ def test_the_chart_title_says_net_short_when_the_fixture_book_is_net_short(
     title = ps.field(readme_charts.cftc_positioning(readme_charts.Lake(root)), "title")
     assert title.startswith("Managed money is net short ")
     assert "net long" not in title and "short -" not in title and "%" not in title
+
+
+# --- the README exhibits are held to the desk rules (I-21) ------------------------------
+
+EXPECTED_UNITS = {
+    "crude_stocks": "mb",
+    "cftc_positioning": "contracts",
+    "interpadd_flows": "mb/d",
+    "eu_gas_storage": "%",
+}
+EXPECTED_YLABELS = {
+    "crude_stocks": "Commercial crude stocks (mb)",
+    "cftc_positioning": "Managed-money positions (contracts; short below zero)",
+    "interpadd_flows": "Crude moved between PADDs (mb/d)",
+    "eu_gas_storage": "EU gas storage, share of working capacity (%)",
+}
+
+
+def test_the_charts_use_the_house_unit_spellings_and_axis_labels(lake: Path) -> None:
+    lk = readme_charts.Lake(lake)
+    with readme_charts.desk_rules():
+        for name, draw in readme_charts.CHARTS.items():
+            fig = draw(lk)
+            assert fig._ps_frame["units"] == EXPECTED_UNITS[name], name  # type: ignore[attr-defined]
+            assert fig.axes[0].get_ylabel() == EXPECTED_YLABELS[name], name
+
+
+def test_every_chart_passes_the_lint_under_the_desk_rules(lake: Path) -> None:
+    lk = readme_charts.Lake(lake)
+    with readme_charts.desk_rules():
+        assert ps.STRICT_DESK is True
+        for name, draw in readme_charts.CHARTS.items():
+            assert ps.lint(draw(lk), axis_labels=True) == [], name
+
+
+def test_a_red_line_cannot_be_saved_under_the_desk_rules(lake: Path, tmp_path: Path) -> None:
+    lk = readme_charts.Lake(lake)
+    with readme_charts.desk_rules():
+        fig = readme_charts.crude_stocks(lk)
+        fig.axes[0].plot([0, 1], [0, 1], color="#C0392B")
+        with pytest.raises(ValueError, match="red or green"):
+            ps.save(fig, tmp_path / "red", formats=("png",))
+
+
+def test_a_free_text_unit_is_refused_under_the_desk_rules() -> None:
+    _, ax = readme_charts.new_figure()
+    fig = ax.figure
+    with readme_charts.desk_rules(), pytest.raises(ValueError, match="allowed spelling"):
+        ps.frame(
+            fig,
+            title="Stocks rose 3 mb in the week.",
+            units="million barrels",
+            cadence="weekly",
+            source="s",
+            asof="2026-10-02",
+            xlabel="x",
+            ylabel="y",
+            margins=readme_charts.MARGINS,
+        )
+
+
+def test_the_switches_are_put_back_after_build_all(lake: Path, tmp_path: Path) -> None:
+    assert ps.STRICT_DESK is False and ps.UNITS is None
+    readme_charts.build_all(lake, tmp_path / "out")
+    assert ps.STRICT_DESK is False and ps.UNITS is None
+
+
+def test_the_switches_are_put_back_when_a_chart_fails(
+    lake: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def boom(_: readme_charts.Lake) -> None:
+        raise RuntimeError("no data")
+
+    monkeypatch.setitem(readme_charts.CHARTS, "crude_stocks", boom)  # type: ignore[arg-type]
+    with pytest.raises(RuntimeError):
+        readme_charts.build_all(lake, tmp_path / "out")
+    assert ps.STRICT_DESK is False and ps.UNITS is None
+
+
+def test_the_positioning_chart_plots_contracts_not_thousands(lake: Path) -> None:
+    lk = readme_charts.Lake(lake)
+    fig = readme_charts.cftc_positioning(lk)
+    top = max(p.get_height() for p in fig.axes[0].patches)
+    assert top > 1e4  # the fixture holds 2e5 long: contracts, with a thousands separator
+    assert fig.axes[0].yaxis.get_major_formatter()(150000, 0) == "150,000"
+    title = ps.field(fig, "title")
+    assert "thousand contracts" in title
