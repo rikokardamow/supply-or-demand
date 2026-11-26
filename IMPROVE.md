@@ -248,3 +248,152 @@ Work on `improve/run-01` only; do not push. Run `make check` after each item; re
 Expected end state: pytest count rises from 1205 by the new tests; ruff and mypy clean; web and site vitest unchanged (46 and 7). Commit identity: `git -c user.name=rikokardamow -c user.email=236246648+rikokardamow@users.noreply.github.com commit -m "..."`. Never `git add -A`; `.improve/`, `node_modules/` and `.next/` are not part of any commit.
 
 Yes items: I-01, I-02, I-03, I-04, I-09 (five). Everything else is in `PARKING.md`.
+
+---
+
+## Round 2 (26 Nov 2026)
+
+Written against `improve/run-01` at `3884a77` (round 1 plus its five implemented items). Checks run here: `EIA_API_KEY=x EMBER_API_KEY=x GIE_API_KEY=x ENTSOE_API_KEY=x FRED_API_KEY=x env -u VIRTUAL_ENV uv run pytest -q`: **1299 passed, 17 deselected**, 97 s, the same count round 1 ended on. Every failing input below was run in this worktree against the current code (throwaway scripts outside the repo); nothing in the repo was changed except this section.
+
+### (a) Re-triage of round 1's "no" items
+
+I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built but has not been run. Running it is the owner's job and is already in `PARKING.md`.
+
+- **I-05 first prints:** still the owner's call. The owner must decide where vintages live: in this lake (`core/storage.py:182-183` changed to keep every changed value), in `desk-core` P-01 pit-store only, or in both.
+- **I-06 the six disputed sources:** still the owner's call. For each of GIE, ENTSO-E, ENTSOG, FRED, OPEC MOMR and Baker Hughes, the owner must either read the terms and record a class, or mark it d in `core/rights.py`. GIE also decides whether the EU gas storage README chart stays up (I-15 below takes the screenshot down, but not this chart).
+- **I-07 EIA spot in place of Yahoo:** partly doable now. The pipeline half can be done without the owner: add `RWTC`, `RBRTE` and `RNGWHHD` to `pipelines/eia/pull_prices.py` and record one cassette with a live EIA key read by name. That needs a live call, but no money and no decision. Switching the pages is still the owner's call: they must decide whether the front page shows EIA daily spot labelled "spot" in place of a front-month futures close.
+- **I-08 unit vocabulary:** still the owner's call for the lake. The owner must approve rewriting the existing lake partitions (`MBBL` to `kb` and so on) and decide whether the artifact layer's spelled-out units ("million barrels") give way to rule 8. The README exhibits' units can be fixed now (I-21 below).
+- **I-10 the web build:** the fact can be written down now. One README sentence can say that `pnpm build` in `web/` needs `web/.env.local` and a reachable serving layer, which round 1 measured. Choosing between keeping Supabase SSR and moving to a static export is still the owner's call.
+- **I-11 house style on the dashboards:** still the owner's call: restyle, or mark as legacy. The decision now also has to cover `web/`, which uses `--red: #ff5a4d` for deficits (`web/src/components/tables/HeatTable.tsx:158`), red and green delta chips (visible in `docs/screenshots/data-overview.png`) and Plotly (`web/src/theme/plotly.ts:17`). Option (b)'s `STRICT_DESK` half no longer needs the owner: all four README charts pass `ps.lint(..., axis_labels=True)` with `STRICT_DESK = True` today (run here), so it is I-21 below.
+- **I-12 unmerged branches:** still the owner's call. The owner must decide, in order: merge `fix/entsoe-forward-wind-forecast` (after reading its window change), `chore/move-weather-spec`, `docs/readme-and-notes` (README conflict with I-03), `docs/forecasting-roadmap` and `docs/energy-analyst-notes`. Then decide on `feat/sd-models`, the two `*-rebuilt` model branches and `feat/dash-app`, and delete the seven rewritten-history branches.
+- **I-13 retire what the private desks own:** still the owner's call. The owner must list which of the trading layer (specs 18-27), the GRP module (specs 28.*) and the weather anomaly maps stay public.
+- **I-14 `released_at`:** still the owner's call. It depends on I-05, and it is a schema change, which `DEVELOPMENT.md:16` (rule 7) says to ask about first.
+
+### (b) New items, ranked by value
+
+#### I-15 Take the dashboard screenshot out of the README: it shows Yahoo (class d) prices on the public front page
+
+- **Why.** `README.md:35` embeds `docs/screenshots/data-overview.png`. The image shows the Yahoo front-month closes, which `core/rights.py:347-353` classes d and the README's own licence table says are "kept out of the serving layer". The headline cards read WTI 95.62, Brent 100.56 and Henry Hub 2.85, and a "Brent and WTI, front-month close" chart sits under them. The screenshot also carries red and green delta chips and sparklines (banned by PROJECT-STARTER 7.2 rule 4), the units `USD/bbl` and `MBBL` (rule 8), and a "PRIMARY SOURCES ONLY" badge that is false for Yahoo. Section 6 and rule 10: a chart drawn from class d data lives only under `.local/`. The guard from I-01 stops new rows reaching the serving layer, but this picture is the same data, committed and displayed on the repo's front page. The file is referenced nowhere else (`grep -rn data-overview` finds only `README.md:35`).
+- **Exact change.** Delete the two README lines "The dashboard itself, as served:" and the image line (`README.md:33-35`). `git rm docs/screenshots/data-overview.png`; the copy in history stays, because pushed history is never rewritten. `docs/screenshots/site-landing.png` is referenced nowhere; leave it alone. In `tests/test_readme_claims.py`, add `test_the_readme_shows_no_screenshot_of_class_d_data`: `"data-overview.png" not in README` and `not (ROOT / "docs/screenshots/data-overview.png").exists()`. Add one line to `PARKING.md`: "Retake a dashboard screenshot for the README once I-07 (or another public-domain price) feeds the headline cards and I-11 settles the colours."
+- **Acceptance.** `grep -n "screenshots/" README.md` returns nothing; `git ls-files docs/screenshots` lists only `site-landing.png`; the new test passes; pytest is at 1300 or more passed.
+- **Risk.** The README loses its only picture of the web app. That is the honest state until I-07 lands.
+- **Implement in this run: yes.** It applies section 6 and rule 10 directly, with no decision about any source's class: Yahoo is already d in this repo's own register.
+
+#### I-16 Seasonal bands have no value before each year's first report: the README crude chart raises `KeyError` on the 2027-01-01 report, and the January "median" comes from one year
+
+- **Why.** `core/seasonal.py:51-56` (`_daily_ffill_by_year`) forward-fills inside each calendar year only. A weekly series is therefore NaN from 1 January until that year's first report, and `pivot_table` drops a day of the year that no band year covers. WPSR weeks end on Fridays. 2027-01-01 is a Friday, so the week ending 1 January 2027 (released 6 January 2027, about six weeks from now) is the first report of 2027. Its band years 2022 to 2026 first report on Jan 7, 6, 5, 3 and 2, so day 1 is missing from the band.
+  - Run here on a W-FRI series from 2021-01-01 to 2027-01-01: `seasonal_stats(..., years=range(2022, 2027))` has a minimum day of 2, and `readme_charts.seasonal_panel` raises `KeyError: 1` at `apps/exhibits/readme_charts.py:156`. `uv run python -m apps.exhibits.readme_charts` would then fail on its first chart for that whole week.
+  - The same gap reaches public numbers. `pipelines/eia/wpsr_lines.py:119-122` returns `vs_median_pct = None` when the day is missing. With the default 2018-2026 window, day 1 is covered only by 2021, whose first report fell on 1 January 2021, so the published "median" for that week is one year's value.
+- **Exact change.** In `core/seasonal.py`, add `CARRY_DAYS = 14`. In `_daily_ffill_by_year`, find the last observation of the previous calendar year. If it lies no more than `CARRY_DAYS` before 1 January, include it as the seed of the reindex and forward-fill, then keep only this year's daily grid. The level then holds from the last December report until the first January one, which is how the module already treats every other gap between reports. Nothing changes after a year's first report, and nothing is bridged across a real gap longer than 14 days.
+- **Acceptance.** All three use synthetic W-FRI data from 2021-01-01 to 2027-01-01, with every observation in year *y* valued `y - 2000` (21 to 27).
+  - (a) `seasonal_stats(df, "value", years=range(2022, 2027))` has 1 in its index. The day-1 values for 2022 to 2026 are carried from 2021-12-31 (21), 2022-12-30 (22), 2023-12-29 (23), 2024-12-27 (24) and 2025-12-26 (25), so the day-1 median is **23.0**, `lo` is **21.0** and `hi` is **25.0**.
+  - (b) `readme_charts.seasonal_panel` on the same frame returns **(27.0, 23.0)** instead of raising.
+  - (c) A series with a 30-day gap over the new year (last obs 2025-12-02, first 2026-01-15) still has NaN for 2026 days 1 to 14.
+  - The existing `tests/test_seasonal.py` and `tests/test_publish_seasonal.py` stay green. Re-run them first; any change to a non-January value is a bug in the change.
+- **Risk.** `serving.seasonal` and `wpsr_lines` gain values on the first days of January where they had NaN or one year. No existing non-NaN value moves. For a series whose last December report falls in 2020, the 2021 grid starts from a 2020 level until 2021's first report. That is the level that held at the time, not a 2020 norm, but worth knowing.
+- **Implement in this run: yes.** It fixes a crash that comes due on a known date, and no published number other than a missing one changes.
+
+#### I-17 `inventory_deviation` puts the year it measures into its own benchmark: the published `derived.inv.dev_z.uscrude` is understated
+
+- **Why.** At `core/fundamentals.py:24`, `years_range = range(current_year - years, current_year + 1)` includes the current year. Lines 27-30 then take `mean` and `std` over every year column, the current one among them, and `min`/`max` are `seasonal_stats`' `lo`/`hi`, which include it too. `core/seasonal.py:14-17` names exactly this error ("folding it into the band's own lo/hi/median would let it move the very benchmark it is measured by"), and `core/publish.py:seasonal_rows` avoids it with two calls.
+  - The z-score is written to the lake as `derived.inv.dev_z.uscrude` (`pipelines/derived/fundamentals.py:62`). It traces to EIA, so it is class b and published to `serving.series_long` by the sweep. Page 19 shows it as "Latest deviation z-score (ex-2020)" (`apps/dashboard/pages/19_fundamentals.py:94`).
+  - Run here on the repo's own test fixture (2022 to 2026 at 398, 402, 400, 401 and 405): it returns mean **401.2**, max **405.0** (the current value itself), dev 3.8 and dev_z **1.468**.
+  - Excluding 2026 gives mean 400.25, std (ddof 1) √(8.75/3) = 1.7078, dev 4.75 and dev_z **2.781**. The published z is about half what it should be, and a record level can never sit above the band's max.
+  - The existing test (`tests/test_core_fundamentals.py:40`) asserts `mean ≈ 401.2, abs=1.0`, so it passes either way. `pipelines/derived/fundamentals.py` has no test at all.
+- **Exact change.** In `inventory_deviation`, compute the band from `seasonal_stats(df, "value", years=range(current_year - years, current_year), exclude=exclude)`. Take `mean`, `std`, `min` and `max` from those prior-year columns only. Read `value` (the current track) from a second call whose range is stretched to `current_year + 1`, the pattern `seasonal_rows` uses. Fix the docstring ("across the included years" becomes "across the `years` years before the latest, 2020 excluded"). Add `tests/test_derived_fundamentals.py`: write a synthetic `WCESTUS1` to a temp lake (the `tmp_lake` pattern in `tests/test_derived_cushing.py`), run `_pull_inventory_deviation`, and read `derived.inv.dev_z.uscrude` back.
+- **Acceptance.** On the existing fixture, at `result.index[100]`: mean **400.25**, min **398.0**, max **402.0**, dev **4.75**, dev_z **2.781** (±0.001). Tighten the existing assertion from `401.2 abs=1.0` to `400.25 abs=1e-9`. The std-zero test still yields all-NaN dev_z. The new pipeline test reads back 2026 rows whose last value is 2.781 ± 0.001, unit `z-score`.
+- **Risk.** The next `derived_fundamentals` run rewrites the current year's `derived.inv.dev_z.uscrude` rows with larger magnitudes, and the next sweep publishes them. It is not a frozen or pre-registered number; `specs/19_fundamentals-physical.md` records no score against it. Say so in the commit message.
+- **Implement in this run: yes.**
+
+#### I-18 Close the rights hole in derived curve series: class d settles would publish as class b
+
+- **Why.** At `core/rights.py:384`, `^derived\.(spread|curve)\.` maps to `("eia",)` for every root. But `pipelines/derived/curve.py:30-40` builds `derived.spread.<root>.*` and `derived.curve.<root>.*` from `fut.<root>.<contract>.settle` read from every source partition. Contract-coded settles come only from `manual` (vendor export) or `ibkr`, both class d. `pipelines/derived/curve.py` is scheduled (`infra/run_scheduled.py:52`).
+  - Run here: `series_class("derived", "derived.spread.lco.s12")` returns **"b"**, and `drop_restricted` keeps a `derived.spread.lco.s12` row.
+  - It writes nothing today only because no `series_meta` rows exist (`pipelines/derived/curve_ranks.py:17-20` and the comment at `core/rights.py:382-383`). The first manual-CSV or IBKR pull (`pipelines/futures/pull.py:51` writes `series_meta`) would put a vendor-derived Brent curve on the public API with no warning.
+- **Exact change.**
+  1. Narrow the derived map to what the EIA ranks cover: `re.compile(r"^derived\.(spread|curve)\.(cl|rb|ho|hu)\.")` mapping to `("eia",)`. These are the roots in `curve_ranks.RANK_ROOTS`; a test asserts the two agree. Any other root then matches nothing and is class d by the existing rule.
+  2. In `pipelines/derived/curve.py::pull_root`, after reading the panel, look up `core.rights.SOURCE_CLASS` for the `source` of the settle rows. If any is class d, write nothing for that root and print `<root>: settles come from class d source(s) [...]; derived curve rows not written (RIGHTS.md)`. This keeps class d inputs out of the shared `derived` partition, and also stops curve.py and curve_ranks.py from writing the same ids from different data, which `curve_ranks.py:17-20` warns about.
+  3. Regenerate `RIGHTS.md` with `uv run python -m core.rights`.
+- **Acceptance.**
+  - `series_class("derived", "derived.spread.lco.s12") == "d"`, `series_class("derived", "derived.curve.lco.regime") == "d"` and `series_class("derived", "derived.spread.cl.s12") == "b"`.
+  - A temp lake with `fut.lco.z2026.settle` and `fut.lco.f2027.settle` under `source=manual`, plus two `series_meta` rows: `curve.pull_root("lco", meta, ts)` returns **0** and nothing is written under `source=derived`.
+  - With `SOURCE_CLASS` monkeypatched so `manual` is `"b"`, the same call returns more than 0.
+  - `tests/test_rights.py` passes, comparing the regenerated `RIGHTS.md` byte for byte.
+- **Risk.** None today, since no row changes. If the owner later wants a private Brent curve in the lake, that is a separate id namespace, and their call.
+- **Implement in this run: yes.** It enforces the class the register already gives `manual` and `ibkr`.
+
+#### I-19 Daily seasonal charts crash for all of 2028: 29 February reaches `replace(year=2001)`
+
+- **Why.** At `apps/exhibits/readme_charts.py:121-122`, the current-year track is passed to `seasonal._normalised_doy`, which does `d.replace(year=2001)` (`core/seasonal.py:37`). `seasonal_stats` drops 29 February from the band, but nothing drops it from the track.
+  - Run here on a daily series from 2022-01-01 to 2028-03-05: `seasonal_panel` raises `ValueError: day 29 must be in range 1..28 for month 2 in year 2001`. The EU gas storage README chart (daily AGSI+) therefore cannot be drawn from 29 February 2028 to 31 December 2028.
+  - The same open-coded `replace(year=2001)` is in `apps/dashboard/pages/08_weather.py:99,116,124` (daily HDD, also a crash), `05_us_gas_power.py:93`, `015_us_oil_overview.py:80`, `01_us_padd.py:108`, `19_fundamentals.py:85` and `pipelines/derived/fundamentals.py:57`. The weekly series among these crash only when 29 February is a report date.
+  - Three places already clamp it, each in its own way: `core/cracks.py:133-138`, `core/publish.py:_today_doy`, `apps/dashboard/components/event_overlay.py:41-45`. `DEVELOPMENT.md:12` (rule 4) says to use `core.seasonal` and never reimplement it.
+- **Exact change.**
+  - In `core/seasonal.py`, add the public `reference_doy(ts)`, which drops 29 February rows, and `current_track(df, value_col="value") -> pd.Series`: the latest calendar year's rows minus 29 February, indexed by reference day of year.
+  - Use `current_track` in `readme_charts.seasonal_panel`, in the five dashboard pages above and in `pipelines/derived/fundamentals.py`. Replace the three private clamps with one `reference_doy_clamped(ts)` (29 February becomes 28 February) for single dates.
+  - Add `tests/test_seasonal_calendar.py`, including a guard test: `grep` finds no `replace(year=2001)` or `replace(year=REFERENCE_YEAR)` outside `core/seasonal.py`.
+- **Acceptance.**
+  - Daily constant 50.0 from 2022-01-01 to 2028-03-05: `seasonal_panel` returns **(50.0, 50.0)**.
+  - `current_track` has **64** rows (Jan 31 + Feb 29 + Mar 5 = 65, minus 29 February) and no duplicate index.
+  - `reference_doy_clamped(pd.Timestamp("2028-02-29")) == 59`.
+  - The guard test passes.
+  - The `tests/test_pages_smoke.py` page smoke tests stay green.
+- **Risk.** It touches six pages. Each change replaces one line with one call, and the smoke tests cover the pages.
+- **Implement in this run: yes.**
+
+#### I-20 The CFTC README chart's finding is wrong whenever managed money is net short
+
+- **Why.** At `apps/exhibits/readme_charts.py:208-210`, the title is `f"net long {net:.0f} thousand contracts, {100*(1 - net/net.max()):.0f}% below its three-year high"` with no sign check. Run here: net −10 against a three-year high of +50 gives "Managed money is **net long -10** thousand contracts, **120%** below its three-year high". Net −10 against a high of −5 gives "**-100%** below". Managed money in WTI has been net short before (in other years). The title is sentence 1 of the caption, the finding (PROJECT-STARTER 7.1), and the README repeats it by hand (`README.md:23`).
+- **Exact change.** Add `positioning_finding(net_last, net_max, peak) -> str` in `readme_charts.py`. Write "net long" or "net short" with the absolute value. Use the percentage form only when both `net_last` and `net_max` are positive. Otherwise say "N thousand below its three-year high of ±M thousand in <Month YYYY>" with a sign (rule 3). When `net_last == net_max`, say "at its three-year high". Add tests.
+- **Acceptance.**
+  - (54, 257, Oct 2023) gives "Managed money is net long 54 thousand contracts, 79% below its three-year high of October 2023", unchanged from today's caption.
+  - (−10, 50, Oct 2023) gives "Managed money is net short 10 thousand contracts, 60 thousand below its three-year high of +50 thousand in October 2023".
+  - (−10, −5, Mar 2025) gives "... net short 10 thousand contracts, 5 thousand below its three-year high of −5 thousand in March 2025".
+  - (60, 60, Oct 2026) gives "... net long 60 thousand contracts, at its three-year high".
+  - The byte-identity test for the fixture stays green, since the fixture is net long below its high.
+- **Risk.** None.
+- **Implement in this run: yes.**
+
+#### I-21 Lock the README exhibits to the desk rules: `STRICT_DESK` on, and rule-8 unit spellings
+
+- **Why.** `core/paper_style.py:99` sets `STRICT_DESK = False` and `:98` sets `UNITS = None`, so nothing stops a red line, a legend box, a twin axis or a free-text unit from reaching the README. Today's charts comply only by luck: all four pass `ps.lint(fig, axis_labels=True)` with `STRICT_DESK = True` (run here on the test fixture). They do write units that rule 8 does not allow: "million barrels" (`readme_charts.py:173`), "thousand contracts" (`:214`), "million barrels a day" (`:251`) and "% of working capacity" (`:274`). The committed captions (`docs/img/*.tex`) carry those spellings, and PROJECT-STARTER 7.1 asks for `Units: mb; weekly…` and axis labels like "Commercial crude stocks (mb)".
+- **Exact change.**
+  - In `build_all`, set `ps.STRICT_DESK = True` and `ps.UNITS = frozenset({"mb", "mb/d", "kb", "kb/d", "contracts", "%"})` inside a `try/finally` that restores the previous values, so other callers in the process are untouched.
+  - Units become "mb", "contracts", "mb/d" and "%".
+  - Axis labels become "Commercial crude stocks (mb)", "Managed-money positions (contracts; short below zero)", "Crude moved between PADDs (mb/d)" and "EU gas storage, share of working capacity (%)".
+  - The CFTC panel plots contracts, not thousands, with a `{x:,.0f}` tick formatter; its title keeps "thousand contracts" as words.
+  - Do not redraw `docs/img/*`; there is no lake here. The owner redraws with `uv run python -m apps.exhibits.readme_charts`, and that goes in `PARKING.md`.
+- **Acceptance.**
+  - On the fixture lake, `ps.field(fig, "units")` is "mb", "contracts", "mb/d" and "%" for the four charts.
+  - Every chart passes `ps.lint(fig, axis_labels=True) == []` under `STRICT_DESK`.
+  - A test that adds `ax.plot(..., color="#C0392B")` to the crude chart makes `ps.save` raise.
+  - After `build_all` returns, `ps.STRICT_DESK is False` and `ps.UNITS is None`.
+  - The byte-identity test is updated once, to the new expected bytes, and stays green between two runs.
+- **Risk.** The committed PNGs and captions stay on the old spellings until the owner redraws. The I-04 and I-20 tests also read the caption text, so update them together.
+- **Implement in this run: yes.**
+
+#### I-22 A fifth README exhibit: this week's crude build or draw against the same week in the five prior years
+
+- **Why.** This moves the repo toward the desk-seat questions. The number the market trades on a WPSR Wednesday is the week's change in commercial crude stocks set against what is normal for that week (question 2). The repo already publishes `wow` (`pipelines/eia/wpsr_lines.py:13-14`) and a seasonal level band, but not the change against its own seasonal norm, which is the named benchmark (seasonal naive) any later scoring would use (question 3). It is public-domain EIA data, so question 4 is answered: it can be shown. It is the "weekly balance" family of house exhibits.
+- **Exact change.**
+  - Add `crude_weekly_change(lake)` to `apps/exhibits/readme_charts.py`. It takes `WCESTUS1` in mb, computes `diff()`, and passes it through `seasonal.seasonal_stats(..., years=band_years(df))`; no new seasonal maths. It draws the latest 26 weeks of change as bars, with the prior five years' same-week range as a light band and their median as a dashed line.
+  - The title states the finding with ▲/▼ and a sign. Units are "mb"; the caption source is the WPSR (WCESTUS1), public domain.
+  - Register it in `CHARTS`. Do not add the README image line until the owner has drawn it from the lake; that goes in `PARKING.md` as one line.
+- **Acceptance.** Use a synthetic W-FRI series where the change in the week ending on or before 2 October is +1.0 (2021), −1.0 (2022), +3.0 (2023), 0.0 (2024), +2.0 (2025) and **−2.0** (2026, the latest). The same-week median is **+1.0** and the range is **−1.0 to +3.0**. The title reads "US crude stocks ▼2.0 mb in the week to Oct 2, against a 2021 to 2025 median of ▲1.0 mb for the week". The chart passes lint under I-21's settings and is byte-identical between two runs.
+- **Risk.** It shares I-16's January edge: build it after I-16, or the first week of 2027 breaks it as well.
+- **Implement in this run: yes.** Code and tests only; drawing it needs the owner's lake.
+
+### Order for the implementer (round 2)
+
+Work on `improve/run-01`; do not push. Run the five-placeholder-key pytest after each item and put the count in the commit message.
+
+1. **I-15**, the screenshot and its test.
+2. **I-16**, the year-start carry, before anything else that touches seasonal charts.
+3. **I-17**, `inventory_deviation` and `tests/test_derived_fundamentals.py`.
+4. **I-18**, the derived curve rights hole and the `RIGHTS.md` regeneration.
+5. **I-19**, `current_track` and `reference_doy_clamped`, then the six call sites.
+6. **I-20**, the positioning finding.
+7. **I-21**, the strict switches and units. Update the I-04 and I-20 caption assertions in the same commit.
+8. **I-22**, the weekly change exhibit, code and tests only.
+
+Yes items: I-15 to I-22 (eight). Add one line each to `PARKING.md` for what the owner must do afterwards: retake a screenshot (I-15), redraw `docs/img/*` from the lake (I-21, I-22), and add the I-22 image to the README.
