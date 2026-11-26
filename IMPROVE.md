@@ -293,6 +293,7 @@ I-01, I-02, I-03, I-04 and I-09 are done and are not re-opened. I-02 is built bu
   - The existing `tests/test_seasonal.py` and `tests/test_publish_seasonal.py` stay green. Re-run them first; any change to a non-January value is a bug in the change.
 - **Risk.** `serving.seasonal` and `wpsr_lines` gain values on the first days of January where they had NaN or one year. No existing non-NaN value moves. For a series whose last December report falls in 2020, the 2021 grid starts from a 2020 level until 2021's first report. That is the level that held at the time, not a 2020 norm, but worth knowing.
 - **Implement in this run: yes.** It fixes a crash that comes due on a known date, and no published number other than a missing one changes.
+- **Status: done in 868a1ad. `pytest -q`: 1304 passed, 17 deselected; `ruff check`: All checks passed; `mypy core pipelines infra apps`: no issues found in 228 source files. All three acceptance cases hold (day-1 median 23.0, lo 21.0, hi 25.0; `seasonal_panel` returns (27.0, 23.0); a 30-day gap stays NaN for days 1 to 14). The existing seasonal tests were green before and after, so no non-January value moved.**
 
 #### I-17 `inventory_deviation` puts the year it measures into its own benchmark: the published `derived.inv.dev_z.uscrude` is understated
 
